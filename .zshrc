@@ -219,6 +219,19 @@ alias cvt="/cygdrive/c/progra~2/ImageMagick-6.4.4-Q16/cvt.exe"
 alias d='/bin/rm -fr'
 alias du="du -h"
 alias df="df -h"
+alias dc='sudo docker commit $(sudo docker ps -l -q)'
+function denv () { sudo docker run -rm $1 env }
+function dip () { sudo docker inspect $(sudo docker ps -l -q) | grep IPAddress | cut -d '"' -f 4 }
+alias dp='sudo docker ps -a | more'
+alias dps='sudo docker ps -a | more'
+alias dl='sudo docker images | more'
+alias dls='sudo docker images | more'
+alias dd='sudo docker rmi -f $(sudo docker images -q)'
+alias ddel='sudo docker rmi -f $(sudo docker images -q)'
+alias dk='sudo docker rm -f $(sudo docker ps -a -q)'
+alias dkill='sudo docker rm -f $(sudo docker ps -a -q)'
+alias dkd='dk ; dd'
+alias dv='sudo docker images -viz'
 # alias e='/cygdrive/c/Progra~2/emacs-23.4/bin/emacsclientw.exe'
 alias ee='e d:\.emacs'
 alias xyzzy='/cygdrive/d/bin/xyzzy/xyzzycli.exe'
