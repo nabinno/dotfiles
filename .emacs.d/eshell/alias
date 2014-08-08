@@ -1,100 +1,70 @@
-alias grao git remote add origin https://github.com/nabinno/$1.git
-alias gpom git push -v -u origin master
-alias gra git remote add $*
-alias gi git init
-alias J j ~/.blahfe
-alias z zsh -c ". ~/.zshrc && $1"
-alias x dired .
-alias w cmd /c $1
-alias v cat $1
-alias u tar zxvf $1
-alias t z "t $1"
-alias ssh901 alias ll ls -a $*
-alias sl ls
-alias sg z put-rsync-software-config-to-google-drive
-alias sb z put-rsync-google-drive-to-backup-in-local
-alias s901 z put-rsync-blahfe-901-to-901
-alias s9 z put-rsync-to-009-i65c-pc
-alias s804 z put-rsync-blahfe-804-to-804
-alias s ln -s $1 $2
-alias rr c ~/.zshrc /ssh:901:~/
-alias rename ~/bin/rename.pl $*
-alias re e ~/.zshrc
-alias r mv $1 $2
-alias pp j c:/progra~2
-alias plagger-edit e /ssh:901:/home/i65cbb/plagger/$1
-alias nil $*
-alias m mv $1 $2
-alias ll ls -a $*
-alias lf ls -al $*
-alias kl /bin/kill -f $1
-alias k mkdir -p $*
-alias jg j ~/Google\ Drive
-alias jee j ~/.emacs.d/elisp
-alias j901p j /ssh:901:~/plagger
-alias j901lp j /ssh:901:~/local/lib/perl5/Plagger/Plugin
-alias j901 j /ssh:901:~/
-alias j804 j /ssh:804:~/
-alias j202 j /ssh:202:~/
-alias j009.101 j /ssh:bs009.101:~/
-alias j009 j /ssh:bg009:~/
-alias j cd $1
-alias ip ps -Wf
-alias gwho git shortlog -s --
-alias gvlog git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen - %cD (%cr) %C(bold blue)<%an>%Creset%n' --abbrev-commit --date=relative -p ; echo ''
-alias gswitch git checkout $*
-alias gst git status -sb
-alias gslog git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative ; echo ''
-alias gsearch git "!sh -c 'git rev-list --all | grep ^$1 | while read commit; do git --no-pager log -n1 --pretty=format:\"%H %ci %an %s%n\" $commit; done' -"
-alias gs git status -sb
-alias gpr git pull --rebase
-alias gpick git cherry-pick
-alias glg git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -- ; echo ''
-alias glf git log --decorate=full --graph --pretty=full ; echo ''
-alias glast-commit-diff git diff HEAD^
-alias glast git diff HEAD~1..HEAD
-alias gl git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -- ; echo ''
-alias ghist git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -- ; echo ''
-alias gexport git "!sh -c 'git checkout-index -a -f --prefix=$1/' -"
-alias gdfc git diff --cached
-alias gdf git diff HEAD^
-alias gdelete-remote-branch git "!sh -c \"git push origin --delete $1\""
-alias gdelete-branch git !git branch -D $*
-alias gdel git rm $*
-alias gd git rm $*
-alias gco git checkout
-alias gci git commit -v $*
-alias gcd git !bash -c 'while  ! -d .git; do cd ..; done'
-alias gca git commit -a -v -m $*
-alias gc git commit -a -v -m $*
-alias gbrs git branch -a $*
-alias gbranches git branch -a $*
-alias gbr git branch $*
-alias gb git branch $*
-alias gammend git commit --amend $*
-alias galiases git !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /'
-alias ga git add -v $*
-alias g git $*
-alias fl lf
-alias ee e ~/.emacs
-alias ed11 alias ed2 
-alias ed1 j ~/.emacs.d
-alias ed alias o 
-alias e find-file $1
-alias d rm -fr $*
-alias cyg-get , c:/cygwin/.cygwin/setup-x86_64.exe
-alias cu Symbol's value as variable is void: \'process
-alias cs (modify-coding-system-alist processsjis-dos)
-alias c cp -f -R $1 $2
-alias blahfe-rm J ; for i in {blahfe} {d $i/$1}
-alias blahfe-mkdir J ; for i in {blahfe} {k $i/$1}
-alias blahfe-cp J ; for i in {blahfe} {c 000/$1 $i/$2}
-alias blahfe echo 101 102 103 104 201 202 203 204 205 206 301 302 303 304 401 501 502 503 504 506 601 602 603
-alias b cp -ipR $1 {concat $1 ".org" (format-time-string "%y%m%d")}
-alias X "/cygdrive/c/progra~1/dyna214/dynaclient.exe" %P
-alias U tar zcvf $1.tar.gz $1
-alias KL cmd /c "taskkill /F /T /IM $1"
-alias IP w "tasklist"
-alias . source $1
 alias , cmd /c start $*
+alias . source $1
+alias U tar zcvf $1.tar.gz $1
+alias b cp -ipR $1 {concat $1 ".org" (format-time-string "%y%m%d")}
+alias c cp -f -R $1 $2
+alias cs (modify-coding-system-alist processsjis-dos)
+alias d rm -fr $*
+alias e find-file $1
+alias ed alias o 
+alias ed1 j ~/.emacs.d
+alias ed11 alias ed2 
+alias fl lf
+alias g git $*
+alias ga git add -v $*
+alias galiases git !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /'
+alias gammend git commit --amend $*
+alias gb git branch $*
+alias gbr git branch $*
+alias gbranches git branch -a $*
+alias gbrs git branch -a $*
+alias gc git commit -a -v -m $*
+alias gca git commit -a -v -m $*
+alias gcd git !bash -c 'while  ! -d .git; do cd ..; done'
+alias gci git commit -v $*
+alias gco git checkout
+alias gd git rm $*
+alias gdel git rm $*
+alias gdelete-branch git !git branch -D $*
+alias gdelete-remote-branch git "!sh -c \"git push origin --delete $1\""
+alias gdf git diff HEAD^
+alias gdfc git diff --cached
+alias gexport git "!sh -c 'git checkout-index -a -f --prefix=$1/' -"
+alias ghist git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -- ; echo ''
+alias gi git init
+alias gl git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -- ; echo ''
+alias glast git diff HEAD~1..HEAD
+alias glast-commit-diff git diff HEAD^
+alias glf git log --decorate=full --graph --pretty=full ; echo ''
+alias glg git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -- ; echo ''
 alias gp git push -v -u $*
+alias gpick git cherry-pick
+alias gpom git push -v -u origin master
+alias gpr git pull --rebase
+alias gra git remote add $*
+alias grao git remote add origin https://github.com/nabinno/$1.git
+alias gs git status -sb
+alias gsearch git "!sh -c 'git rev-list --all | grep ^$1 | while read commit; do git --no-pager log -n1 --pretty=format:\"%H %ci %an %s%n\" $commit; done' -"
+alias gslog git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative ; echo ''
+alias gst git status -sb
+alias gswitch git checkout $*
+alias gvlog git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen - %cD (%cr) %C(bold blue)<%an>%Creset%n' --abbrev-commit --date=relative -p ; echo ''
+alias gwho git shortlog -s --
+alias ip ps -Wf
+alias j cd $1
+alias k mkdir -p $*
+alias kl /bin/kill -f $1
+alias lf ls -al $*
+alias ll ls -a $*
+alias m mv $1 $2
+alias nil $*
+alias r mv $1 $2
+alias re e ~/.zshrc
+alias s ln -s $1 $2
+alias sl ls
+alias t z "t $1"
+alias u tar zxvf $1
+alias v cat $1
+alias w cmd /c $1
+alias x dired .
+alias z zsh -c ". ~/.zshrc && $1"
