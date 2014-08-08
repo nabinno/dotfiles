@@ -1,9 +1,6 @@
 [user]
 	name = Nab Inno
 	email = nab@blahfe.com
-[github]
-	user = nabinno
-	token = ca6b1976a49e55d8f00dd83c279e19bc3e23074b
 [core]
 	excludesfile = ~/.gitignore_global
 [alias]
