@@ -95,6 +95,7 @@ termcapinfo   xterm* 'XC=K%,%\E(B,[\304,\\\\\326,]\334,{\344,|\366,}\374,~\337'
 # ### wyse-75-42 must have flow control (xo = "terminal uses xon/xoff")
 # ### essential to have it here, as this is a slow terminal.
 termcapinfo wy75-42 xo:hs@
+defflow off
 
 # ### New termcap sequences for cursor application mode.
 termcapinfo wy* CS=\E[?1h:CE=\E[?1l:vi=\E[?25l:ve=\E[?25h:VR=\E[?5h:VN=\E[?5l:cb=\E[1K:CD=\E[1J

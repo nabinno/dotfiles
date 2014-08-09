@@ -51,10 +51,10 @@
 (setq show-paren-style 'expression)
 
 
-; deffered
-; --------
-(require 'cl)
-(require 'deferred)
+;; ; deffered
+;; ; --------
+;; (require 'cl)
+;; (require 'deferred)
 
 
 ; info
@@ -84,7 +84,7 @@
 (global-set-key (kbd "M-SPC") 'electric-buffer-list)
 (global-set-key (kbd "C-x C-z") 'shell-pop)
 (global-set-key (kbd "M-9") '(lambda () (interactive) (find-file "~/.zshrc") (sh-mode)))
-(global-set-key (kbd "M-0") '(lambda () (interactive) (find-file "~/.emacs")))
+(global-set-key (kbd "M-0") '(lambda () (interactive) (find-file "~/.emacs.d/init.el")))
 (global-set-key (kbd "C-c e") '(lambda () (interactive) (eshell)))
 (global-set-key (kbd "M-1") '(lambda () (interactive) (eshell)))
 (global-set-key (kbd "C-c s") '(lambda () (interactive) (shell)))
@@ -173,8 +173,6 @@
 ; ======
 ; org mode
 ; --------
-(global-set-key (kbd "C-c o") '(lambda () (interactive) (find-file "~/.blahfe/801/memo.org")))
-(global-set-key (kbd "M-8") '(lambda () (interactive) (find-file "~/.blahfe/801/memo.org")))
 (global-set-key (kbd "C-c l") 'org-store-link)
 (global-set-key (kbd "C-c a") 'org-agenda)
 (global-set-key (kbd "C-c r") 'org-remember)
@@ -183,15 +181,10 @@
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 (add-hook 'org-mode-hook 'turn-on-font-lock)
 (setq org-hide-leading-stars t)
-(setq org-directory "~/.blahfe/801/")
+(setq org-directory "~/")
 (setq org-default-notes-file "notes.org")
 (setq org-tag-alist
-      '(("BOREDOM" . ?b)
-	("LONELINESS" . ?l)
-	("ACHE" . ?a)
-	("HEALTH DAMAGE" . ?h)
-	("FINANCIAL STRESS" . ?f)
-	("EMPTINESS" . ?e)
+      '(
 	("Heroku" . ?k)
 	("Rails" . ?r)
 	))
@@ -239,24 +232,24 @@
 		    ))))
 
 
-; zlc
-; ---
-(require 'zlc)
-(setq zlc-select-completion-immediately t)
-(let ((map minibuffer-local-map))
-  (define-key map (kbd "<backtab>") 'zlc-select-previous)
-  (define-key map (kbd "S-<tab>") 'zlc-select-previous)
-  (define-key map (kbd "C-M-p") 'zlc-select-previous-vertical)
-  (define-key map (kbd "C-M-n") 'zlc-select-next-vertical)
-  (define-key map (kbd "C-p") 'zlc-select-previous)
-  (define-key map (kbd "C-n") 'zlc-select-next)
-  )
+;; ; zlc
+;; ; ---
+;; (require 'zlc)
+;; (setq zlc-select-completion-immediately t)
+;; (let ((map minibuffer-local-map))
+;;   (define-key map (kbd "<backtab>") 'zlc-select-previous)
+;;   (define-key map (kbd "S-<tab>") 'zlc-select-previous)
+;;   (define-key map (kbd "C-M-p") 'zlc-select-previous-vertical)
+;;   (define-key map (kbd "C-M-n") 'zlc-select-next-vertical)
+;;   (define-key map (kbd "C-p") 'zlc-select-previous)
+;;   (define-key map (kbd "C-n") 'zlc-select-next)
+;;   )
 
 
-; lcomp
-; -----
-(require 'lcomp)
-(lcomp-install)
+;; ; lcomp
+;; ; -----
+;; (require 'lcomp)
+;; (lcomp-install)
 
 
 ; diff

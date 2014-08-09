@@ -4,6 +4,8 @@
 # --------------------
 [ -z "$PS1" ] && return
 stty -ixon
+stty start undef
+stty stop undef
 function parse_git_dirty {
   git diff --no-ext-diff --quiet --exit-code &> /dev/null || echo "*"
 }
