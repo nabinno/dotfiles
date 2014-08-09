@@ -1,3 +1,5 @@
+
+
 alias , cmd /c start $*
 alias . source $1
 alias U tar zcvf $1.tar.gz $1
@@ -5,6 +7,19 @@ alias b cp -ipR $1 {concat $1 ".org" (format-time-string "%y%m%d")}
 alias c cp -f -R $1 $2
 alias cs (modify-coding-system-alist processsjis-dos)
 alias d rm -fr $*
+alias dc sudo docker commit $(sudo docker ps -l -q)
+alias dd sudo docker rmi -f $(sudo docker images -q)
+alias ddel sudo docker rmi -f $(sudo docker images -q)
+alias denv sudo docker run -rm $1 env
+alias dip sudo docker inspect $(sudo docker ps -l -q) | grep IPAddress | cut -d '"' -f 4
+alias dk sudo docker rm -f $(sudo docker ps -a -q)
+alias dkd dk ; dd
+alias dkill sudo docker rm -f $(sudo docker ps -a -q)
+alias dl sudo docker images
+alias dls sudo docker images
+alias dp sudo docker ps -a
+alias dps sudo docker ps -a
+alias dv sudo docker images -viz
 alias e find-file $1
 alias ed alias o 
 alias ed1 j ~/.emacs.d

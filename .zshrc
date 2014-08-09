@@ -299,10 +299,10 @@ esac
 alias dc='sudo docker commit $(sudo docker ps -l -q)'
 function denv () { sudo docker run -rm $1 env }
 function dip () { sudo docker inspect $(sudo docker ps -l -q) | grep IPAddress | cut -d '"' -f 4 }
-alias dp='sudo docker ps -a | more'
-alias dps='sudo docker ps -a | more'
-alias dl='sudo docker images | more'
-alias dls='sudo docker images | more'
+alias dp='sudo docker ps -a | less -S'
+alias dps='sudo docker ps -a | less -S'
+alias dl='sudo docker images | less -S'
+alias dls='sudo docker images | less -S'
 alias dd='sudo docker rmi -f $(sudo docker images -q)'
 alias ddel='sudo docker rmi -f $(sudo docker images -q)'
 alias dk='sudo docker rm -f $(sudo docker ps -a -q)'
