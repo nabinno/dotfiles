@@ -12,6 +12,7 @@ alias ddel sudo docker rmi -f
 alias ddela sudo docker rmi -f $(sudo docker images -q)
 alias denv sudo docker run -rm $1 env
 alias dip sudo docker inspect $(sudo docker ps -l -q) | grep IPAddress | cut -d '"' -f 4
+alias dj sudo docker run -i -t
 alias dk sudo docker rm -f
 alias dka sudo docker rm -f $(sudo docker ps -a -q)
 alias dkd dk ; dd
