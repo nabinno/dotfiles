@@ -297,18 +297,24 @@ esac
 # ----------
 # ### docker ###
 alias dc='sudo docker commit $(sudo docker ps -l -q)'
-function denv () { sudo docker run -rm $1 env }
-function dip () { sudo docker inspect $(sudo docker ps -l -q) | grep IPAddress | cut -d '"' -f 4 }
-alias dp='sudo docker ps -a | less -S'
-alias dps='sudo docker ps -a | less -S'
+alias dd='sudo docker rmi -f'
+alias dda='sudo docker rmi -f $(sudo docker images -q)'
+alias ddel='sudo docker rmi -f'
+alias ddela='sudo docker rmi -f $(sudo docker images -q)'
+alias dj='sudo docker run -i -t'
+alias dk='sudo docker rm -f'
+alias dka='sudo docker rm -f $(sudo docker ps -a -q)'
+alias dkd='dka ; dda'
+alias dkill='sudo docker rm -f'
+alias dkilla='sudo docker rm -f $(sudo docker ps -a -q)'
 alias dl='sudo docker images | less -S'
 alias dls='sudo docker images | less -S'
-alias dd='sudo docker rmi -f $(sudo docker images -q)'
-alias ddel='sudo docker rmi -f $(sudo docker images -q)'
-alias dk='sudo docker rm -f $(sudo docker ps -a -q)'
-alias dkill='sudo docker rm -f $(sudo docker ps -a -q)'
-alias dkd='dk ; dd'
+alias dp='sudo docker ps -a | less -S'
+alias dps='sudo docker ps -a | less -S'
+alias dr='sudo docker tag'
 alias dv='sudo docker images -viz'
+function denv () { sudo docker run -rm $1 env }
+function dip () { sudo docker inspect $(sudo docker ps -l -q) | grep IPAddress | cut -d '"' -f 4 }
 
 # #### git ###
 alias g='git'
