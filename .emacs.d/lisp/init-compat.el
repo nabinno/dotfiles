@@ -22,14 +22,14 @@ to case differences."
       "Overridden; see `sanityinc/called-interactively-p' for the wrapped function."
       (sanityinc/called-interactively-p))))
 
-(when (eval-when-compile (< emacs-major-version 24))
-  ;; Help package.el work in older Emacsen, where there's no TRASH arg
-  ;; for 'delete-directory
-  (message "Warning: overriding delete-directory to support TRASH argument.")
-  (fset 'sanityinc/delete-directory (symbol-function 'delete-directory))
-  (defun delete-directory (directory &optional recursive trash)
-    "Overridden: see `sanityinc/delete-directory' for the wrapped function"
-    (sanityinc/delete-directory directory recursive)))
+;; (when (eval-when-compile (< emacs-major-version 24))
+;;   ;; Help package.el work in older Emacsen, where there's no TRASH arg
+;;   ;; for 'delete-directory
+;;   (message "Warning: overriding delete-directory to support TRASH argument.")
+;;   (fset 'sanityinc/delete-directory (symbol-function 'delete-directory))
+;;   (defun delete-directory (directory &optional recursive trash)
+;;     "Overridden: see `sanityinc/delete-directory' for the wrapped function"
+;;     (sanityinc/delete-directory directory recursive)))
 
 
 ;;----------------------------------------------------------------------------
