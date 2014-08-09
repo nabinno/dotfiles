@@ -314,7 +314,7 @@ alias dps='sudo docker ps -a | less -S'
 alias dr='sudo docker tag'
 alias dv='sudo docker images -viz'
 function denv () { sudo docker run -rm $1 env }
-function dip () { sudo docker inspect $(sudo docker ps -l -q) | grep IPAddress | cut -d '"' -f 4 }
+function dip () { sudo docker inspect $(sudo docker ps -l -q) | \grep IPAddress | \cut -d '"' -f 4 }
 
 # #### git ###
 alias g='git'
