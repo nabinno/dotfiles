@@ -31,6 +31,7 @@ export PATH=$HOME/bin:$HOME/local/bin:$PATH
 export PATH="$HOME/.parts/autoparts/bin:$PATH"
 export PATH="$HOME/.cask/bin:$PATH"
 export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
+export PATH=$HOME/local/perl-5.18/bin:$PATH
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
 eval "$(parts env)"
 
@@ -296,25 +297,47 @@ esac
 # customized
 # ----------
 # ### docker ###
-alias dc='sudo docker commit $(sudo docker ps -l -q)'
-alias dd='sudo docker rmi -f'
-alias dda='sudo docker rmi -f $(sudo docker images -q)'
-alias ddel='sudo docker rmi -f'
-alias ddela='sudo docker rmi -f $(sudo docker images -q)'
-alias dj='sudo docker run -i -t'
-alias dk='sudo docker rm -f'
-alias dka='sudo docker rm -f $(sudo docker ps -a -q)'
+alias dc='docker commit $(docker ps -l -q)'
+alias dd='docker rmi -f'
+alias dda='docker rmi -f $(docker images -q)'
+alias ddel='docker rmi -f'
+alias ddela='docker rmi -f $(docker images -q)'
+alias dj='docker run -i -t'
+alias dk='docker rm -f'
+alias dka='docker rm -f $(docker ps -a -q)'
 alias dkd='dka ; dda'
-alias dkill='sudo docker rm -f'
-alias dkilla='sudo docker rm -f $(sudo docker ps -a -q)'
-alias dl='sudo docker images | less -S'
-alias dls='sudo docker images | less -S'
-alias dp='sudo docker ps -a | less -S'
-alias dps='sudo docker ps -a | less -S'
-alias dr='sudo docker tag'
-alias dv='sudo docker images -viz'
-function denv () { sudo docker run -rm $1 env }
-function dip () { sudo docker inspect $(sudo docker ps -l -q) | \grep IPAddress | \cut -d '"' -f 4 }
+alias dkill='docker rm -f'
+alias dkilla='docker rm -f $(docker ps -a -q)'
+alias dl='docker images | less -S'
+alias dls='docker images | less -S'
+alias docker='sudo docker'
+alias dp='docker ps -a | less -S'
+alias dps='docker ps -a | less -S'
+alias dsshd='docker run -t -d -P'
+alias dr='docker tag'
+alias dv='docker images -viz'
+function datach () { docker start $1 ; docker atach $1 }
+function denv () { docker run --rm $1 env }
+function dip () {
+    CI=$(docker ps -l -q)
+    if [ $1 ]; then
+	docker inspect --format {{.NetworkSettings.IPAddress}} $1
+	docker inspect --format {{.NetworkSettings.Ports}} $1
+    else
+	docker inspect --format {{.NetworkSettings.IPAddress}} $CI
+	docker inspect --format {{.NetworkSettings.Ports}} $CI
+	fi
+}
+function dnsenter () {
+    CI=$(docker ps -l -q)
+    if [ $1 ] ; then
+	PID=$(docker inspect --format {{.State.Pid}} $1)
+        nsenter --target $PID --mount --uts --ipc --net --pid
+    else
+	PID=$(docker inspect --format {{.State.Pid}} $CI)
+        nsenter --target $PID --mount --uts --ipc --net --pid
+    fi
+}
 
 # #### git ###
 alias g='git'
