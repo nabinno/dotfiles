@@ -2,7 +2,7 @@
 ; ==============
 ; eshell
 ; ------
-(require 'eshell-pop)
+;; (require 'eshell-pop)
 (setq eshell-directory-name "~/.emacs.d/eshell/")
 (setq shell-pop-window-height 30)
 ;;(require 'esh-myparser)
