@@ -313,7 +313,7 @@ alias dls='docker images | less -S'
 alias docker='sudo docker'
 alias dp='docker ps -a | less -S'
 alias dps='docker ps -a | less -S'
-alias dsshd='docker run -t -d -P'
+function dsshd () { docker run -t -d -P $1 /usr/sbin/sshd -D }
 alias dr='docker tag'
 alias dv='docker images -viz'
 function datach () { docker start $1 ; docker atach $1 }
