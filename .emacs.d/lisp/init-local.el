@@ -21,7 +21,6 @@
 (put 'narrow-to-region 'disabled t)
 (remove-hook 'kill-buffer-query-functions 'server-kill-buffer-query-function)
 ;; (scroll-bar-mode 0)
-(setq browse-url-browser-function '(("." . browse-url-generic))) (setq browse-url-generic-program *chrome-path*)
 (setq cache-long-line-scans t)
 (setq delete-by-moving-to-trash t)
 (setq echo-keystrokes 0.0001)
@@ -81,7 +80,7 @@
 ;; (global-set-key (kbd "M-TAB") 'indent-region)
 ;; (global-set-key [f1] 'help-for-help)
 ;; (global-set-key (kbd "C-x e") 'electric-buffer-list)
-(global-set-key (kbd "M-SPC") 'electric-buffer-list)
+(global-set-key (kbd "M-SPC") 'ibuffer)
 (global-set-key (kbd "C-x C-z") 'shell-pop)
 (global-set-key (kbd "M-9") '(lambda () (interactive) (find-file "~/.zshrc") (sh-mode)))
 (global-set-key (kbd "M-0") '(lambda () (interactive) (find-file "~/.emacs.d/init.el")))
@@ -159,13 +158,13 @@
 	     (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
 
 
-; autocomplete
-; ------------
-(define-key ac-complete-mode-map (kbd "C-n") 'ac-next)
-(define-key ac-complete-mode-map (kbd "C-p") 'ac-previous)
-(defadvice ac-on-post-command
-  (around check-whether-input-type-is-japanese activate)
-  (or current-input-method ad-do-it))
+;; ; autocomplete
+;; ; ------------
+;; (define-key ac-complete-mode-map (kbd "C-n") 'ac-next)
+;; (define-key ac-complete-mode-map (kbd "C-p") 'ac-previous)
+;; (defadvice ac-on-post-command
+;;   (around check-whether-input-type-is-japanese activate)
+;;   (or current-input-method ad-do-it))
 
 
 
