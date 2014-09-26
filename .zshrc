@@ -302,18 +302,19 @@ alias dd='docker rmi -f'
 alias dda='docker rmi -f $(docker images -q)'
 alias ddel='docker rmi -f'
 alias ddela='docker rmi -f $(docker images -q)'
+function dh () { docker history $1 | less -S }
 alias dj='docker run -i -t'
 alias dk='docker rm -f'
 alias dka='docker rm -f $(docker ps -a -q)'
 alias dkd='dka ; dda'
 alias dkill='docker rm -f'
 alias dkilla='docker rm -f $(docker ps -a -q)'
+alias docker='sudo docker'
 alias dl='docker images | less -S'
 alias dls='docker images | less -S'
-alias docker='sudo docker'
 alias dp='docker ps -a | less -S'
 alias dps='docker ps -a | less -S'
-function dsshd () { docker run -t -d -P $1 /usr/sbin/sshd -D }
+function dsshd () { docker run -t -d -p 5000:3000 -P $1 /usr/sbin/sshd -D }
 alias dr='docker tag'
 alias dv='docker images -viz'
 function datach () { docker start $1 ; docker atach $1 }

@@ -73,7 +73,7 @@
 (require 'init-php)
 (require 'init-org)
 ;; (require 'init-nxml)
-(require 'init-html)
+;; (require 'init-html)
 ;; (require 'init-css)
 ;; (require 'init-haml)
 (require 'init-python-mode)
