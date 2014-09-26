@@ -1,9 +1,13 @@
 (require-package 'auto-complete)
 (require 'auto-complete-config)
 (global-auto-complete-mode t)
-(setq-default ac-expand-on-auto-complete nil)
-(setq-default ac-auto-start nil)
-(setq-default ac-dwim nil) ; To get pop-ups with docs even if a word is uniquely completed
+(setq-default ac-expand-on-auto-complete t)
+(setq-default ac-auto-start t)
+(setq-default ac-dwim t) ; To get pop-ups with docs even if a word is uniquely completed
+(ac-set-trigger-key "SPC")
+(define-key ac-completing-map (kbd "C-n") 'ac-next)
+(define-key ac-completing-map (kbd "C-p") 'ac-previous)
+(define-key ac-completing-map (kbd "SPC") 'ac-complete)
 
 ;;----------------------------------------------------------------------------
 ;; Use Emacs' built-in TAB completion hooks to trigger AC (Emacs >= 23.2)

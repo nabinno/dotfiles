@@ -14,17 +14,20 @@
 ; ==============
 ;; yasnippet
 (require-package 'yasnippet)
-(after-load 'yasnippet
-  (diminish 'yas-minor-mode "YAS"))
-;; (setq yas-snippet-dirs
-;;       '("~/.emacs.d/site-lisp/yasnippets-rails/rails-snippets/ruby-mode/"
-;;        "~/.emacs.d/site-lisp/yasnippets-rails/rails-snippets/html-mode/"))
-;; ido
-(ido-mode t)
+(yas-global-mode 1)
+(yas-load-directory "~/.emacs.d/site-lisp/yasnippets-rails/rails-snippets")
+(yas-load-directory "~/.emacs.d/site-lisp/yasnippets-rspec/rspec-snippets")
+(yas-reload-all)
+(define-key yas-minor-mode-map (kbd "M-B") 'yas-insert-snippet)
+(require-package 'dropdown-list)
+(setq yas-prompt-functions '(yas-dropdown-prompt
+                             yas-ido-prompt
+                             yas-completing-prompt))
 ;; rspec-mode
 (require-package 'rspec-mode)
-(after-load 'rspec-mode
-  (diminish 'rspec-mode "RSpec"))
+(eval-after-load 'rspec-mode
+ '(rspec-install-snippets))
+(rspec-mode 1)
 
 
 
