@@ -42,26 +42,26 @@
 ;; (require 'init-osx-keys)
 ;; (require 'init-gui-frames)
 ;; (require 'init-proxies)
-;; (require 'init-dired)
+(require 'init-dired)
 ;; (require 'init-isearch)
 ;; (require 'init-uniquify)
 ;; (require 'init-ibuffer)
-;; (require 'init-flycheck)
+(require 'init-flycheck)
 
 ;; (require 'init-recentf)
 (require 'init-ido)
-;; (require 'init-hippie-expand)
-(require 'init-auto-complete)
+(require 'init-hippie-expand)
+;; (require 'init-auto-complete)
 ;; (require 'init-windows)
 ;; (require 'init-sessions)
 ;; (require 'init-fonts)
 (require 'init-mmm)
 
-;; (require 'init-editing-utils)
+(require 'init-editing-utils)
 
 ;; (require 'init-vc)
 ;; (require 'init-darcs)
-(require 'init-git)
+;; (require 'init-git)
 ;; (require 'init-github)
 
 (require 'init-crontab)
@@ -82,6 +82,9 @@
 (require 'init-rails)
 (require 'init-sql)
 ;; (require 'init-perl)
+
+(require 'init-java)
+(require 'init-scala)
 
 ;; (require 'init-paredit)
 ;; (require 'init-lisp)

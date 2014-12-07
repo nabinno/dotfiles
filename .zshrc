@@ -1,3 +1,4 @@
+
 # BASIC SETTINGS
 # ===============
 # environment variable
@@ -31,9 +32,16 @@ export PATH=$HOME/bin:$HOME/local/bin:$PATH
 export PATH="$HOME/.parts/autoparts/bin:$PATH"
 export PATH="$HOME/.cask/bin:$PATH"
 export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
-export PATH=$HOME/local/perl-5.18/bin:$PATH
+export PATH="$HOME/local/perl-5.18/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
 eval "$(parts env)"
+
+### java ###
+export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+export CLASSPATH=.:$JAVA_HOME/jre/lib:$JAVA_HOME/lib:$JAVA_HOME/lib/tools.jar
+export PLAY_HOME=/usr/local/play-2.2.3
+export PATH="$JAVA_HOME/bin:$PATH"
+export PATH="$PLAY_HOME:$PATH"
 
 # ### perl ###
 # eval $(perl -I$HOME/local/lib/perl5 -Mlocal::lib=$HOME/local)
