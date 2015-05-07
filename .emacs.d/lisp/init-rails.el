@@ -28,6 +28,11 @@
   '(rspec-install-snippets))
 (require-package 'rspec-mode)
 
+;; minitest-emacs
+(eval-after-load 'minitest
+  '(add-hook 'ruby-mode-hook 'minitest-mode))
+(require-package 'minitest)
+
 ;; rinari-rgrep
 (setq rinari-rgrep-file-endings "*.rb *.erb *.yml *.coffee *.js *.scss *.rake")
 (eval-after-load "grep"
