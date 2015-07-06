@@ -19,6 +19,7 @@
 (require 'init-utils)
 (require 'init-site-lisp) ;; Must come before elpa, as it may provide package.el
 (require 'init-elpa)      ;; Machinery for installing required packages
+(require 'init-el-get)    ;; Machinery for installing required packages
 (require 'init-exec-path) ;; Set up $PATH
 
 ;;----------------------------------------------------------------------------
@@ -70,6 +71,7 @@
 (require 'init-csv)
 ;; (require 'init-erlang)
 (require 'init-javascript)
+(require 'init-express)
 (require 'init-php)
 (require 'init-org)
 ;; (require 'init-nxml)
@@ -83,8 +85,8 @@
 (require 'init-sql)
 ;; (require 'init-perl)
 
-(require 'init-java)
-(require 'init-scala)
+;; (require 'init-java)
+;; (require 'init-scala)
 
 ;; (require 'init-paredit)
 ;; (require 'init-lisp)
