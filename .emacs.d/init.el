@@ -58,7 +58,7 @@
 ;; (require 'init-windows)
 ;; (require 'init-sessions)
 ;; (require 'init-fonts)
-(require 'init-multiple)
+(require 'init-mmm)
 
 (require 'init-editing-utils)
 
@@ -104,6 +104,7 @@
 (require 'init-eshell)
 (require 'init-marmalade)
 (require 'init-misc)
+(require 'init-japanese)
 
 ;; (require 'init-dash)
 ;; (require 'init-ledger)

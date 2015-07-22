@@ -1,5 +1,5 @@
 (unless (require 'jinari nil 'noerror)
-  (el-get-bundle nabinno/jinai))
+  (el-get-bundle nabinno/jinari))
 
 (after-load 'jinari
   (diminish 'jinari-minor-mode "Jin"))
@@ -8,7 +8,7 @@
 (defun update-express-ctags ()
   (interactive)
   (let ((default-directory (or (jinari-root) default-directory)))
-    (shell-command (concat "ctags -a -e -f " jinari-tags-file-name " --tag-relative -R src lib vendor test"))))
+    (shell-command (concat "ctags -a -e -f " jinari-tags-file-name " --tag-relative -R node_modules src lib vendor test"))))
 
 
 ; temporary sets
@@ -21,9 +21,11 @@
 ;; gulpjs
 (el-get-bundle stevenremot/emacs-gulpjs)
 
+;; jade-mode
+(require-package 'jade-mode)
 
 ;; jinari-rgrep
-(setq jinari-rgrep-file-endings "*.rb *.erb *.yml *.yaml *.coffee *.js *.es6 *.json *.scss *.rake")
+(setq jinari-rgrep-file-endings "*.rb *.erb *.yml *.yaml *.coffee *.js *.jade *.es6 *.json *.scss *.rake")
 (eval-after-load "grep"
   '(progn
      (add-to-list 'grep-find-ignored-directories ".old")
