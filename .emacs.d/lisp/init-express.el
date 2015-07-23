@@ -8,7 +8,7 @@
 (defun update-express-ctags ()
   (interactive)
   (let ((default-directory (or (jinari-root) default-directory)))
-    (shell-command (concat "ctags -a -e -f " jinari-tags-file-name " --tag-relative -R node_modules src lib vendor test"))))
+    (shell-command (concat "ctags -a -e -f " jinari-tags-file-name " --langmap=JAVASCRIPT:.js --tag-relative -R node_modules src lib vendor test"))))
 
 
 ; temporary sets

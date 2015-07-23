@@ -21,8 +21,8 @@
                                   unless (eq preferred-javascript-mode (cdr entry))
                                   collect entry)))
 
-
-;; js2-mode
+
+;;; Js2-mode
 (after-load 'js2-mode
   (add-hook 'js2-mode-hook '(lambda () (setq mode-name "JS2"))))
 
@@ -33,11 +33,25 @@
 (after-load 'js2-mode
   (js2-imenu-extras-setup))
 
-;; js-mode
+
+;;; Js-mode
 (setq-default js-indent-level preferred-javascript-indent-level)
 
 
 (add-to-list 'interpreter-mode-alist (cons "node" preferred-javascript-mode))
+
+
+
+;; ;;; Company-tern
+;; (require-package 'company-tern)
+;; (setq company-tern-property-marker "")
+;; (defun company-tern-depth (candidate)
+;;   "Return depth attribute for CANDIDATE. 'nil' entries are treated as 0"
+;;   (let ((depth (get-text-property 0 'depth candidate)))
+;;     (if (eq depth nil) 0 depth)))
+;; (add-hook 'js2-mode-hook 'tern-mode)
+;; (add-to-list 'company-backends '(company-tern :with company-dabbrev-code))
+
 
 
 ;; Javascript nests {} and () a lot, so I find this helpful
