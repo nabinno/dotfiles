@@ -47,7 +47,7 @@
 ; -----
 (show-paren-mode t)
 (setq show-paren-delay 0)
-(setq show-paren-style 'expression)
+(setq show-paren-style 'mixed)
 
 
 ;; ; deffered
@@ -92,7 +92,7 @@
 (global-set-key (kbd "M-[ 1 ; 7 q") '(lambda () (interactive) (shell)))
 ;; (keyboard-translate ?\C-h ?\C-?) (global-set-key (kbd "C-h") nil)
 ;; (global-set-key (kbd "C-x C-h") 'help-command)
-(global-set-key (kbd "M-s") '(lambda () (interactive) (hl-line-mode) (view-mode)))
+(global-set-key (kbd "M-s") 'view-mode)
 (global-set-key (kbd "<f9>") '(lambda () (interactive) (hl-line-mode) (view-mode)))
 (global-set-key (kbd "M-[ 1 ; 5 i") 'other-window)
 (global-set-key (kbd "C-TAB") 'other-window)
@@ -115,8 +115,10 @@
     ("p" . beginning-of-buffer)
     ("e" . end-of-buffer)
     ("n" . end-of-buffer)
-    ("j" . (lambda () (interactive) (scroll-up 4)))
-    ("k" . (lambda () (interactive) (scroll-down 4)))
+    ("j" . forward-list)
+    ("k" . backward-list)
+    ;; ("j" . (lambda () (interactive) (scroll-up 4)))
+    ;; ("k" . (lambda () (interactive) (scroll-down 4)))
     ))
 (defun define-many-keys (keymap key-table &optional includes)
   (let (key cmd)
@@ -128,7 +130,7 @@
   keymap)
 (defun view-mode-hook0 ()
   (define-many-keys view-mode-map pager-keybind)
-  (hl-line-mode 1)
+  ;; (hl-line-mode 1)
   (define-key view-mode-map " " 'scroll-up))
 (add-hook 'view-mode-hook 'view-mode-hook0)
 (defadvice find-file
@@ -216,7 +218,7 @@
 		    ("C-M-p" . org-move-subtree-up)
 		    ("C-M-n" . org-move-subtree-down)
 		    ("<prior>" . org-shiftup)
-		    ("M-o h" . org-shiftleft)    
+		    ("M-o h" . org-shiftleft)
 		    ("M-o f" . org-shiftright)
 		    ("<next>" . org-shiftdown)
 		    ("ESC <prior>" . org-shiftmetaup)

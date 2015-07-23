@@ -341,6 +341,29 @@ With arg N, insert N newlines."
 
 
 
+;;; Folding
+;; (require-package 'fold-dwim)
+;; (global-set-key (kbd "<f8>")     'fold-dwim-toggle)
+;; (global-set-key (kbd "<M-f8>")   'fold-dwim-hide-all)
+;; (global-set-key (kbd "<S-M-f8>") 'fold-dwim-show-all)
+
+(require-package 'fold-this)
+(setq fold-this-persistent-folds t)
+(defun fold-this--this-or-all (all)
+  (interactive "P")
+  (let ((x (bounds-of-thing-at-point 'sexp))
+        (rap (region-active-p)))
+    (funcall (if all 'fold-this-all 'fold-this)
+             (if rap (region-beginning) (car x))
+             (if rap (region-end) (cdr x))))
+  (message (substitute-command-keys "To unfold all, try \\[fold-this-unfold-all]")))
+(with-eval-after-load "view"
+  (define-key view-mode-map (kbd "i") 'fold-this--this-or-all)
+  (define-key view-mode-map (kbd ",") 'fold-this-unfold-at-point)
+  (define-key view-mode-map (kbd "f") 'fold-this-unfold-all))
+
+
+
 (require-package 'highlight-escape-sequences)
 (hes-mode)
 

@@ -42,6 +42,43 @@
 
 
 
+;;; Jshint
+(require-package 'flymake-gjshint)
+(add-hook 'js-mode-hook 'flymake-gjshint:load)
+
+
+
+;;; Repl: Babel, Node.js
+(require-package 'babel-repl)
+(require-package 'nodejs-repl)
+
+
+;;; Unit testing: Karma
+(require-package 'karma)
+
+
+;;; Unit testing: Jst/Mocha
+(require-package 'jst)
+(add-hook 'js2-mode-hook 'jst-enable-appropriate-mode)
+(add-hook 'coffee-mode-hook 'jst-enable-appropriate-mode)
+;; (add-hook 'what-ever-js-mode-hook 'jst-enable-appropriate-mode)
+
+;; for node.js
+(jst-declare-project :type "nodejs" :testing-framework "mocha"
+                     :spec-dir nil :source-dir nil :command-ci nil
+                     :command-browser nil :browser-url: nil
+                     :target-to-spec (lambda () "testSuites.js")
+                     :spec-to-target (lambda () "myLib.js"))
+
+;; ;; If you created your own JS cluster language
+;; (jst-remember-language :extension "qs" :name "MyQScript")
+;; ;; If you name your spec dirs BlaBlaSuite
+;; (jst-remember-spec-dir-pattern "\\(Suite\\)")
+;; ;; If you are using darcs
+;; (jst-remember-dominating-file ".darcs")
+
+
+
 ;; ;;; Company-tern
 ;; (require-package 'company-tern)
 ;; (setq company-tern-property-marker "")
