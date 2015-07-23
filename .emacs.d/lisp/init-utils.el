@@ -84,4 +84,11 @@
       (browse-url (concat "file://" file-name)))))
 
 
+
+;;; Lice, Lorem ipsum
+(require-package 'lice)
+(require-package 'lorem-ipsum)
+
+
+
 (provide 'init-utils)

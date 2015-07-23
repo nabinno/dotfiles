@@ -43,7 +43,7 @@
 (require-package 'git-blame)
 (autoload 'git-blame-mode "git-blame"
   "Minor mode for incremental blame for Git." t)
-(setq git-blame-colors git-blame-ancient-color)
+
 
 
 (when *is-a-mac*
