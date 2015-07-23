@@ -1,5 +1,4 @@
 (require-package 'magit)
-(require-package 'git-blame)
 ;; (require-package 'git-commit-mode)
 ;; (require-package 'git-rebase-mode)
 (require-package 'gitignore-mode)
@@ -13,16 +12,21 @@
  magit-diff-refine-hunk t
  magit-completing-read-function 'magit-ido-completing-read)
 
+;; (custom-set-faces
+;;  '(diff-added ((t (:foreground "#149914" :background nil :inherit nil))))
+;;  '(diff-removed ((t (:foreground "#991414" :background nil :inherit nil)))))
+
 ;; Hint: customize `magit-repo-dirs' so that you can use C-u M-F12 to
 ;; quickly open magit on any one of your projects.
-(global-set-key (kbd "ESC <f12>") 'magit-status)
+(global-set-key (kbd "C-x g") 'magit-status)
+(global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
 
 (after-load 'magit
   (define-key magit-status-mode-map (kbd "C-M-<up>") 'magit-goto-parent-section))
 
-(require-package 'fullframe)
-(after-load 'magit
-  (fullframe magit-status magit-mode-quit-window))
+;; (require-package 'fullframe)
+;; (after-load 'magit
+;;   (fullframe magit-status magit-mode-quit-window))
 
 
 ;; ;;; When we start working on git-backed files, use git-wip if available
@@ -33,6 +37,13 @@
 ;;
 ;; (after-load 'magit
 ;;   (diminish 'magit-auto-revert-mode))
+
+
+;;; git-blame
+(require-package 'git-blame)
+(autoload 'git-blame-mode "git-blame"
+  "Minor mode for incremental blame for Git." t)
+(setq git-blame-colors git-blame-ancient-color)
 
 
 (when *is-a-mac*
