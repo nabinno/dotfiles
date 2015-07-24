@@ -364,6 +364,12 @@ With arg N, insert N newlines."
 
 
 
+;;; Lice, Lorem ipsum
+(require-package 'lice)
+(require-package 'lorem-ipsum)
+
+
+
 (require-package 'highlight-escape-sequences)
 (hes-mode)
 

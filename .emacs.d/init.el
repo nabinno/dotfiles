@@ -104,7 +104,6 @@
 (require 'init-eshell)
 (require 'init-marmalade)
 (require 'init-misc)
-(require 'init-japanese)
 
 ;; (require 'init-dash)
 ;; (require 'init-ledger)

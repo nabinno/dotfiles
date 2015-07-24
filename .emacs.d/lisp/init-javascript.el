@@ -63,12 +63,12 @@
 (add-hook 'coffee-mode-hook 'jst-enable-appropriate-mode)
 ;; (add-hook 'what-ever-js-mode-hook 'jst-enable-appropriate-mode)
 
-;; for node.js
-(jst-declare-project :type "nodejs" :testing-framework "mocha"
-                     :spec-dir nil :source-dir nil :command-ci nil
-                     :command-browser nil :browser-url: nil
-                     :target-to-spec (lambda () "testSuites.js")
-                     :spec-to-target (lambda () "myLib.js"))
+;; ;; for node.js
+;; (jst-declare-project :type "nodejs" :testing-framework "mocha"
+;;                      :spec-dir nil :source-dir nil :command-ci nil
+;;                      :command-browser nil :browser-url: nil
+;;                      :target-to-spec (lambda () "testSuites.js")
+;;                      :spec-to-target (lambda () "myLib.js"))
 
 ;; ;; If you created your own JS cluster language
 ;; (jst-remember-language :extension "qs" :name "MyQScript")
