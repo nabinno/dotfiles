@@ -85,10 +85,4 @@
 
 
 
-;;; Lice, Lorem ipsum
-(require-package 'lice)
-(require-package 'lorem-ipsum)
-
-
-
 (provide 'init-utils)

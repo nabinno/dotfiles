@@ -19,4 +19,17 @@
    (set-selection-coding-system 'utf-8))
   (prefer-coding-system 'utf-8))
 
+
+
+;;; Japanese input mode
+(require-package 'mozc)
+;; Mozc
+(set-language-environment "Japanese")
+(setq default-input-method "japanese-mozc")
+(setq mozc-candidate-style 'echo-area)
+;; Other
+(setq quail-japanese-use-double-n t)
+
+
+
 (provide 'init-locales)
