@@ -24,7 +24,7 @@
 ;;; Japanese input mode
 (require-package 'mozc)
 ;; Mozc
-(set-language-environment "Japanese")
+;; (set-language-environment "Japanese")
 (setq default-input-method "japanese-mozc")
 (setq mozc-candidate-style 'echo-area)
 ;; Other

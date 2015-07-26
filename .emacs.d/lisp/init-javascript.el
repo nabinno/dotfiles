@@ -30,53 +30,26 @@
  js2-basic-offset preferred-javascript-indent-level
  js2-bounce-indent-p nil)
 
-(after-load 'js2-mode
-  (js2-imenu-extras-setup))
+(when (fboundp 'js2-mode)
+  (add-to-list 'auto-mode-alist '("\\.es6$" . js2-mode)))
+
+(after-load 'js2-mode (js2-imenu-extras-setup))
 
 
 ;;; Js-mode
 (setq-default js-indent-level preferred-javascript-indent-level)
 
-
 (add-to-list 'interpreter-mode-alist (cons "node" preferred-javascript-mode))
-
 
 
 ;;; Jshint
 (require-package 'flymake-gjshint)
 (add-hook 'js-mode-hook 'flymake-gjshint:load)
 
-
 
 ;;; Repl: Babel, Node.js
 (require-package 'babel-repl)
 (require-package 'nodejs-repl)
-
-
-;;; Unit testing: Karma
-(require-package 'karma)
-
-
-;;; Unit testing: Jst/Mocha
-(require-package 'jst)
-(add-hook 'js2-mode-hook 'jst-enable-appropriate-mode)
-(add-hook 'coffee-mode-hook 'jst-enable-appropriate-mode)
-;; (add-hook 'what-ever-js-mode-hook 'jst-enable-appropriate-mode)
-
-;; ;; for node.js
-;; (jst-declare-project :type "nodejs" :testing-framework "mocha"
-;;                      :spec-dir nil :source-dir nil :command-ci nil
-;;                      :command-browser nil :browser-url: nil
-;;                      :target-to-spec (lambda () "testSuites.js")
-;;                      :spec-to-target (lambda () "myLib.js"))
-
-;; ;; If you created your own JS cluster language
-;; (jst-remember-language :extension "qs" :name "MyQScript")
-;; ;; If you name your spec dirs BlaBlaSuite
-;; (jst-remember-spec-dir-pattern "\\(Suite\\)")
-;; ;; If you are using darcs
-;; (jst-remember-dominating-file ".darcs")
-
 
 
 ;; ;;; Company-tern
@@ -108,10 +81,8 @@
 (when (fboundp 'coffee-mode)
   (add-to-list 'auto-mode-alist '("\\.coffee\\.erb\\'" . coffee-mode)))
 
-;; ---------------------------------------------------------------------------
-;; Run and interact with an inferior JS via js-comint.el
-;; ---------------------------------------------------------------------------
-
+
+;;; Run and interact with an inferior JS via js-comint.el
 (setq inferior-js-program-command "js")
 
 (defvar inferior-js-minor-mode-map (make-sparse-keymap))
@@ -128,10 +99,8 @@
 (dolist (hook '(js2-mode-hook js-mode-hook))
   (add-hook hook 'inferior-js-keys-mode))
 
-;; ---------------------------------------------------------------------------
-;; Alternatively, use skewer-mode
-;; ---------------------------------------------------------------------------
-
+
+;;; Alternatively, use skewer-mode
 (when (and (>= emacs-major-version 24) (featurep 'js2-mode))
   (require-package 'skewer-mode)
   (after-load 'skewer-mode

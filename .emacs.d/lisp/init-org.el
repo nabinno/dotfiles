@@ -36,10 +36,8 @@
               (sequence "WAITING(w@/!)" "SOMEDAY(S)" "|" "CANCELLED(c@/!)"))))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Org clock
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+
+;;; Org clock
 ;; Save the running clock and all clock history when exiting Emacs, load it on startup
 (setq org-clock-persistence-insinuate t)
 (setq org-clock-persist t)
@@ -125,6 +123,67 @@
      (sh . t)
      (sql . nil)
      (sqlite . t))))
+
+
+
+;;; Temporary setting
+(global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c r") 'org-remember)
+(global-set-key (kbd "C-c B") 'googlecl-prompt-blog)
+(global-set-key (kbd "C-c L") 'org-googlecl-list-blogs)
+(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+(add-hook 'org-mode-hook 'turn-on-font-lock)
+(setq org-hide-leading-stars t)
+(setq org-directory "~/")
+(setq org-default-notes-file "notes.org")
+(setq org-tag-alist
+      '(
+        ("Heroku" . ?k)
+        ("Rails" . ?r)
+        ))
+
+;; html
+(setq org-export-html-validation-link nil)
+(setq org--html-postamble nil)
+(setq org-html-validation-link nil)
+
+;; agenda
+(setq org-agenda-files (list org-directory))
+(setq calendar-holidays nil)
+
+;; key bind
+(add-hook 'org-mode-hook
+          (lambda ()
+            (mapc (lambda (pair)
+                    (let ((key (car pair))
+                          (func (cdr pair)))
+                      (define-key org-mode-map
+                        (read-kbd-macro key) func)))
+                  '(("C-<tab>" . other-window)
+                    ("M-[ 1 ; 5 i" . other-window)
+                    ("S-M-j" . org-insert-todo-heading)
+                    ("M-J" . org-insert-todo-heading)
+                    ("?" . org-insert-subheading)
+                    ("?" . org-backward-heading-same-level)
+                    ("?" . org-forward-heading-same-level)
+                    ("C-M-p" . org-move-subtree-up)
+                    ("C-M-n" . org-move-subtree-down)
+                    ("<prior>" . org-shiftup)
+                    ("M-o h" . org-shiftleft)
+                    ("M-o f" . org-shiftright)
+                    ("<next>" . org-shiftdown)
+                    ("ESC <prior>" . org-shiftmetaup)
+                    ("ESC M-[ 5 ~" . org-shiftmetaup)
+                    ("ESC M-O h" . org-shiftmetaleft)
+                    ("ESC M-O f" . org-shiftmetaright)
+                    ("ESC <next>" . org-shiftmetadown)
+                    ("ESC M-[ 6 ~" . org-shiftmetadown)
+                    ;; ("" . org-shiftcontrolup)
+                    ;; ("" . org-shiftcontrolleft)
+                    ;; ("" . org-shiftcontrolright)
+                    ;; ("" . org-shiftcontroldown)
+                    ))))
 
 
 (provide 'init-org)
