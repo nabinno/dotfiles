@@ -1,6 +1,4 @@
 (require-package 'magit)
-;; (require-package 'git-commit-mode)
-;; (require-package 'git-rebase-mode)
 (require-package 'gitignore-mode)
 (require-package 'gitconfig-mode)
 (require-package 'git-messenger) ;; Though see also vc-annotate's "n" & "p" bindings
@@ -18,8 +16,14 @@
 
 ;; Hint: customize `magit-repo-dirs' so that you can use C-u M-F12 to
 ;; quickly open magit on any one of your projects.
-(global-set-key (kbd "C-x g") 'magit-status)
-(global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
+
+(when (maybe-require-package 'magit)
+  (setq-default
+   magit-process-popup-time 10
+   magit-diff-refine-hunk t
+   magit-completing-read-function 'magit-ido-completing-read)
+  (global-set-key (kbd "C-x g") 'magit-status)
+  (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup))
 
 (after-load 'magit
   (define-key magit-status-mode-map (kbd "C-M-<up>") 'magit-goto-parent-section))
@@ -44,17 +48,14 @@
 (autoload 'git-blame-mode "git-blame"
   "Minor mode for incremental blame for Git." t)
 
-
 
 (when *is-a-mac*
   (after-load 'magit
     (add-hook 'magit-mode-hook (lambda () (local-unset-key [(meta h)])))))
 
-
 
 ;; Convenient binding for vc-git-grep
 (global-set-key (kbd "C-x v f") 'vc-git-grep)
-
 
 
 ;; ;;; git-svn support

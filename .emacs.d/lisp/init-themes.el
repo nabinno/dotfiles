@@ -4,20 +4,19 @@
 (require-package 'color-theme-sanityinc-solarized)
 (require-package 'color-theme-sanityinc-tomorrow)
 
-;;------------------------------------------------------------------------------
-;; Old-style color theming support (via color-theme.el)
-;;------------------------------------------------------------------------------
-(defcustom window-system-color-theme 'color-theme-sanityinc-solarized-dark
-  "Color theme to use in window-system frames.
-If Emacs' native theme support is available, this setting is
-ignored: use `custom-enabled-themes' instead."
-  :type 'symbol)
+
+;;; Old-style color theming support (via color-theme.el)
+;; (defcustom window-system-color-theme 'color-theme-sanityinc-solarized-dark
+;;   "Color theme to use in window-system frames.
+;; If Emacs' native theme support is available, this setting is
+;; ignored: use `custom-enabled-themes' instead."
+;;   :type 'symbol)
 
-(defcustom tty-color-theme 'color-theme-terminal
-  "Color theme to use in TTY frames.
-If Emacs' native theme support is available, this setting is
-ignored: use `custom-enabled-themes' instead."
-  :type 'symbol)
+;; (defcustom tty-color-theme 'color-theme-terminal
+;;   "Color theme to use in TTY frames.
+;; If Emacs' native theme support is available, this setting is
+;; ignored: use `custom-enabled-themes' instead."
+;;   :type 'symbol)
 
 (unless (boundp 'custom-enabled-themes)
   (defun color-theme-terminal ()
@@ -40,9 +39,8 @@ ignored: use `custom-enabled-themes' instead."
   (apply-best-color-theme-for-frame-type (selected-frame)))
 
 
-;;------------------------------------------------------------------------------
-;; New-style theme support, in which per-frame theming is not possible
-;;------------------------------------------------------------------------------
+
+;;; New-style theme support, in which per-frame theming is not possible
 
 ;; If you don't customize it, this is the theme you get.
 (setq-default custom-enabled-themes '(sanityinc-solarized-light))
@@ -58,9 +56,8 @@ ignored: use `custom-enabled-themes' instead."
 (add-hook 'after-init-hook 'reapply-themes)
 
 
-;;------------------------------------------------------------------------------
-;; Toggle between light and dark
-;;------------------------------------------------------------------------------
+
+;;; Toggle between light and dark
 (defun light ()
   "Activate a light color theme."
   (interactive)

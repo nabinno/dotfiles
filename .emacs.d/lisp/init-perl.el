@@ -1,6 +1,6 @@
-; Perl
-; ----
-(load-library "cperl-mode")
+(require-package 'cperl-mode)
+;; (load-library "cperl-mode")
+
 (defalias 'perl-mode 'cperl-mode)
 (setenv "PKG_DBDIR" (concat (getenv "HOME") "/local/var/db/pkg"))
 (setenv "PORT_DBDIR" (concat (getenv "HOME") "/local/var/db/pkg"))
@@ -12,16 +12,17 @@
 (setenv "PERL_MM_OPT" "INSTALL_BASE=~/local")
 (setenv "PERL5LIB" (concat "~/local/lib/perl5:~/local/lib/perl5/i686-cygwin-thread-multi-64int:" (getenv "PERL5LIB")))
 (setenv "PERL_CPANM_OPT" (concat "-l " (getenv "HOME") "/local --mirror " (getenv "HOME") "/.cpan/minicpan/"))
-(setq cperl-indent-level 4)
-(setq cperl-continued-statement-offset 4)
-(setq cperl-brace-offset -4)
-(setq cperl-label-offset -4)
-(setq cperl-indent-parens-as-block t)
-(setq cperl-close-paren-offset -4)
-(setq cperl-tab-always-indent t)
-;; (setq cperl-electric-parens t)
-;; (setq cperl-invalid-face nil)
-(setq cperl-highlight-variables-indiscriminately t)
+(setq cperl-indent-level 4
+      cperl-continued-statement-offset 4
+      cperl-brace-offset -4
+      cperl-label-offset -4
+      cperl-indent-parens-as-block t
+      cperl-close-paren-offset -4
+      ;; cperl-electric-parens t
+      ;; cperl-invalid-face nil
+      cperl-tab-always-indent t
+      cperl-highlight-variables-indiscriminately t
+      )
 
 (add-to-list 'auto-mode-alist '("\\.t$" . cperl-mode))
 (add-to-list 'auto-mode-alist '("\\.[Pp][LlMm]Cc]?$" . cperl-mode))
@@ -31,7 +32,9 @@
   (unless (assoc interpreter interpreter-mode-alist)
     (add-to-list 'interpreter-mode-alist (cons interpreter 'cperl-mode))))
 
-; ### Use % to match various kinds of brackets ###
+
+;;; Use % to match various kinds of brackets
+
 ;; (defun match-paren (arg)
 ;;  "Go to the matching paren if on a paren; otherwide insert %."
 ;;  (interactive "p")
@@ -48,8 +51,9 @@
 	(t (self-insert-command (or arg 1)))))
 (global-set-key "%" 'match-paren)
 
-; ### perl tidy ###
-(require 'perltidy)
+
+;;; Perl Tidy
+(require-package 'perltidy)
 (defun perltidy-region ()
   "Run perltidy on the current region."
   (interactive)
@@ -61,30 +65,30 @@
   (save-excursion (mark-defun)
   (perltidy-region)))
 
-; ### key bind and more ###
-(require 'perl-completion)
+
+;;; Key Bind and more
+(require-package 'perl-completion)
 (add-hook 'cperl-mode-hook
 	  (lambda ()
-	    (require 'auto-complete)
-	    ;; (require 'perl-completion)
+	    (require-package 'auto-complete)
+	    ;; (require-package 'perl-completion)
 	    (perl-completion-mode t)
-	    (setq auto-fill-mode t)
-	    (setq cperl-array-face 'cperl-array-face)
-	    (setq cperl-hash-face 'cperl-hash-face)
-	    (setq fill-column 78)
-	    (setq indent-tabs-mode nil)
+	    (setq auto-fill-mode t
+                  cperl-array-face 'cperl-array-face
+                  cperl-hash-face 'cperl-hash-face
+                  fill-column 78
+                  indent-tabs-mode nil)
 	    (set-face-background 'cperl-array-face (face-background 'default))
 	    (set-face-background 'cperl-hash-face (face-background 'default))
-	    (add-to-list 'ac-sources 'ac-source-perl-completion)
-	    ;; (make-face 'cperl-array-face)
 	    ;; (set-face-foreground 'cperl-array-face "color-69")
+	    ;; (make-face 'cperl-array-face)
+	    (add-to-list 'ac-sources 'ac-source-perl-completion)
 	    (mapc (lambda (pair)
 		    (let ((key (car pair))
 			  (func (cdr pair)))
 		      (define-key cperl-mode-map
 			(read-kbd-macro key) func)))
-		  '(
-		    ("C-c t" . perltidy-region)
+		  '(("C-c t" . perltidy-region)
 		    ("C-c C-t" . perltidy-defun)
 		    ("C-c m" . plcmp-cmd-menu)
 		    ("C-c s" . plcmp-cmd-smart-complete)
@@ -93,18 +97,17 @@
 		    ("C-c c" . plcmp-cmd-clear-all-cashes)
 		    ("TAB" . cperl-indent-region)
 		    ;; ("M-C-i" . perltidy)
+                    ("M-," . cperl-perldoc)
+                    ("M-C-," . plcmp-cmd-show-doc-at-point)
+                    ("M-[ 1 ; 7 l" . plcmp-cmd-show-doc-at-point)
 		    ))))
-(global-set-key (kbd "M-,") 'cperl-perldoc)
-(global-set-key (kbd "M-C-,") 'plcmp-cmd-show-doc-at-point)
-(global-set-key (kbd "M-[ 1 ; 7 l") 'plcmp-cmd-show-doc-at-point)
 
+
+;; Flymake
+(require-package 'flymake)
+(require-package 'set-perl5lib)
 
-; flymake
-; -------
-(require 'flymake)
-(require 'set-perl5lib)
-
-; ### flymake for javascript ###
+;; Flymake for JavaScript
 ;; (defconst flymake-allowed-js-file-name-masks
 ;;   '(("\\.user\\.js$" flymake-js17-init)
 ;;     ("\\.json$" flymake-js-init)
@@ -138,13 +141,13 @@
 ;;   (flymake-mode t))
 ;; (add-hook 'javascript-mode-hook '(lambda () (flymake-js-load)))
 
-; ### flymake for perl ###
-(defvar flymake-perl-err-line-patterns '(("\\(.*\\) at \\([^ \n]+\\) line \\([0-9]+\\)[,.\n]" 2 3 nil 1)))
+;; Flymake for Perl
+(defvar flymake-perl-err-line-patterns
+  '(("\\(.*\\) at \\([^ \n]+\\) line \\([0-9]+\\)[,.\n]" 2 3 nil 1)))
 (defconst flymake-allowed-perl-file-name-masks
   '(("\\.pl$" flymake-perl-init)
     ("\\.pm$" flymake-perl-init)
-    ("\\.t$" flymake-perl-init)
-    ))
+    ("\\.t$" flymake-perl-init)))
 (defun flymake-perl-init ()
   (let* ((temp-file (flymake-init-create-temp-buffer-copy
                      'flymake-create-temp-inplace))

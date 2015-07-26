@@ -122,7 +122,7 @@
 ;;----------------------------------------------------------------------------
 (require-package 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
-
+(global-set-key (kbd "M-[ 1 ; 5 k") 'er/expand-region)
 
 ;;----------------------------------------------------------------------------
 ;; Don't disable case-change functions
@@ -147,20 +147,24 @@
 (global-set-key (kbd "C-c j") 'join-line)
 (global-set-key (kbd "C-c J") (lambda () (interactive) (join-line 1)))
 
-(global-set-key (kbd "C-.") 'set-mark-command)
-(global-set-key (kbd "C-x C-.") 'pop-global-mark)
+(global-set-key (kbd "C-.")             'set-mark-command)
+(global-set-key (kbd "M-[ 1 ; 5 n")     'set-mark-command)
+(global-set-key (kbd "C-x C-.")         'pop-global-mark)
+(global-set-key (kbd "C-x M-[ 1 ; 5 n") 'pop-global-mark)
 
 (require-package 'ace-jump-mode)
-(global-set-key (kbd "C-;") 'ace-jump-mode)
-(global-set-key (kbd "C-:") 'ace-jump-word-mode)
-
+(global-set-key (kbd "") 'ace-jump-word-mode)
 
 (require-package 'multiple-cursors)
 ;; multiple-cursors
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-+") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+(global-set-key (kbd "C-<")             'mc/mark-previous-like-this)
+(global-set-key (kbd "M-[ 1 ; 6 l")     'mc/mark-previous-like-this)
+(global-set-key (kbd "C->")             'mc/mark-next-like-this)
+(global-set-key (kbd "M-[ 1 ; 6 n")     'mc/mark-next-like-this)
+(global-set-key (kbd "C-+")             'mc/mark-next-like-this)
+(global-set-key (kbd "M-[ 1 ; 6 k")     'mc/mark-next-like-this)
+(global-set-key (kbd "C-c C-<")         'mc/mark-all-like-this)
+(global-set-key (kbd "C-c M-[ 1 ; 6 l") 'mc/mark-all-like-this)
 ;; From active region to multiple cursors:
 (global-set-key (kbd "C-c c r") 'set-rectangular-region-anchor)
 (global-set-key (kbd "C-c c c") 'mc/edit-lines)
@@ -168,10 +172,9 @@
 (global-set-key (kbd "C-c c a") 'mc/edit-beginnings-of-lines)
 
 
-;; Train myself to use M-f and M-b instead
-(global-unset-key [M-left])
-(global-unset-key [M-right])
-
+;; ;; Train myself to use M-f and M-b instead
+;; (global-unset-key [M-left])
+;; (global-unset-key [M-right])
 
 
 (defun kill-back-to-indentation ()
@@ -190,6 +193,7 @@
 (require-package 'page-break-lines)
 (global-page-break-lines-mode)
 (diminish 'page-break-lines-mode)
+(add-hook 'prog-mode-hook 'page-break-lines-mode)
 
 ;;----------------------------------------------------------------------------
 ;; Fill column indicator
@@ -235,10 +239,14 @@
 ;; use M-S-up and M-S-down, which will work even in lisp modes.
 ;;----------------------------------------------------------------------------
 (require-package 'move-dup)
-(global-set-key [M-up] 'md/move-lines-up)
-(global-set-key [M-down] 'md/move-lines-down)
-(global-set-key [M-S-up] 'md/move-lines-up)
-(global-set-key [M-S-down] 'md/move-lines-down)
+(global-set-key [M-up]              'md/move-lines-up)
+(global-set-key (kbd "M-[ 1 ; 3 A") 'md/move-lines-up)
+(global-set-key [M-down]            'md/move-lines-down)
+(global-set-key (kbd "M-[ 1 ; 3 B") 'md/move-lines-down)
+(global-set-key [M-S-up]            'md/move-lines-up)
+(global-set-key (kbd "M-[ 1 ; 4 A") 'md/move-lines-up)
+(global-set-key [M-S-down]          'md/move-lines-down)
+(global-set-key (kbd "M-[ 1 ; 4 B") 'md/move-lines-down)
 
 (global-set-key (kbd "C-c p") 'md/duplicate-down)
 
@@ -332,7 +340,7 @@ With arg N, insert N newlines."
 
 
 
-
+;;; Ag
 (when (executable-find "ag")
   (require-package 'ag)
   (require-package 'wgrep-ag)
@@ -341,27 +349,26 @@ With arg N, insert N newlines."
 
 
 
-;;; Folding
-;; (require-package 'fold-dwim)
-;; (global-set-key (kbd "<f8>")     'fold-dwim-toggle)
-;; (global-set-key (kbd "<M-f8>")   'fold-dwim-hide-all)
-;; (global-set-key (kbd "<S-M-f8>") 'fold-dwim-show-all)
+;; ;;; Folding
+;; ;; (require-package 'fold-dwim)
+;; ;; (global-set-key (kbd "<f8>")     'fold-dwim-toggle)
+;; ;; (global-set-key (kbd "<M-f8>")   'fold-dwim-hide-all)
+;; ;; (global-set-key (kbd "<S-M-f8>") 'fold-dwim-show-all)
 
-(require-package 'fold-this)
-(setq fold-this-persistent-folds t)
-(defun fold-this--this-or-all (all)
-  (interactive "P")
-  (let ((x (bounds-of-thing-at-point 'sexp))
-        (rap (region-active-p)))
-    (funcall (if all 'fold-this-all 'fold-this)
-             (if rap (region-beginning) (car x))
-             (if rap (region-end) (cdr x))))
-  (message (substitute-command-keys "To unfold all, try \\[fold-this-unfold-all]")))
-(with-eval-after-load "view"
-  (define-key view-mode-map (kbd "i") 'fold-this--this-or-all)
-  (define-key view-mode-map (kbd ",") 'fold-this-unfold-at-point)
-  (define-key view-mode-map (kbd "f") 'fold-this-unfold-all))
-
+;; (require-package 'fold-this)
+;; (setq fold-this-persistent-folds t)
+;; (defun fold-this--this-or-all (all)
+;;   (interactive "P")
+;;   (let ((x (bounds-of-thing-at-point 'sexp))
+;;         (rap (region-active-p)))
+;;     (funcall (if all 'fold-this-all 'fold-this)
+;;              (if rap (region-beginning) (car x))
+;;              (if rap (region-end) (cdr x))))
+;;   (message (substitute-command-keys "To unfold all, try \\[fold-this-unfold-all]")))
+;; (with-eval-after-load "view"
+;;   (define-key view-mode-map (kbd "i") 'fold-this--this-or-all)
+;;   (define-key view-mode-map (kbd ",") 'fold-this-unfold-at-point)
+;;   (define-key view-mode-map (kbd "f") 'fold-this-unfold-all))
 
 
 ;;; Lice, Lorem ipsum

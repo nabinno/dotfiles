@@ -1,5 +1,7 @@
 (require-package 'paredit)
-(autoload 'enable-paredit-mode "paredit")
+;; (autoload 'enable-paredit-mode "paredit")
+(add-hook 'after-init-hook 'enable-paredit-mode)
+(add-hook 'prog-mode-hook 'enable-paredit-mode)
 
 (defun maybe-map-paredit-newline ()
   (unless (or (memq major-mode '(inferior-emacs-lisp-mode cider-repl-mode))
@@ -24,9 +26,7 @@
 
 
 ;; Compatibility with other modes
-
 (suspend-mode-during-cua-rect-selection 'paredit-mode)
-
 
 ;; Use paredit in the minibuffer
 ;; TODO: break out into separate package
@@ -45,12 +45,67 @@
   (if (memq this-command paredit-minibuffer-commands)
       (enable-paredit-mode)))
 
-;; ----------------------------------------------------------------------------
+
 ;; Enable some handy paredit functions in all prog modes
-;; ----------------------------------------------------------------------------
 
 (require-package 'paredit-everywhere)
 (add-hook 'prog-mode-hook 'paredit-everywhere-mode)
 (add-hook 'css-mode-hook 'paredit-everywhere-mode)
+(after-load 'paredit-everywhere
+    (define-key paredit-everywhere-mode-map [remap kill-sentence] 'paredit-kill))
+
+
+;; Keybind
+(add-hook 'paredit-mode-hook
+          (lambda ()
+            (mapc (lambda (pair)
+                    (let ((key (car pair))
+                          (func (cdr pair)))
+                      (define-key paredit-mode-map
+                        (read-kbd-macro key) func)))
+                  '(("M-[ 1 ; 5 c" . paredit-backward-barf-sexp)
+                    ("C-M-d" . paredit-forward-down)
+                    ("M-[ 1 ; 5 d" . paredit-forward-slurp-sexp)
+                    ("M-J" . paredit-join-sexps)
+                    ("C-k" . paredit-kill)
+                    ("M-\"" . paredit-meta-doublequote)
+                    ("M-r" . paredit-raise-sexp)
+                    ("M-s" . paredit-splice-sexp)
+                    ("M-[ 1 ; 6 a" . paredit-splice-sexp-killing-backward)
+                    ("M-S" . paredit-split-sexp)
+                    ("M-" . paredit-wrap-curly)
+                    ("M-(" . paredit-wrap-round)
+                    ("M-[ [" . paredit-wrap-square)
+                    ))))
+
+;; Emacs Lisp
+(fset 'paredit--next-block-elisp "\C-a\C-[\C-f\C-[\C-f\C-[\C-b")
+(fset 'paredit--previous-block-elisp "\C-a\C-[\C-b")
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (mapc (lambda (pair)
+                    (let ((key (car pair))
+                          (func (cdr pair)))
+                      (define-key paredit-mode-map
+                        (read-kbd-macro key) func)))
+                  '(("" . paredit--next-block-elisp)
+                    ("" . paredit--previous-block-elisp)
+                    ))))
+
+;; JavaScript
+(fset 'paredit--next-block-js "\C-a\C-[\C-f\C-[\C-f\C-[\C-f\C-[\C-f\C-[\C-b")
+(fset 'paredit--previous-block-js "\C-a\C-[\C-b")
+(add-hook 'js2-mode-hook
+          (lambda ()
+            (mapc (lambda (pair)
+                    (let ((key (car pair))
+                          (func (cdr pair)))
+                      (define-key paredit-mode-map
+                        (read-kbd-macro key) func)))
+                  '(("" . paredit--next-block-js)
+                    ("" . paredit--previous-block-js)
+                    ))))
+
+
 
 (provide 'init-paredit)
