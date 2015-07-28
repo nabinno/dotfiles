@@ -42,9 +42,9 @@
 (add-to-list 'interpreter-mode-alist (cons "node" preferred-javascript-mode))
 
 
-;;; Jshint
-(require-package 'flymake-gjshint)
-(add-hook 'js-mode-hook 'flymake-gjshint:load)
+;; ;;; Jshint
+;; (require-package 'flymake-gjshint)
+;; (add-hook 'js-mode-hook 'flymake-gjshint:load)
 
 
 ;;; Repl: Babel, Node.js
