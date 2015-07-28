@@ -25,7 +25,7 @@
 
 ;; Jinari-rgrep
 (setq jinari-rgrep-file-endings
-      "*.rb *.erb *.yml *.yaml *.coffee *.js *.jade *.es6 *.json *.scss *.rake")
+      "*.rb *.erb *.yml *.yaml *.coffee *.js *.jade *.es6 *.json *.scss *.tag *.rake")
 (eval-after-load "grep"
   '(progn
      (add-to-list 'grep-find-ignored-directories ".old")
