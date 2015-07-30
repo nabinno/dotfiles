@@ -6,17 +6,21 @@
 (require-package 'js-comint)
 
 (defcustom preferred-javascript-mode
-  (first (remove-if-not #'fboundp '(js2-mode js-mode)))
+  (first (remove-if-not #'fboundp '(js-mode js2-mode)))
   "Javascript mode to use for .js files."
   :type 'symbol
   :group 'programming
-  :options '(js2-mode js-mode))
+  :options '(js-mode js2-mode))
 (defvar preferred-javascript-indent-level 2)
 
 ;; Need to first remove from list if present, since elpa adds entries too, which
 ;; may be in an arbitrary order
 (eval-when-compile (require 'cl))
 (setq auto-mode-alist (cons `("\\.js\\(\\.erb\\)?\\'" . ,preferred-javascript-mode)
+                            (loop for entry in auto-mode-alist
+                                  unless (eq preferred-javascript-mode (cdr entry))
+                                  collect entry)))
+(setq auto-mode-alist (cons `("\\.es6\\'" . ,preferred-javascript-mode)
                             (loop for entry in auto-mode-alist
                                   unless (eq preferred-javascript-mode (cdr entry))
                                   collect entry)))
@@ -30,21 +34,16 @@
  js2-basic-offset preferred-javascript-indent-level
  js2-bounce-indent-p nil)
 
-(when (fboundp 'js2-mode)
-  (add-to-list 'auto-mode-alist '("\\.es6$" . js2-mode)))
-
 (after-load 'js2-mode (js2-imenu-extras-setup))
 
 
 ;;; Js-mode
+(after-load 'js-mode
+  (add-hook 'js-mode-hook '(lambda () (setq mode-name "JS"))))
+
 (setq-default js-indent-level preferred-javascript-indent-level)
 
 (add-to-list 'interpreter-mode-alist (cons "node" preferred-javascript-mode))
-
-
-;; ;;; Jshint
-;; (require-package 'flymake-gjshint)
-;; (add-hook 'js-mode-hook 'flymake-gjshint:load)
 
 
 ;;; Repl: Babel, Node.js
@@ -69,7 +68,6 @@
 (require-package 'rainbow-delimiters)
 (dolist (hook '(js2-mode-hook js-mode-hook json-mode-hook))
   (add-hook hook 'rainbow-delimiters-mode))
-
 
 
 ;;; Coffeescript

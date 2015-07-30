@@ -13,16 +13,6 @@
              jinari-tags-file-name
              " --langmap=JAVASCRIPT:.js --tag-relative -R node_modules src lib vendor test"))))
 
-
-;;; Temporary Sets
-;; GulpJs
-(el-get-bundle stevenremot/emacs-gulpjs)
-
-;; Jade-mode
-(eval-after-load 'jade-mode
-  (add-hook 'jade-mode-hook 'page-break-lines-mode))
-(require-package 'jade-mode)
-
 ;; Jinari-rgrep
 (setq jinari-rgrep-file-endings
       "*.rb *.erb *.yml *.yaml *.coffee *.js *.jade *.es6 *.json *.scss *.tag *.rake")
@@ -41,20 +31,43 @@
      (add-to-list 'grep-find-ignored-directories "vendor")))
 
 
-;;; Unit Testing
-;; Karma
-(require-package 'karma)
+;;; GulpJs
+(el-get-bundle stevenremot/emacs-gulpjs)
 
-;; Jasmine-mode
-(eval-after-load 'jasminejs-mode
-  '(jasminejs-install-snippets))
-(require-package 'jasminejs-mode)
+(fset 'gulpjs--protractor    "xgulpjs-start-taskprotractor0")
+(fset 'gulpjs--test          "xgulpjs-start-tasktest0")
+(fset 'gulpjs--serve         "xgulpjs-start-taskserve0")
+(fset 'gulpjs--build         "xgulpjs-start-taskbuild0")
+(fset 'gulpjs--switch-buffer "xido-switch-buffer*gulp*")
+(global-set-key (kbd "\C-cgs") 'gulpjs--serve)
+(global-set-key (kbd "\C-cgt") 'gulpjs--test)
+(global-set-key (kbd "\C-cgp") 'gulpjs--protractor)
+(global-set-key (kbd "\C-cgb") 'gulpjs--build)
+(global-set-key (kbd "\C-cgg") 'gulpjs--switch-buffer)
+(global-set-key (kbd "") 'gulpjs--switch-buffer)
 
-;; Unit testing: Jst/Mocha
-(require-package 'jst)
-;; (add-hook 'js2-mode-hook 'jst-enable-appropriate-mode)
-;; (add-hook 'coffee-mode-hook 'jst-enable-appropriate-mode)
-;; (add-hook 'what-ever-js-mode-hook 'jst-enable-appropriate-mode)
+
+;;; Jade-mode
+(eval-after-load 'jade-mode
+  (add-hook 'jade-mode-hook 'page-break-lines-mode))
+(require-package 'jade-mode)
+(add-auto-mode 'jade-mode "\\.tag\\'")
+
+
+;; ;;; Unit Testing
+;; ;; Karma
+;; (require-package 'karma)
+
+;; ;; Jasmine-mode
+;; (eval-after-load 'jasminejs-mode
+;;   '(jasminejs-install-snippets))
+;; (require-package 'jasminejs-mode)
+
+;; ;; Unit testing: Jst/Mocha
+;; (require-package 'jst)
+;; ;; (add-hook 'js2-mode-hook 'jst-enable-appropriate-mode)
+;; ;; (add-hook 'coffee-mode-hook 'jst-enable-appropriate-mode)
+;; ;; (add-hook 'what-ever-js-mode-hook 'jst-enable-appropriate-mode)
 
 ;; ;; for node.js
 ;; (jst-declare-project :type "nodejs" :testing-framework "mocha"
