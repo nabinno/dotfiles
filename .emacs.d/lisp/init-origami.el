@@ -6,7 +6,7 @@
 ;; (makunbound 'origami-view-mode-map)
 (define-minor-mode origami-wrap-mode
   "Setup origami folding for TAB"
-  nil " 折紙"
+  nil " 折"
   '(("\C-i" . origami-cycle))
   (or origami-mode (origami-mode 1)))
 (defun origami-cycle (recursive)
