@@ -2,7 +2,7 @@
   (el-get-bundle nabinno/jinari))
 
 (after-load 'jinari
-  (diminish 'jinari-minor-mode "Jin"))
+  (diminish 'jinari-minor-mode " J"))
 (global-jinari-mode)
 
 (defun update-express-ctags ()
@@ -34,6 +34,7 @@
 ;;; GulpJs
 (el-get-bundle stevenremot/emacs-gulpjs)
 
+(fset 'gulpjs--save-buffer-and-protractor "xsave-bufferxgulpjs-start-taskprotractor0")
 (fset 'gulpjs--protractor    "xgulpjs-start-taskprotractor0")
 (fset 'gulpjs--test          "xgulpjs-start-tasktest0")
 (fset 'gulpjs--serve         "xgulpjs-start-taskserve0")
@@ -44,7 +45,17 @@
 (global-set-key (kbd "\C-cgp") 'gulpjs--protractor)
 (global-set-key (kbd "\C-cgb") 'gulpjs--build)
 (global-set-key (kbd "\C-cgg") 'gulpjs--switch-buffer)
-(global-set-key (kbd "") 'gulpjs--switch-buffer)
+(global-set-key (kbd "")   'gulpjs--switch-buffer)
+
+(add-hook 'jinari-minor-mode-hook
+          (lambda ()
+            (mapc (lambda (pair)
+                    (let ((key (car pair))
+                          (func (cdr pair)))
+                      (define-key jinari-minor-mode-map
+                        (read-kbd-macro key) func)))
+                  '(("" . gulpjs--save-buffer-and-protractor))
+                    )))
 
 
 ;;; Jade-mode
