@@ -1,6 +1,8 @@
 ;;; Neotree
 (require-package 'neotree)
-(global-set-key [f8] 'neotree-toggle)
+(when (maybe-require-package 'neotree)
+  (require 'neotree)
+  (global-set-key [f8] 'neotree-toggle))
 
 (add-hook 'neotree-mode-hook
           (lambda ()
