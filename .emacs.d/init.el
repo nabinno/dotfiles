@@ -49,8 +49,7 @@
 (require 'init-uniquify)
 (require 'init-ibuffer)
 (require 'init-flycheck)
-;; (require 'init-yasnippet)
-(require 'init-origami)
+(require 'init-yasnippet)
 
 ;; (require 'init-recentf)
 (require 'init-ido)
@@ -92,7 +91,9 @@
 ;; (require 'init-java)
 ;; (require 'init-scala)
 
+(require 'init-origami)
 (require 'init-paredit)
+(require 'init-project)
 ;; (require 'init-lisp)
 ;; (require 'init-slime)
 ;; (require 'init-clojure)

@@ -30,6 +30,9 @@
      (add-to-list 'grep-find-ignored-directories "tmp")
      (add-to-list 'grep-find-ignored-directories "vendor")))
 
+;; ;; Projectile
+;; (add-hook 'jinari-minor-mode-hook 'projectile-mode)
+
 
 ;;; GulpJs
 (el-get-bundle stevenremot/emacs-gulpjs)
