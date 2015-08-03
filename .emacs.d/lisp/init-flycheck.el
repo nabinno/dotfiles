@@ -7,7 +7,7 @@
 
     (setq flycheck-display-errors-function #'flycheck-display-error-messages-unless-error-list))
 
-(require-package 'flycheck-tip)
+;; (require-package 'flycheck-tip)
 
 
 (provide 'init-flycheck)
