@@ -53,6 +53,12 @@
 	    ((system-time-locale "C"))
 	  (format-time-string " [%R %d %b %a] " now))))
 
+;; auto-save-mode
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+
 ;; paren
 (show-paren-mode t)
 (setq show-paren-delay 0)

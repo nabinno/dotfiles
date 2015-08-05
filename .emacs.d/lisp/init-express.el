@@ -57,7 +57,7 @@
                           (func (cdr pair)))
                       (define-key jinari-minor-mode-map
                         (read-kbd-macro key) func)))
-                  '(("" . gulpjs--save-buffer-and-protractor))
+                  '(("" . gulpjs--save-buffer-and-protractor))
                     )))
 
 
