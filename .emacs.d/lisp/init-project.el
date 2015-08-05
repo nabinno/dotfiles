@@ -18,7 +18,8 @@
 (define-key speedbar-mode-map (kbd "p") 'speedbar-backward-list)
 (define-key speedbar-mode-map (kbd "o") 'speedbar-contract-line-descendants)
 (define-key speedbar-mode-map (kbd "+") 'speedbar-create-directory)
-(define-key speedbar-mode-map (kbd "") 'speedbar-edit-line)
+(define-key speedbar-mode-map (kbd "h") 'speedbar-edit-line)
+(define-key speedbar-mode-map (kbd "m") '(progn (speedbar-next) (speedbar-edit-line t)))
 (define-key speedbar-mode-map (kbd "i") 'speedbar-expand-line-descendants)
 (define-key speedbar-mode-map (kbd "n") 'speedbar-forward-list)
 (define-key speedbar-mode-map (kbd "c") 'speedbar-item-copy)
