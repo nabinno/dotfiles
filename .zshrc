@@ -1,4 +1,3 @@
-
 # BASIC SETTINGS
 # ===============
 # environment variable
@@ -30,6 +29,7 @@ export LC_MESSAGES=C
 export MAILPATH=$HOME/MailBox/postmaster/maildir
 export PATH=$HOME/bin:$HOME/local/bin:$PATH
 export PATH="$HOME/.parts/autoparts/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.cask/bin:$PATH"
 export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
 export PATH="$HOME/local/perl-5.18/bin:$PATH"
@@ -372,7 +372,7 @@ alias gdfc='git diff --cached'
 alias gexport='git "!sh -c \"git checkout-index -a -f --prefix=$1/\" -"'
 alias ghist='git log --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --'
 function ghclone () { git clone https://${2}github.com/${1}.git }
-alias gl='git log --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --'
+alias gl='git log $1 --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --'
 alias glast='git diff HEAD~1..HEAD'
 alias glf='git log --decorate=full --graph --pretty=full'
 alias glg='git log --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --'
@@ -386,6 +386,10 @@ alias gst='git status -sb'
 alias gswitch='git checkout'
 alias gvlog='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen - %cD (%cr) %C(bold blue)<%an>%Creset%n" --abbrev-commit --date=relative -p ; echo ""'
 alias gwho='git shortlog -s --'
+
+# ### emacs ###
+function get-emacs () { yes | c ~/.emacs.d/lisp/* .emacs.d/lisp/ ; wait ; yes | c ~/.emacs.d/init.el .emacs.d/ }
+function put-emacs () { yes | c .emacs.d/lisp/* ~/.emacs.d/lisp/ ; wait ; yes | c .emacs.d/init.el ~/.emacs.d/ }
 
 # ### other ###
 function bkup () { cp -ipr $1 $1.org$(date +%y%m%d) }
