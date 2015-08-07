@@ -36,6 +36,30 @@
   (rgrep "TODO:" jinari-rgrep-file-endings (jinari-root)))
 (define-key jinari-minor-mode-map (kbd "M-6") 'jinari-rgrep--todo)
 
+;;; Dispatch other-window-or-split on Jinari
+(defun jinari--other-window-or-split ()
+   (interactive)
+   (when (one-window-p)
+     (if (< (window-body-width) 110)
+         (progn
+           (split-window-vertically-x)
+           (sr-speedbar-toggle)
+           (other-window 1)
+           (eshell))
+       (if (>= (window-body-width) 200)
+           (progn
+             (sr-speedbar-toggle)
+             (split-window-vertically-x)
+             (split-window-horizontally-n 3)
+             (other-window 3) (eshell)
+             (other-window 1) (jinari-find-test-functional)
+             (other-window 1) (jinari-find-routes)
+             )
+         (split-window-horizontally))))
+   (other-window 1))
+(add-hook 'jinari-minor-mode-hook
+          (lambda () (global-set-key (kbd "M-[ 1 ; 5 i") 'jinari--other-window-or-split)))
+
 ;; ;; Projectile
 ;; (add-hook 'jinari-minor-mode-hook 'projectile-mode)
 
