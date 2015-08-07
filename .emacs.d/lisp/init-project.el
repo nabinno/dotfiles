@@ -1,18 +1,20 @@
 ;;; Sr Speedbar
 (require-package 'sr-speedbar)
-(global-set-key (kbd "M-2") 'sr-speedbar-toggle)
+(when (maybe-require-package 'sr-speedbar)
+  (require 'speedbar)
+  (global-set-key (kbd "M-2") 'sr-speedbar-toggle))
 
 (setq speedbar-hide-button-brackets-flag t
       speedbar-show-unknown-files t
       speedbar-smart-directory-expand-flag t
       speedbar-use-images nil
-      speedbar-indentation-width 2
+      speedbar-indentation-width 1
       speedbar-update-flag t
       sr-speedbar-width 20
       sr-speedbar-width-x 20
       sr-speedbar-auto-refresh t
       sr-speedbar-skip-other-window-p t
-      sr-speedbar-right-side nil)
+      sr-speedbar-right-side t)
 
 ;; keybind
 (define-key speedbar-mode-map (kbd "p") 'speedbar-backward-list)
@@ -40,6 +42,55 @@
 (define-key speedbar-mode-map (kbd "P") 'beginning-of-buffer)
 (define-key speedbar-mode-map (kbd "N") 'end-of-buffer)
 (define-key speedbar-mode-map (kbd "l") 'recenter)
+
+
+;;; Other window or split
+(defun split-window-vertically-n (num_wins)
+  (interactive "p")
+  (if (= num_wins 2)
+      (split-window-vertically)
+    (progn
+      (split-window-vertically
+       (- (window-height) (/ (window-height) num_wins)))
+      (split-window-vertically-n (- num_wins 1)))))
+(defun split-window-horizontally-n (num_wins)
+  (interactive "p")
+  (if (= num_wins 2)
+      (split-window-horizontally)
+    (progn
+      (split-window-horizontally
+       (- (window-width) (/ (window-width) num_wins)))
+      (split-window-horizontally-n (- num_wins 1)))))
+(defun split-window-vertically-x ()
+  (interactive)
+  (split-window-vertically
+   (- (window-height) (/ (window-height) 4))))
+(defun other-window-or-split ()
+  (interactive)
+  (when (one-window-p)
+    (if (< (window-body-width) 110)
+        (progn
+          (split-window-vertically-x)
+          (sr-speedbar-toggle)
+          (other-window 1)
+          (eshell))
+      (if (>= (window-body-width) 200)
+          (progn
+            (sr-speedbar-toggle)
+            (split-window-vertically-x)
+            (split-window-horizontally-n 3)
+            (other-window 4)
+            (eshell))
+        (split-window-horizontally))))
+  (other-window 1))
+(defun delete-other-windows-and-speedbar-close ()
+  (interactive)
+  (progn
+    (delete-other-windows)
+    (sr-speedbar-close)))
+
+(global-set-key (kbd "M-[ 1 ; 5 i") 'other-window-or-split)
+(global-set-key (kbd "<backtab>") 'delete-other-windows-and-speedbar-close)
 
 
 ;; ;;; Neotree

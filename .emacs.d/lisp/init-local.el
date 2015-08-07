@@ -42,6 +42,7 @@
 (setq kill-whole-line t)
 (setq make-backup-files nil)
 (setq message-log-max 512)
+(set-default 'truncate-lines t)
 ;; (tool-bar-mode 0)
 (transient-mark-mode t)
 
@@ -54,6 +55,7 @@
 	  (format-time-string " [%R %d %b %a] " now))))
 
 ;; auto-save-mode
+(setq make-backup-files nil)
 (setq backup-directory-alist
       `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms
@@ -82,8 +84,8 @@
 (global-set-key (kbd "C-r") 'replace-string)
 (global-set-key (kbd "C-M-r") 'replace-regexp)
 (global-set-key (kbd "C-h") 'delete-backward-char)
-;; (global-set-key (kbd "C-M-n") 'next-buffer)
-;; (global-set-key (kbd "C-M-p") 'previous-buffer)
+(global-set-key (kbd "M-") 'next-buffer)
+(global-set-key (kbd "M-") 'previous-buffer)
 ;; (global-set-key (kbd "M-n") 'forward-paragraph)
 ;; (global-set-key (kbd "M-P") 'backward-paragraph)
 ;; (global-set-key (kbd "C-M-l") 'recenter)
@@ -102,8 +104,6 @@
 (global-set-key (kbd "M-[ 1 ; 7 q") '(lambda () (interactive) (shell)))
 ;; (keyboard-translate ?\C-h ?\C-?) (global-set-key (kbd "C-h") nil)
 ;; (global-set-key (kbd "C-x C-h") 'help-command)
-(global-set-key (kbd "M-[ 1 ; 5 i") 'other-window)
-(global-set-key (kbd "C-TAB") 'other-window)
 (global-set-key (kbd "C-t") 'quoted-insert)
 (global-set-key (kbd "") 'indent-for-tab-command)
 (global-unset-key (kbd "C-z"))
