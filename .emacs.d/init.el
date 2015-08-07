@@ -44,6 +44,7 @@
 ;; (require 'init-gui-frames)
 ;; (require 'init-proxies)
 (require 'init-view)
+(require 'init-other-window)
 (require 'init-dired)
 (require 'init-isearch)
 (require 'init-uniquify)

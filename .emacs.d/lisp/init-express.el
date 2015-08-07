@@ -30,6 +30,12 @@
      (add-to-list 'grep-find-ignored-directories "tmp")
      (add-to-list 'grep-find-ignored-directories "vendor")))
 
+;; Jinari-rgrep--todo
+(defun jinari-rgrep--todo ()
+  (interactive)
+  (rgrep "TODO:" jinari-rgrep-file-endings (jinari-root)))
+(define-key jinari-minor-mode-map (kbd "M-6") 'jinari-rgrep--todo)
+
 ;; ;; Projectile
 ;; (add-hook 'jinari-minor-mode-hook 'projectile-mode)
 
