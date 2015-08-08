@@ -56,6 +56,9 @@ export PATH="$PLAY_HOME:$PATH"
 ## export PERL_CPANM_OPT="-l ~/local --mirror http://ftp.funet.fi/pub/languages/perl/CPAN/"
 # export PERL_CPANM_OPT="-l ~/local --mirror ~/.cpan/minicpan/"
 
+# ### javascript ###
+export node='NODE_NO_READLINE=1 node'
+
 
 # default shell
 # -------------
@@ -387,9 +390,21 @@ alias gswitch='git checkout'
 alias gvlog='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen - %cD (%cr) %C(bold blue)<%an>%Creset%n" --abbrev-commit --date=relative -p ; echo ""'
 alias gwho='git shortlog -s --'
 
-# ### emacs ###
-function get-emacs () { yes | c ~/.emacs.d/lisp/* .emacs.d/lisp/ ; wait ; yes | c ~/.emacs.d/init.el .emacs.d/ }
-function put-emacs () { yes | c .emacs.d/lisp/* ~/.emacs.d/lisp/ ; wait ; yes | c .emacs.d/init.el ~/.emacs.d/ }
+# ### dotfiles ###
+function get-dotfiles () {
+    git pull;  wait
+    cp -pr ~/.emacs.d/lisp/* .emacs.d/lisp/;  wait
+    cp -pr ~/.emacs.d/eshell/alias .emacs.d/eshell/;  wait
+    cp -pr  ~/.emacs.d/init.el .emacs.d/;  wait
+    cp -pr ~/.zshrc .
+}
+function put-dotfiles () {
+    git pull;  wait
+    cp -pr .emacs.d/lisp/* ~/.emacs.d/lisp/;  wait
+    cp -pr .emacs.d/eshell/alias ~/.emacs.d/eshell/;  wait
+    cp -pr .emacs.d/init.el ~/.emacs.d/;  wait
+    cp -pr .zshrc ~/
+}
 
 # ### other ###
 function bkup () { cp -ipr $1 $1.org$(date +%y%m%d) }
@@ -417,6 +432,7 @@ function gresreg () {
 	rm $i.tmp;
     done
 }
+alias e='emacsclient -c t'
 alias ij='jobs -l'
 alias ic='cat /proc/cpuinfo'
 alias in='netstat -a -n | more'
