@@ -1,11 +1,11 @@
 (setq eshell-directory-name "~/.emacs.d/eshell/")
+(setq eshell-cmpl-cycle-completions nil)
+(setq eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'")
+(setq eshell-save-history-on-exit t)
 
-(setq eshell-cmpl-cycle-completions nil
-      eshell-save-history-on-exit t
-      eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'")
 (eval-after-load 'esh-opt
   '(progn
-     (require 'em-cmpl)
+     ;; (require 'em-cmpl)
      (require 'em-prompt)
      (require 'em-term)
      ;; TODO: for some reason requiring this here breaks it, but
@@ -24,6 +24,12 @@
      ;; (add-to-list 'eshell-output-filter-functions 'eshell-handle-ansi-color)
      ))
 
+(defun eshell--delete-other-windows-and-speedbar-close ()
+  (interactive)
+  (progn
+    (sanityinc/toggle-delete-other-windows)
+    (sr-speedbar-close)))
+
 ;; keybind
 (add-hook 'eshell-mode-hook
 	  (lambda ()
@@ -35,6 +41,7 @@
 			(read-kbd-macro key) func)))
 		  '(("M-s" . (lambda () (interactive) (hl-line-mode) (view-mode)))
 		    ("C-M-l" . recenter)
+		    ("<backtab>" . eshell--delete-other-windows-and-speedbar-close)
 		    ))))
 
 
@@ -45,6 +52,15 @@
 
 (global-set-key (kbd "M-1") 'multi-eshell-switch)
 (global-set-key (kbd "M-!") 'multi-eshell)
+
+
+;;; Kill all eshell
+(defun multi-eshell--kill-all ()
+  (interactive)
+  (dolist
+      (buffer (buffer-list))
+    (if (string-match-p"^\*eshell"  (buffer-name buffer))
+        (kill-buffer buffer))))
 
 
 ;; ;;; Eshell Z

@@ -1,7 +1,5 @@
 (require-package 'elscreen)
-(elscreen-start)
 
-(setq elscreen-prefix-key (kbd "C-1"))
 (setq elscreen-prefix-key (kbd "M-[ 1 ; 5 q"))
 (setq elscreen-display-tab nil)
 (setq elscreen-tab-display-kill-screen nil)
@@ -29,6 +27,8 @@
 
 (global-set-key (kbd "M-[ 1 ; 5 h") 'elscreen-previous)
 (global-set-key (kbd "M-[ 1 ; 5 f") 'elscreen-next)
+
+(elscreen-start)
 
 
 ;;; Elscreen persist

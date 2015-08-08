@@ -49,10 +49,8 @@
          (string-match-p "^\*" (buffer-name))
          (not ( equal bread-crumb (buffer-name))))
       (previous-buffer))))
-(global-set-key [remap next-buffer] 'next-code-buffer)
-(global-set-key [remap previous-buffer] 'previous-code-buffer)
-(global-set-key (kbd "M-") 'next-buffer)
-(global-set-key (kbd "M-") 'previous-buffer)
+(global-set-key (kbd "M-") 'next-code-buffer)
+(global-set-key (kbd "M-") 'previous-code-buffer)
 
 
 (provide 'init-ido)
