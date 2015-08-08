@@ -26,7 +26,33 @@
 ;; http://www.reddit.com/r/emacs/comments/21a4p9/use_recentf_and_ido_together/cgbprem
 (add-hook 'ido-setup-hook (lambda () (define-key ido-completion-map [up] 'previous-history-element)))
 
+(setq ido-ignore-buffers '("^ " "*Completions*" "*Shell Command Output*"
+                           "*Messages*" "Async Shell Command"))
 
+
+;;; Next/Previous code buffer
+(defun next-code-buffer ()
+  (interactive)
+  (let (( bread-crumb (buffer-name)))
+    (next-buffer)
+    (while
+        (and
+         (string-match-p "^\*" (buffer-name))
+         (not ( equal bread-crumb (buffer-name))))
+      (next-buffer))))
+(defun previous-code-buffer ()
+  (interactive)
+  (let (( bread-crumb (buffer-name)))
+    (previous-buffer)
+    (while
+        (and
+         (string-match-p "^\*" (buffer-name))
+         (not ( equal bread-crumb (buffer-name))))
+      (previous-buffer))))
+(global-set-key [remap next-buffer] 'next-code-buffer)
+(global-set-key [remap previous-buffer] 'previous-code-buffer)
+(global-set-key (kbd "M-") 'next-buffer)
+(global-set-key (kbd "M-") 'previous-buffer)
 
 
 (provide 'init-ido)

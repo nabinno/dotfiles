@@ -1,11 +1,5 @@
-; shell settings
-; ==============
-; eshell
-; ------
-;; (require 'eshell-pop)
 (setq eshell-directory-name "~/.emacs.d/eshell/")
-(setq shell-pop-window-height 30)
-;;(require 'esh-myparser)
+
 (setq eshell-cmpl-cycle-completions nil
       eshell-save-history-on-exit t
       eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'")
@@ -18,7 +12,7 @@
      ;; requiring it after an eshell session is started works fine.
      ;; (require 'eshell-vc)
      (setenv "PAGER" "cat")
-    ;; (set-face-attribute 'eshell-prompt nil :foreground "turquoise1")
+     ;; (set-face-attribute 'eshell-prompt nil :foreground "turquoise1")
      (add-hook 'eshell-mode-hook ;; for some reason this needs to be a hook
                '(lambda () (define-key eshell-mode-map "\C-a" 'eshell-bol)))
      (add-to-list 'eshell-visual-commands "ssh")
@@ -29,6 +23,8 @@
                   '("tar" "\\(\\.tar|\\.tgz\\|\\.tar\\.gz\\)\\'"))
      ;; (add-to-list 'eshell-output-filter-functions 'eshell-handle-ansi-color)
      ))
+
+;; keybind
 (add-hook 'eshell-mode-hook
 	  (lambda ()
 	    ;; (set-buffer-process-coding-system 'utf-8 'utf-8)
@@ -41,17 +37,40 @@
 		    ("C-M-l" . recenter)
 		    ))))
 
+
+;;; Multi eshell
+(require-package 'multi-eshell)
+(setq multi-eshell-shell-function '(eshell))
+(setq multi-eshell-name "*eshell*")
 
-; tramp
-; -----
+(global-set-key (kbd "M-1") 'multi-eshell-switch)
+(global-set-key (kbd "M-!") 'multi-eshell)
+
+
+;; ;;; Eshell Z
+;; (eval-after-load 'eshell
+;;       '(require-package 'eshell-z nil t))
+
+
+;; ;;; Eshell myparser
+;; (unless (require 'esh-myparser nil 'noerror)
+;;   (el-get-bundle! esh-myparser
+;;     :url "http://www.emacswiki.org/emacs/download/esh-myparser.el"))
+
+
+;; ;;; Eshell pop
+;; (require 'eshell-pop)
+;; (setq shell-pop-window-height 30)
+
+
+;; Tramp
 (require 'tramp)
 (setq tramp-default-method "ssh")
 (setq tramp-debug-buffer t)
 (setq tramp-completion-without-shell-p t)
 
-
-; zsh
-; ---
+
+;; Zsh
 (defun skt:shell ()
   (or (executable-find "zsh")
       (executable-find "cmdproxy")
@@ -63,6 +82,9 @@
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 
+(global-set-key (kbd "C-c s") '(lambda () (interactive) (shell)))
+(global-set-key (kbd "M-C-1") '(lambda () (interactive) (shell)))
+(global-set-key (kbd "M-[ 1 ; 7 q") '(lambda () (interactive) (shell)))
 
 
 (provide 'init-eshell)

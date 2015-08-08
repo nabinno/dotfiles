@@ -1,5 +1,5 @@
+alias z zsh -c ". ~/.zshrc && $*"
 alias gl git log $* --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -- ; echo ''
-alias z zsh -c ". ~/.zshrc && $1"
 alias x dired .
 alias w cmd /c $1
 alias v cat $1
@@ -88,3 +88,4 @@ alias b cp -ipR $1 {concat $1 ".org" (format-time-string "%y%m%d")}
 alias U tar zcvf $1.tar.gz $1
 alias . source $1
 alias , cmd /c start $*
+alias node NODE_NO_READLINE=1 node

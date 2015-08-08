@@ -11,7 +11,6 @@
   (add-hook 'server-done-hook
             (lambda () (shell-command "screen -X select $(cat ~/.emacs.d/emacsclient-caller)"))))
 
-
 ;; other
 (cond (window-system (setq x-select-enable-clipboard t)))
 (defun my-bell-function ()
@@ -75,7 +74,6 @@
 ;; (add-to-list 'Info-additional-directory-list "/usr/share/info")
 (add-to-list 'Info-directory-list "~/info")
 
-
 
 ;;; Key Bind Settings
 (defun my-kill-some-buffers () (interactive) (dolist (buffer (buffer-list)) (unless (string= (buffer-name buffer) "*scratch*")) (kill-buffer buffer))) (global-set-key (kbd "C-x C-k") 'my-kill-some-buffers)
@@ -84,31 +82,20 @@
 (global-set-key (kbd "C-r") 'replace-string)
 (global-set-key (kbd "C-M-r") 'replace-regexp)
 (global-set-key (kbd "C-h") 'delete-backward-char)
-(global-set-key (kbd "M-") 'next-buffer)
-(global-set-key (kbd "M-") 'previous-buffer)
 ;; (global-set-key (kbd "M-n") 'forward-paragraph)
 ;; (global-set-key (kbd "M-P") 'backward-paragraph)
 ;; (global-set-key (kbd "C-M-l") 'recenter)
 (global-set-key (kbd "C-S-i") 'indent-region)
 ;; (global-set-key (kbd "M-TAB") 'indent-region)
 ;; (global-set-key [f1] 'help-for-help)
-;; (global-set-key (kbd "C-x e") 'electric-buffer-list)
-(global-set-key (kbd "M-SPC") 'ibuffer)
-(global-set-key (kbd "C-x C-z") 'shell-pop)
 (global-set-key (kbd "M-9") '(lambda () (interactive) (find-file "~/.zshrc") (sh-mode)))
 (global-set-key (kbd "M-0") '(lambda () (interactive) (find-file "~/.emacs.d/init.el")))
-(global-set-key (kbd "C-c e") '(lambda () (interactive) (eshell)))
-(global-set-key (kbd "M-1") '(lambda () (interactive) (eshell)))
-(global-set-key (kbd "C-c s") '(lambda () (interactive) (shell)))
-(global-set-key (kbd "M-C-1") '(lambda () (interactive) (shell)))
-(global-set-key (kbd "M-[ 1 ; 7 q") '(lambda () (interactive) (shell)))
 ;; (keyboard-translate ?\C-h ?\C-?) (global-set-key (kbd "C-h") nil)
 ;; (global-set-key (kbd "C-x C-h") 'help-command)
 (global-set-key (kbd "C-t") 'quoted-insert)
 (global-set-key (kbd "") 'indent-for-tab-command)
 (global-unset-key (kbd "C-z"))
-(global-unset-key (kbd "C-q"))
-
+(global-unset-key (kbd "<f2>"))
 
 
 ;;; Any mode settings
