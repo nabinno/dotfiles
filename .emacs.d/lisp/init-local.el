@@ -76,7 +76,16 @@
 
 
 ;;; Key Bind Settings
-(defun my-kill-some-buffers () (interactive) (dolist (buffer (buffer-list)) (unless (string= (buffer-name buffer) "*scratch*")) (kill-buffer buffer))) (global-set-key (kbd "C-x C-k") 'my-kill-some-buffers)
+(defun my-kill-some-buffers ()
+  (interactive)
+  (dolist
+      (buffer (buffer-list))
+    (unless
+        (string= (buffer-name buffer) "*scratch*"))
+    (kill-buffer buffer)))
+(global-set-key (kbd "C-x C-k") 'my-kill-some-buffers)
+(global-set-key (kbd "C-x k") 'kill-this-buffer)
+
 (global-set-key (kbd "C-x w") 'toggle-truncate-lines)
 (global-set-key (kbd "C-c M-a") 'align-regexp)
 (global-set-key (kbd "C-r") 'replace-string)
