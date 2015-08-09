@@ -29,6 +29,15 @@
   (progn
     (sanityinc/toggle-delete-other-windows)
     (sr-speedbar-close)))
+(defun eshell/cdp ()
+  (let* ((cmd "git rev-parse --show-toplevel")
+         (dir (with-temp-buffer
+                (unless (call-process-shell-command cmd nil t)
+                  (error "Here is not Git Repository"))
+                (goto-char (point-min))
+                (buffer-substring-no-properties
+                 (point) (line-end-position)))))
+        (eshell/cd dir)))
 
 ;; keybind
 (add-hook 'eshell-mode-hook
@@ -50,17 +59,15 @@
 (setq multi-eshell-shell-function '(eshell))
 (setq multi-eshell-name "*eshell*")
 
-(global-set-key (kbd "M-1") 'multi-eshell-switch)
-(global-set-key (kbd "M-!") 'multi-eshell)
-
-
-;;; Kill all eshell
 (defun multi-eshell--kill-all ()
   (interactive)
   (dolist
       (buffer (buffer-list))
     (if (string-match-p"^\*eshell"  (buffer-name buffer))
         (kill-buffer buffer))))
+
+(global-set-key (kbd "M-1") 'multi-eshell-switch)
+(global-set-key (kbd "M-!") 'multi-eshell)
 
 
 ;; ;;; Eshell Z
