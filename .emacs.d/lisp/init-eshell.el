@@ -17,10 +17,10 @@
                '(lambda () (define-key eshell-mode-map "\C-a" 'eshell-bol)))
      (add-to-list 'eshell-visual-commands "ssh")
      (add-to-list 'eshell-visual-commands "tail")
-     (add-to-list 'eshell-command-completions-alist
-                  '("gunzip" "gz\\'"))
-     (add-to-list 'eshell-command-completions-alist
-                  '("tar" "\\(\\.tar|\\.tgz\\|\\.tar\\.gz\\)\\'"))
+     ;; (add-to-list 'eshell-command-completions-alist
+     ;;              '("gunzip" "gz\\'"))
+     ;; (add-to-list 'eshell-command-completions-alist
+     ;;              '("tar" "\\(\\.tar|\\.tgz\\|\\.tar\\.gz\\)\\'"))
      ;; (add-to-list 'eshell-output-filter-functions 'eshell-handle-ansi-color)
      ))
 
