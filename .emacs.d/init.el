@@ -93,6 +93,9 @@
 ;; (require 'init-java)
 ;; (require 'init-scala)
 
+(require 'init-analytics)
+(require 'init-orchestration)
+
 (require 'init-origami)
 (require 'init-paredit)
 (require 'init-project)
