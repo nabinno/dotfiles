@@ -1,7 +1,6 @@
 ;;; Basic setting
 (setq default-directory "~/")
 
-
 ;; after init hook
 (defvar *on_linux*
   (string-match "linux" system-configuration))
@@ -85,7 +84,6 @@
     (kill-buffer buffer)))
 (global-set-key (kbd "C-x C-k") 'my-kill-some-buffers)
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
-
 (global-set-key (kbd "C-x w") 'toggle-truncate-lines)
 (global-set-key (kbd "C-c M-a") 'align-regexp)
 (global-set-key (kbd "C-r") 'replace-string)
@@ -97,7 +95,7 @@
 (global-set-key (kbd "C-S-i") 'indent-region)
 ;; (global-set-key (kbd "M-TAB") 'indent-region)
 ;; (global-set-key [f1] 'help-for-help)
-(global-set-key (kbd "M-9") '(lambda () (interactive) (find-file "~/.zshrc") (sh-mode)))
+(global-set-key (kbd "M-9") '(lambda () (interactive) (progn (find-file "~/.zshrc") (sh-mode))))
 (global-set-key (kbd "M-0") '(lambda () (interactive) (find-file "~/.emacs.d/init.el")))
 ;; (keyboard-translate ?\C-h ?\C-?) (global-set-key (kbd "C-h") nil)
 ;; (global-set-key (kbd "C-x C-h") 'help-command)
@@ -114,9 +112,8 @@
 	     (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
 
 
-;;; buffer
-;; ; zlc
-;; ; ---
+;;; Buffer
+;; ;; zlc
 ;; (require 'zlc)
 ;; (setq zlc-select-completion-immediately t)
 ;; (let ((map minibuffer-local-map))
@@ -128,15 +125,11 @@
 ;;   (define-key map (kbd "C-n") 'zlc-select-next)
 ;;   )
 
-
-;; ; lcomp
-;; ; -----
+;; ;; lcomp
 ;; (require 'lcomp)
 ;; (lcomp-install)
 
-
-; diff
-; ----
+;; diff
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
 
