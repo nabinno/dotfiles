@@ -9,7 +9,7 @@
 ;;; Docker
 (require-package 'docker)
 (require-package 'docker-tramp)
-(require-package 'docker-file-mode)
+;; (require-package 'docker-file-mode)
 (require-package 'marcopolo)
 
 

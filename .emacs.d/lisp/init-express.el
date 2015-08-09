@@ -87,7 +87,7 @@
 ;;; GulpJs
 (el-get-bundle stevenremot/emacs-gulpjs)
 
-(fset 'gulpjs--save-buffer-and-protractor "xsave-bufferxgulpjs-start-taskprotractor")
+(fset 'gulpjs--save-buffer-and-protractor "xsave-bufferxgulpjs-start-taskprotractorxquit-window")
 (fset 'gulpjs--protractor    "xgulpjs-start-taskprotractor0")
 (fset 'gulpjs--test          "xgulpjs-start-tasktest0")
 (fset 'gulpjs--serve         "xgulpjs-start-taskserve0")
