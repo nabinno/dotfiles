@@ -60,22 +60,9 @@
 (after-load 'js2-mode (js2-imenu-extras-setup))
 
 
-;;; Repl: Babel, Node.js
-(require-package 'babel-repl)
-(require-package 'nodejs-repl)
-
-
-;;; Repl: Mozilla
-(require-package 'jss)
-(require-package 'moz)
-
-(add-hook 'js-mode-hook 'moz-minor-mode)
-;; (add-to-list 'auto-mode-alist '("\\.js$" . javascript-mode))
-(autoload 'inferior-moz-mode "moz" "MozRepl Inferior Mode" t)
-(autoload 'moz-minor-mode "moz" "MozRepl Minor Mode" t)
-(add-hook 'javascript-mode-hook 'javascript-moz-setup)
-
-(defun javascript-moz-setup () (moz-minor-mode 1))
+;; ;;; Repl: Babel, Node.js
+;; (require-package 'babel-repl)
+;; (require-package 'nodejs-repl)
 
 
 ;; ;;; Company-tern
@@ -98,7 +85,6 @@
 
 
 ;;; CoffeeScript
-
 (after-load 'coffee-mode
   (setq coffee-js-mode preferred-javascript-mode
         coffee-tab-width preferred-javascript-indent-level))
