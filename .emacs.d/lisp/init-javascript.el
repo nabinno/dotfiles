@@ -25,6 +25,29 @@
                                   unless (eq preferred-javascript-mode (cdr entry))
                                   collect entry)))
 
+(dolist (mode '(js js2))
+  (progn
+    (font-lock-add-keywords
+     (intern (format "%s-mode" mode))
+     `(("\\(function *\\)("
+        (0 (progn
+             (compose-region (match-beginning 1) (match-end 1) "ƒ")
+             nil)))))
+    (font-lock-add-keywords
+     (intern (format "%s-mode" mode))
+     '(("\\<\\(FIX\\|TODO\\|FIXME\\|HACK\\|REFACTOR\\):"
+        1 font-lock-warning-face t)))
+    ))
+
+
+;;; Js-mode
+(after-load 'js-mode
+  (add-hook 'js-mode-hook '(lambda () (setq mode-name "JS"))))
+
+(setq-default js-indent-level preferred-javascript-indent-level)
+
+(add-to-list 'interpreter-mode-alist (cons "node" preferred-javascript-mode))
+
 
 ;;; Js2-mode
 (after-load 'js2-mode
@@ -37,18 +60,22 @@
 (after-load 'js2-mode (js2-imenu-extras-setup))
 
 
-;;; Js-mode
-(after-load 'js-mode
-  (add-hook 'js-mode-hook '(lambda () (setq mode-name "JS"))))
-
-(setq-default js-indent-level preferred-javascript-indent-level)
-
-(add-to-list 'interpreter-mode-alist (cons "node" preferred-javascript-mode))
-
-
 ;;; Repl: Babel, Node.js
 (require-package 'babel-repl)
 (require-package 'nodejs-repl)
+
+
+;;; Repl: Mozilla
+(require-package 'jss)
+(require-package 'moz)
+
+(add-hook 'js-mode-hook 'moz-minor-mode)
+;; (add-to-list 'auto-mode-alist '("\\.js$" . javascript-mode))
+(autoload 'inferior-moz-mode "moz" "MozRepl Inferior Mode" t)
+(autoload 'moz-minor-mode "moz" "MozRepl Minor Mode" t)
+(add-hook 'javascript-mode-hook 'javascript-moz-setup)
+
+(defun javascript-moz-setup () (moz-minor-mode 1))
 
 
 ;; ;;; Company-tern
@@ -70,7 +97,7 @@
   (add-hook hook 'rainbow-delimiters-mode))
 
 
-;;; Coffeescript
+;;; CoffeeScript
 
 (after-load 'coffee-mode
   (setq coffee-js-mode preferred-javascript-mode

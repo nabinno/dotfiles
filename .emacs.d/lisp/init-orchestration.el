@@ -13,8 +13,8 @@
 (require-package 'marcopolo)
 
 
-;;; Amazon EC2
-(require-package 'helm-aws)
+;; ;;; Amazon EC2
+;; (require-package 'helm-aws)
 
 
 ;;; Heroku

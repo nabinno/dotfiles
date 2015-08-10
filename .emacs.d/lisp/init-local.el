@@ -1,15 +1,6 @@
 ;;; Basic setting
 (setq default-directory "~/")
 
-;; after init hook
-(defvar *on_linux*
-  (string-match "linux" system-configuration))
-(when *on_linux*
-  (add-hook 'after-init-hook
-            'server-start)
-  (add-hook 'server-done-hook
-            (lambda () (shell-command "screen -X select $(cat ~/.emacs.d/emacsclient-caller)"))))
-
 ;; other
 (cond (window-system (setq x-select-enable-clipboard t)))
 (defun my-bell-function ()
@@ -20,7 +11,6 @@
                             backward-char forward-char))
     (ding)))
 (setq ring-bell-function 'my-bell-function)
-
 (fset 'yes-or-no-p 'y-or-n-p)
 (global-font-lock-mode t)
 ;; (iswitchb-mode t)
