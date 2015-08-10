@@ -1,3 +1,4 @@
+;;; Erlang
 (ignore-errors
   (require-package 'erlang))
 
@@ -6,8 +7,8 @@
 
 ;; (add-to-list 'ac-modes 'erlang-mode)
 
-
-;; Exlixr
+
+;;; Exlixr
 (require-package 'elixir-mode)
 
 (el-get-bundle tonini/alchemist.el)
@@ -19,8 +20,8 @@
   (define-key erlang-mode-map (kbd "M-,") 'alchemist-goto-jump-back))
 (add-hook 'erlang-mode-hook 'custom-erlang-mode-hook)
 
-
-;; Phoenix
+
+;;; Phoenix
 (unless (require 'xinari nil 'noerror)
   (el-get-bundle nabinno/xinari))
 

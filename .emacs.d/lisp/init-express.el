@@ -2,7 +2,7 @@
   (el-get-bundle nabinno/jinari))
 
 (after-load 'jinari
-  (diminish 'jinari-minor-mode " J"))
+  (diminish 'jinari-minor-mode " JIN"))
 (global-jinari-mode)
 
 (defun update-express-ctags ()

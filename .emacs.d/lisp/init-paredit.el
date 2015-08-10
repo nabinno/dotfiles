@@ -3,6 +3,19 @@
 (add-hook 'after-init-hook 'enable-paredit-mode)
 (add-hook 'prog-mode-hook 'enable-paredit-mode)
 
+;; Enable paredit for a couple for non lisp modes; tweak
+;; paredit-space-for-delimiter-predicates to avoid inserting spaces
+;; before open parens.
+(dolist (mode
+         '(ruby js js2 cperl elixir erlang python jade haml))
+  (add-hook (intern (format "%s-mode-hook" mode))
+            '(lambda ()
+               (add-to-list
+                (make-local-variable
+                 'paredit-space-for-delimiter-predicates)
+                (lambda (_ _) nil))
+               (enable-paredit-mode))))
+
 (defun maybe-map-paredit-newline ()
   (unless (or (memq major-mode '(inferior-emacs-lisp-mode cider-repl-mode))
               (minibufferp))
@@ -23,7 +36,6 @@
 
   ;; Allow my global binding of M-? to work when paredit is active
   (define-key paredit-mode-map (kbd "M-?") nil))
-
 
 ;; Compatibility with other modes
 (suspend-mode-during-cua-rect-selection 'paredit-mode)
@@ -78,7 +90,7 @@
                     ("M-[ [" . paredit-wrap-square)
                     ))))
 
-;; Emacs Lisp
+;; emacs lisp
 (fset 'paredit--next-block-elisp "\C-a\C-[\C-f\C-[\C-f\C-[\C-b")
 (fset 'paredit--previous-block-elisp "\C-a\C-[\C-b")
 (add-hook 'emacs-lisp-mode-hook
@@ -92,7 +104,7 @@
                     ("" . paredit--previous-block-elisp)
                     ))))
 
-;; JavaScript
+;; javascript
 (fset 'paredit--next-block-js "\C-a\C-[\C-f\C-[\C-f\C-[\C-f\C-[\C-f\C-[\C-b")
 (fset 'paredit--previous-block-js "\C-a\C-[\C-b")
 (add-hook 'js2-mode-hook
