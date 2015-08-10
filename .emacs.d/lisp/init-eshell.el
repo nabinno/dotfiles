@@ -33,7 +33,6 @@
                  '("tar" "\\(\\.tar|\\.tgz\\|\\.tar\\.gz\\)\\'"))
     (set-face-attribute 'eshell-prompt nil :foreground "turquoise1")
     ))
-(add-hook 'after-init-hook 'eshell-arg-initialize)
 
 (defun eshell--delete-other-windows-and-speedbar-close ()
   (interactive)

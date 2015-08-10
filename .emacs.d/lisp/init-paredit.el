@@ -37,6 +37,7 @@
   ;; Allow my global binding of M-? to work when paredit is active
   (define-key paredit-mode-map (kbd "M-?") nil))
 
+
 ;; Compatibility with other modes
 (suspend-mode-during-cua-rect-selection 'paredit-mode)
 
@@ -90,7 +91,7 @@
                     ("M-[ [" . paredit-wrap-square)
                     ))))
 
-;; emacs lisp
+;; Emacs Lisp
 (fset 'paredit--next-block-elisp "\C-a\C-[\C-f\C-[\C-f\C-[\C-b")
 (fset 'paredit--previous-block-elisp "\C-a\C-[\C-b")
 (add-hook 'emacs-lisp-mode-hook
@@ -104,7 +105,7 @@
                     ("" . paredit--previous-block-elisp)
                     ))))
 
-;; javascript
+;; JavaScript
 (fset 'paredit--next-block-js "\C-a\C-[\C-f\C-[\C-f\C-[\C-f\C-[\C-f\C-[\C-b")
 (fset 'paredit--previous-block-js "\C-a\C-[\C-b")
 (add-hook 'js2-mode-hook
