@@ -87,18 +87,18 @@
 ;;; GulpJs
 (el-get-bundle stevenremot/emacs-gulpjs)
 
-(fset 'gulpjs--save-buffer-and-protractor "xsave-bufferxgulpjs-start-taskprotractorxquit-window")
-(fset 'gulpjs--protractor    "xgulpjs-start-taskprotractor0")
-(fset 'gulpjs--test          "xgulpjs-start-tasktest0")
-(fset 'gulpjs--serve         "xgulpjs-start-taskserve0")
-(fset 'gulpjs--build         "xgulpjs-start-taskbuild0")
-(fset 'gulpjs--switch-buffer "xido-switch-buffer*gulp*")
-(global-set-key (kbd "\C-cgs") 'gulpjs--serve)
-(global-set-key (kbd "\C-cgt") 'gulpjs--test)
-(global-set-key (kbd "\C-cgp") 'gulpjs--protractor)
-(global-set-key (kbd "\C-cgb") 'gulpjs--build)
-(global-set-key (kbd "\C-cgg") 'gulpjs--switch-buffer)
-(global-set-key (kbd "")   'gulpjs--switch-buffer)
+(fset 'gulp-save-buffer-and-protractor "xsave-bufferxgulpprotractorxquit-window")
+(fset 'gulp-protractor    "xgulpprotractor0")
+(fset 'gulp-test          "xgulptest0")
+(fset 'gulp-serve         "xgulpserve0")
+(fset 'gulp-build         "xgulpbuild0")
+(fset 'gulp-switch-buffer "xido-switch-buffer*gulp*")
+(global-set-key (kbd "\C-cgs") 'gulp-serve)
+(global-set-key (kbd "\C-cgt") 'gulp-test)
+(global-set-key (kbd "\C-cgp") 'gulp-protractor)
+(global-set-key (kbd "\C-cgb") 'gulp-build)
+(global-set-key (kbd "\C-cgg") 'gulp-switch-buffer)
+(global-set-key (kbd "")   'gulp-switch-buffer)
 
 (add-hook 'jinari-minor-mode-hook
           (lambda ()
@@ -107,8 +107,16 @@
                           (func (cdr pair)))
                       (define-key jinari-minor-mode-map
                         (read-kbd-macro key) func)))
-                  '(("" . gulpjs--save-buffer-and-protractor))
+                  '(("" . gulp-save-buffer-and-protractor))
                     )))
+
+(defun gulp (arg)
+  "JS task runner by using gulp tool"
+  (interactive "stask name: ")
+  (progn
+    (setq buffer (get-buffer-create "*gulp*"))
+    (apply 'make-comint-in-buffer "gulp" buffer "~/.parts/bin/gulp" nil (list arg))
+    ))
 
 
 ;;; Jade-mode
