@@ -6,7 +6,6 @@
   (autoload 'org-mac-grab-link "org-mac-link" nil t)
   (require-package 'org-mac-iCal))
 
-
 (define-key global-map (kbd "C-c l") 'org-store-link)
 (define-key global-map (kbd "C-c a") 'org-agenda)
 
@@ -22,7 +21,6 @@
       org-export-kill-product-buffer-when-displayed t
       org-tags-column 80)
 
-
 ; Refile targets include this file and any file contributing to the agenda - up to 5 levels deep
 (setq org-refile-targets (quote ((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5))))
 ; Targets start with the file name - allows creating level 1 tasks
@@ -30,11 +28,9 @@
 ; Targets complete in steps so we start with filename, TAB shows the next level of targets etc
 (setq org-outline-path-complete-in-steps t)
 
-
 (setq org-todo-keywords
       (quote ((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d!/!)")
               (sequence "WAITING(w@/!)" "SOMEDAY(S)" "|" "CANCELLED(c@/!)"))))
-
 
 
 ;;; Org clock
@@ -69,11 +65,9 @@
   (define-key org-clock-mode-line-map [header-line mouse-2] 'org-clock-goto)
   (define-key org-clock-mode-line-map [header-line mouse-1] 'org-clock-menu))
 
-
 (require-package 'org-pomodoro)
 (after-load 'org-agenda
   (define-key org-agenda-mode-map (kbd "P") 'org-pomodoro))
-
 
 ;; ;; Show iCal calendars in the org agenda
 ;; (when (and *is-a-mac* (require 'org-mac-iCal nil t))
@@ -94,7 +88,6 @@
 ;;                 (save-excursion
 ;;                   (re-search-backward "^[0-9]+:[0-9]+-[0-9]+:[0-9]+ " nil t))
 ;;                 (insert (match-string 0))))))
-
 
 (after-load 'org
   (define-key org-mode-map (kbd "C-M-<up>") 'org-up-element)
@@ -123,7 +116,6 @@
      (sh . t)
      (sql . nil)
      (sqlite . t))))
-
 
 
 ;;; Temporary setting

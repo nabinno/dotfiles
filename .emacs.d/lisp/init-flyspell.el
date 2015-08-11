@@ -1,25 +1,25 @@
-;;----------------------------------------------------------------------------
-;; Add spell-checking in comments for all programming language modes
-;;----------------------------------------------------------------------------
+;;; Add spell-checking in comments for all programming language modes
 (if (fboundp 'prog-mode)
     (add-hook 'prog-mode-hook 'flyspell-prog-mode)
-  (dolist (hook '(lisp-mode-hook
-                  emacs-lisp-mode-hook
-                  scheme-mode-hook
+  (dolist (hook '(caml-mode-hook
                   clojure-mode-hook
-                  ruby-mode-hook
-                  yaml-mode
-                  python-mode-hook
-                  shell-mode-hook
-                  php-mode-hook
-                  css-mode-hook
-                  haskell-mode-hook
-                  caml-mode-hook
-                  nxml-mode-hook
                   crontab-mode-hook
+                  css-mode-hook
+                  emacs-lisp-mode-hook
+                  haskell-mode-hook
+                  javascript-mode-hook
+                  js-mode-hook
+                  js2-mode-hook
+                  lisp-mode-hook
+                  nxml-mode-hook
                   perl-mode-hook
+                  php-mode-hook
+                  python-mode-hook
+                  ruby-mode-hook
+                  scheme-mode-hook
+                  shell-mode-hook
                   tcl-mode-hook
-                  javascript-mode-hook))
+                  yaml-mode))
     (add-hook hook 'flyspell-prog-mode)))
 
 (after-load 'flyspell
