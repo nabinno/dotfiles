@@ -1,8 +1,5 @@
-;;----------------------------------------------------------------------------
-;; Navigate window layouts with "C-c <left>" and "C-c <right>"
-;;----------------------------------------------------------------------------
+;;; Navigate window layouts with "C-c <left>" and "C-c <right>"
 (winner-mode 1)
-
 
 
 ;;; Make "C-x o" prompt for a target window when there are more than 2
@@ -10,7 +7,6 @@
 (require 'switch-window)
 (setq switch-window-shortcut-style 'alphabet)
 (global-set-key (kbd "C-x o") 'switch-window)
-
 
 ;; When splitting window, show (other-buffer) in the new window
 (defun split-window-func-with-other-buffer (split-function)
@@ -30,22 +26,25 @@
            (equal (selected-window) (next-window)))
       (winner-undo)
     (delete-other-windows)))
-
 (global-set-key "\C-x1" 'sanityinc/toggle-delete-other-windows)
 
 ;; Rearrange split windows
-(defun split-window-horizontally-instead ()
-  (interactive)
-  (save-excursion
-    (delete-other-windows)
-    (funcall (split-window-func-with-other-buffer 'split-window-horizontally))))
-
-(defun split-window-vertically-instead ()
-  (interactive)
-  (save-excursion
-    (delete-other-windows)
-    (funcall (split-window-func-with-other-buffer 'split-window-vertically))))
-
+(defun split-window-horizontally-instead (num_wins)
+  (interactive "p")
+  (if (> num_wins 2)
+      (progn (delete-other-windows)
+             (dotimes (n (- num_wins 1)) (split-window-horizontally))
+             (balance-windows))
+    (progn (delete-other-windows)
+           (split-window-horizontally))))
+(defun split-window-vertically-instead (num_wins)
+  (interactive "p")
+  (if (> num_wins 2)
+      (progn (delete-other-windows)
+             (dotimes (n (- num_wins 1)) (split-window-vertically))
+             (balance-windows))
+    (progn (delete-other-windows)
+           (split-window-vertically))))
 (defun split-window-crossly-instead ()
   (interactive)
   (progn

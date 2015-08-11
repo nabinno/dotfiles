@@ -3,8 +3,7 @@ You should have a section marked ";;; Commentary:"
 The first line should be of the form: ";;; package --- Summary"
 (setenv "JAVA_HOME" "/usr/lib/jvm/java-7-openjdk-amd64/")
 
-
-
+
 ;;; Malabar-mode
 (require-package 'malabar-mode)
 (add-auto-mode 'malabar-mode "\\.java\\'")
@@ -24,7 +23,7 @@ The first line should be of the form: ";;; package --- Summary"
   (add-hook 'malabar-mode-hook 'subword-mode))
 (setq malabar-groovy-java-options '("-Duser.language=en"))
 
-
+
 ;;; Jtags
 (require-package 'jtags)
 

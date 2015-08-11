@@ -12,6 +12,8 @@
 ;;                              yas-ido-prompt
 ;;                              yas-completing-prompt))
 
+;; Keybind
+(global-set-key (kbd "\C-c y") 'yas-insert-snippet)
 
 
 (provide 'init-yasnippet)

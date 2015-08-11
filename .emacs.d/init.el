@@ -1,4 +1,3 @@
-
 ;;; This file bootstraps the configuration, which is divided into
 ;;; a number of other files.
 
@@ -117,6 +116,7 @@
 ;; (require 'init-ledger)
 ;; Extra packages which don't require any configuration
 
+;; (require 'init-diagram)
 (require-package 'gnuplot)
 (require-package 'lua-mode)
 (require-package 'htmlize)

@@ -1,6 +1,11 @@
 (require-package 'origami)
-(add-hook 'after-init-hook 'origami-mode)
-(add-hook 'prog-mode-hook (lambda () (interactive) (progn (origami-wrap-mode) (origami-cycle 1))))
+(add-hook 'after-init-hook
+          (lambda ()
+             (progn (origami-mode)
+                    (add-hook 'prog-mode-hook
+                              (lambda ()
+                                 (progn (origami-wrap-mode)
+                                        (origami-cycle 1)))))))
 ;; (add-hook 'view-mode-hook 'view-mode-hook--origami)
 
 ;; (makunbound 'origami-view-mode-map)
