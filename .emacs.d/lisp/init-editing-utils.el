@@ -386,5 +386,11 @@ With arg N, insert N newlines."
 (guide-key-mode 1)
 (diminish 'guide-key-mode)
 
+
+;; ;;; Time/Date
+;; (require-package 'time-ext)
+;; (require-package 'wwtime)
+
+
 
 (provide 'init-editing-utils)

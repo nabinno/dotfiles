@@ -87,11 +87,11 @@
 ;;; GulpJs
 (el-get-bundle stevenremot/emacs-gulpjs)
 
-(fset 'gulp-save-buffer-and-protractor "xsave-bufferxgulpprotractorxquit-window")
-(fset 'gulp-protractor    "xgulpprotractor0")
-(fset 'gulp-test          "xgulptest0")
-(fset 'gulp-serve         "xgulpserve0")
-(fset 'gulp-build         "xgulpbuild0")
+(fset 'gulp-save-buffer-and-protractor "xsave-bufferxgulpprotractor")
+(fset 'gulp-protractor    "xgulpprotractor")
+(fset 'gulp-test          "xgulptest")
+(fset 'gulp-serve         "xgulpserve")
+(fset 'gulp-build         "xgulpbuild")
 (fset 'gulp-switch-buffer "xido-switch-buffer*gulp*")
 (global-set-key (kbd "\C-cgs") 'gulp-serve)
 (global-set-key (kbd "\C-cgt") 'gulp-test)
@@ -114,7 +114,7 @@
   "JS task runner by using gulp tool"
   (interactive "stask name: ")
   (progn
-    (setq buffer (get-buffer-create "*gulp*"))
+    (setq buffer (get-buffer-create (concat "*gulp<" arg ">*")))
     (apply 'make-comint-in-buffer "gulp" buffer "~/.parts/bin/gulp" nil (list arg))
     ))
 
@@ -154,6 +154,10 @@
 ;; (jst-remember-spec-dir-pattern "\\(Suite\\)")
 ;; ;; If you are using darcs
 ;; (jst-remember-dominating-file ".darcs")
+
+
+;;; E2E Testing
+(require-package 'livid-mode)
 
 
 (provide 'init-express)

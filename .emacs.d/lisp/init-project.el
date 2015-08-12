@@ -69,5 +69,10 @@
 ;; (require-package 'project)
 ;; (projectile-global-mode)
 
+
+;; ;;; Task manager: Pomodoro
+;; (require-package 'pomodoro)
+
+
 
 (provide 'init-project)
