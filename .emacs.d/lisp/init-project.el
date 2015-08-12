@@ -70,17 +70,28 @@
 ;; (projectile-global-mode)
 
 
-;; ;;; Task management
-;; (require-package 'pomodoro)
-
+;;; Task management
 ;; todo hilight
-(require-package 'fic-mode)
-(when (maybe-require-package 'fic-mode) (require 'fic-mode))
-;; (require-package 'hl-todo)
-;; (when (maybe-require-package 'hl-todo) (require 'hl-todo))
+(dolist (mode '(ruby js js2 cperl elixir erlang python jade haml emacs-lisp ielm))
+  (progn
+    (font-lock-add-keywords
+     (intern (format "%s-mode" mode))
+     '(("\\<\\(FIX\\|TODO\\|DONE\\|FIXME\\|HACK\\|REFACTOR\\):"
+        1 font-lock-warning-face t)))))
 
-(defun insert-todo-mark () (interactive)
-           (insert (shell-command-to-string "echo -n TODO: $(date +%Y-%m-%d)")))
+;; (require-package 'fic-mode)
+;; (when (maybe-require-package 'fic-mode) (require 'fic-mode))
+;; ;; (require-package 'hl-todo)
+;; ;; (when (maybe-require-package 'hl-todo) (require 'hl-todo))
+;; (defun insert-todo-mark () (interactive)
+;;            (insert (shell-command-to-string "echo -n TODO: $(date +%Y-%m-%d)")))
+
+
+
+
+(provide 'init-project)
+
+;; (require-package 'pomodoro)
 
 
 

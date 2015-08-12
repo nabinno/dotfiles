@@ -32,12 +32,7 @@
      `(("\\(function *\\)("
         (0 (progn
              (compose-region (match-beginning 1) (match-end 1) "ƒ")
-             nil)))))
-    (font-lock-add-keywords
-     (intern (format "%s-mode" mode))
-     '(("\\<\\(FIX\\|TODO\\|FIXME\\|HACK\\|REFACTOR\\):"
-        1 font-lock-warning-face t)))
-    ))
+             nil)))))))
 
 
 ;;; Js-mode
