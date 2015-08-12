@@ -70,8 +70,18 @@
 ;; (projectile-global-mode)
 
 
-;; ;;; Task manager: Pomodoro
+;; ;;; Task management
 ;; (require-package 'pomodoro)
+
+;; todo hilight
+(require-package 'fic-mode)
+(when (maybe-require-package 'fic-mode) (require 'fic-mode))
+;; (require-package 'hl-todo)
+;; (when (maybe-require-package 'hl-todo) (require 'hl-todo))
+
+(defun insert-todo-mark () (interactive)
+           (insert (shell-command-to-string "echo -n TODO: $(date +%Y-%m-%d)")))
+
 
 
 
