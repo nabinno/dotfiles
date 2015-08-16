@@ -20,8 +20,7 @@
 
 ;; Explicitly require ibuffer-vc to get its column definitions, which
 ;; can't be autoloaded
-(after-load 'ibuffer
-  (require 'ibuffer-vc))
+(after-load 'ibuffer (require 'ibuffer-vc))
 
 ;; Modify the default ibuffer-formats (toggle with `)
 (setq ibuffer-formats
@@ -49,6 +48,17 @@
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "M-SPC") 'ibuffer)
 ;; (global-set-key (kbd "C-x e") 'electric-buffer-list)
+
+(eval-after-load "ibuffer"
+  '(progn
+     (add-hook 'ibuffer-mode-hook
+               (lambda ()
+                 (define-key ibuffer-mode-map "j"    'ibuffer-forward-line)
+                 (define-key ibuffer-mode-map "k"    'ibuffer-backward-line)
+                 (define-key ibuffer-mode-map " "    'ibuffer-mark-forward)
+                 (define-key ibuffer-mode-map "\M-a" '(lambda () (interactive) (ibuffer-unmark-all 1)))
+                 ))))
+
 
 
 (provide 'init-ibuffer)
