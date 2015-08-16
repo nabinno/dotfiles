@@ -19,6 +19,12 @@
   (interactive "P")
   (call-interactively
    (if recursive 'origami-toggle-all-nodes 'origami-recursively-toggle-node)))
+(defun origami-cycle-universally ()
+  "Setup org-like origami function universally"
+  (interactive)
+  (progn
+    (let ((recursive (universal-argument)))
+      (origami-cycle recursive))))
 ;; (defun view-mode-hook--origami ()
 ;;   (when (memq major-mode (mapcar 'car origami-parser-alist))
 ;;     (origami-wrap-mode (if view-mode 1 -1))))

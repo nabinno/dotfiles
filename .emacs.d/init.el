@@ -44,6 +44,7 @@
 ;; (require 'init-proxies)
 (require 'init-view)
 (require 'init-dired)
+(require 'init-grep)
 (require 'init-isearch)
 (require 'init-uniquify)
 (require 'init-ibuffer)
