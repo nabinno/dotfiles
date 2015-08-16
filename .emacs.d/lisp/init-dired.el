@@ -3,6 +3,7 @@
 (setq diredp-hide-details-initially-flag nil)
 (setq dired-listing-switches "-AFl --group-directories-first")
 (setq dired-recursive-deletes 'top)
+(put 'dired-find-alternate-file 'disabled nil)
 
 (defun dired-find-file-x (&optional arg)
   "Open each of the marked files, or the file under the point, or
@@ -62,6 +63,24 @@ other window."
   "In dired, mark all"
   (interactive)
   (progn (dired-unmark-all-marks) (dired-toggle-marks)))
+(defun dired-next-buffer ()
+  (interactive)
+  (let ((bread-crumb (buffer-name)))
+    (next-buffer)
+    (while
+        (and
+         (not (string-match-p "dired-mode" (message "%s" major-mode)))
+         (not (equal bread-crumb (buffer-name))))
+      (next-buffer))))
+(defun dired-previous-buffer ()
+  (interactive)
+  (let ((bread-crumb (buffer-name)))
+    (previous-buffer)
+    (while
+        (and
+         (not (string-match-p "dired-mode" (message "%s" major-mode)))
+         (not (equal bread-crumb (buffer-name))))
+      (previous-buffer))))
 
 ;; keybind
 (eval-after-load "dired"
@@ -95,6 +114,8 @@ other window."
                  (define-key dired-mode-map " "    'dired-mark)
                  (define-key dired-mode-map "f"    'isearch-forward)
                  (define-key dired-mode-map "	"  'switch-window)
+                 (define-key dired-mode-map (kbd "M-[ 1 ; 3 C") 'dired-next-buffer)
+                 (define-key dired-mode-map (kbd "M-[ 1 ; 3 D") 'dired-previous-buffer)
                  ))))
 
 
