@@ -60,20 +60,19 @@
 ;; (require-package 'nodejs-repl)
 
 
-;; ;;; Company-tern
-;; (require-package 'company-tern)
-;; (setq company-tern-property-marker "")
-;; (defun company-tern-depth (candidate)
-;;   "Return depth attribute for CANDIDATE. 'nil' entries are treated as 0"
-;;   (let ((depth (get-text-property 0 'depth candidate)))
-;;     (if (eq depth nil) 0 depth)))
-;; (add-hook 'js2-mode-hook 'tern-mode)
-;; (add-to-list 'company-backends '(company-tern :with company-dabbrev-code))
-
+;;; Company-tern
+(require-package 'company-tern)
+(setq company-tern-property-marker "")
+(defun company-tern-depth (candidate)
+  "Return depth attribute for CANDIDATE. 'nil' entries are treated as 0"
+  (let ((depth (get-text-property 0 'depth candidate)))
+    (if (eq depth nil) 0 depth)))
+(add-hook 'js-mode-hook 'tern-mode)
+(add-hook 'js2-mode-hook 'tern-mode)
+(add-to-list 'company-backends '(company-tern :with company-dabbrev-code))
 
 
 ;; Javascript nests {} and () a lot, so I find this helpful
-
 (require-package 'rainbow-delimiters)
 (dolist (hook '(js2-mode-hook js-mode-hook json-mode-hook))
   (add-hook hook 'rainbow-delimiters-mode))

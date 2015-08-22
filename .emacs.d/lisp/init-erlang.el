@@ -6,7 +6,7 @@
 
 ;; (add-to-list 'ac-modes 'erlang-mode)
 
-
+
 ;; Exlixr
 (require-package 'elixir-mode)
 
@@ -19,7 +19,7 @@
   (define-key erlang-mode-map (kbd "M-,") 'alchemist-goto-jump-back))
 (add-hook 'erlang-mode-hook 'custom-erlang-mode-hook)
 
-
+
 ;; Phoenix
 (unless (require 'xinari nil 'noerror)
   (el-get-bundle nabinno/xinari))
