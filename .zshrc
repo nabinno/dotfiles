@@ -405,6 +405,22 @@ function put-dotfiles () {
     cp -pr .emacs.d/init.el ~/.emacs.d/;  wait
     cp -pr .zshrc ~/
 }
+function get-dotfiles-x () {
+    if [ ! -d ~/dotfiles ]; then
+        git clone https://github.com/nabinno/dotfiles; wait
+    fi
+    cd ~/dotfiles
+    get-dotfiles; wait
+}
+function put-dotfiles-x () {
+    if [ ! -d ~/dotfiles ]; then
+        git clone https://github.com/nabinno/dotfiles; wait
+    fi
+    cd ~/dotfiles
+    put-dotfiles; wait
+    cd -
+}
+eval put-dotfiles-x
 
 # ### other ###
 function bkup () { cp -ipr $1 $1.org$(date +%y%m%d) }
