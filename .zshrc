@@ -419,9 +419,10 @@ function put-dotfiles () {
     cp -pr .emacs.d/eshell/alias ~/.emacs.d/eshell/;  wait
     cp -pr .emacs.d/init.el ~/.emacs.d/;  wait
     cp -pr .zshrc ~/; wait
-    cd ${current_pwd}
+    cd ${current_pwd}; wait
+    source ~/.zshrc
 }
-eval put-dotfiles
+alias zp=put-dotfiles
 
 # ### other ###
 function bkup () { cp -ipr $1 $1.org$(date +%y%m%d) }
