@@ -30,7 +30,7 @@
                          tcl-mode-hook
                          yaml-mode
                          ))
-                (add-hook 'prog-mode-hook
+                (add-hook hook
                           (lambda ()
                             (progn (origami-wrap-mode)
                                    (origami-cycle 1)))))
