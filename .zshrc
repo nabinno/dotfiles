@@ -392,35 +392,35 @@ alias gwho='git shortlog -s --'
 
 # ### dotfiles ###
 function get-dotfiles () {
+    cd ~/; wait
+    if [ ! -d ~/dotfiles ]; then
+        git clone https://github.com/nabinno/dotfiles; wait
+    fi
+    cd ~/dotfiles; wait
+    git checkout -- .;  wait
     git pull;  wait
+    rm -rf .emacs.d/lisp/*;  wait
     cp -pr ~/.emacs.d/lisp/* .emacs.d/lisp/;  wait
     cp -pr ~/.emacs.d/eshell/alias .emacs.d/eshell/;  wait
     cp -pr  ~/.emacs.d/init.el .emacs.d/;  wait
     cp -pr ~/.zshrc .
 }
 function put-dotfiles () {
+    eval current_pwd=`pwd`
+    cd ~/
+    if [ ! -d ~/dotfiles ]; then
+        git clone https://github.com/nabinno/dotfiles; wait
+    fi
+    cd ~/dotfiles; wait
+    git checkout -- .;  wait
     git pull;  wait
+    rm -rf ~/.emacs.d/lisp/*;  wait
     cp -pr .emacs.d/lisp/* ~/.emacs.d/lisp/;  wait
     cp -pr .emacs.d/eshell/alias ~/.emacs.d/eshell/;  wait
     cp -pr .emacs.d/init.el ~/.emacs.d/;  wait
     cp -pr .zshrc ~/
 }
-function get-dotfiles-x () {
-    if [ ! -d ~/dotfiles ]; then
-        git clone https://github.com/nabinno/dotfiles; wait
-    fi
-    cd ~/dotfiles
-    get-dotfiles; wait
-}
-function put-dotfiles-x () {
-    if [ ! -d ~/dotfiles ]; then
-        git clone https://github.com/nabinno/dotfiles; wait
-    fi
-    cd ~/dotfiles
-    put-dotfiles; wait
-    cd -
-}
-eval put-dotfiles-x
+eval put-dotfiles
 
 # ### other ###
 function bkup () { cp -ipr $1 $1.org$(date +%y%m%d) }
