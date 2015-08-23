@@ -27,7 +27,6 @@
                          python-mode-hook
                          ruby-mode-hook
                          scheme-mode-hook
-                         shell-mode-hook
                          tcl-mode-hook
                          yaml-mode
                          ))
