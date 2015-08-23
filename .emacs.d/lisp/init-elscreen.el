@@ -1,3 +1,6 @@
+;;; init-elscreen -- elscreen configuration
+;;; Commentary:
+;;; Code:
 (require-package 'elscreen)
 
 (setq elscreen-prefix-key (kbd "M-[ 1 ; 5 q"))
@@ -5,25 +8,19 @@
 (setq elscreen-tab-display-kill-screen nil)
 (setq elscreen-tab-display-control nil)
 (setq elscreen-buffer-to-nickname-alist
-      '(("^dired-mode$" .
-         (lambda ()
-           (format "Dired(%s)" dired-directory)))
-        ("^Info-mode$" .
-         (lambda ()
-           (format "Info(%s)" (file-name-nondirectory Info-current-file))))
-        ("^mew-draft-mode$" .
-         (lambda ()
-           (format "Mew(%s)" (buffer-name (current-buffer)))))
-        ("^mew-" . "Mew")
-        ("^irchat-" . "IRChat")
-        ("^liece-" . "Liece")
-        ("^lookup-" . "Lookup")))
+      '(("^dired-mode$"     . (lambda () (format "Dired(%s)" dired-directory)))
+        ("^Info-mode$"      . (lambda () (format "Info(%s)" (file-name-nondirectory Info-current-file))))
+        ("^mew-draft-mode$" . (lambda () (format "Mew(%s)" (buffer-name (current-buffer)))))
+        ("^mew-"            . "Mew")
+        ("^irchat-"         . "IRChat")
+        ("^liece-"          . "Liece")
+        ("^lookup-"         . "Lookup")))
 (setq elscreen-mode-to-nickname-alist
-      '(("[Ss]hell" . "shell")
-        ("compilation" . "compile")
-        ("-telnet" . "telnet")
-        ("dict" . "OnlineDict")
-                ("*WL:Message*" . "Wanderlust")))
+      '(("[Ss]hell"     . "shell")
+        ("compilation"  . "compile")
+        ("-telnet"      . "telnet")
+        ("dict"         . "OnlineDict")
+        ("*WL:Message*" . "Wanderlust")))
 
 ;; keybind
 (global-set-key (kbd "M-[ 1 ; 5 h") 'elscreen-previous)
@@ -44,7 +41,7 @@
 
 ;;; Elscreen persist
 (require-package 'elscreen-persist)
-(elscreen-persist-mode 1)
+;; (elscreen-persist-mode 1)
 
 
 ;;; Elscreen separate buffer list
@@ -54,3 +51,4 @@
 
 
 (provide 'init-elscreen)
+;;; init-elscreen.el ends here

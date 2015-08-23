@@ -133,6 +133,8 @@
   (require-package 'osx-location))
 (require-package 'regex-tool)
 
+(require 'init-proced)
+
 ;;----------------------------------------------------------------------------
 ;; Allow access from emacsclient
 ;;----------------------------------------------------------------------------

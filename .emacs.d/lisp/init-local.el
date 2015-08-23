@@ -101,7 +101,6 @@
 ;; (global-set-key (kbd "C-x C-h") 'help-command)
 (global-set-key (kbd "C-t") 'quoted-insert)
 (global-set-key (kbd "") 'indent-for-tab-command)
-(global-set-key (kbd "") 'proced)
 (global-unset-key (kbd "C-z"))
 (global-unset-key (kbd "<f2>"))
 
