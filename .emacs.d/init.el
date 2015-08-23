@@ -133,6 +133,7 @@
   (require-package 'osx-location))
 (require-package 'regex-tool)
 
+(require 'init-irc)
 (require 'init-proced)
 
 ;;----------------------------------------------------------------------------
