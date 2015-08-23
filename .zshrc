@@ -418,7 +418,8 @@ function put-dotfiles () {
     cp -pr .emacs.d/lisp/* ~/.emacs.d/lisp/;  wait
     cp -pr .emacs.d/eshell/alias ~/.emacs.d/eshell/;  wait
     cp -pr .emacs.d/init.el ~/.emacs.d/;  wait
-    cp -pr .zshrc ~/
+    cp -pr .zshrc ~/; wait
+    cd ${current_pwd}
 }
 eval put-dotfiles
 
