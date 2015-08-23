@@ -64,7 +64,6 @@
 
 
 ;;; Company-tern
-(require-package 'tern)
 (require-package 'company-tern)
 (setq company-tern-property-marker "")
 (defun company-tern-depth (candidate)

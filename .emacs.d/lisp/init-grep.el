@@ -1,3 +1,6 @@
+;;; init-grep -- grep configuration
+;;; Commentary:
+;;; Code:
 ;;; Ag / The Silver Searcher
 (require-package 'ag)
 (setq ag-highlight-search t)
@@ -57,3 +60,4 @@
 
 
 (provide 'init-grep)
+;;; init-grep.el ends here
