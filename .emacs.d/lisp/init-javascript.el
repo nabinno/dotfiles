@@ -1,3 +1,6 @@
+;;; init-javascript -- javascript configuration
+;;; Commentary:
+;;; Code:
 (require-package 'json-mode)
 (when (>= emacs-major-version 24)
   (require-package 'js2-mode)
@@ -61,15 +64,17 @@
 
 
 ;;; Company-tern
+(require-package 'tern)
 (require-package 'company-tern)
 (setq company-tern-property-marker "")
 (defun company-tern-depth (candidate)
   "Return depth attribute for CANDIDATE. 'nil' entries are treated as 0"
   (let ((depth (get-text-property 0 'depth candidate)))
     (if (eq depth nil) 0 depth)))
-(add-hook 'js-mode-hook 'tern-mode)
-(add-hook 'js2-mode-hook 'tern-mode)
-(add-to-list 'company-backends '(company-tern :with company-dabbrev-code))
+(dolist (hook '(js-mode-hook js2-mode))
+  (add-hook hook '(lambda ()
+                    (tern-mode)
+                    (add-to-list 'company-backends '(company-tern :with company-dabbrev-code)))))
 
 
 ;; Javascript nests {} and () a lot, so I find this helpful
@@ -114,3 +119,4 @@
 
 
 (provide 'init-javascript)
+;;; init-javascript.el ends here

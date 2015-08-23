@@ -1,3 +1,6 @@
+;;; init-auto-compile -- auto-compile configuration
+;;; Commentary:
+;;; Code:
 (require-package 'auto-complete)
 (require 'auto-complete-config)
 (global-auto-complete-mode t)
@@ -67,3 +70,4 @@
 
 
 (provide 'init-auto-complete)
+;;; init-auto-complete.el ends here

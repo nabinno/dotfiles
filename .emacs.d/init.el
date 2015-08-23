@@ -1,5 +1,10 @@
-;;; This file bootstraps the configuration, which is divided into
-;;; a number of other files.
+;;; init.el --- This file bootstraps the configuration
+;;;
+;;; Commentary:
+;;; This file bootstraps the configuration, which is divided into a
+;;; number of other files.
+;;;
+;;; Code:
 
 (let ((minver 23))
   (unless (>= emacs-major-version minver)
@@ -58,6 +63,7 @@
 ;; (require 'init-auto-complete)
 (require 'init-windows)
 (require 'init-other-window)
+;; (require 'init-e2wm)
 (require 'init-elscreen)
 ;; (require 'init-sessions)
 ;; (require 'init-fonts)
@@ -88,6 +94,7 @@
 (require 'init-ruby-mode)
 (require 'init-rails)
 (require 'init-sql)
+;; (require 'init-edbi)
 ;; (require 'init-perl)
 
 ;; (require 'init-java)
@@ -162,8 +169,8 @@
 
 
 (provide 'init)
-
-;; Local Variables:
-;; coding: utf-8
-;; no-byte-compile: t
-;; End:
+;;; Local Variables:
+;;; coding: utf-8
+;;; no-byte-compile: t
+;;;
+;;; init.el ends here

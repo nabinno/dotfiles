@@ -1,6 +1,6 @@
-;;; Basic java setup
-You should have a section marked ";;; Commentary:"
-The first line should be of the form: ";;; package --- Summary"
+;;; init-java.el --- basic java configuration
+;;; Commentary:
+;;; Code:
 (setenv "JAVA_HOME" "/usr/lib/jvm/java-7-openjdk-amd64/")
 
 
@@ -30,3 +30,4 @@ The first line should be of the form: ";;; package --- Summary"
 
 
 (provide 'init-java)
+;;; init-java.el ends here
