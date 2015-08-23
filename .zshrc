@@ -520,3 +520,7 @@ alias U='tar zcvf $1.tar.gz $1'
 alias uz='unzip'
 alias v="cat"
 function t () { \mv (.*~|.*.org*|*.org*|*.tar.gz|*.stackdump|*.tar.gz|*.asx|*.0|*.msi|*.wav|*.doc|*.pdf|$1) .old/ }
+
+if [ -f ~/.zshrc.mine ]; then
+    source ~/.zshrc.mine
+fi
