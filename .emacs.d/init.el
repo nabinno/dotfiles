@@ -95,6 +95,7 @@
 (require 'init-rails)
 (require 'init-sql)
 ;; (require 'init-edbi)
+(require 'init-restclient)
 ;; (require 'init-perl)
 
 ;; (require 'init-java)
