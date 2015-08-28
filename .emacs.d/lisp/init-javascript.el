@@ -116,6 +116,19 @@
     (add-hook 'skewer-mode-hook
               (lambda () (inferior-js-keys-mode -1)))))
 
+
+;;; JSDoc
+(require-package 'js-doc)
+(setq js-doc-mail-address "your email address"
+      js-doc-author (format "your name <%s>" js-doc-mail-address)
+      js-doc-url "url of your website"
+      js-doc-license "license name")
+(add-hook 'js-mode-hook
+          #'(lambda ()
+              (define-key js-mode-map (kbd "C-c i") 'js-doc-insert-function-doc)
+              (define-key js-mode-map (kbd "@") 'js-doc-insert-tag)))
+
+
 
 (provide 'init-javascript)
 ;;; init-javascript.el ends here
