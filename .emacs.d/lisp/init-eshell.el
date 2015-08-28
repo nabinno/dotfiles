@@ -96,14 +96,14 @@
 ;; (setq shell-pop-window-height 30)
 
 
-;; Tramp
+;;; Tramp
 (require 'tramp)
 (setq tramp-default-method "ssh")
 (setq tramp-debug-buffer t)
 (setq tramp-completion-without-shell-p t)
 
 
-;; Zsh
+;;; Zsh
 (defun skt:shell ()
   (or (executable-find "zsh")
       (executable-find "cmdproxy")

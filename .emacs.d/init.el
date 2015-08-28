@@ -178,3 +178,4 @@
 ;;; no-byte-compile: t
 ;;;
 ;;; init.el ends here
+(put 'erase-buffer 'disabled nil)
