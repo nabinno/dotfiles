@@ -1,3 +1,6 @@
+;;; init-erlang --- erlang configuration
+;;; Commentary:
+;;; Code:
 (ignore-errors
   (require-package 'erlang))
 
@@ -7,9 +10,10 @@
 ;; (add-to-list 'ac-modes 'erlang-mode)
 
 
-;; Exlixr
+;;; Exlixr
 (require-package 'elixir-mode)
 
+;; alchemist
 (el-get-bundle tonini/alchemist.el)
 (setq alchemist-key-command-prefix (kbd "C-c ,")) ;; default: (kbd "C-c a")
 
@@ -18,9 +22,10 @@
 (defun custom-erlang-mode-hook ()
   (define-key erlang-mode-map (kbd "M-,") 'alchemist-goto-jump-back))
 (add-hook 'erlang-mode-hook 'custom-erlang-mode-hook)
+(add-hook 'elixir-mode-hook 'alchemist-mode)
 
 
-;; Phoenix
+;;; Phoenix
 (unless (require 'xinari nil 'noerror)
   (el-get-bundle nabinno/xinari))
 
@@ -52,3 +57,4 @@
 
 
 (provide 'init-erlang)
+;;; init-erlang.el ends here
