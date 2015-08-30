@@ -1,5 +1,7 @@
+;;; init-yasnippet --- yasnippet configuration
+;;; Commentary:
+;;; COde:
 (require-package 'yasnippet)
-
 
 (yas-global-mode 1)
 ;; (yas-load-directory "~/.emacs.d/site-lisp/yasnippets-rails/rails-snippets")
@@ -17,3 +19,4 @@
 
 
 (provide 'init-yasnippet)
+;;; init-yasnippet.el ends here

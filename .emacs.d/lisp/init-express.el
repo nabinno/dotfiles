@@ -1,3 +1,6 @@
+;;; init-express --- express configuration
+;;; Commentary:
+;;; Code:
 (unless (require 'jinari nil 'noerror)
   (el-get-bundle nabinno/jinari))
 
@@ -126,6 +129,11 @@
 (add-auto-mode 'jade-mode "\\.tag\\'")
 
 
+;;; AngularJS
+(require-package 'angularjs-mode)
+(require-package 'angular-snippets)
+
+
 ;; ;;; Unit Testing
 ;; ;; Karma
 ;; (require-package 'karma)
@@ -161,3 +169,4 @@
 
 
 (provide 'init-express)
+;;; init-express.el ends here
