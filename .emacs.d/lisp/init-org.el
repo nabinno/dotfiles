@@ -1,3 +1,6 @@
+;;; init-org --- org configuration
+;;; Commentary:
+;;; Code:
 (when (< emacs-major-version 24)
   (require-package 'org))
 (require-package 'org-fstree)
@@ -31,6 +34,16 @@
 (setq org-todo-keywords
       (quote ((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d!/!)")
               (sequence "WAITING(w@/!)" "SOMEDAY(S)" "|" "CANCELLED(c@/!)"))))
+
+
+;;; Org babel
+;; plantuml
+(setq org-plantuml-jar-path "~/.local/bin/plantuml.jar")
+(defun org-mode-init ()
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   (add-to-list 'org-babel-load-languages '(plantuml . t))))
+(add-hook 'org-mode-hook 'org-mode-init)
 
 
 ;;; Org clock
@@ -178,4 +191,7 @@
                     ))))
 
 
+
+
 (provide 'init-org)
+;;; init-org.el ends here

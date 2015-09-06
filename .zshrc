@@ -226,6 +226,13 @@ if [ "$TERM" = "screen" ]; then
     chpwd
 fi
 
+# plantuml
+# --------
+if [ ! -f ~/.local/bin/plantuml.jar ]; then
+    wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
+fi
+alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng'
+
 
 
 # ALIAS
@@ -401,6 +408,7 @@ function get-dotfiles () {
     git pull;  wait
     rm -rf .emacs.d/lisp/*;  wait
     cp -pr ~/.emacs.d/lisp/* .emacs.d/lisp/;  wait
+    cp -pr ~/.emacs.d/bin/* .emacs.d/bin/;  wait
     cp -pr ~/.emacs.d/eshell/alias .emacs.d/eshell/;  wait
     cp -pr  ~/.emacs.d/init.el .emacs.d/;  wait
     cp -pr ~/.zshrc .
@@ -416,6 +424,7 @@ function put-dotfiles () {
     git pull;  wait
     rm -rf ~/.emacs.d/lisp/*;  wait
     cp -pr .emacs.d/lisp/* ~/.emacs.d/lisp/;  wait
+    cp -pr .emacs.d/bin/* ~/.emacs.d/bin/;  wait
     cp -pr .emacs.d/eshell/alias ~/.emacs.d/eshell/;  wait
     cp -pr .emacs.d/init.el ~/.emacs.d/;  wait
     cp -pr .zshrc ~/; wait
