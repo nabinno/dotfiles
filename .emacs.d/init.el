@@ -99,7 +99,7 @@
 (require 'init-restclient)
 ;; (require 'init-perl)
 
-;; (require 'init-java)
+(require 'init-java)
 ;; (require 'init-scala)
 
 (require 'init-analytics)
