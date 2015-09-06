@@ -86,6 +86,7 @@
 (require 'init-express)
 (require 'init-php)
 (require 'init-org)
+(require 'init-plantuml)
 ;; (require 'init-nxml)
 (require 'init-html)
 (require 'init-css)
