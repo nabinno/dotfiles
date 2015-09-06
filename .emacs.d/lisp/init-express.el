@@ -114,7 +114,7 @@
                     )))
 
 (defun gulp (arg)
-  "JS task runner by using gulp tool"
+  "Gulp task as ARG."
   (interactive "stask name: ")
   (progn
     (setq buffer (get-buffer-create (concat "*gulp<" arg ">*")))
