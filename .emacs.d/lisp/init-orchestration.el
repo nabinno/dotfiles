@@ -1,24 +1,30 @@
-;;; Terraform
-(require-package 'terraform-mode)
+;;; init-orchestration --- orchestration configuration
+;;; Commentary:
+;;; Code:
 
-
-;;; Vagrant
+;;; OS level virtualization
+;; vagrant
 (require-package 'vagrant)
 
-
-;;; Docker
+;; docker
 (require-package 'docker)
 (require-package 'docker-tramp)
 ;; (require-package 'docker-file-mode)
 (require-package 'marcopolo)
 
 
-;; ;;; Amazon EC2
+;;; Platform service
+;; terraform
+(require-package 'terraform-mode)
+(setq terraform-indent-level 2)
+
+;; ;; amazon ec2
 ;; (require-package 'helm-aws)
 
-
-;;; Heroku
+;; heroku
 (require-package 'heroku)
 
 
+
 (provide 'init-orchestration)
+;;; init-orchestration.el ends here
