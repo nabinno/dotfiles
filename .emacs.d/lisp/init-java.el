@@ -22,8 +22,8 @@
   (add-hook 'malabar-mode-hook 'subword-mode))
 (setq malabar-groovy-java-options '("-Duser.language=en"))
 
-;; jdee
-(require-package 'jdee)
+;; ;; jdee
+;; (require-package 'jdee)
 
 
 ;;; Maven
