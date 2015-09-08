@@ -33,25 +33,25 @@
   (interactive "stask name: ")
   (progn
     (setq buffer (get-buffer-create (concat "*aws<ec2>*")))
-    (apply 'make-comint-in-buffer "aws-ec2" buffer "~/.emcs.d/bin/aws_ec2" nil (list arg))))
+    (apply 'make-comint-in-buffer "aws-ec2" buffer "~/.emacs.d/bin/aws_ec2" nil (list arg))))
 (defun aws-ecs (arg)
   "Amazon ECS task with ARG."
   (interactive "stask name: ")
   (progn
     (setq buffer (get-buffer-create (concat "*aws<ecs>*")))
-    (apply 'make-comint-in-buffer "aws-ecs" buffer "~/.emcs.d/bin/aws_ecs" nil (list arg))))
+    (apply 'make-comint-in-buffer "aws-ecs" buffer "~/.emacs.d/bin/aws_ecs" nil (list arg))))
 (defun aws-s3 (arg)
   "Amazon S3 task with ARG."
   (interactive "stask name: ")
   (progn
     (setq buffer (get-buffer-create (concat "*aws<s3>*")))
-    (apply 'make-comint-in-buffer "aws-s3" buffer "~/.emcs.d/bin/aws_s3" nil (list arg))))
+    (apply 'make-comint-in-buffer "aws-s3" buffer "~/.emacs.d/bin/aws_s3" nil (list arg))))
 (defun aws-route53 (arg)
   "Amazon Route53 task with ARG."
   (interactive "stask name: ")
   (progn
     (setq buffer (get-buffer-create (concat "*aws<route53>*")))
-    (apply 'make-comint-in-buffer "aws-route53" buffer "~/.emcs.d/bin/aws_route53" nil (list arg))))
+    (apply 'make-comint-in-buffer "aws-route53" buffer "~/.emacs.d/bin/aws_route53" nil (list arg))))
 
 
 ;;; Heroku
