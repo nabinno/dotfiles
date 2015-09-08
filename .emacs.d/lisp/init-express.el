@@ -114,7 +114,7 @@
                     )))
 
 (defun gulp (arg)
-  "Gulp task as ARG."
+  "Gulp task with ARG."
   (interactive "stask name: ")
   (progn
     (setq buffer (get-buffer-create (concat "*gulp<" arg ">*")))
