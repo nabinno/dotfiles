@@ -22,7 +22,7 @@
   (interactive "stask name: ")
   (progn
     (setq buffer (get-buffer-create (concat "*terraform*")))
-    (apply 'make-comint-in-buffer "terraform" buffer "terraform" nil (list arg))))
+    (apply 'make-comint-in-buffer "terraform" buffer "~/.emacs.d/bin/terraform" nil (list arg))))
 
 
 ;;; AWS
