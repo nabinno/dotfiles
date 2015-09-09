@@ -28,11 +28,13 @@
 (fset 'terraform-plan                  "xterraformplan")
 (fset 'terraform-plan--module-depth--1 "xterraformplan -module-depth=-1")
 (fset 'terraform-apply                 "xterraformapply")
+(fset 'terraform-get                   "xterraformget")
 (fset 'terraform-switch-buffer         "xido-switch-buffer*terraform*")
 (global-set-key (kbd "\C-cts") 'terraform-show)
 (global-set-key (kbd "\C-ctp") 'terraform-plan)
 (global-set-key (kbd "\C-ctP") 'terraform-plan--module-depth--1)
 (global-set-key (kbd "\C-cta") 'terraform-apply)
+(global-set-key (kbd "\C-ctg") 'terraform-get)
 (global-set-key (kbd "\C-ctt") 'terraform-switch-buffer)
 (global-set-key (kbd "")   'terraform-switch-buffer)
 
