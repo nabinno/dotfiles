@@ -17,17 +17,30 @@
 (require-package 'terraform-mode)
 (setq terraform-indent-level 2)
 
+;; terraform command interpreter in a buffer
 (defun terraform (arg)
   "Terraform task with ARG."
   (interactive "stask name: ")
   (progn
     (setq buffer (get-buffer-create (concat "*terraform*")))
     (apply 'make-comint-in-buffer "terraform" buffer "~/.emacs.d/bin/terraform" nil (list arg))))
+(fset 'terraform-show                  "xterraformshow")
+(fset 'terraform-plan                  "xterraformplan")
+(fset 'terraform-plan--module-depth--1 "xterraformplan -module-depth=-1")
+(fset 'terraform-apply                 "xterraformapply")
+(fset 'terraform-switch-buffer         "xido-switch-buffer*terraform*")
+(global-set-key (kbd "\C-cts") 'terraform-show)
+(global-set-key (kbd "\C-ctp") 'terraform-plan)
+(global-set-key (kbd "\C-ctP") 'terraform-plan--module-depth--1)
+(global-set-key (kbd "\C-cta") 'terraform-apply)
+(global-set-key (kbd "\C-ctt") 'terraform-switch-buffer)
+(global-set-key (kbd "")   'terraform-switch-buffer)
 
 
 ;;; AWS
 (require-package 'helm-aws)
 
+;; aws command interpreter in a buffer
 (defun aws-ec2 (arg)
   "Amazon EC2 task with ARG."
   (interactive "stask name: ")
