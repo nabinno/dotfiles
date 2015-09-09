@@ -25,12 +25,14 @@
     (setq buffer (get-buffer-create (concat "*terraform*")))
     (apply 'make-comint-in-buffer "terraform" buffer "~/.emacs.d/bin/terraform" nil (list arg))))
 (fset 'terraform-show                  "xterraformshow")
+(fset 'terraform-show--module-depth--1 "xterraformshow -module-depth=-1")
 (fset 'terraform-plan                  "xterraformplan")
 (fset 'terraform-plan--module-depth--1 "xterraformplan -module-depth=-1")
 (fset 'terraform-apply                 "xterraformapply")
 (fset 'terraform-get                   "xterraformget")
 (fset 'terraform-switch-buffer         "xido-switch-buffer*terraform*")
 (global-set-key (kbd "\C-cts") 'terraform-show)
+(global-set-key (kbd "\C-ctS") 'terraform-show--module-depth--1)
 (global-set-key (kbd "\C-ctp") 'terraform-plan)
 (global-set-key (kbd "\C-ctP") 'terraform-plan--module-depth--1)
 (global-set-key (kbd "\C-cta") 'terraform-apply)
