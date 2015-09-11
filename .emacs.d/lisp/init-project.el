@@ -75,7 +75,7 @@
 
 ;;; Task management
 ;; todo hilight
-(dolist (mode '(ruby js js2 cperl elixir erlang python jade haml emacs-lisp ielm))
+(dolist (mode '(ruby js js2 terraform cperl elixir erlang python jade haml emacs-lisp ielm))
   (progn
     (font-lock-add-keywords
      (intern (format "%s-mode" mode))
