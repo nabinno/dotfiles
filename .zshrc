@@ -360,6 +360,9 @@ autoload -Uz zmv
 unset LSCOLORS
 zstyle ':completion:*' use-cache true
 case "${TERM}" in
+    screen.xterm)
+	export TERM=screen
+	;;
     xterm)
 	export TERM=xterm-color
 	;;
@@ -622,12 +625,14 @@ alias gdfc='git diff --cached'
 alias gexport='git "!sh -c \"git checkout-index -a -f --prefix=$1/\" -"'
 alias ghist='git log --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --'
 function ghclone () { git clone https://${2}github.com/${1}.git }
-alias gl='git log $1 --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --'
+function git-log () { git log ${1} --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit -- }
+alias gl='git-log'
 alias glast='git diff HEAD~1..HEAD'
 alias glf='git log --decorate=full --graph --pretty=full'
 alias glg='git log --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --'
 alias gpick='git cherry-pick'
 alias gp='git push -v'
+alias gpom='git push -v -u origin master'
 alias gpr='git pull --rebase'
 alias gs='git status -sb'
 alias gsearch=git "!sh -c \'git rev-list --all | grep ^$1 | while read commit; do git --no-pager log -n1 --pretty=format:\"%H %ci %an %s%n\" $commit; done\' -"
