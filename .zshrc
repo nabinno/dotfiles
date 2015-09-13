@@ -3,15 +3,13 @@
 # environment variable
 # --------------------
 [ -z "$PS1" ] && return
-stty -ixon
-stty start undef
-stty stop undef
-function parse_git_dirty {
-  git diff --no-ext-diff --quiet --exit-code &> /dev/null || echo "*"
-}
-function parse_git_branch {
-    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty))/"
-}
+case "${OSTYPE}" in
+    freebsd*|darwin*|linux*)
+        stty -ixon
+        stty start undef
+        stty stop undef
+        ;;
+esac
 # export EDITOR=/usr/local/bin/vi
 # export LANG=ja_JP.UTF-8
 # export LANG=ja_JP.eucJP
@@ -187,19 +185,17 @@ function get-java () {
             ;;
     esac
 }
-if ! type -p java > /dev/null; then
-    get-java
-else
-    REQUIRED_JAVA_VERSION=$(echo $REQUIRED_JAVA_VERSION | sed 's/\(.*\..*\)\..*/\1/')
-    CURRENT_JAVA_VERSION=$(java -version 2>&1 | head -n 1 | cut -d\" -f 2 | sed 's/\(.*\..*\)\..*/\1/')
-    if [[ $REQUIRED_JAVA_VERSION > $CURRENT_JAVA_VERSION ]]; then get-java; fi
-fi
-if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ]; then
-    wget http://downloads.typesafe.com/play/$REQUIRED_PLAY_VERSION/play-$REQUIRED_PLAY_VERSION.zip
-    unzip play-$REQUIRED_PLAY_VERSION.zip
-    mv play-$REQUIRED_PLAY_VERSION ~/.local/
-    rm -fr play-$REQUIRED_PLAY_VERSION.zip
-    wait
+function get-play () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            wget http://downloads.typesafe.com/play/$REQUIRED_PLAY_VERSION/play-$REQUIRED_PLAY_VERSION.zip
+            unzip play-$REQUIRED_PLAY_VERSION.zip
+            mv play-$REQUIRED_PLAY_VERSION ~/.local/
+            rm -fr play-$REQUIRED_PLAY_VERSION.zip
+            ;;
+    esac
+}
+function get-sbt () {
     case "${OSTYPE}" in
         freebsd*|darwin*)
             sudo port install sbt
@@ -219,6 +215,17 @@ if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ]; then
             esac
             ;;
     esac
+}
+if ! type -p java > /dev/null; then
+    get-java
+else
+    REQUIRED_JAVA_VERSION=$(echo $REQUIRED_JAVA_VERSION | sed 's/\(.*\..*\)\..*/\1/')
+    CURRENT_JAVA_VERSION=$(java -version 2>&1 | head -n 1 | cut -d\" -f 2 | sed 's/\(.*\..*\)\..*/\1/')
+    if [[ $REQUIRED_JAVA_VERSION > $CURRENT_JAVA_VERSION ]]; then get-java; fi
+fi
+if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ]; then
+    get-play
+    get-sbt
 fi
 
 
@@ -638,6 +645,12 @@ alias gst='git status -sb'
 alias gswitch='git checkout'
 alias gvlog='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen - %cD (%cr) %C(bold blue)<%an>%Creset%n" --abbrev-commit --date=relative -p ; echo ""'
 alias gwho='git shortlog -s --'
+function parse_git_dirty {
+    git diff --no-ext-diff --quiet --exit-code &> /dev/null || echo "*"
+}
+function parse_git_branch {
+    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty))/"
+}
 
 # ### dotfiles ###
 function get-dotfiles () {
@@ -654,7 +667,11 @@ function get-dotfiles () {
     cp -pr ~/.emacs.d/eshell/alias .emacs.d/eshell/;  wait
     cp -pr  ~/.emacs.d/init.el .emacs.d/;  wait
     cp -pr ~/.zshrc .
-    cp -pr ~/.screenrc .
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            cp -pr ~/.screenrc .
+            ;;
+    esac
 }
 alias zg=get-dotfiles
 function put-dotfiles () {
