@@ -1,15 +1,55 @@
 # BASIC SETTINGS
 # ===============
-# environment variable
-# --------------------
-[ -z "$PS1" ] && return
+# os detect
+# ---------
 case "${OSTYPE}" in
     freebsd*|darwin*|linux*)
+        [ -z "$PS1" ] && return
         stty -ixon
         stty start undef
         stty stop undef
+        OS=`uname -s`
+        REV=`uname -r`
+        MACH=`uname -m`
+        function GetVersionFromFile () {
+            VERSION=`cat $1 | tr "\n" ' ' | sed s/.*VERSION.*=\ // `
+        }
+        if [ "${OS}" = "SunOS" ] ; then
+            OS=Solaris
+            ARCH=`uname -p`
+            OSSTR="${OS} ${REV}(${ARCH} `uname -v`)"
+        elif [ "${OS}" = "AIX" ] ; then
+            OSSTR="${OS} `oslevel` (`oslevel -r`)"
+        elif [ "${OS}" = "Linux" ] ; then
+            KERNEL=`uname -r`
+            if [ -f /etc/redhat-release ] ; then
+                DIST='RedHat'
+                PSUEDONAME=`cat /etc/redhat-release | sed s/.*\(// | sed s/\)//`
+                REV=`cat /etc/redhat-release | sed s/.*release\ // | sed s/\ .*//`
+            elif [ -f /etc/SUSE-release ] ; then
+                DIST="SUSE"
+                DIST2=`cat /etc/SUSE-release | tr "\n" ' '| sed s/VERSION.*//`
+                REV=`cat /etc/SUSE-release | tr "\n" ' ' | sed s/.*=\ //`
+            elif [ -f /etc/mandrake-release ] ; then
+                DIST='Mandrake'
+                PSUEDONAME=`cat /etc/mandrake-release | sed s/.*\(// | sed s/\)//`
+                REV=`cat /etc/mandrake-release | sed s/.*release\ // | sed s/\ .*//`
+            elif [ -f /etc/debian_version ] ; then
+                DIST="Debian"
+                DIST2="Debian `cat /etc/debian_version`"
+                REV=""
+            fi
+            if [ -f /etc/UnitedLinux-release ] ; then
+                DIST="${DIST}[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
+            fi
+            OSSTR="${OS} ${DIST} ${REV}(${PSUEDONAME} ${KERNEL} ${MACH})"
+        fi
         ;;
 esac
+
+
+# environment variable
+# --------------------
 # export EDITOR=/usr/local/bin/vi
 # export LANG=ja_JP.UTF-8
 # export LANG=ja_JP.eucJP
@@ -34,46 +74,6 @@ export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
 export PATH="$HOME/.parts/packages/python2/2.7.6/bin:$PATH"
 export PATH="$HOME/local/perl-5.18/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
-
-
-# os detect
-# ---------
-OS=`uname -s`
-REV=`uname -r`
-MACH=`uname -m`
-function GetVersionFromFile () {
-    VERSION=`cat $1 | tr "\n" ' ' | sed s/.*VERSION.*=\ // `
-}
-if [ "${OS}" = "SunOS" ] ; then
-    OS=Solaris
-    ARCH=`uname -p`
-    OSSTR="${OS} ${REV}(${ARCH} `uname -v`)"
-elif [ "${OS}" = "AIX" ] ; then
-    OSSTR="${OS} `oslevel` (`oslevel -r`)"
-elif [ "${OS}" = "Linux" ] ; then
-    KERNEL=`uname -r`
-    if [ -f /etc/redhat-release ] ; then
-        DIST='RedHat'
-        PSUEDONAME=`cat /etc/redhat-release | sed s/.*\(// | sed s/\)//`
-        REV=`cat /etc/redhat-release | sed s/.*release\ // | sed s/\ .*//`
-    elif [ -f /etc/SUSE-release ] ; then
-        DIST="SUSE"
-        DIST2=`cat /etc/SUSE-release | tr "\n" ' '| sed s/VERSION.*//`
-        REV=`cat /etc/SUSE-release | tr "\n" ' ' | sed s/.*=\ //`
-    elif [ -f /etc/mandrake-release ] ; then
-        DIST='Mandrake'
-        PSUEDONAME=`cat /etc/mandrake-release | sed s/.*\(// | sed s/\)//`
-        REV=`cat /etc/mandrake-release | sed s/.*release\ // | sed s/\ .*//`
-    elif [ -f /etc/debian_version ] ; then
-        DIST="Debian"
-        DIST2="Debian `cat /etc/debian_version`"
-        REV=""
-    fi
-    if [ -f /etc/UnitedLinux-release ] ; then
-        DIST="${DIST}[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
-    fi
-    OSSTR="${OS} ${DIST} ${REV}(${PSUEDONAME} ${KERNEL} ${MACH})"
-fi
 
 
 # autoparts
@@ -265,20 +265,20 @@ export node='NODE_NO_READLINE=1 node'
 REQUIRED_EMACS_VERSION=24.5
 function get-emacs () {
     case "${OSTYPE}" in
-        linux*)
+        freebsd*|darwin*|linux*)
             case "${DIST}" in
                 Debian)
                     sudo apt-get install -y build-essential
                     sudo apt-get build-dep emacs
                 ;;
             esac
+            current_pwd=`pwd`
+            wget http://core.ring.gr.jp/pub/GNU/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
+            tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
+            cd emacs-$REQUIRED_EMACS_VERSION; ./configure --with-xpm=no --with-gif=no; make; yes | sudo make install;  wait
+            cd $current_pwd; rm -fr emacs-$REQUIRED_EMACS_VERSION*
             ;;
     esac
-    current_pwd=`pwd`
-    wget http://core.ring.gr.jp/pub/GNU/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
-    tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
-    cd emacs-$REQUIRED_EMACS_VERSION; ./configure --with-xpm=no --with-gif=no; make; yes | sudo make install;  wait
-    cd $current_pwd; rm -fr emacs-$REQUIRED_EMACS_VERSION*
 }
 if ! type -p emacs > /dev/null; then
     get-emacs
