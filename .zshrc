@@ -108,6 +108,7 @@ case "${OSTYPE}" in
                 http-server \
                 less \
                 node-plantuml \
+                phantomjs \
                 requirejs
             gem install \
                 rails
@@ -125,6 +126,7 @@ case "${OSTYPE}" in
                 http-server \
                 less \
                 node-plantuml \
+                phantomjs \
                 requirejs
         fi
         if ! type -p gem > /dev/null; then
@@ -136,7 +138,12 @@ case "${OSTYPE}" in
             parts install pip
             pip install -U \
                 awscli \
-                docker-compose
+                docker-compose \
+                ipython \
+                pandas \
+                pulp \
+                simpy \
+                boto
         fi
 	;;
 esac
@@ -173,8 +180,8 @@ function get-java () {
                     export JAVA_HOME=/usr/lib/jvm/jre-$REQUIRED_JAVA_VERSION-openjdk.$MACH
                     ;;
                 Debian)
+                    sudo apt-get update
                     sudo apt-get install -y openjdk-7-jre
-                    sudo apt-get install -y icedtea-plugin
                     ;;
             esac
             ;;
@@ -443,23 +450,15 @@ fi
 
 # plantuml
 # --------
-if ! type -p puml > /dev/null; then
-    case "${OSTYPE}" in
-        freebsd*|darwin*|linux*)
-            if ! type -p puml > /dev/null; then npm install node-plantuml; fi
-            ;;
-    esac
-fi
-if ! type -p plantuml > /dev/null; then
-    case "${OSTYPE}" in
-        freebsd*|darwin*|linux*)
-            if [ ! -f ~/.local/bin/plantuml.jar ]; then
-                wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
-            fi
+case "${OSTYPE}" in
+    freebsd*|darwin*|linux*)
+        if ! type -p puml > /dev/null; then npm install -g node-plantuml; fi
+        if ! which plantuml > /dev/null; then
+            wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
             alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng'
-	    ;;
-    esac
-fi
+        fi
+        ;;
+esac
 
 
 # docker
