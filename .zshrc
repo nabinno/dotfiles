@@ -10,7 +10,7 @@ function parse_git_dirty {
   git diff --no-ext-diff --quiet --exit-code &> /dev/null || echo "*"
 }
 function parse_git_branch {
-  git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty))/"
+    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty))/"
 }
 # export EDITOR=/usr/local/bin/vi
 # export LANG=ja_JP.UTF-8
@@ -29,22 +29,205 @@ export LC_MESSAGES=C
 export MAILPATH=$HOME/MailBox/postmaster/maildir
 export PATH=$HOME/bin:$HOME/local/bin:$PATH
 export PATH="$HOME/.parts/autoparts/bin:$PATH"
+export PATH="$HOME/.jenv/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.cask/bin:$PATH"
 export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
 export PATH="$HOME/.parts/packages/python2/2.7.6/bin:$PATH"
 export PATH="$HOME/local/perl-5.18/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
-eval "$(parts env)"
 
-### java ###
-export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
-export CLASSPATH=.:$JAVA_HOME/jre/lib:$JAVA_HOME/lib:$JAVA_HOME/lib/tools.jar
-export PLAY_HOME=/usr/local/play-2.2.3
-export PATH="$JAVA_HOME/bin:$PATH"
+
+# os detect
+# ---------
+OS=`uname -s`
+REV=`uname -r`
+MACH=`uname -m`
+function GetVersionFromFile () {
+    VERSION=`cat $1 | tr "\n" ' ' | sed s/.*VERSION.*=\ // `
+}
+if [ "${OS}" = "SunOS" ] ; then
+    OS=Solaris
+    ARCH=`uname -p`
+    OSSTR="${OS} ${REV}(${ARCH} `uname -v`)"
+elif [ "${OS}" = "AIX" ] ; then
+    OSSTR="${OS} `oslevel` (`oslevel -r`)"
+elif [ "${OS}" = "Linux" ] ; then
+    KERNEL=`uname -r`
+    if [ -f /etc/redhat-release ] ; then
+        DIST='RedHat'
+        PSUEDONAME=`cat /etc/redhat-release | sed s/.*\(// | sed s/\)//`
+        REV=`cat /etc/redhat-release | sed s/.*release\ // | sed s/\ .*//`
+    elif [ -f /etc/SUSE-release ] ; then
+        DIST="SUSE"
+        DIST2=`cat /etc/SUSE-release | tr "\n" ' '| sed s/VERSION.*//`
+        REV=`cat /etc/SUSE-release | tr "\n" ' ' | sed s/.*=\ //`
+    elif [ -f /etc/mandrake-release ] ; then
+        DIST='Mandrake'
+        PSUEDONAME=`cat /etc/mandrake-release | sed s/.*\(// | sed s/\)//`
+        REV=`cat /etc/mandrake-release | sed s/.*release\ // | sed s/\ .*//`
+    elif [ -f /etc/debian_version ] ; then
+        DIST="Debian"
+        DIST2="Debian `cat /etc/debian_version`"
+        REV=""
+    fi
+    if [ -f /etc/UnitedLinux-release ] ; then
+        DIST="${DIST}[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
+    fi
+    OSSTR="${OS} ${DIST} ${REV}(${PSUEDONAME} ${KERNEL} ${MACH})"
+fi
+
+
+# autoparts
+# ---------
+case "${OSTYPE}" in
+    freebsd*|darwin*|linux*)
+        if ! type -p parts > /dev/null; then
+            ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
+            exec $SHELL -l
+            parts install \
+                  chruby \
+                  ctags \
+                  elixir \
+                  erlang \
+                  go \
+                  heroku_toolbelt \
+                  maven \
+                  nodejs \
+                  phantomjs \
+                  pip \
+                  ruby2.2 \
+                  the_silver_searcher \
+                  zsh \
+                  vim \
+                  tree
+            npm install -g \
+                bower \
+                grunt-cli \
+                gulp \
+                http-server \
+                less \
+                node-plantuml \
+                requirejs
+            gem install \
+                rails
+            pip install -U \
+                awscli \
+                docker-compose
+        fi
+        eval "$(parts env)"
+        if ! type -p npm > /dev/null; then
+            parts install npm
+            npm install -g \
+                bower \
+                grunt-cli \
+                gulp \
+                http-server \
+                less \
+                node-plantuml \
+                requirejs
+        fi
+        if ! type -p gem > /dev/null; then
+            parts install gem
+            gem install \
+                rails
+        fi
+        if ! type -p pip > /dev/null; then
+            parts install pip
+            pip install -U \
+                awscli \
+                docker-compose
+        fi
+	;;
+esac
+
+
+# local
+# -----
+if [ ! -d ~/.local ]; then mkdir -p ~/.local/bin; fi
+
+
+# java
+# ----
+REQUIRED_JAVA_VERSION=1.7.0
+REQUIRED_PLAY_VERSION=2.2.3
+export PLAY_HOME=/usr/local/play-$REQUIRED_PLAY_VERSION
 export PATH="$PLAY_HOME:$PATH"
+case "${OSTYPE}" in
+    freebsd*|darwin*|linux*)
+        if [ ! -d ~/.jenv ]; then
+            git clone https://github.com/gcuisinier/jenv.git ~/.jenv
+            eval "$(jenv init -)"
+        fi
+        ;;
+esac
+function get-java () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*)
+            sudo pkg install openjdk
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat)
+                    sudo yum install java-$REQUIRED_JAVA_VERSION-openjdk
+                    export JAVA_HOME=/usr/lib/jvm/jre-$REQUIRED_JAVA_VERSION-openjdk.$MACH
+                    ;;
+                Debian)
+                    sudo apt-get install openjdk-7-jre
+                    sudo apt-get install icedtea-plugin
+                    ;;
+            esac
+            ;;
+    esac
+}
+if ! type -p java > /dev/null; then
+    get-java
+else
+    REQUIRED_JAVA_VERSION=$(echo $REQUIRED_JAVA_VERSION | sed 's/\(.*\..*\)\..*/\1/')
+    CURRENT_JAVA_VERSION=$(java -version 2>&1 | head -n 1 | cut -d\" -f 2 | sed 's/\(.*\..*\)\..*/\1/')
+    if [[ $REQUIRED_JAVA_VERSION > $CURRENT_JAVA_VERSION ]]; then get-java; fi
+fi
+if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ]; then
+    wget http://downloads.typesafe.com/play/$REQUIRED_PLAY_VERSION/play-$REQUIRED_PLAY_VERSION.zip
+    unzip play-$REQUIRED_PLAY_VERSION.zip
+    mv play-$REQUIRED_PLAY_VERSION ~/.local/
+    rm -fr play-$REQUIRED_PLAY_VERSION.zip
+    wait
+    case "${OSTYPE}" in
+        freebsd*|darwin*)
+            sudo port install sbt
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat)
+                    curl https://bintray.com/sbt/rpm/rpm | sudo tee /etc/yum.repos.d/bintray-sbt-rpm.repo
+                    sudo yum install sbt
+                    ;;
+                Debian)
+                    echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+                    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823
+                    sudo apt-get update
+                    sudo apt-get install sbt
+                    ;;
+            esac
+            ;;
+    esac
+fi
 
-# ### perl ###
+
+# perl
+# ----
+case "${OSTYPE}" in
+    freebsd*|darwin*|linux*)
+        if [ ! -d ~/.local/xbuild ]; then
+            git clone https://github.com/tagomoris/xbuild.git ~/.local/xbuild
+        fi
+        if [ ! -d ~/.local/perl-5.18 ]; then
+            ~/.local/xbuild/perl-install 5.18.2 ~/.local/perl-5.18
+        fi
+        alias cpanm='~/.local/perl-5.18/bin/cpanm'
+        ;;
+esac
 # eval $(perl -I$HOME/local/lib/perl5 -Mlocal::lib=$HOME/local)
 # export PKG_DBDIR=$HOME/local/var/db/pkg
 # export PORT_DBDIR=$HOME/local/var/db/pkg
@@ -57,8 +240,28 @@ export PATH="$PLAY_HOME:$PATH"
 ## export PERL_CPANM_OPT="-l ~/local --mirror http://ftp.funet.fi/pub/languages/perl/CPAN/"
 # export PERL_CPANM_OPT="-l ~/local --mirror ~/.cpan/minicpan/"
 
-# ### javascript ###
+
+# javascript
+# ----------
 export node='NODE_NO_READLINE=1 node'
+
+
+# emacs
+# -----
+REQUIRED_EMACS_VERSION=24.5
+function get-emacs () {
+    current_pwd=`pwd`
+    wget http://core.ring.gr.jp/pub/GNU/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
+    tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
+    cd emacs-$REQUIRED_EMACS_VERSION; ./configure --with-xpm=no --with-gif=no; make; make install;  wait
+    cd $current_pwd; rm -fr emacs-$REQUIRED_EMACS_VERSION*
+}
+if ! type -p emacs > /dev/null; then
+    get-emacs
+else
+    CURRENT_EMACS_VERSION=$(emacs --version | head -n 1 | sed 's/GNU Emacs //' | awk '$0 = substr($0, 1, index($0, ".") + 1)')
+    if [[ $REQUIRED_EMACS_VERSION > $CURRENT_EMACS_VERSION ]]; then get-emacs; fi
+fi
 
 
 # default shell
@@ -227,12 +430,75 @@ if [ "$TERM" = "screen" ]; then
     chpwd
 fi
 
+
 # plantuml
 # --------
-if [ ! -f ~/.local/bin/plantuml.jar ]; then
-    wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
-fi
-alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng'
+case "${OSTYPE}" in
+    freebsd*|darwin*|linux*)
+        if ! type -p puml > /dev/null; then npm install node-plantuml; fi
+        if [ ! -f ~/.local/bin/plantuml.jar ]; then
+            wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
+        fi
+        alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng'
+	;;
+esac
+
+
+# docker
+# ------
+alias dc='docker commit $(docker ps -l -q)'
+alias dd='docker rmi -f'
+alias dda='docker rmi -f $(docker images -q)'
+alias ddel='docker rmi -f'
+alias ddela='docker rmi -f $(docker images -q)'
+function dh () { docker history $1 | less -S }
+alias dj='docker run -i -t'
+alias dk='docker rm -f'
+alias dka='docker rm -f $(docker ps -a -q)'
+alias dkd='dka ; dda'
+alias dkill='docker rm -f'
+alias dkilla='docker rm -f $(docker ps -a -q)'
+alias docker='sudo docker'
+alias dl='docker images | less -S'
+alias dls='docker images | less -S'
+alias dp='docker ps -a | less -S'
+alias dps='docker ps -a | less -S'
+function dsshd () { docker run -t -d -p 5000:3000 -P $1 /usr/sbin/sshd -D }
+alias dr='docker tag'
+alias dv='docker images -viz'
+function datach () { docker start $1 ; docker atach $1 }
+function denv () { docker run --rm $1 env }
+function dip () {
+    CI=$(docker ps -l -q)
+    if [ $1 ]; then
+	docker inspect --format {{.NetworkSettings.IPAddress}} $1
+	docker inspect --format {{.NetworkSettings.Ports}} $1
+    else
+	docker inspect --format {{.NetworkSettings.IPAddress}} $CI
+	docker inspect --format {{.NetworkSettings.Ports}} $CI
+	fi
+}
+function dnsenter () {
+    CI=$(docker ps -l -q)
+    if [ $1 ] ; then
+	PID=$(docker inspect --format {{.State.Pid}} $1)
+        nsenter --target $PID --mount --uts --ipc --net --pid
+    else
+	PID=$(docker inspect --format {{.State.Pid}} $CI)
+        nsenter --target $PID --mount --uts --ipc --net --pid
+    fi
+}
+
+# ### docker compose / machine ###
+case "${OSTYPE}" in
+    linux*|darwin*|freebsd*)
+        if ! type -p docker-compose > /dev/null; then pip install -U docker-compose; fi
+        if ! type -p docker-machine > /dev/null; then
+            wget https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_linux-386 -O ~/.local/bin/docker-machine
+            chmod +x ~/.local/bin/docker-machine
+        fi
+	;;
+esac
 
 
 
@@ -315,50 +581,6 @@ esac
 
 # customized
 # ----------
-# ### docker ###
-alias dc='docker commit $(docker ps -l -q)'
-alias dd='docker rmi -f'
-alias dda='docker rmi -f $(docker images -q)'
-alias ddel='docker rmi -f'
-alias ddela='docker rmi -f $(docker images -q)'
-function dh () { docker history $1 | less -S }
-alias dj='docker run -i -t'
-alias dk='docker rm -f'
-alias dka='docker rm -f $(docker ps -a -q)'
-alias dkd='dka ; dda'
-alias dkill='docker rm -f'
-alias dkilla='docker rm -f $(docker ps -a -q)'
-alias docker='sudo docker'
-alias dl='docker images | less -S'
-alias dls='docker images | less -S'
-alias dp='docker ps -a | less -S'
-alias dps='docker ps -a | less -S'
-function dsshd () { docker run -t -d -p 5000:3000 -P $1 /usr/sbin/sshd -D }
-alias dr='docker tag'
-alias dv='docker images -viz'
-function datach () { docker start $1 ; docker atach $1 }
-function denv () { docker run --rm $1 env }
-function dip () {
-    CI=$(docker ps -l -q)
-    if [ $1 ]; then
-	docker inspect --format {{.NetworkSettings.IPAddress}} $1
-	docker inspect --format {{.NetworkSettings.Ports}} $1
-    else
-	docker inspect --format {{.NetworkSettings.IPAddress}} $CI
-	docker inspect --format {{.NetworkSettings.Ports}} $CI
-	fi
-}
-function dnsenter () {
-    CI=$(docker ps -l -q)
-    if [ $1 ] ; then
-	PID=$(docker inspect --format {{.State.Pid}} $1)
-        nsenter --target $PID --mount --uts --ipc --net --pid
-    else
-	PID=$(docker inspect --format {{.State.Pid}} $CI)
-        nsenter --target $PID --mount --uts --ipc --net --pid
-    fi
-}
-
 # #### git ###
 alias g='git'
 alias ga='git add -v'
@@ -413,9 +635,11 @@ function get-dotfiles () {
     cp -pr ~/.emacs.d/eshell/alias .emacs.d/eshell/;  wait
     cp -pr  ~/.emacs.d/init.el .emacs.d/;  wait
     cp -pr ~/.zshrc .
+    cp -pr ~/.screenrc .
 }
+alias zg=get-dotfiles
 function put-dotfiles () {
-    eval current_pwd=`pwd`
+    current_pwd=`pwd`
     cd ~/
     if [ ! -d ~/dotfiles ]; then
         git clone https://github.com/nabinno/dotfiles; wait
@@ -429,7 +653,12 @@ function put-dotfiles () {
     cp -pr .emacs.d/eshell/alias ~/.emacs.d/eshell/;  wait
     cp -pr .emacs.d/init.el ~/.emacs.d/;  wait
     cp -pr .zshrc ~/; wait
-    cd ${current_pwd}; wait
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            cp -pr .screenrc ~/; wait
+            ;;
+    esac
+    cd $current_pwd
     source ~/.zshrc
 }
 alias zp=put-dotfiles
@@ -531,6 +760,5 @@ alias uz='unzip'
 alias v="cat"
 function t () { \mv (.*~|.*.org*|*.org*|*.tar.gz|*.stackdump|*.tar.gz|*.asx|*.0|*.msi|*.wav|*.doc|*.pdf|$1) .old/ }
 
-if [ -f ~/.zshrc.mine ]; then
-    source ~/.zshrc.mine
-fi
+# ### other source file ###
+if [ -f ~/.zshrc.mine ]; then source ~/.zshrc.mine; fi
