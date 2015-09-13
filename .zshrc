@@ -443,15 +443,23 @@ fi
 
 # plantuml
 # --------
-case "${OSTYPE}" in
-    freebsd*|darwin*|linux*)
-        if ! type -p puml > /dev/null; then npm install node-plantuml; fi
-        if [ ! -f ~/.local/bin/plantuml.jar ]; then
-            wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
-        fi
-        alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng'
-	;;
-esac
+if ! type -p puml > /dev/null; then
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            if ! type -p puml > /dev/null; then npm install node-plantuml; fi
+            ;;
+    esac
+fi
+if ! type -p plantuml > /dev/null; then
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            if [ ! -f ~/.local/bin/plantuml.jar ]; then
+                wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
+            fi
+            alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng'
+	    ;;
+    esac
+fi
 
 
 # docker
