@@ -250,10 +250,20 @@ export node='NODE_NO_READLINE=1 node'
 # -----
 REQUIRED_EMACS_VERSION=24.5
 function get-emacs () {
+    case "${OSTYPE}" in
+        linux*)
+            case "${DIST}" in
+                Debian)
+                    sudo apt-get install -y build-essential
+                    sudo apt-get build-dep emacs
+                ;;
+            esac
+            ;;
+    esac
     current_pwd=`pwd`
     wget http://core.ring.gr.jp/pub/GNU/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
     tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
-    cd emacs-$REQUIRED_EMACS_VERSION; ./configure --with-xpm=no --with-gif=no; make; make install;  wait
+    cd emacs-$REQUIRED_EMACS_VERSION; ./configure --with-xpm=no --with-gif=no; make; yes | sudo make install;  wait
     cd $current_pwd; rm -fr emacs-$REQUIRED_EMACS_VERSION*
 }
 if ! type -p emacs > /dev/null; then
