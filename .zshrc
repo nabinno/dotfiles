@@ -144,7 +144,7 @@ esac
 
 # local
 # -----
-if [ ! -d ~/.local ]; then mkdir -p ~/.local/bin; fi
+if [ ! -d ~/.local/bin ]; then mkdir -p ~/.local/bin; fi
 
 
 # java
@@ -164,17 +164,17 @@ esac
 function get-java () {
     case "${OSTYPE}" in
         freebsd*|darwin*)
-            sudo pkg install openjdk
+            sudo pkg install -y openjdk
             ;;
         linux*)
             case "${DIST}" in
                 Redhat)
-                    sudo yum install java-$REQUIRED_JAVA_VERSION-openjdk
+                    sudo yum install -y java-$REQUIRED_JAVA_VERSION-openjdk
                     export JAVA_HOME=/usr/lib/jvm/jre-$REQUIRED_JAVA_VERSION-openjdk.$MACH
                     ;;
                 Debian)
-                    sudo apt-get install openjdk-7-jre
-                    sudo apt-get install icedtea-plugin
+                    sudo apt-get install -y openjdk-7-jre
+                    sudo apt-get install -y icedtea-plugin
                     ;;
             esac
             ;;
@@ -201,13 +201,13 @@ if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ]; then
             case "${DIST}" in
                 Redhat)
                     curl https://bintray.com/sbt/rpm/rpm | sudo tee /etc/yum.repos.d/bintray-sbt-rpm.repo
-                    sudo yum install sbt
+                    sudo yum install -y sbt
                     ;;
                 Debian)
                     echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
                     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823
                     sudo apt-get update
-                    sudo apt-get install sbt
+                    sudo apt-get install -y sbt
                     ;;
             esac
             ;;
