@@ -360,10 +360,7 @@ autoload -Uz zmv
 unset LSCOLORS
 zstyle ':completion:*' use-cache true
 case "${TERM}" in
-    screen.xterm)
-	export TERM=screen
-	;;
-    xterm)
+    xterm|screen.xterm)
 	export TERM=xterm-color
 	;;
     kterm)
@@ -456,7 +453,7 @@ fi
 case "${OSTYPE}" in
     freebsd*|darwin*|linux*)
         if ! type -p puml > /dev/null; then npm install -g node-plantuml; fi
-        if ! which plantuml > /dev/null; then
+        if [ ! -f ~/.local/bin/plantuml.jar ] ; then
             wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
             alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng'
         fi
