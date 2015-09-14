@@ -138,7 +138,7 @@ register ] "\033:se ai\015a"
 # screen -t local 0
 # screen -t mail 1 elm
 # screen -t 40 2 rlogin faui40
-screen -t Emacs 0 emacs -nw 
+screen -t Emacs 0 /usr/bin/emacs -nw
 termcap kterm   G0:KJ=jis
 terminfo kterm  G0:KJ=jis
 termcapinfo kterm XT

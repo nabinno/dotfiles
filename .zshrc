@@ -268,14 +268,17 @@ function get-emacs () {
         freebsd*|darwin*|linux*)
             case "${DIST}" in
                 Debian)
-                    sudo apt-get install -y build-essential
+                    sudo apt-get install -y build-essential libncurses-dev
                     sudo apt-get build-dep emacs
                 ;;
             esac
             current_pwd=`pwd`
             wget http://core.ring.gr.jp/pub/GNU/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
             tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
-            cd emacs-$REQUIRED_EMACS_VERSION; ./configure --with-xpm=no --with-gif=no; make; yes | sudo make install;  wait
+            cd emacs-$REQUIRED_EMACS_VERSION
+            ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no
+            make
+            yes | sudo make install;  wait
             cd $current_pwd; rm -fr emacs-$REQUIRED_EMACS_VERSION*
             ;;
     esac
