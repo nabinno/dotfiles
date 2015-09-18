@@ -122,6 +122,16 @@
     ))
 
 
+;;; Http-server
+(defun http-server ()
+  "Http-server."
+  (interactive)
+  (progn
+    (setq buffer (get-buffer-create (concat "*http-server*")))
+    (apply 'make-comint-in-buffer "http-server" buffer "~/.parts/bin/http-server" nil nil)
+    ))
+
+
 ;;; Jade-mode
 (eval-after-load 'jade-mode
   (add-hook 'jade-mode-hook 'page-break-lines-mode))
