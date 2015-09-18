@@ -489,6 +489,27 @@ if ! type -p dot > /dev/null; then
 fi
 
 
+# benchmark
+# ---------
+if ! type -p ab > /dev/null; then
+    case "${OSTYPE}" in
+        freebsd*|darwin*)
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat)
+                    sudo yum install -y httpd-tools
+                    ;;
+                Debian)
+                    sudo apt-get install -y apache2-utils
+                    ;;
+            esac
+            ;;
+    esac
+fi
+
+
+
 # docker
 # ------
 alias dc='docker commit $(docker ps -l -q)'
