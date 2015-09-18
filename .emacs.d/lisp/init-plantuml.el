@@ -29,19 +29,31 @@
     (shell-command cmd)
     (message "done")))
 
-(defun puml-node-execute ()
+(defun puml-node-execute-to-png ()
   "Node-plantuml."
   (interactive)
   (progn
-    (setq buffer (get-buffer-create (concat "*puml*")))
+    (setq buffer (get-buffer-create (concat "*puml<png>*")))
     (apply 'make-comint-in-buffer "node-plantuml" buffer
-           "~/.emacs.d/bin/puml" nil (list (buffer-file-name)))
+           "~/.emacs.d/bin/puml-to-png" nil (list
+                                             (buffer-file-name)
+                                             (concat (file-name-sans-extension (buffer-file-name)) ".png")
+                                             (file-name-directory (buffer-file-name))))
+    ))
+
+(defun puml-node-execute-to-text ()
+  "Node-plantuml."
+  (interactive)
+  (progn
+    (setq buffer (get-buffer-create (concat "*puml<text>*")))
+    (apply 'make-comint-in-buffer "node-plantuml" buffer
+           "~/.emacs.d/bin/puml-to-text" nil (list (buffer-file-name)))
     ))
 
 (setq puml-mode-map
       (let ((map (make-sparse-keymap)))
-        (define-key map (kbd "C-c C-C") 'puml-java-execute)
-        (define-key map (kbd "C-c C-c") 'puml-node-execute)
+        (define-key map (kbd "C-c C-p") 'puml-node-execute-to-png)
+        (define-key map (kbd "C-c C-t") 'puml-node-execute-to-text)
         map))
 
 

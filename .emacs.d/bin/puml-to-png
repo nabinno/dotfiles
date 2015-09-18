@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+~/.parts/bin/puml generate "$1" -o "$2"
+~/.parts/bin/http-server "$3"
