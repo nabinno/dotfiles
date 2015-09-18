@@ -469,6 +469,24 @@ case "${OSTYPE}" in
         fi
         ;;
 esac
+if ! type -p dot > /dev/null; then
+    case "${OSTYPE}" in
+        freebsd*|darwin*)
+            sudo port install -y graphviz
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat)
+                    sudo yum install -y graphviz
+                    ;;
+                Debian)
+                    sudo apt-get update
+                    sudo apt-get install -y graphviz
+                    ;;
+            esac
+            ;;
+    esac
+fi
 
 
 # docker
