@@ -295,10 +295,13 @@ function get-emacs () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             case "${DIST}" in
+                Redhat)
+                    sudo yum install -y ncurses-devel
+                    ;;
                 Debian)
                     sudo apt-get install -y build-essential libncurses-dev
                     sudo apt-get build-dep emacs
-                ;;
+                    ;;
             esac
             current_pwd=`pwd`
             wget http://core.ring.gr.jp/pub/GNU/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
