@@ -24,15 +24,15 @@ case "${OSTYPE}" in
             KERNEL=`uname -r`
             if [ -f /etc/redhat-release ] ; then
                 DIST='RedHat'
-                PSUEDONAME=`cat /etc/redhat-release | sed -e 's/.*\(//' | sed -e 's/\)//'`
-                REV=`cat /etc/redhat-release | sed -e 's/.*release\ //' | sed -e 's/\ .*//'`
+                PSUEDONAME=`cat /etc/redhat-release | sed -e 's/.*(//' | sed -e 's/)//'`
+                REV=`cat /etc/redhat-release | sed -e 's/.*release //' | sed -e 's/ .*//'`
             elif [ -f /etc/SUSE-release ] ; then
                 DIST="SUSE"
                 DIST2=`cat /etc/SUSE-release | tr "\n" ' '| sed -e 's/VERSION.*//'`
-                REV=`cat /etc/SUSE-release | tr "\n" ' ' | sed -e 's/.*=\ //'`
+                REV=`cat /etc/SUSE-release | tr "\n" ' ' | sed -e 's/.*= //'`
             elif [ -f /etc/mandrake-release ] ; then
                 DIST='Mandrake'
-                PSUEDONAME=`cat /etc/mandrake-release | sed -e 's/.*\(//' | sed -e 's/\)//'`
+                PSUEDONAME=`cat /etc/mandrake-release | sed -e 's/.*(//' | sed -e 's/)//'`
                 REV=`cat /etc/mandrake-release | sed -e 's/.*release\ //' | sed -e 's/\ .*//'`
             elif [ -f /etc/debian_version ] ; then
                 DIST="Debian"
