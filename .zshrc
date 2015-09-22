@@ -24,23 +24,23 @@ case "${OSTYPE}" in
             KERNEL=`uname -r`
             if [ -f /etc/redhat-release ] ; then
                 DIST='RedHat'
-                PSUEDONAME=`cat /etc/redhat-release | sed s/.*\(// | sed s/\)//`
-                REV=`cat /etc/redhat-release | sed s/.*release\ // | sed s/\ .*//`
+                PSUEDONAME=`cat /etc/redhat-release | sed -e 's/.*\(//' | sed -e 's/\)//'`
+                REV=`cat /etc/redhat-release | sed -e 's/.*release\ //' | sed -e 's/\ .*//'`
             elif [ -f /etc/SUSE-release ] ; then
                 DIST="SUSE"
-                DIST2=`cat /etc/SUSE-release | tr "\n" ' '| sed s/VERSION.*//`
-                REV=`cat /etc/SUSE-release | tr "\n" ' ' | sed s/.*=\ //`
+                DIST2=`cat /etc/SUSE-release | tr "\n" ' '| sed -e 's/VERSION.*//'`
+                REV=`cat /etc/SUSE-release | tr "\n" ' ' | sed -e 's/.*=\ //'`
             elif [ -f /etc/mandrake-release ] ; then
                 DIST='Mandrake'
-                PSUEDONAME=`cat /etc/mandrake-release | sed s/.*\(// | sed s/\)//`
-                REV=`cat /etc/mandrake-release | sed s/.*release\ // | sed s/\ .*//`
+                PSUEDONAME=`cat /etc/mandrake-release | sed -e 's/.*\(//' | sed -e 's/\)//'`
+                REV=`cat /etc/mandrake-release | sed -e 's/.*release\ //' | sed -e 's/\ .*//'`
             elif [ -f /etc/debian_version ] ; then
                 DIST="Debian"
                 DIST2="Debian `cat /etc/debian_version`"
                 REV=""
             fi
             if [ -f /etc/UnitedLinux-release ] ; then
-                DIST="${DIST}[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
+                DIST="${DIST}[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed -e 's/VERSION.*//'`]"
             fi
             OSSTR="${OS} ${DIST} ${REV}(${PSUEDONAME} ${KERNEL} ${MACH})"
         fi
@@ -74,6 +74,32 @@ export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
 export PATH="$HOME/.parts/packages/python2/2.7.6/bin:$PATH"
 export PATH="$HOME/local/perl-5.18/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
+
+
+# local
+# -----
+if [ ! -d ~/.local/bin ]; then mkdir -p ~/.local/bin; fi
+
+
+# ruby
+# ----
+case "${OSTYPE}" in
+    freebsd*|darwin*)
+        sudo pkg install -y ruby
+    ;;
+    linux*)
+        case "${DIST}" in
+            Redhat)
+                sudo yum update -y
+                sudo yum install -y ruby
+                ;;
+            Debian)
+                sudo apt-get update -y
+                sudo apt-get install -y ruby
+                ;;
+        esac
+        ;;
+esac
 
 
 # autoparts
@@ -145,11 +171,6 @@ case "${OSTYPE}" in
         fi
 	;;
 esac
-
-
-# local
-# -----
-if [ ! -d ~/.local/bin ]; then mkdir -p ~/.local/bin; fi
 
 
 # java
