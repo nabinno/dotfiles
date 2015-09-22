@@ -33,7 +33,7 @@ case "${OSTYPE}" in
             elif [ -f /etc/mandrake-release ] ; then
                 DIST='Mandrake'
                 PSUEDONAME=`cat /etc/mandrake-release | sed -e 's/.*(//' | sed -e 's/)//'`
-                REV=`cat /etc/mandrake-release | sed -e 's/.*release\ //' | sed -e 's/\ .*//'`
+                REV=`cat /etc/mandrake-release | sed -e 's/.*release //' | sed -e 's/ .*//'`
             elif [ -f /etc/debian_version ] ; then
                 DIST="Debian"
                 DIST2="Debian `cat /etc/debian_version`"
@@ -489,12 +489,20 @@ fi
 # plantuml
 # --------
 case "${OSTYPE}" in
-    freebsd*|darwin*|linux*)
-        if ! type -p puml > /dev/null; then npm install -g node-plantuml; fi
-        if [ ! -f ~/.local/bin/plantuml.jar ] ; then
-            wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
-            alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng'
-        fi
+    freebsd*|darwin*)
+    ;;
+    linux*)
+        case "${DIST}" in
+            Redhat)
+            ;;
+            Debian)
+                if ! type -p puml > /dev/null; then npm install -g node-plantuml; fi
+                if [ ! -f ~/.local/bin/plantuml.jar ] ; then
+                    wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
+                    alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng'
+                fi
+                ;;
+        esac
         ;;
 esac
 if ! type -p dot > /dev/null; then
@@ -585,13 +593,21 @@ function dnsenter () {
 
 # ### docker compose / machine ###
 case "${OSTYPE}" in
-    linux*|darwin*|freebsd*)
-        if ! type -p docker-compose > /dev/null; then pip install -U docker-compose; fi
-        if ! type -p docker-machine > /dev/null; then
-            wget https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_linux-386 -O ~/.local/bin/docker-machine
-            chmod +x ~/.local/bin/docker-machine
-        fi
-	;;
+    freebsd*|darwin*)
+    ;;
+    linux*)
+        case "${DIST}" in
+            Redhat)
+            ;;
+            Debian)
+                if ! type -p docker-compose > /dev/null; then pip install -U docker-compose; fi
+                if ! type -p docker-machine > /dev/null; then
+                    wget https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_linux-386 -O ~/.local/bin/docker-machine
+                    chmod +x ~/.local/bin/docker-machine
+                fi
+	        ;;
+        esac
+        ;;
 esac
 
 
