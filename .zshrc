@@ -105,71 +105,78 @@ esac
 # autoparts
 # ---------
 case "${OSTYPE}" in
-    freebsd*|darwin*|linux*)
-        if ! type -p parts > /dev/null; then
-            ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
-            exec $SHELL -l
-            parts install \
-                  chruby \
-                  ctags \
-                  elixir \
-                  erlang \
-                  go \
-                  heroku_toolbelt \
-                  maven \
-                  nodejs \
-                  phantomjs \
-                  pip \
-                  ruby2.2 \
-                  the_silver_searcher \
-                  zsh \
-                  vim \
-                  tree
-            npm install -g \
-                bower \
-                grunt-cli \
-                gulp \
-                http-server \
-                less \
-                node-plantuml \
-                phantomjs \
-                requirejs
-            gem install \
-                rails
-            pip install -U \
-                awscli \
-                docker-compose
-        fi
-        eval "$(parts env)"
-        if ! type -p npm > /dev/null; then
-            parts install npm
-            npm install -g \
-                bower \
-                grunt-cli \
-                gulp \
-                http-server \
-                less \
-                node-plantuml \
-                phantomjs \
-                requirejs
-        fi
-        if ! type -p gem > /dev/null; then
-            parts install gem
-            gem install \
-                rails
-        fi
-        if ! type -p pip > /dev/null; then
-            parts install pip
-            pip install -U \
-                awscli \
-                docker-compose \
-                ipython \
-                pandas \
-                pulp \
-                simpy \
-                boto
-        fi
-	;;
+    freebsd*|darwin*)
+        ;;
+    linux*)
+        case "${DIST}" in
+            Redhat)
+                ;;
+            Debian)
+                if ! type -p parts > /dev/null; then
+                    ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
+                    exec $SHELL -l
+                    parts install \
+                          chruby \
+                          ctags \
+                          elixir \
+                          erlang \
+                          go \
+                          heroku_toolbelt \
+                          maven \
+                          nodejs \
+                          phantomjs \
+                          pip \
+                          ruby2.2 \
+                          the_silver_searcher \
+                          zsh \
+                          vim \
+                          tree
+                    npm install -g \
+                        bower \
+                        grunt-cli \
+                        gulp \
+                        http-server \
+                        less \
+                        node-plantuml \
+                        phantomjs \
+                        requirejs
+                    gem install \
+                        rails
+                    pip install -U \
+                        awscli \
+                        docker-compose
+                fi
+                eval "$(parts env)"
+                if ! type -p npm > /dev/null; then
+                    parts install npm
+                    npm install -g \
+                        bower \
+                        grunt-cli \
+                        gulp \
+                        http-server \
+                        less \
+                        node-plantuml \
+                        phantomjs \
+                        requirejs
+                fi
+                if ! type -p gem > /dev/null; then
+                    parts install gem
+                    gem install \
+                        rails
+                fi
+                if ! type -p pip > /dev/null; then
+                    parts install pip
+                    pip install -U \
+                        awscli \
+                        docker-compose \
+                        ipython \
+                        pandas \
+                        pulp \
+                        simpy \
+                        boto
+                fi
+	        ;;
+        esac
 esac
 
 
