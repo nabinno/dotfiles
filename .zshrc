@@ -24,23 +24,23 @@ case "${OSTYPE}" in
             KERNEL=`uname -r`
             if [ -f /etc/redhat-release ] ; then
                 DIST='RedHat'
-                PSUEDONAME=`cat /etc/redhat-release | sed -e 's/.*(//' | sed -e 's/)//'`
-                REV=`cat /etc/redhat-release | sed -e 's/.*release //' | sed -e 's/ .*//'`
+                PSUEDONAME=`cat /etc/redhat-release | sed s/.*\(// | sed s/\)//`
+                REV=`cat /etc/redhat-release | sed s/.*release\ // | sed s/\ .*//`
             elif [ -f /etc/SUSE-release ] ; then
                 DIST="SUSE"
-                DIST2=`cat /etc/SUSE-release | tr "\n" ' '| sed -e 's/VERSION.*//'`
-                REV=`cat /etc/SUSE-release | tr "\n" ' ' | sed -e 's/.*= //'`
+                DIST2=`cat /etc/SUSE-release | tr "\n" ' '| sed s/VERSION.*//`
+                REV=`cat /etc/SUSE-release | tr "\n" ' ' | sed s/.*=\ //`
             elif [ -f /etc/mandrake-release ] ; then
                 DIST='Mandrake'
-                PSUEDONAME=`cat /etc/mandrake-release | sed -e 's/.*(//' | sed -e 's/)//'`
-                REV=`cat /etc/mandrake-release | sed -e 's/.*release //' | sed -e 's/ .*//'`
+                PSUEDONAME=`cat /etc/mandrake-release | sed s/.*\(// | sed s/\)//`
+                REV=`cat /etc/mandrake-release | sed s/.*release\ // | sed s/\ .*//`
             elif [ -f /etc/debian_version ] ; then
                 DIST="Debian"
                 DIST2="Debian `cat /etc/debian_version`"
                 REV=""
             fi
             if [ -f /etc/UnitedLinux-release ] ; then
-                DIST="${DIST}[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed -e 's/VERSION.*//'`]"
+                DIST="${DIST}[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
             fi
             OSSTR="${OS} ${DIST} ${REV}(${PSUEDONAME} ${KERNEL} ${MACH})"
         fi
@@ -76,110 +76,83 @@ export PATH="$HOME/local/perl-5.18/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
 
 
-# local
-# -----
-if [ ! -d ~/.local/bin ]; then mkdir -p ~/.local/bin; fi
-
-
-# ruby
-# ----
-if ! type -p ruby > /dev/null; then
-    case "${OSTYPE}" in
-        freebsd*|darwin*)
-            sudo pkg install -y ruby
-            ;;
-        linux*)
-            case "${DIST}" in
-                Redhat)
-                    sudo yum update -y
-                    sudo yum install -y ruby
-                    ;;
-                Debian)
-                    sudo apt-get update -y
-                    sudo apt-get install -y ruby1.9.3
-                    ;;
-            esac
-            ;;
-    esac
-fi
-
-
 # autoparts
 # ---------
 case "${OSTYPE}" in
-    freebsd*|darwin*)
-        ;;
-    linux*)
-        case "${DIST}" in
-            Redhat)
-                ;;
-            Debian)
-                if ! type -p parts > /dev/null; then
-                    ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
-                    exec $SHELL -l
-                    parts install \
-                          chruby \
-                          ctags \
-                          elixir \
-                          erlang \
-                          go \
-                          heroku_toolbelt \
-                          maven \
-                          nodejs \
-                          phantomjs \
-                          pip \
-                          ruby2.2 \
-                          the_silver_searcher \
-                          zsh \
-                          vim \
-                          tree
-                    npm install -g \
-                        bower \
-                        grunt-cli \
-                        gulp \
-                        http-server \
-                        less \
-                        node-plantuml \
-                        phantomjs \
-                        requirejs
-                    gem install \
-                        rails
-                    pip install -U \
-                        awscli \
-                        docker-compose
-                fi
-                eval "$(parts env)"
-                if ! type -p npm > /dev/null; then
-                    parts install npm
-                    npm install -g \
-                        bower \
-                        grunt-cli \
-                        gulp \
-                        http-server \
-                        less \
-                        node-plantuml \
-                        phantomjs \
-                        requirejs
-                fi
-                if ! type -p gem > /dev/null; then
-                    parts install gem
-                    gem install \
-                        rails
-                fi
-                if ! type -p pip > /dev/null; then
-                    parts install pip
-                    pip install -U \
-                        awscli \
-                        docker-compose \
-                        ipython \
-                        pandas \
-                        pulp \
-                        simpy \
-                        boto
-                fi
-	        ;;
-        esac
+    freebsd*|darwin*|linux*)
+        if ! type -p parts > /dev/null; then
+            ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
+            exec $SHELL -l
+            parts install \
+                  chruby \
+                  ctags \
+                  elixir \
+                  erlang \
+                  go \
+                  heroku_toolbelt \
+                  maven \
+                  mysql \
+                  nodejs \
+                  phantomjs \
+                  pip \
+                  postgresql \
+                  redis \
+                  ruby2.2 \
+                  the_silver_searcher \
+                  tree \
+                  vim \
+                  zsh
+            npm install -g \
+                bower \
+                grunt-cli \
+                gulp \
+                http-server \
+                less \
+                node-plantuml \
+                phantomjs \
+                requirejs
+            gem install \
+                rails
+            pip install -U \
+                awscli \
+                docker-compose
+        fi
+        eval "$(parts env)"
+        if ! type -p npm > /dev/null; then
+            parts install npm
+            npm install -g \
+                bower \
+                grunt-cli \
+                gulp \
+                http-server \
+                less \
+                node-plantuml \
+                phantomjs \
+                requirejs
+        fi
+        if ! type -p gem > /dev/null; then
+            parts install gem
+            gem install \
+                rails
+        fi
+        if ! type -p pip > /dev/null; then
+            parts install pip
+            pip install -U \
+                awscli \
+                docker-compose \
+                ipython \
+                pandas \
+                pulp \
+                simpy \
+                boto
+        fi
+	;;
 esac
+
+
+# local
+# -----
+if [ ! -d ~/.local/bin ]; then mkdir -p ~/.local/bin; fi
 
 
 # java
@@ -297,13 +270,10 @@ function get-emacs () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             case "${DIST}" in
-                Redhat)
-                    sudo yum install -y ncurses-devel
-                    ;;
                 Debian)
                     sudo apt-get install -y build-essential libncurses-dev
                     sudo apt-get build-dep emacs
-                    ;;
+                ;;
             esac
             current_pwd=`pwd`
             wget http://core.ring.gr.jp/pub/GNU/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
@@ -494,20 +464,12 @@ fi
 # plantuml
 # --------
 case "${OSTYPE}" in
-    freebsd*|darwin*)
-    ;;
-    linux*)
-        case "${DIST}" in
-            Redhat)
-            ;;
-            Debian)
-                if ! type -p puml > /dev/null; then npm install -g node-plantuml; fi
-                if [ ! -f ~/.local/bin/plantuml.jar ] ; then
-                    wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
-                    alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng'
-                fi
-                ;;
-        esac
+    freebsd*|darwin*|linux*)
+        if ! type -p puml > /dev/null; then npm install -g node-plantuml; fi
+        if [ ! -f ~/.local/bin/plantuml.jar ] ; then
+            wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
+            alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng'
+        fi
         ;;
 esac
 if ! type -p dot > /dev/null; then
@@ -598,21 +560,13 @@ function dnsenter () {
 
 # ### docker compose / machine ###
 case "${OSTYPE}" in
-    freebsd*|darwin*)
-    ;;
-    linux*)
-        case "${DIST}" in
-            Redhat)
-            ;;
-            Debian)
-                if ! type -p docker-compose > /dev/null; then pip install -U docker-compose; fi
-                if ! type -p docker-machine > /dev/null; then
-                    wget https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_linux-386 -O ~/.local/bin/docker-machine
-                    chmod +x ~/.local/bin/docker-machine
-                fi
-	        ;;
-        esac
-        ;;
+    linux*|darwin*|freebsd*)
+        if ! type -p docker-compose > /dev/null; then pip install -U docker-compose; fi
+        if ! type -p docker-machine > /dev/null; then
+            wget https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_linux-386 -O ~/.local/bin/docker-machine
+            chmod +x ~/.local/bin/docker-machine
+        fi
+	;;
 esac
 
 
