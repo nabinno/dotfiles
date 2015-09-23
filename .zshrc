@@ -83,23 +83,25 @@ if [ ! -d ~/.local/bin ]; then mkdir -p ~/.local/bin; fi
 
 # ruby
 # ----
-case "${OSTYPE}" in
-    freebsd*|darwin*)
-        sudo pkg install -y ruby
-    ;;
-    linux*)
-        case "${DIST}" in
-            Redhat)
-                sudo yum update -y
-                sudo yum install -y ruby
-                ;;
-            Debian)
-                sudo apt-get update -y
-                sudo apt-get install -y ruby
-                ;;
-        esac
-        ;;
-esac
+if ! type -p ruby > /dev/null; then
+    case "${OSTYPE}" in
+        freebsd*|darwin*)
+            sudo pkg install -y ruby
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat)
+                    sudo yum update -y
+                    sudo yum install -y ruby
+                    ;;
+                Debian)
+                    sudo apt-get update -y
+                    sudo apt-get install -y ruby1.9.3
+                    ;;
+            esac
+            ;;
+    esac
+fi
 
 
 # autoparts
