@@ -189,6 +189,20 @@ REQUIRED_PLAY_VERSION=2.2.3
 export PLAY_HOME=/usr/local/play-$REQUIRED_PLAY_VERSION
 export PATH="$PLAY_HOME:$PATH"
 case "${OSTYPE}" in
+    freebsd*|darwin*)
+        ;;
+    linux*)
+        case "${DIST}" in
+            Redhat)
+                export JAVA_HOME=/usr/lib/jvm/jre-$REQUIRED_JAVA_VERSION-openjdk.$MACH
+                ;;
+            Debian)
+                export JAVA_HOME=/usr/lib/jvm/default-java
+                ;;
+        esac
+        ;;
+esac
+case "${OSTYPE}" in
     freebsd*|darwin*|linux*)
         if [ ! -d ~/.jenv ]; then
             git clone https://github.com/gcuisinier/jenv.git ~/.jenv
@@ -205,12 +219,10 @@ function get-java () {
             case "${DIST}" in
                 Redhat)
                     sudo yum install -y java-$REQUIRED_JAVA_VERSION-openjdk
-                    export JAVA_HOME=/usr/lib/jvm/jre-$REQUIRED_JAVA_VERSION-openjdk.$MACH
                     ;;
                 Debian)
                     sudo apt-get update
                     sudo apt-get install -y openjdk-7-jre
-                    export JAVA_HOME=/usr/lib/jvm/default-java
                     ;;
             esac
             ;;
