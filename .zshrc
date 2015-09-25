@@ -66,14 +66,15 @@ export LC_CTYPE=UTF-8
 export LC_MESSAGES=C
 export MAILPATH=$HOME/MailBox/postmaster/maildir
 export PATH=$HOME/bin:$HOME/local/bin:$PATH
-export PATH="$HOME/.parts/autoparts/bin:$PATH"
 export PATH="$HOME/.jenv/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.cask/bin:$PATH"
+export PATH="$HOME/.local/rbenv/bin:$PATH"
+export PATH="$HOME/.parts/autoparts/bin:$PATH"
 export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
 export PATH="$HOME/.parts/packages/python2/2.7.6/bin:$PATH"
 export PATH="$HOME/.parts/packages/python2/2.7.6/bin:$PATH"
-export PATH="$HOME/local/perl-5.18/bin:$PATH"
+export PATH="$HOME/.cask/bin:$PATH"
+export PATH="$HOME/.local/perl-5.18/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
 
 
@@ -86,20 +87,13 @@ if [ ! -d ~/.local/bin ]; then mkdir -p ~/.local/bin; fi
 # ----
 if ! type -p ruby > /dev/null; then
     case "${OSTYPE}" in
-        freebsd*|darwin*)
-            sudo pkg install -y ruby
-            ;;
-        linux*)
-            case "${DIST}" in
-                Redhat)
-                    sudo yum update -y
-                    sudo yum install -y ruby
-                    ;;
-                Debian)
-                    sudo apt-get update -y
-                    sudo apt-get install -y ruby1.9.3
-                    ;;
-            esac
+        freebsd*|darwin*|linux*)
+            git clone git://github.com/sstephenson/rbenv.git ~/.local/rbenv
+            git clone git://github.com/sstephenson/ruby-build.git ~/.local/rbenv/plugins/ruby-build
+            git clone https://github.com/sstephenson/rbenv-gem-rehash.git ~/.local/rbenv/plugins/rbenv-gem-rehash
+            exec $SHELL -l
+            rbenv install 2.2.0
+            rbenv global 2.2.0
             ;;
     esac
 fi
