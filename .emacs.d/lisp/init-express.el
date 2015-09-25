@@ -126,11 +126,11 @@
 (fset 'grunt-save-buffer-and-protractor "xsave-bufferxgruntprotractor")
 (fset 'grunt-protractor    "xgruntprotractor")
 (fset 'grunt-test          "xgrunttest")
-(fset 'grunt-serve         "xgruntserve")
+(fset 'grunt-server        "xgruntserver")
 (fset 'grunt-serve-proxy   "xgruntserve_proxy")
 (fset 'grunt-build         "xgruntbuild")
 (fset 'grunt-switch-buffer "xido-switch-buffer*grunt*")
-(global-set-key (kbd "\C-cfs") 'grunt-serve)
+(global-set-key (kbd "\C-cfs") 'grunt-server)
 (global-set-key (kbd "\C-cfS") 'grunt-serve-proxy)
 (global-set-key (kbd "\C-cft") 'grunt-test)
 (global-set-key (kbd "\C-cfp") 'grunt-protractor)
