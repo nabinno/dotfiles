@@ -85,15 +85,20 @@ if [ ! -d ~/.local/bin ]; then mkdir -p ~/.local/bin; fi
 
 # ruby
 # ----
+export RBENV_ROOT="/usr/local/rbenv"
 if ! type -p ruby > /dev/null; then
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             git clone git://github.com/sstephenson/rbenv.git ~/.local/rbenv
+            mkdir ~/.local/rbenv/shims ~/.local/rbenv/versions ~/.local/rbenv/plugins
             git clone git://github.com/sstephenson/ruby-build.git ~/.local/rbenv/plugins/ruby-build
             git clone https://github.com/sstephenson/rbenv-gem-rehash.git ~/.local/rbenv/plugins/rbenv-gem-rehash
+            echo 'eval "$(rbenv init -)'
             exec $SHELL -l
             rbenv install 2.2.0
+            rbenv rehash
             rbenv global 2.2.0
+            gem install bundler
             ;;
     esac
 fi
