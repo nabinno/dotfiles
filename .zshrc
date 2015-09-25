@@ -145,6 +145,7 @@ case "${OSTYPE}" in
                         awscli \
                         docker-compose
                 fi
+                eval "$(parts env)"
                 if ! type -p npm > /dev/null; then
                     parts install npm
                     npm install -g \
