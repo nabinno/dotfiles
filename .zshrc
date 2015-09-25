@@ -72,6 +72,7 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.cask/bin:$PATH"
 export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
 export PATH="$HOME/.parts/packages/python2/2.7.6/bin:$PATH"
+export PATH="$HOME/.parts/packages/python2/2.7.6/bin:$PATH"
 export PATH="$HOME/local/perl-5.18/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
 
@@ -116,6 +117,7 @@ case "${OSTYPE}" in
             Debian)
                 if ! type -p parts > /dev/null; then
                     ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
+                    eval "$(parts env)"
                     exec $SHELL -l
                     parts install \
                           chruby \
@@ -143,12 +145,12 @@ case "${OSTYPE}" in
                         phantomjs \
                         requirejs
                     gem install \
-                        rails
+                        rails \
+                        compass
                     pip install -U \
                         awscli \
                         docker-compose
                 fi
-                eval "$(parts env)"
                 if ! type -p npm > /dev/null; then
                     parts install npm
                     npm install -g \
@@ -189,20 +191,6 @@ REQUIRED_PLAY_VERSION=2.2.3
 export PLAY_HOME=/usr/local/play-$REQUIRED_PLAY_VERSION
 export PATH="$PLAY_HOME:$PATH"
 case "${OSTYPE}" in
-    freebsd*|darwin*)
-        ;;
-    linux*)
-        case "${DIST}" in
-            Redhat)
-                export JAVA_HOME=/usr/lib/jvm/jre-$REQUIRED_JAVA_VERSION-openjdk.$MACH
-                ;;
-            Debian)
-                export JAVA_HOME=/usr/lib/jvm/default-java
-                ;;
-        esac
-        ;;
-esac
-case "${OSTYPE}" in
     freebsd*|darwin*|linux*)
         if [ ! -d ~/.jenv ]; then
             git clone https://github.com/gcuisinier/jenv.git ~/.jenv
@@ -219,10 +207,12 @@ function get-java () {
             case "${DIST}" in
                 Redhat)
                     sudo yum install -y java-$REQUIRED_JAVA_VERSION-openjdk
+                    export JAVA_HOME=/usr/lib/jvm/jre-$REQUIRED_JAVA_VERSION-openjdk.$MACH
                     ;;
                 Debian)
                     sudo apt-get update
                     sudo apt-get install -y openjdk-7-jre
+                    export JAVA_HOME=/usr/lib/jvm/default-java
                     ;;
             esac
             ;;
