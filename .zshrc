@@ -72,11 +72,11 @@ export PATH=$HOME/bin:$HOME/local/bin:$PATH
 export PATH="$HOME/.jenv/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.local/rbenv/bin:$PATH"
-export PATH="$HOME/.linuxbrew/bin:$PATH"
 export PATH="$HOME/.parts/autoparts/bin:$PATH"
 export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
 export PATH="$HOME/.parts/packages/python2/2.7.6/bin:$PATH"
 export PATH="$HOME/.parts/packages/python2/2.7.6/bin:$PATH"
+export PATH="$HOME/.linuxbrew/bin:$PATH"
 export PATH="$HOME/.cask/bin:$PATH"
 export PATH="$HOME/.local/perl-5.18/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
@@ -107,15 +107,6 @@ if ! type -p ruby > /dev/null; then
     esac
 fi
 
-# linuxbrew
-# ---------
-case "${OSTYPE}" in
-    linux*)
-        if ! type -p brew > /dev/null; then
-            ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
-        fi
-        ;;
-esac
 
 # autoparts
 # ---------
@@ -138,10 +129,7 @@ case "${OSTYPE}" in
                           nodejs \
                           phantomjs \
                           pip \
-                          ruby2.2 \
                           the_silver_searcher \
-                          zsh \
-                          vim \
                           tree
                     npm install -g \
                         bower \
@@ -195,6 +183,46 @@ case "${OSTYPE}" in
                 fi
 	        ;;
         esac
+esac
+
+
+# linuxbrew
+# ---------
+case "${OSTYPE}" in
+    linux*)
+        if ! type -p brew > /dev/null; then
+            ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
+            exec $SHELL -l
+            case "${DIST}" in
+                Redhat)
+                    brew install \
+                         chruby \
+                         ctags \
+                         elixir \
+                         elixir-build \
+                         erlang \
+                         go \
+                         heroku_toolbelt \
+                         jq \
+                         lua \
+                         maven \
+                         mruby \
+                         rust \
+                         scalaenv \
+                         the_silver_searcher \
+                         tmux \
+                         tree \
+                         vert.x
+                    ;;
+                Debian)
+                    brew install \
+                         jq \
+                         scalaenv \
+                         vert.x
+                    ;;
+            esac
+        fi
+        ;;
 esac
 
 
