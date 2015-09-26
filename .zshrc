@@ -65,10 +65,14 @@ export LC_ALL=en_US.UTF-8
 export LC_CTYPE=UTF-8
 export LC_MESSAGES=C
 export MAILPATH=$HOME/MailBox/postmaster/maildir
+export MANPATH=$HOME/.linuxbrew/share/man:$MANPATH
+export INFOPATH=$HOME/.linuxbrew/share/info:$INFOPATH
+export LD_LIBRARY_PATH=$HOME/.linuxbrew/lib:$LD_LIBRARY_PATH
 export PATH=$HOME/bin:$HOME/local/bin:$PATH
 export PATH="$HOME/.jenv/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.local/rbenv/bin:$PATH"
+export PATH="$HOME/.linuxbrew/bin:$PATH"
 export PATH="$HOME/.parts/autoparts/bin:$PATH"
 export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
 export PATH="$HOME/.parts/packages/python2/2.7.6/bin:$PATH"
@@ -103,16 +107,19 @@ if ! type -p ruby > /dev/null; then
     esac
 fi
 
+# linuxbrew
+# ---------
+case "${OSTYPE}" in
+    linux*)
+        ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
+        ;;
+esac
 
 # autoparts
 # ---------
 case "${OSTYPE}" in
-    freebsd*|darwin*)
-        ;;
     linux*)
         case "${DIST}" in
-            Redhat)
-                ;;
             Debian)
                 if ! type -p parts > /dev/null; then
                     ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
@@ -144,8 +151,13 @@ case "${OSTYPE}" in
                         phantomjs \
                         requirejs
                     gem install \
+                        bundler \
+                        compass \
+                        haml \
                         rails \
-                        compass
+                        rubygems-bundler \
+                        sidekiq \
+                        unicorn
                     pip install -U \
                         awscli \
                         docker-compose
@@ -207,7 +219,8 @@ function get-java () {
             case "${DIST}" in
                 Redhat)
                     sudo yum install -y java-$REQUIRED_JAVA_VERSION-openjdk
-                    export JAVA_HOME=/usr/lib/jvm/jre-$REQUIRED_JAVA_VERSION-openjdk.$MACH
+                    sudo yum install -y java-$REQUIRED_JAVA_VERSION-openjdk-devel
+                    export JAVA_HOME=/usr/lib/jvm/java-$REQUIRED_JAVA_VERSION
                     ;;
                 Debian)
                     sudo apt-get update
