@@ -111,7 +111,9 @@ fi
 # ---------
 case "${OSTYPE}" in
     linux*)
-        ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
+        if ! type -p brew > /dev/null; then
+            ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
+        fi
         ;;
 esac
 
