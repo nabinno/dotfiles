@@ -68,6 +68,7 @@ export MAILPATH=$HOME/MailBox/postmaster/maildir
 export MANPATH=$HOME/.linuxbrew/share/man:$MANPATH
 export INFOPATH=$HOME/.linuxbrew/share/info:$INFOPATH
 export LD_LIBRARY_PATH=$HOME/.linuxbrew/lib:$LD_LIBRARY_PATH
+export RBENV_ROOT="$HOME/.local/rbenv"
 export PATH=$HOME/bin:$HOME/local/bin:$PATH
 export PATH="$HOME/.jenv/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
@@ -90,10 +91,9 @@ if [ ! -d ~/.local/bin ]; then mkdir -p ~/.local/bin; fi
 
 # ruby
 # ----
-export RBENV_ROOT="/usr/local/rbenv"
-if ! type -p ruby > /dev/null; then
-    case "${OSTYPE}" in
-        freebsd*|darwin*|linux*)
+case "${OSTYPE}" in
+    freebsd*|darwin*|linux*)
+        if ! type -p rbenv > /dev/null; then
             git clone git://github.com/sstephenson/rbenv.git ~/.local/rbenv
             mkdir ~/.local/rbenv/shims ~/.local/rbenv/versions ~/.local/rbenv/plugins
             git clone git://github.com/sstephenson/ruby-build.git ~/.local/rbenv/plugins/ruby-build
@@ -104,9 +104,10 @@ if ! type -p ruby > /dev/null; then
             rbenv rehash
             rbenv global 2.2.0
             gem install bundler
-            ;;
-    esac
-fi
+        fi
+        echo 'eval "$(rbenv init -)'
+        ;;
+esac
 
 
 # autoparts
