@@ -792,6 +792,14 @@ function parse_git_branch {
     git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty))/"
 }
 
+# ### dove ###
+function cd-dove () {
+    dove_path=`which dove`
+    dove_dir=`dirname $dove_path`
+    cd $dove_dir/../$1
+}
+alias zd=cd-dove
+
 # ### dotfiles ###
 function get-dotfiles () {
     cd ~/; wait
