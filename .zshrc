@@ -139,6 +139,7 @@ case "${OSTYPE}" in
                         http-server \
                         less \
                         node-plantuml \
+                        npm2dot \
                         phantomjs \
                         requirejs
                     gem install \
@@ -163,6 +164,7 @@ case "${OSTYPE}" in
                         http-server \
                         less \
                         node-plantuml \
+                        npm2dot \
                         phantomjs \
                         requirejs
                 fi
