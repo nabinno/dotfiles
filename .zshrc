@@ -72,6 +72,7 @@ export PATH=$HOME/bin:$HOME/local/bin:$PATH
 export PATH="$HOME/.jenv/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.local/rbenv/bin:$PATH"
+export PATH="$HOME/.local/dove/bin:$PATH"
 export PATH="$HOME/.parts/autoparts/bin:$PATH"
 export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
 export PATH="$HOME/.parts/packages/python2/2.7.6/bin:$PATH"
