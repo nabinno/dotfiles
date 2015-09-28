@@ -65,9 +65,6 @@ export LC_ALL=en_US.UTF-8
 export LC_CTYPE=UTF-8
 export LC_MESSAGES=C
 export MAILPATH=$HOME/MailBox/postmaster/maildir
-export MANPATH=$HOME/.linuxbrew/share/man:$MANPATH
-export INFOPATH=$HOME/.linuxbrew/share/info:$INFOPATH
-export LD_LIBRARY_PATH=$HOME/.linuxbrew/lib:$LD_LIBRARY_PATH
 export RBENV_ROOT="$HOME/.local/rbenv"
 export PATH=$HOME/bin:$HOME/local/bin:$PATH
 export PATH="$HOME/.jenv/bin:$PATH"
@@ -78,7 +75,6 @@ export PATH="$HOME/.parts/autoparts/bin:$PATH"
 export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
 export PATH="$HOME/.parts/packages/python2/2.7.6/bin:$PATH"
 export PATH="$HOME/.parts/packages/python2/2.7.6/bin:$PATH"
-export PATH="$HOME/.linuxbrew/bin:$PATH"
 export PATH="$HOME/.cask/bin:$PATH"
 export PATH="$HOME/.local/perl-5.18/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
@@ -194,11 +190,15 @@ esac
 # ---------
 case "${OSTYPE}" in
     linux*)
-        if ! type -p brew > /dev/null; then
-            ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
-            exec $SHELL -l
-            case "${DIST}" in
-                Redhat)
+        case "${DIST}" in
+            Redhat)
+                export MANPATH=$HOME/.linuxbrew/share/man:$MANPATH
+                export INFOPATH=$HOME/.linuxbrew/share/info:$INFOPATH
+                export LD_LIBRARY_PATH=$HOME/.linuxbrew/lib:$LD_LIBRARY_PATH
+                export PATH="$HOME/.linuxbrew/bin:$PATH"
+                if ! type -p brew > /dev/null; then
+                    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
+                    exec $SHELL -l
                     brew install \
                          chruby \
                          ctags \
@@ -217,15 +217,9 @@ case "${OSTYPE}" in
                          tmux \
                          tree \
                          vert.x
-                    ;;
-                Debian)
-                    brew install \
-                         jq \
-                         scalaenv \
-                         vert.x
-                    ;;
-            esac
-        fi
+                fi
+                ;;
+        esac
         ;;
 esac
 
