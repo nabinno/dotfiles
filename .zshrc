@@ -153,7 +153,7 @@ case "${OSTYPE}" in
                 fi
                 eval "$(parts env)"
                 if ! type -p npm > /dev/null; then
-                    parts install npm
+                    parts install nodejs
                     npm install -g \
                         bower \
                         grunt-cli \
@@ -941,3 +941,5 @@ function t () { \mv (.*~|.*.org*|*.org*|*.tar.gz|*.stackdump|*.tar.gz|*.asx|*.0|
 
 # ### other source file ###
 if [ -f ~/.zshrc.mine ]; then source ~/.zshrc.mine; fi
+
+
