@@ -53,6 +53,11 @@ esac
 # export EDITOR=/usr/local/bin/vi
 # export LANG=ja_JP.UTF-8
 # export LANG=ja_JP.eucJP
+REQUIRED_JAVA_VERSION=1.7.0
+REQUIRED_PLAY_VERSION=2.2.3
+REQUIRED_RUBY_VERSION=2.2.0
+REQUIRED_PERL_VERSION=5.18
+REQUIRED_PYTHON_VERSION=2.7.6
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias grep='grep --color=auto'
@@ -65,6 +70,9 @@ export LC_ALL=en_US.UTF-8
 export LC_CTYPE=UTF-8
 export LC_MESSAGES=C
 export MAILPATH=$HOME/MailBox/postmaster/maildir
+export MANPATH=$HOME/.linuxbrew/share/man:$MANPATH
+export INFOPATH=$HOME/.linuxbrew/share/info:$INFOPATH
+export LD_LIBRARY_PATH=$HOME/.linuxbrew/lib:$LD_LIBRARY_PATH
 export RBENV_ROOT="$HOME/.local/rbenv"
 export PATH=$HOME/bin:$HOME/local/bin:$PATH
 export PATH="$HOME/.jenv/bin:$PATH"
@@ -73,10 +81,11 @@ export PATH="$HOME/.local/rbenv/bin:$PATH"
 export PATH="$HOME/.local/dove/bin:$PATH"
 export PATH="$HOME/.parts/autoparts/bin:$PATH"
 export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
-export PATH="$HOME/.parts/packages/python2/2.7.6/bin:$PATH"
-export PATH="$HOME/.parts/packages/python2/2.7.6/bin:$PATH"
+export PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
+export PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
+export PATH="$HOME/.linuxbrew/bin:$PATH"
 export PATH="$HOME/.cask/bin:$PATH"
-export PATH="$HOME/.local/perl-5.18/bin:$PATH"
+export PATH="$HOME/.local/perl-$REQUIRED_PERL_VERSION/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
 
 
@@ -96,12 +105,12 @@ case "${OSTYPE}" in
             git clone https://github.com/sstephenson/rbenv-gem-rehash.git ~/.local/rbenv/plugins/rbenv-gem-rehash
             echo 'eval "$(rbenv init -)'
             exec $SHELL -l
-            rbenv install 2.2.0
+            rbenv install $REQUIRED_RUBY_VERSION
             rbenv rehash
-            rbenv global 2.2.0
+            rbenv global $REQUIRED_RUBY_VERSION
             gem install bundler
         fi
-        eval "$(rbenv init -)"
+        echo 'eval "$(rbenv init -)'
         ;;
 esac
 
@@ -153,7 +162,7 @@ case "${OSTYPE}" in
                 fi
                 eval "$(parts env)"
                 if ! type -p npm > /dev/null; then
-                    parts install nodejs
+                    parts install npm
                     npm install -g \
                         bower \
                         grunt-cli \
@@ -190,15 +199,11 @@ esac
 # ---------
 case "${OSTYPE}" in
     linux*)
-        case "${DIST}" in
-            Redhat)
-                export MANPATH=$HOME/.linuxbrew/share/man:$MANPATH
-                export INFOPATH=$HOME/.linuxbrew/share/info:$INFOPATH
-                export LD_LIBRARY_PATH=$HOME/.linuxbrew/lib:$LD_LIBRARY_PATH
-                export PATH="$HOME/.linuxbrew/bin:$PATH"
-                if ! type -p brew > /dev/null; then
-                    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
-                    exec $SHELL -l
+        if ! type -p brew > /dev/null; then
+            ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
+            exec $SHELL -l
+            case "${DIST}" in
+                Redhat)
                     brew install \
                          chruby \
                          ctags \
@@ -217,17 +222,21 @@ case "${OSTYPE}" in
                          tmux \
                          tree \
                          vert.x
-                fi
-                ;;
-        esac
+                    ;;
+                Debian)
+                    brew install \
+                         jq \
+                         scalaenv \
+                         vert.x
+                    ;;
+            esac
+        fi
         ;;
 esac
 
 
 # java
 # ----
-REQUIRED_JAVA_VERSION=1.7.0
-REQUIRED_PLAY_VERSION=2.2.3
 export PLAY_HOME=/usr/local/play-$REQUIRED_PLAY_VERSION
 export PATH="$PLAY_HOME:$PATH"
 case "${OSTYPE}" in
@@ -310,8 +319,8 @@ case "${OSTYPE}" in
         if [ ! -d ~/.local/xbuild ]; then
             git clone https://github.com/tagomoris/xbuild.git ~/.local/xbuild
         fi
-        if [ ! -d ~/.local/perl-5.18 ]; then
-            ~/.local/xbuild/perl-install 5.18.2 ~/.local/perl-5.18
+        if [ ! -d ~/.local/perl-$REQUIRED_PERL_VERSION ]; then
+            ~/.local/xbuild/perl-install $REQUIRED_PERL_VERSION.2 ~/.local/perl-$REQUIRED_PERL_VERSION
         fi
         alias cpanm='~/.local/perl-5.18/bin/cpanm'
         ;;
@@ -594,9 +603,39 @@ if ! type -p ab > /dev/null; then
 fi
 
 
+# vagrannt
+# --------
+alias vu='vagrant up'
+alias vp='vagrant global-status'
+alias vk='vagrant destroy --force'
+alias vl='vagrant box list'
+alias vd='vagrant box remove'
+alias vsh='vagrant ssh'
+alias vshconfig='vagrant ssh-config'
+
 
 # docker
 # ------
+# ### installation ###
+if ! type -p docker > /dev/null; then
+    case "${OSTYPE}" in
+        freebsd*|darwin*)
+        ;;
+        linux*)
+            case "${DIST}" in
+                Redhat)
+                    sudo yum update
+                    ;;
+                Debian)
+                    sudo apt-get update
+                    sudo apt-get install -y docker-io
+	            ;;
+            esac
+            ;;
+    esac
+fi
+
+# ### alias ###
 alias dc='docker commit $(docker ps -l -q)'
 alias dd='docker rmi -f'
 alias dda='docker rmi -f $(docker images -q)'
@@ -647,6 +686,7 @@ case "${OSTYPE}" in
     linux*)
         case "${DIST}" in
             Redhat)
+                if ! type -p docker-compose > /dev/null; then pip install -U docker-compose; fi
             ;;
             Debian)
                 if ! type -p docker-compose > /dev/null; then pip install -U docker-compose; fi
@@ -941,5 +981,3 @@ function t () { \mv (.*~|.*.org*|*.org*|*.tar.gz|*.stackdump|*.tar.gz|*.asx|*.0|
 
 # ### other source file ###
 if [ -f ~/.zshrc.mine ]; then source ~/.zshrc.mine; fi
-
-
