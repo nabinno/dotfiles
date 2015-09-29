@@ -915,7 +915,21 @@ alias ij='jobs -l'
 alias ic='cat /proc/cpuinfo'
 alias in='netstat -a -n | more'
 alias im='cat /proc/meminfo'
-alias ip="ps -flW"
+case "${OSTYPE}" in
+    freebsd*|darwin*|cygwin*)
+        alias ip="ps -flW"
+        ;;
+    linux*)
+        case "${DIST}" in
+            Redhat)
+                alias ip="ps -flW"
+                ;;
+            Debian)
+                alias ip="ps aux"
+                ;;
+        esac
+        ;;
+esac
 alias it="date -R"
 alias j='cd'
 alias k='/bin/mkdir -p'
