@@ -1,101 +1,105 @@
-alias zd cd ~/.local/dove/$1
-alias uml puml generate --unicode --text $*
-alias zg z get-dotfiles; cd ~/dotfiles
-alias zp z put-dotfiles
-alias t z t
-alias z zsh -c ". ~/.zshrc && $*"
-alias gl git log $* --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -- ; echo ''
-alias x dired .
-alias w cmd /c $1
-alias v cat $1
-alias u tar zxvf $1
-alias sl ls
-alias s ln -s $1 $2
-alias re e ~/.zshrc
-alias r mv $1 $2
-alias nil $*
-alias m mv $1 $2
-alias ll ls -a $*
-alias lf ls -al $*
-alias kl /bin/kill -f $1
-alias k mkdir -p $*
-alias j cd $1
-alias ip ps -Wf
-alias gwho git shortlog -s --
-alias gvlog git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen - %cD (%cr) %C(bold blue)<%an>%Creset%n' --abbrev-commit --date=relative -p ; echo ''
-alias gswitch git checkout $*
-alias gst git status -sb
-alias gslog git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative ; echo ''
-alias gsearch git "!sh -c 'git rev-list --all | grep ^$1 | while read commit; do git --no-pager log -n1 --pretty=format:\"%H %ci %an %s%n\" $commit; done' -"
-alias gs git status -sb
-alias grao git remote add origin https://github.com/nabinno/$1.git
-alias gra git remote add $*
-alias gpr git pull --rebase
-alias gpom git push -v -u origin master
-alias gpick git cherry-pick
-alias gp git push -v -u $*
-alias glg git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -- ; echo ''
-alias glf git log --decorate=full --graph --pretty=full ; echo ''
-alias glast-commit-diff git diff HEAD^
-alias glast git diff HEAD~1..HEAD
-alias gi git init
-alias ghist git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -- ; echo ''
-alias gexport git "!sh -c 'git checkout-index -a -f --prefix=$1/' -"
-alias gdfc git diff --cached
-alias gdf git diff HEAD^
-alias gdelete-remote-branch git "!sh -c \"git push origin --delete $1\""
-alias gdelete-branch git !git branch -D $*
-alias gdel git rm $*
-alias gd git rm $*
-alias gco git checkout
-alias gci git commit -v $*
-alias gcd git !bash -c 'while  ! -d .git; do cd ..; done'
-alias gca git commit -a -v -m $*
-alias gc git commit -a -v -m $*
-alias gbrs git branch -a $*
-alias gbranches git branch -a $*
-alias gbr git branch $*
-alias gb git branch $*
-alias gammend git commit --amend $*
-alias galiases git !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /'
-alias ga git add -v $*
-alias g git $*
-alias fl lf
-alias ed11 alias ed2 
-alias ed1 j ~/.emacs.d
-alias ed alias o 
-alias e find-file $1
-alias dv docker images -viz
-alias dps docker ps -a
-alias dp docker ps -a
-alias dls docker images
-alias dl docker images
-alias dkilla docker rm -f $(docker ps -a -q)
-alias dkill docker rm -f
-alias dkd dk ; dd
-alias dka docker rm -f $(docker ps -a -q)
-alias dk docker rm -f
-alias dj docker run -i -t
-alias dip docker inspect $(docker ps -l -q) | grep IPAddress | cut -d '"' -f 4 ; docker inspect $(docker ps -l -q) | grep /tcp | cut -d '"' -f 2
-alias denv docker run --rm $1 env
-alias ddela docker rmi -f $(docker images -q)
-alias ddel docker rmi -f
-alias dda docker rmi -f $(docker images -q)
-alias dd docker rmi -f
-alias dc docker commit $(docker ps -l -q)
-alias datach docker start $1 ; docker atach $1
-alias docker sudo docker
-alias d rm -fr $*
-alias cs (modify-coding-system-alist processsjis-dos)
-alias c cp -f -R $1 $2
-alias b cp -ipR $1 {concat $1 ".org" (format-time-string "%y%m%d")}
-alias U tar zcvf $1.tar.gz $1
-alias . source $1
-alias , cmd /c start $*
-alias node NODE_NO_READLINE=1 node
-alias keshikimi rm -rf config/plagger; wait; pigtail -w; wait; whenever -w
-alias jd cd ~/dotfiles
-alias J cd ~/$1
-alias npmi strip-json-comments package.comment.json | sed '/^ *$/d' > package.json; wait; npm install
-alias bowi strip-json-comments bower.comment.json | sed '/^ *$/d' > bower.json; wait; bower install
+alias vd vagrant box remove
+alias vk vagrant destroy $1
+alias vp vagrant global-status
+alias vl vagrant box list
 alias tf terraform $*
+alias bowi strip-json-comments bower.comment.json | sed '/^ *$/d' > bower.json; wait; bower install
+alias npmi strip-json-comments package.comment.json | sed '/^ *$/d' > package.json; wait; npm install
+alias J cd ~/$1
+alias jd cd ~/dotfiles
+alias keshikimi rm -rf config/plagger; wait; pigtail -w; wait; whenever -w
+alias node NODE_NO_READLINE=1 node
+alias , cmd /c start $*
+alias . source $1
+alias U tar zcvf $1.tar.gz $1
+alias b cp -ipR $1 {concat $1 ".org" (format-time-string "%y%m%d")}
+alias c cp -f -R $1 $2
+alias cs (modify-coding-system-alist processsjis-dos)
+alias d rm -fr $*
+alias docker sudo docker
+alias datach docker start $1 ; docker atach $1
+alias dc docker commit $(docker ps -l -q)
+alias dd docker rmi -f
+alias dda docker rmi -f $(docker images -q)
+alias ddel docker rmi -f
+alias ddela docker rmi -f $(docker images -q)
+alias denv docker run --rm $1 env
+alias dip docker inspect $(docker ps -l -q) | grep IPAddress | cut -d '"' -f 4 ; docker inspect $(docker ps -l -q) | grep /tcp | cut -d '"' -f 2
+alias dj docker run -i -t
+alias dk docker rm -f
+alias dka docker rm -f $(docker ps -a -q)
+alias dkd dk ; dd
+alias dkill docker rm -f
+alias dkilla docker rm -f $(docker ps -a -q)
+alias dl docker images
+alias dls docker images
+alias dp docker ps -a
+alias dps docker ps -a
+alias dv docker images -viz
+alias e find-file $1
+alias ed alias o 
+alias ed1 j ~/.emacs.d
+alias ed11 alias ed2 
+alias fl lf
+alias g git $*
+alias ga git add -v $*
+alias galiases git !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /'
+alias gammend git commit --amend $*
+alias gb git branch $*
+alias gbr git branch $*
+alias gbranches git branch -a $*
+alias gbrs git branch -a $*
+alias gc git commit -a -v -m $*
+alias gca git commit -a -v -m $*
+alias gcd git !bash -c 'while  ! -d .git; do cd ..; done'
+alias gci git commit -v $*
+alias gco git checkout
+alias gd git rm $*
+alias gdel git rm $*
+alias gdelete-branch git !git branch -D $*
+alias gdelete-remote-branch git "!sh -c \"git push origin --delete $1\""
+alias gdf git diff HEAD^
+alias gdfc git diff --cached
+alias gexport git "!sh -c 'git checkout-index -a -f --prefix=$1/' -"
+alias ghist git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -- ; echo ''
+alias gi git init
+alias glast git diff HEAD~1..HEAD
+alias glast-commit-diff git diff HEAD^
+alias glf git log --decorate=full --graph --pretty=full ; echo ''
+alias glg git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -- ; echo ''
+alias gp git push -v -u $*
+alias gpick git cherry-pick
+alias gpom git push -v -u origin master
+alias gpr git pull --rebase
+alias gra git remote add $*
+alias grao git remote add origin https://github.com/nabinno/$1.git
+alias gs git status -sb
+alias gsearch git "!sh -c 'git rev-list --all | grep ^$1 | while read commit; do git --no-pager log -n1 --pretty=format:\"%H %ci %an %s%n\" $commit; done' -"
+alias gslog git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative ; echo ''
+alias gst git status -sb
+alias gswitch git checkout $*
+alias gvlog git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen - %cD (%cr) %C(bold blue)<%an>%Creset%n' --abbrev-commit --date=relative -p ; echo ''
+alias gwho git shortlog -s --
+alias ip ps -Wf
+alias j cd $1
+alias k mkdir -p $*
+alias kl /bin/kill -f $1
+alias lf ls -al $*
+alias ll ls -a $*
+alias m mv $1 $2
+alias nil $*
+alias r mv $1 $2
+alias re e ~/.zshrc
+alias s ln -s $1 $2
+alias sl ls
+alias u tar zxvf $1
+alias v cat $1
+alias w cmd /c $1
+alias x dired .
+alias gl git log $* --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -- ; echo ''
+alias z zsh -c ". ~/.zshrc && $*"
+alias t z t
+alias zp z put-dotfiles
+alias zg z get-dotfiles; cd ~/dotfiles
+alias uml puml generate --unicode --text $*
+alias zd cd ~/.local/dove/$1
