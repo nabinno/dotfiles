@@ -110,7 +110,7 @@ case "${OSTYPE}" in
             rbenv global $REQUIRED_RUBY_VERSION
             gem install bundler
         fi
-        echo 'eval "$(rbenv init -)'
+        eval "$(rbenv init -)"
         ;;
 esac
 
