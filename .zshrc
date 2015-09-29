@@ -147,7 +147,8 @@ case "${OSTYPE}" in
                         node-plantuml \
                         npm2dot \
                         phantomjs \
-                        requirejs
+                        requirejs \
+                        term
                     gem install \
                         bundler \
                         compass \
@@ -173,6 +174,7 @@ case "${OSTYPE}" in
                         npm2dot \
                         phantomjs \
                         requirejs
+                        term
                 fi
                 if ! type -p gem > /dev/null; then
                     parts install gem
