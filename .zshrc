@@ -103,7 +103,7 @@ case "${OSTYPE}" in
             mkdir ~/.local/rbenv/shims ~/.local/rbenv/versions ~/.local/rbenv/plugins
             git clone git://github.com/sstephenson/ruby-build.git ~/.local/rbenv/plugins/ruby-build
             git clone https://github.com/sstephenson/rbenv-gem-rehash.git ~/.local/rbenv/plugins/rbenv-gem-rehash
-            echo 'eval "$(rbenv init -)'
+            eval "$(rbenv init -)"
             exec $SHELL -l
             rbenv install $REQUIRED_RUBY_VERSION
             rbenv rehash
@@ -162,7 +162,7 @@ case "${OSTYPE}" in
                 fi
                 eval "$(parts env)"
                 if ! type -p npm > /dev/null; then
-                    parts install npm
+                    parts install nodejs
                     npm install -g \
                         bower \
                         grunt-cli \
@@ -628,7 +628,7 @@ if ! type -p docker > /dev/null; then
                     ;;
                 Debian)
                     sudo apt-get update
-                    sudo apt-get install -y docker-io
+                    sudo apt-get install -y docker.io
 	            ;;
             esac
             ;;
