@@ -95,7 +95,7 @@
 (fset 'gulp-test          "xgulptest")
 (fset 'gulp-serve         "xgulpserve")
 (fset 'gulp-build         "xgulpbuild")
-(fset 'gulp-switch-buffer "xido-switch-buffer*gulp*")
+(fset 'gulp-switch-buffer "xido-switch-buffer*gulp")
 (global-set-key (kbd "\C-cgs") 'gulp-serve)
 (global-set-key (kbd "\C-cgt") 'gulp-test)
 (global-set-key (kbd "\C-cgp") 'gulp-protractor)
@@ -119,6 +119,37 @@
   (progn
     (setq buffer (get-buffer-create (concat "*gulp<" arg ">*")))
     (apply 'make-comint-in-buffer "gulp" buffer "~/.parts/bin/gulp" nil (list arg))
+    ))
+
+
+;;; Grunt
+(fset 'grunt-test          "xgrunttest")
+(fset 'grunt-serve         "xgruntserve")
+(fset 'grunt-serve-proxy   "xgruntserve_proxy")
+(fset 'grunt-build         "xgruntbuild")
+(fset 'grunt-switch-buffer "xido-switch-buffer*grunt")
+(global-set-key (kbd "\C-cGs") 'grunt-serve)
+(global-set-key (kbd "\C-cGS") 'grunt-serve-proxy)
+(global-set-key (kbd "\C-cGt") 'grunt-test)
+(global-set-key (kbd "\C-cGb") 'grunt-build)
+(global-set-key (kbd "\C-cGg") 'grunt-switch-buffer)
+
+(add-hook 'jinari-minor-mode-hook
+          (lambda ()
+            (mapc (lambda (pair)
+                    (let ((key (car pair))
+                          (func (cdr pair)))
+                      (define-key jinari-minor-mode-map
+                        (read-kbd-macro key) func)))
+                  '(("" . grunt-save-buffer-and-protractor))
+                    )))
+
+(defun grunt (arg)
+  "Grunt task with ARG."
+  (interactive "stask name: ")
+  (progn
+    (setq buffer (get-buffer-create (concat "*grunt<" arg ">*")))
+    (apply 'make-comint-in-buffer "grunt" buffer "~/.parts/bin/grunt" nil (list arg))
     ))
 
 
