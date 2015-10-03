@@ -12,7 +12,7 @@ sh -c "$(curl -fsSL https://raw.github.com/nabinno/dotfiles/master/install.sh)"
 ### Zsh
 Launch zsh or run zsh resource.
 ```
-exec zsh -l"
+exec zsh -l
 ```
 
 ### Emacs
