@@ -61,7 +61,6 @@ REQUIRED_PYTHON_VERSION=2.7.6
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias grep='grep --color=auto'
-alias ls='ls --color=auto'
 export CLICOLOR=1
 export EDITOR='vim -f'
 export LANG=en_US.UTF-8
@@ -936,9 +935,10 @@ alias it="date -R"
 alias j='cd'
 alias k='/bin/mkdir -p'
 function kl () { kill -f $1 }
-alias la="\ls -p -F -a"
+alias ls='ls --color=auto'
+alias la="\ls -p -l -F -a"
+alias lf="\ls -p -F --hide='.*'"
 alias ll="\ls -p -F -a"
-alias lf="\ls -p -l -F -a"
 function lt () {
     \ls -R $1 | \grep ":$" | \sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
 }
