@@ -1,3 +1,5 @@
+alias lf ls -l --hide='.*'
+alias la ls -al
 alias zg z get-dotfiles; cd ~/.local/dotfiles
 alias zd cd ~/.local/dove/$1
 alias uml puml generate --unicode --text $*
@@ -16,7 +18,6 @@ alias r mv $1 $2
 alias nil $*
 alias m mv $1 $2
 alias ll ls -a $*
-alias lf ls -al $*
 alias kl /bin/kill -f $1
 alias k mkdir -p $*
 alias j cd $1
