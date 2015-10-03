@@ -937,7 +937,7 @@ alias k='/bin/mkdir -p'
 function kl () { kill -f $1 }
 alias ls='ls --color=auto'
 alias la="\ls -p -l -F -a"
-alias lf="\ls -p -F --hide='.*'"
+alias lf="\ls -p -l -F --hide='.*'"
 alias ll="\ls -p -F -a"
 function lt () {
     \ls -R $1 | \grep ":$" | \sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
