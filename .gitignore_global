@@ -41,10 +41,12 @@
 /lessons_*
 /log/*.log
 /tmp
+CTAGS
 Desktop.ini
 Gemfile.lock
 InstalledFiles
 Session.vim
+TAGS
 Thumbs.db
 \#*\#
 _tmp
