@@ -840,17 +840,18 @@ alias zd=cd-dove
 # ### dotfiles ###
 function get-dotfiles () {
     cd ~/; wait
-    if [ ! -d ~/dotfiles ]; then
-        git clone https://github.com/nabinno/dotfiles; wait
+    if [ ! -d ~/.local/dotfiles ]; then
+        mkdir -p ~/.local
+        sh -c "$(curl -fsSL https://raw.github.com/nabinno/dotfiles/master/install)"; wait
     fi
-    cd ~/dotfiles; wait
+    cd ~/.local/dotfiles; wait
     git checkout -- .;  wait
     git pull;  wait
-    rm -rf .emacs.d/lisp/*;  wait
-    cp -pr ~/.emacs.d/lisp/* .emacs.d/lisp/;  wait
-    cp -pr ~/.emacs.d/bin/* .emacs.d/bin/;  wait
-    cp -pr ~/.emacs.d/eshell/alias .emacs.d/eshell/;  wait
-    cp -pr  ~/.emacs.d/init.el .emacs.d/;  wait
+    rm -rf                         .emacs.d/lisp/*;  wait
+    cp -pr ~/.emacs.d/lisp/*       .emacs.d/lisp/;   wait
+    cp -pr ~/.emacs.d/bin/*        .emacs.d/bin/;    wait
+    cp -pr ~/.emacs.d/eshell/alias .emacs.d/eshell/; wait
+    cp -pr ~/.emacs.d/init.el      .emacs.d/;        wait
     cp -pr ~/.zshrc .
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
@@ -862,25 +863,26 @@ alias zg=get-dotfiles
 function put-dotfiles () {
     current_pwd=`pwd`
     cd ~/
-    if [ ! -d ~/dotfiles ]; then
-        git clone https://github.com/nabinno/dotfiles; wait
+    if [ ! -d ~/.local/dotfiles ]; then
+        mkdir -p ~/.local
+        sh -c "$(curl -fsSL https://raw.github.com/nabinno/dotfiles/master/install)"; wait
     fi
-    cd ~/dotfiles; wait
+    cd ~/.local/dotfiles; wait
     git checkout -- .;  wait
     git pull;  wait
-    rm -rf ~/.emacs.d/lisp/*;  wait
-    cp -pr .emacs.d/lisp/* ~/.emacs.d/lisp/;  wait
-    cp -pr .emacs.d/bin/* ~/.emacs.d/bin/;  wait
-    cp -pr .emacs.d/eshell/alias ~/.emacs.d/eshell/;  wait
-    cp -pr .emacs.d/init.el ~/.emacs.d/;  wait
-    cp -pr .zshrc ~/; wait
+    rm -rf                       ~/.emacs.d/lisp/*;  wait
+    cp -pr .emacs.d/lisp/*       ~/.emacs.d/lisp/;   wait
+    cp -pr .emacs.d/bin/*        ~/.emacs.d/bin/;    wait
+    cp -pr .emacs.d/eshell/alias ~/.emacs.d/eshell/; wait
+    cp -pr .emacs.d/init.el      ~/.emacs.d/;        wait
+    cp -pr .zshrc ~/;                                wait
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             cp -pr .screenrc ~/; wait
             ;;
     esac
     cd $current_pwd
-    source ~/.zshrc
+    exec zsh -l
 }
 alias zp=put-dotfiles
 
