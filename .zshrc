@@ -882,7 +882,7 @@ function put-dotfiles () {
             ;;
     esac
     cd $current_pwd
-    exec zsh -l
+    source ~/.zshrc
 }
 alias zp=put-dotfiles
 
