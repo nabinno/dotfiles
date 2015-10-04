@@ -10,9 +10,10 @@ find ~/.local/dotfiles -maxdepth 1 -mindepth 1 -not \( \
      -o -name Dockerfile \
      -o -name README.md \
      -o -name install.sh \
-     \) | xargs -i cp -ipr {} ~/
+     \) | xargs -i cp -fr {} ~/
 
 printf "${GREEN}"
+echo '                                     '
 echo '       __      __  _____ __          '
 echo '  ____/ /___  / /_/ __(_) /__  _____ '
 echo ' / __  / __ \/ __/ /_/ / / _ \/ ___/ '
