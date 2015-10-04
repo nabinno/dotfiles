@@ -24,19 +24,27 @@ case "${OSTYPE}" in
             KERNEL=`uname -r`
             if [ -f /etc/redhat-release ] ; then
                 DIST='RedHat'
+                DIST_VERSION=''
+                DIST2=''
                 PSUEDONAME=`cat /etc/redhat-release | sed -e 's/.*(//' | sed -e 's/)//'`
                 REV=`cat /etc/redhat-release | sed -e 's/.*release //' | sed -e 's/ .*//'`
             elif [ -f /etc/SUSE-release ] ; then
                 DIST="SUSE"
+                DIST_VERSION=''
                 DIST2=`cat /etc/SUSE-release | tr "\n" ' '| sed -e 's/VERSION.*//'`
+                PSUEDONAME=''
                 REV=`cat /etc/SUSE-release | tr "\n" ' ' | sed -e 's/.*= //'`
             elif [ -f /etc/mandrake-release ] ; then
                 DIST='Mandrake'
+                DIST_VERSION=''
+                DIST2=''
                 PSUEDONAME=`cat /etc/mandrake-release | sed -e 's/.*(//' | sed -e 's/)//'`
                 REV=`cat /etc/mandrake-release | sed -e 's/.*release //' | sed -e 's/ .*//'`
             elif [ -f /etc/debian_version ] ; then
-                DIST="Debian"
+                DIST="$(lsb_release -i -s)"
+                DIST_VERSION="$(lsb_release -s -r)"
                 DIST2="Debian `cat /etc/debian_version`"
+                PSUEDONAME=''
                 REV=""
             fi
             if [ -f /etc/UnitedLinux-release ] ; then
@@ -98,6 +106,28 @@ if [ ! -d ~/.local/bin ]; then mkdir -p ~/.local/bin; fi
 case "${OSTYPE}" in
     freebsd*|darwin*|linux*)
         if ! type -p rbenv > /dev/null; then
+            case "$DIST" in
+                Debian)
+                    sudo apt-get update; sudo apt-get -y install \
+                            build-essential \
+                            zlib1g-dev \
+                            libssl-dev \
+                            libreadline5-dev \
+                            make \
+                            curl \
+                            git-core
+                    ;;
+                Ubuntu)
+                    sudo apt-get update; apt-get -y install \
+                            build-essential \
+                            zlib1g-dev \
+                            libssl-dev \
+                            libreadline-dev \
+                            make \
+                            curl \
+                            git-core
+                    ;;
+            esac
             git clone git://github.com/sstephenson/rbenv.git ~/.local/rbenv
             mkdir ~/.local/rbenv/shims ~/.local/rbenv/versions ~/.local/rbenv/plugins
             git clone git://github.com/sstephenson/ruby-build.git ~/.local/rbenv/plugins/ruby-build
@@ -119,7 +149,7 @@ esac
 case "${OSTYPE}" in
     linux*)
         case "${DIST}" in
-            Debian)
+            Debian|Ubuntu)
                 if ! type -p parts > /dev/null; then
                     ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
                     eval "$(parts env)"
@@ -224,7 +254,7 @@ case "${OSTYPE}" in
                          tree \
                          vert.x
                     ;;
-                Debian)
+                Debian|Ubuntu)
                     brew install \
                          jq \
                          scalaenv \
@@ -260,7 +290,7 @@ function get-java () {
                     sudo yum install -y java-$REQUIRED_JAVA_VERSION-openjdk-devel
                     export JAVA_HOME=/usr/lib/jvm/java-$REQUIRED_JAVA_VERSION
                     ;;
-                Debian)
+                Debian|Ubuntu)
                     sudo apt-get update
                     sudo apt-get install -y openjdk-7-jdk
                     export JAVA_HOME=/usr/lib/jvm/default-java
@@ -290,7 +320,7 @@ function get-sbt () {
                     curl https://bintray.com/sbt/rpm/rpm | sudo tee /etc/yum.repos.d/bintray-sbt-rpm.repo
                     sudo yum install -y sbt
                     ;;
-                Debian)
+                Debian|Ubuntu)
                     echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
                     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823
                     sudo apt-get update
@@ -354,7 +384,7 @@ function get-emacs () {
                 Redhat)
                     sudo yum install -y ncurses-devel
                     ;;
-                Debian)
+                Debian|Ubuntu)
                     sudo apt-get install -y build-essential libncurses-dev
                     sudo apt-get build-dep emacs
                     ;;
@@ -554,7 +584,7 @@ case "${OSTYPE}" in
         case "${DIST}" in
             Redhat)
             ;;
-            Debian)
+            Debian|Ubuntu)
                 if ! type -p puml > /dev/null; then npm install -g node-plantuml; fi
                 if [ ! -f ~/.local/bin/plantuml.jar ] ; then
                     wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
@@ -574,7 +604,7 @@ if ! type -p dot > /dev/null; then
                 Redhat)
                     sudo yum install -y graphviz
                     ;;
-                Debian)
+                Debian|Ubuntu)
                     sudo apt-get update
                     sudo apt-get install -y graphviz
                     ;;
@@ -595,7 +625,7 @@ if ! type -p ab > /dev/null; then
                 Redhat)
                     sudo yum install -y httpd-tools
                     ;;
-                Debian)
+                Debian|Ubuntu)
                     sudo apt-get install -y apache2-utils
                     ;;
             esac
@@ -628,8 +658,10 @@ if ! type -p docker > /dev/null; then
                     sudo yum update
                     ;;
                 Debian)
-                    sudo apt-get update
-                    sudo apt-get install -y docker.io
+                    sudo apt-get update; sudo apt-get install -y docker.io
+	            ;;
+                Ubuntu)
+                    sudo apt-get update; sudo apt-get install -y docker
 	            ;;
             esac
             ;;
@@ -689,7 +721,7 @@ case "${OSTYPE}" in
             Redhat)
                 if ! type -p docker-compose > /dev/null; then pip install -U docker-compose; fi
             ;;
-            Debian)
+            Debian|Ubuntu)
                 if ! type -p docker-compose > /dev/null; then pip install -U docker-compose; fi
                 if ! type -p docker-machine > /dev/null; then
                     wget https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_linux-386 -O ~/.local/bin/docker-machine
@@ -925,7 +957,7 @@ case "${OSTYPE}" in
             Redhat)
                 alias ip="ps -flW"
                 ;;
-            Debian)
+            Debian|Ubuntu)
                 alias ip="ps aux"
                 ;;
         esac
