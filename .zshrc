@@ -66,6 +66,7 @@ REQUIRED_PLAY_VERSION=2.2.3
 REQUIRED_RUBY_VERSION=2.2.0
 REQUIRED_PERL_VERSION=5.18
 REQUIRED_PYTHON_VERSION=2.7.6
+REQUIRED_GIT_VERSION=1.9.4
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias grep='grep --color=auto'
@@ -372,6 +373,35 @@ esac
 # javascript
 # ----------
 export node='NODE_NO_READLINE=1 node'
+
+
+# git
+# ---
+function get-git () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*)
+        ;;
+        linux*)
+            case "${DIST}" in
+                Redhat)
+                ;;
+                Debian|Ubuntu)
+                    sudo apt-get install -y python-software-properties
+                    sudo add-apt-repository ppa:git-core/ppa
+                    sudo apt-get update
+                    sudo apt-get install -y git
+                    ;;
+            esac
+            ;;
+    esac
+}
+if ! type -p git > /dev/null; then
+    get-git
+else
+    REQUIRED_GIT_VERSION=$(echo $REQUIRED_GIT_VERSION | sed 's/\(.*\..*\)\..*/\1/')
+    CURRENT_GIT_VERSION=$(git --version 2>&1 | cut -d\  -f 3 | sed 's/\(.*\..*\)\..*/\1/')
+    if [[ $REQUIRED_GIT_VERSION > $CURRENT_GIT_VERSION ]]; then get-git; fi
+fi
 
 
 # emacs
