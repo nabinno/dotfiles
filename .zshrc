@@ -427,6 +427,22 @@ if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ]; then
 fi
 
 
+# php
+# ---
+case "${OSTYPE}" in
+    freebsd*|darwin*|linux*)
+        case "${DIST}" in
+            Debian|Ubuntu)
+                if [ ! type -p php > /dev/null ]; then
+                    sudo apt-get update
+                    sudo apt-get install -y php5-common php5-cli php5-fpm
+                fi
+                ;;
+        esac
+        ;;
+esac
+
+
 # perl
 # ----
 case "${OSTYPE}" in
