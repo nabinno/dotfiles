@@ -19,9 +19,9 @@
 ;;  '(diff-removed ((t (:foreground "#991414" :background nil :inherit nil)))))
 (custom-set-faces
  '(magit-diff-added ((t (:background "black" :foreground "green"))))
- '(magit-diff-added-highlight ((t (:background "white" :foreground "green"))))
- '(magit-diff-removed ((t (:background "black" :foreground "blue"))))
- '(magit-diff-removed-highlight ((t (:background "white" :foreground "blue"))))
+ '(magit-diff-added-highlight ((t (:background "green" :foreground "black"))))
+ '(magit-diff-removed ((t (:background "black" :foreground "pink"))))
+ '(magit-diff-removed-highlight ((t (:background "pink" :foreground "black"))))
  '(magit-hash ((t (:foreground "red")))))
 
 ;; Hint: customize `magit-repo-dirs' so that you can use C-u M-F12 to
@@ -61,6 +61,7 @@
 
 ;;; Git flow
 (require-package 'magit-gitflow)
+(require 'magit-gitflow)
 (add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
 
 
