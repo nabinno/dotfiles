@@ -13,9 +13,16 @@
  magit-diff-refine-hunk t
  magit-completing-read-function 'magit-ido-completing-read)
 
+;; coloration
 ;; (custom-set-faces
 ;;  '(diff-added ((t (:foreground "#149914" :background nil :inherit nil))))
 ;;  '(diff-removed ((t (:foreground "#991414" :background nil :inherit nil)))))
+(custom-set-faces
+ '(magit-diff-added ((t (:background "black" :foreground "green"))))
+ '(magit-diff-added-highlight ((t (:background "white" :foreground "green"))))
+ '(magit-diff-removed ((t (:background "black" :foreground "blue"))))
+ '(magit-diff-removed-highlight ((t (:background "white" :foreground "blue"))))
+ '(magit-hash ((t (:foreground "red")))))
 
 ;; Hint: customize `magit-repo-dirs' so that you can use C-u M-F12 to
 ;; quickly open magit on any one of your projects.
@@ -54,7 +61,7 @@
 
 ;;; Git flow
 (require-package 'magit-gitflow)
-(add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
+(add-hook 'magit-mode-hook 'magit-gitflow)
 
 
 (when *is-a-mac*

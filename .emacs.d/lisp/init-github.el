@@ -9,10 +9,10 @@
 (add-hook 'prog-mode-hook 'bug-reference-prog-mode)
 
 (when (eval-when-compile (> emacs-major-version 23))
+  (require-package 'ido-completing-read+)
   (require-package 'github-clone)
   (require-package 'magit-gh-pulls))
 (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
-
 
 (provide 'init-github)
 ;;; init-github.el ends here
