@@ -61,7 +61,7 @@
 
 ;;; Git flow
 (require-package 'magit-gitflow)
-(add-hook 'magit-mode-hook 'magit-gitflow)
+(add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
 
 
 (when *is-a-mac*
