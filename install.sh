@@ -6,7 +6,6 @@ mkdir -p .local/dotfiles
 git clone https://github.com/nabinno/dotfiles.git .local/dotfiles
 find ~/.local/dotfiles -maxdepth 1 -mindepth 1 -not \( \
      -name .git \
-     -o -name .gitconfig \
      -o -name Dockerfile \
      -o -name README.md \
      -o -name install.sh \
