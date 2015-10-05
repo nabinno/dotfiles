@@ -479,6 +479,7 @@ export node='NODE_NO_READLINE=1 node'
 function get-git () {
     case "${OSTYPE}" in
         freebsd*|darwin*)
+            port install git-flow
         ;;
         linux*)
             case "${DIST}" in
@@ -488,7 +489,7 @@ function get-git () {
                     sudo apt-get install -y python-software-properties
                     sudo add-apt-repository ppa:git-core/ppa
                     sudo apt-get update
-                    sudo apt-get install -y git
+                    sudo apt-get install -y git git-flow
                     ;;
             esac
             ;;
