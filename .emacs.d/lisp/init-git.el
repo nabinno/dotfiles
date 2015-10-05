@@ -1,3 +1,6 @@
+;;; init-git --- git configuration
+;;; Commentary:
+;;; Code:
 (require-package 'magit)
 (require-package 'gitignore-mode)
 (require-package 'gitconfig-mode)
@@ -43,10 +46,15 @@
 ;;   (diminish 'magit-auto-revert-mode))
 
 
-;;; git-blame
+;;; Git blame
 (require-package 'git-blame)
 (autoload 'git-blame-mode "git-blame"
   "Minor mode for incremental blame for Git." t)
+
+
+;;; Git flow
+(require-package 'magit-gitflow)
+(add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
 
 
 (when *is-a-mac*
@@ -94,3 +102,4 @@
 
 
 (provide 'init-git)
+;;; init-git.el ends here

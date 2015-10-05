@@ -1,3 +1,6 @@
+;;; init-github --- github configuration
+;;; Commentary:
+;;; Code:
 (require 'init-git)
 
 (require-package 'yagist)
@@ -8,7 +11,8 @@
 (when (eval-when-compile (> emacs-major-version 23))
   (require-package 'github-clone)
   (require-package 'magit-gh-pulls))
-
+(add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
 
 
 (provide 'init-github)
+;;; init-github.el ends here
