@@ -474,6 +474,26 @@ esac
 export node='NODE_NO_READLINE=1 node'
 
 
+# mysql
+# -----
+case "${OSTYPE}" in
+    linux*)
+        case "${DIST}" in
+            Debian|Ubuntu)
+                if ! type -p mysql > /dev/null; then
+                    sudo apt-get update;  sudo apt-get install -y libmysqlclient-dev
+                fi
+                ;;
+        esac
+esac
+function my-restart () {
+    sudo killall mysqld $1; wait
+    sudo /etc/init.d/mysql start; wait
+    sudo /etc/init.d/mysql status
+}
+alias mr="my-restart"
+
+
 # git
 # ---
 function get-git () {
@@ -502,6 +522,51 @@ else
     CURRENT_GIT_VERSION=$(git --version 2>&1 | cut -d\  -f 3 | sed 's/\(.*\..*\)\..*/\1/')
     if [[ $REQUIRED_GIT_VERSION > $CURRENT_GIT_VERSION ]]; then get-git; fi
 fi
+alias g='git'
+alias ga='git add -v'
+alias galiases="git !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /'"
+alias gammend='git commit --amend'
+alias gb='git branch'
+alias gbr='git branch'
+alias gbranches='git branch -a'
+alias gbrs='git branch -a'
+alias gc='git commit -a -v -m'
+alias gca='git commit -a -v -m'
+alias gcd="git !bash -c 'while  ! -d .git; do cd ..; done'"
+alias gci='git commit -v'
+alias gco='git checkout'
+alias gd='git rm'
+alias gdel='git rm'
+alias gdelbr='git !git branch -D'
+alias gdb='git !git branch -D'
+alias gdrb='git "!sh -c \"git push origin --delete $1\""'
+alias gdf='git diff HEAD^'
+alias gdfc='git diff --cached'
+alias gexport='git "!sh -c \"git checkout-index -a -f --prefix=$1/\" -"'
+alias ghist='git log --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --'
+function ghclone () { git clone https://${2}github.com/${1}.git }
+function git-log () { git log ${1} --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit -- }
+alias gl='git-log'
+alias glast='git diff HEAD~1..HEAD'
+alias glf='git log --decorate=full --graph --pretty=full'
+alias glg='git log --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --'
+alias gpick='git cherry-pick'
+alias gp='git push -v'
+alias gpom='git push -v -u origin master'
+alias gpr='git pull --rebase'
+alias gs='git status -sb'
+alias gsearch=git "!sh -c \'git rev-list --all | grep ^$1 | while read commit; do git --no-pager log -n1 --pretty=format:\"%H %ci %an %s%n\" $commit; done\' -"
+alias gslog='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --date=relative'
+alias gst='git status -sb'
+alias gswitch='git checkout'
+alias gvlog='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen - %cD (%cr) %C(bold blue)<%an>%Creset%n" --abbrev-commit --date=relative -p ; echo ""'
+alias gwho='git shortlog -s --'
+function parse_git_dirty {
+    git diff --no-ext-diff --quiet --exit-code &> /dev/null || echo "*"
+}
+function parse_git_branch {
+    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty))/"
+}
 
 
 # emacs
@@ -943,53 +1008,6 @@ esac
 
 # customized
 # ----------
-# #### git ###
-alias g='git'
-alias ga='git add -v'
-alias galiases="git !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /'"
-alias gammend='git commit --amend'
-alias gb='git branch'
-alias gbr='git branch'
-alias gbranches='git branch -a'
-alias gbrs='git branch -a'
-alias gc='git commit -a -v -m'
-alias gca='git commit -a -v -m'
-alias gcd="git !bash -c 'while  ! -d .git; do cd ..; done'"
-alias gci='git commit -v'
-alias gco='git checkout'
-alias gd='git rm'
-alias gdel='git rm'
-alias gdelbr='git !git branch -D'
-alias gdb='git !git branch -D'
-alias gdrb='git "!sh -c \"git push origin --delete $1\""'
-alias gdf='git diff HEAD^'
-alias gdfc='git diff --cached'
-alias gexport='git "!sh -c \"git checkout-index -a -f --prefix=$1/\" -"'
-alias ghist='git log --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --'
-function ghclone () { git clone https://${2}github.com/${1}.git }
-function git-log () { git log ${1} --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit -- }
-alias gl='git-log'
-alias glast='git diff HEAD~1..HEAD'
-alias glf='git log --decorate=full --graph --pretty=full'
-alias glg='git log --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --'
-alias gpick='git cherry-pick'
-alias gp='git push -v'
-alias gpom='git push -v -u origin master'
-alias gpr='git pull --rebase'
-alias gs='git status -sb'
-alias gsearch=git "!sh -c \'git rev-list --all | grep ^$1 | while read commit; do git --no-pager log -n1 --pretty=format:\"%H %ci %an %s%n\" $commit; done\' -"
-alias gslog='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --date=relative'
-alias gst='git status -sb'
-alias gswitch='git checkout'
-alias gvlog='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen - %cD (%cr) %C(bold blue)<%an>%Creset%n" --abbrev-commit --date=relative -p ; echo ""'
-alias gwho='git shortlog -s --'
-function parse_git_dirty {
-    git diff --no-ext-diff --quiet --exit-code &> /dev/null || echo "*"
-}
-function parse_git_branch {
-    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty))/"
-}
-
 # ### dove ###
 function cd-dove () {
     dove_path=`which dove`
