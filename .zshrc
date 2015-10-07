@@ -372,11 +372,25 @@ function get-java () {
                 Redhat)
                     sudo yum install -y java-$REQUIRED_JAVA_VERSION-openjdk
                     sudo yum install -y java-$REQUIRED_JAVA_VERSION-openjdk-devel
-                    export JAVA_HOME=/usr/lib/jvm/java-$REQUIRED_JAVA_VERSION
                     ;;
                 Debian|Ubuntu)
                     sudo apt-get update
                     sudo apt-get install -y openjdk-7-jdk
+                    ;;
+            esac
+            ;;
+    esac
+}
+function set-javahome () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*)
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat)
+                    export JAVA_HOME=/usr/lib/jvm/java-$REQUIRED_JAVA_VERSION
+                    ;;
+                Debian|Ubuntu)
                     export JAVA_HOME=/usr/lib/jvm/default-java
                     ;;
             esac
@@ -416,10 +430,12 @@ function get-sbt () {
 }
 if ! type -p java > /dev/null; then
     get-java
+    set-javahome
 else
     REQUIRED_JAVA_VERSION=$(echo $REQUIRED_JAVA_VERSION | sed 's/\(.*\..*\)\..*/\1/')
     CURRENT_JAVA_VERSION=$(java -version 2>&1 | head -n 1 | cut -d\" -f 2 | sed 's/\(.*\..*\)\..*/\1/')
     if [[ $REQUIRED_JAVA_VERSION > $CURRENT_JAVA_VERSION ]]; then get-java; fi
+    set-javahome
 fi
 if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ]; then
     get-play
