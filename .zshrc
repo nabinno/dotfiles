@@ -256,6 +256,7 @@ case "${OSTYPE}" in
                         grunt-cli \
                         gulp \
                         http-server \
+                        html2jade \
                         less \
                         node-plantuml \
                         npm2dot \
@@ -266,6 +267,7 @@ case "${OSTYPE}" in
                         bundler \
                         compass \
                         haml \
+                        html2slim \
                         rails \
                         rubygems-bundler \
                         sidekiq \
@@ -281,6 +283,7 @@ case "${OSTYPE}" in
                         bower \
                         grunt-cli \
                         gulp \
+                        html2jade \
                         http-server \
                         less \
                         node-plantuml \
@@ -292,7 +295,14 @@ case "${OSTYPE}" in
                 if ! type -p gem > /dev/null; then
                     parts install gem
                     gem install \
-                        rails
+                        bundler \
+                        compass \
+                        haml \
+                        html2slim \
+                        rails \
+                        rubygems-bundler \
+                        sidekiq \
+                        unicorn
                 fi
                 if ! type -p pip > /dev/null; then
                     parts install pip
