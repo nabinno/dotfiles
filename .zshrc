@@ -492,6 +492,8 @@ function my-restart () {
     sudo /etc/init.d/mysql status
 }
 alias mr="my-restart"
+alias mp="ps aux | \grep -G 'mysql.*'"
+alias ms="sudo /etc/init.d/mysql status"
 
 
 # git
