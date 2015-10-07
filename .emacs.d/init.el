@@ -60,7 +60,7 @@
 (require 'init-ido)
 (require 'init-hippie-expand)
 (require 'init-company)
-;; (require 'init-auto-complete)
+(require 'init-auto-complete)
 (require 'init-helm)
 (require 'init-windows)
 (require 'init-other-window)
