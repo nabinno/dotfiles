@@ -1,4 +1,6 @@
-;;; Basic ruby setup
+;;; init-ruby-mode -- basic ruby configuration
+;;; Commentary:
+;;; Code:
 (require-package 'ruby-mode)
 (require-package 'ruby-hash-syntax)
 
@@ -67,9 +69,11 @@
 
 
 ;;; YAML
-
 (require-package 'yaml-mode)
 
+
+;;; Slim
+(require-package 'slim-mode)
 
 
 ;;; ERB
@@ -126,3 +130,4 @@
 
 
 (provide 'init-ruby-mode)
+;;; init-ruby-mode.el ends here
