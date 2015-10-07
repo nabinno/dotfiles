@@ -1,3 +1,12 @@
+;;; init-sql -- sql configuration
+;;;
+;;; Commentary:
+;;;   C-c C-c : 'sql-send-paragraph
+;;;   C-c C-r : 'sql-send-region
+;;;   C-c C-s : 'sql-send-string
+;;;   C-c C-b : 'sql-send-buffer
+;;;
+;;; Code:
 (require-package 'sql-indent)
 (after-load 'sql
   (require 'sql-indent))
@@ -20,11 +29,11 @@
     (defun sanityinc/maybe-set-dash-db-docset ()
       (when (eq sql-product 'postgres)
         (setq dash-at-point-docset "psql")))
-
     (add-hook 'sql-mode-hook 'sanityinc/maybe-set-dash-db-docset)
     (add-hook 'sql-interactive-mode-hook 'sanityinc/maybe-set-dash-db-docset)
     (defadvice sql-set-product (after set-dash-docset activate)
-      (sanityinc/maybe-set-dash-db-docset))))
+      (sanityinc/maybe-set-dash-db-docset)))
+  )
 
 (setq-default sql-input-ring-file-name
               (expand-file-name ".sqli_history" user-emacs-directory))
@@ -32,4 +41,7 @@
 (after-load 'page-break-lines
   (push 'sql-mode page-break-lines-modes))
 
+
+
 (provide 'init-sql)
+;;; init-sql.el ends here
