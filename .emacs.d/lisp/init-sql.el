@@ -41,6 +41,9 @@
 (after-load 'page-break-lines
   (push 'sql-mode page-break-lines-modes))
 
+
+;;; Redis
+(require-package 'redis)
 
 
 (provide 'init-sql)
