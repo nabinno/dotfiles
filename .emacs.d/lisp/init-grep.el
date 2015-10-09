@@ -19,12 +19,7 @@
   "Visit ag result in another window with EVENT, but don't select it."
   (interactive)
   (ag-visit-buffer-other-window event t))
-(defun ag-visit-buffer-other-window-noselect-and-next-error ()
-  "Visit ag result in another window but don't select it, and go to next file."
-  (interactive)
-  (progn
-    (ag-visit-buffer-other-window-noselect)
-    (compilation-next-error)))
+(fset 'ag-visit-buffer-other-window-noselect-and-next-error "xcompilation-next-errorxag-visit-buffer-other-window-noselect")
 
 ;; keybind
 (add-hook 'ag-mode-hook
