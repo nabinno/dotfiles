@@ -96,6 +96,7 @@ export PATH="$HOME/.cask/bin:$PATH"
 export PATH="$HOME/.local/perl-$REQUIRED_PERL_VERSION/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
 
+
 # base installation
 # -----------------
 function install-base () {
@@ -162,6 +163,7 @@ function install-base () {
                          libpq-dev \
                          libqt4-dev \
                          libreadline6-dev \
+                         libreadline5-dev \
                          libreadline-dev \
                          libsndfile1-dev \
                          libsqlite3-dev \
@@ -206,28 +208,7 @@ if [ ! -d ~/.local/bin ]; then mkdir -p ~/.local/bin; fi
 case "${OSTYPE}" in
     freebsd*|darwin*|linux*)
         if ! type -p rbenv > /dev/null; then
-            case "$DIST" in
-                Debian)
-                    sudo apt-get update; sudo apt-get -y install \
-                            build-essential \
-                            zlib1g-dev \
-                            libssl-dev \
-                            libreadline5-dev \
-                            make \
-                            curl \
-                            git-core
-                    ;;
-                Ubuntu)
-                    sudo apt-get update; sudo apt-get -y install \
-                            build-essential \
-                            zlib1g-dev \
-                            libssl-dev \
-                            libreadline-dev \
-                            make \
-                            curl \
-                            git-core
-                    ;;
-            esac
+            install-base
             git clone git://github.com/sstephenson/rbenv.git ~/.local/rbenv
             mkdir ~/.local/rbenv/shims ~/.local/rbenv/versions ~/.local/rbenv/plugins
             git clone git://github.com/sstephenson/ruby-build.git ~/.local/rbenv/plugins/ruby-build
