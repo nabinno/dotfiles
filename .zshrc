@@ -96,6 +96,105 @@ export PATH="$HOME/.cask/bin:$PATH"
 export PATH="$HOME/.local/perl-$REQUIRED_PERL_VERSION/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
 
+# base installation
+# -----------------
+function install-base () {
+    case "${OSTYPE}" in
+        linux*)
+            case "${DIST}" in
+                Debian|Ubuntu)
+                    sudo apt-get update
+                    sudo apt-get install -y \
+                         automake \
+                         autotools-dev \
+                         base-files \
+                         base-passwd \
+                         binutils \
+                         build-essential \
+                         bzip2 \
+                         cmake \
+                         curl \
+                         dnsutils \
+                         gdb \
+                         git \
+                         git-core \
+                         gnupg \
+                         imagemagick \
+                         libarchive12 \
+                         libarchive-dev \
+                         libbz2-1.0 \
+                         libbz2-dev \
+                         libc6 \
+                         libcurl3 \
+                         libcurl3-gnutls \
+                         libcurl4-openssl-dev \
+                         libdb5.1 \
+                         libdb5.1-dev \
+                         libevent-1.4-2 \
+                         libevent-core-1.4-2 \
+                         libevent-dev \
+                         libevent-extra-1.4-2 \
+                         libffi-dev \
+                         libgdbm-dev \
+                         libglib2.0-dev \
+                         libicu-dev \
+                         libldap-2.4-2 \
+                         libldap2-dev \
+                         libltdl7 \
+                         libltdl-dev \
+                         liblzma5 \
+                         liblzma-dev \
+                         liblzma-doc \
+                         libmagickcore-dev \
+                         libmagickwand-dev \
+                         libmysqlclient-dev \
+                         libncap44 \
+                         libncap-dev \
+                         libncurses5-dev \
+                         libncurses-dev \
+                         libncursesw5 \
+                         libncursesw5-dev \
+                         libpam0g-dev \
+                         libpcre3 \
+                         libpcre3-dev \
+                         libpng12-0 \
+                         libpng12-dev \
+                         libpq-dev \
+                         libqt4-dev \
+                         libreadline6-dev \
+                         libreadline-dev \
+                         libsndfile1-dev \
+                         libsqlite3-dev \
+                         libssl0.9.8 \
+                         libssl-dev \
+                         libxml2 \
+                         libxml2-dev \
+                         libxslt1-dev \
+                         libxt6 \
+                         libxt-dev \
+                         libyaml-dev \
+                         make \
+                         openssl \
+                         psmisc \
+                         ruby1.9.3 \
+                         s3cmd \
+                         sqlite3 \
+                         telnet \
+                         tsconf \
+                         unzip \
+                         util-linux \
+                         wget \
+                         whiptail \
+                         xz-utils \
+                         zip \
+                         zlib1g \
+                         zlib1g-dev
+                    ;;
+            esac
+            ;;
+    esac
+}
+
 
 # local
 # -----
@@ -119,7 +218,7 @@ case "${OSTYPE}" in
                             git-core
                     ;;
                 Ubuntu)
-                    sudo apt-get update; apt-get -y install \
+                    sudo apt-get update; sudo apt-get -y install \
                             build-essential \
                             zlib1g-dev \
                             libssl-dev \
@@ -152,89 +251,7 @@ case "${OSTYPE}" in
         case "${DIST}" in
             Debian|Ubuntu)
                 if ! type -p parts > /dev/null; then
-                    sudo apt-get update
-                    sudo apt-get install -y \
-                            automake \
-                            autotools-dev \
-                            base-files \
-                            base-passwd \
-                            binutils \
-                            build-essential \
-                            bzip2 \
-                            cmake \
-                            curl \
-                            dnsutils \
-                            gdb \
-                            git \
-                            git-core \
-                            gnupg \
-                            imagemagick \
-                            libarchive-dev \
-                            libarchive12 \
-                            libbz2-1.0 \
-                            libbz2-dev \
-                            libc6 \
-                            libcurl3 \
-                            libcurl3-gnutls \
-                            libcurl4-openssl-dev \
-                            libdb5.1 \
-                            libdb5.1-dev \
-                            libevent-1.4-2 \
-                            libevent-core-1.4-2 \
-                            libevent-dev \
-                            libevent-extra-1.4-2 \
-                            libffi-dev \
-                            libgdbm-dev \
-                            libglib2.0-dev \
-                            libglib2.0-dev \
-                            libicu-dev \
-                            libldap-2.4-2 \
-                            libldap2-dev \
-                            libltdl-dev \
-                            libltdl7 \
-                            liblzma-dev \
-                            liblzma-doc \
-                            liblzma5 \
-                            libmagickcore-dev \
-                            libmagickwand-dev \
-                            libmysqlclient-dev \
-                            libncap-dev \
-                            libncap44 \
-                            libncurses5-dev \
-                            libncurses5-dev \
-                            libncursesw5 \
-                            libncursesw5-dev \
-                            libncursesw5-dev \
-                            libpam0g-dev \
-                            libpng12-0 \
-                            libpng12-dev \
-                            libpq-dev \
-                            libqt4-dev \
-                            libreadline6-dev \
-                            libsndfile1-dev \
-                            libsqlite3-dev \
-                            libssl0.9.8 \
-                            libxml2 \
-                            libxml2-dev \
-                            libxslt1-dev \
-                            libxt-dev \
-                            libxt6 \
-                            libyaml-dev \
-                            openssl \
-                            psmisc \
-                            ruby1.9.3 \
-                            s3cmd \
-                            sqlite3 \
-                            telnet \
-                            tsconf \
-                            unzip \
-                            util-linux \
-                            wget \
-                            whiptail \
-                            xz-utils \
-                            zip \
-                            zlib1g \
-                            zlib1g-dev
+                    install-base
                     ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
                     eval "$(parts env)"
                     exec $SHELL -l
