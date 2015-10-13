@@ -53,6 +53,11 @@
 ;;   (diminish 'magit-auto-revert-mode))
 
 
+(when *is-a-mac*
+  (after-load 'magit
+    (add-hook 'magit-mode-hook (lambda () (local-unset-key [(meta h)])))))
+
+
 ;;; Git blame
 (require-package 'git-blame)
 (autoload 'git-blame-mode "git-blame"
@@ -65,9 +70,28 @@
 (add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
 
 
-(when *is-a-mac*
-  (after-load 'magit
-    (add-hook 'magit-mode-hook (lambda () (local-unset-key [(meta h)])))))
+;;; Git gutter
+(require-package 'git-gutter+)
+(global-git-gutter+-mode)
+
+(eval-after-load 'git-gutter+
+ '(progn
+    (define-key git-gutter+-mode-map (kbd "C-x n h")     'git-gutter+-next-hunk)
+    (define-key git-gutter+-mode-map (kbd "C-x n p")   'git-gutter+-previous-hunk)
+    (define-key git-gutter+-mode-map (kbd "C-x n v =") 'git-gutter+-show-hunk)
+    (define-key git-gutter+-mode-map (kbd "C-x n r")   'git-gutter+-revert-hunks)
+    (define-key git-gutter+-mode-map (kbd "C-x n t")   'git-gutter+-stage-hunks)
+    (define-key git-gutter+-mode-map (kbd "C-x n c")   'git-gutter+-commit)
+    (define-key git-gutter+-mode-map (kbd "C-x n C")   'git-gutter+-stage-and-commit)
+    (define-key git-gutter+-mode-map (kbd "C-x n C-y") 'git-gutter+-stage-and-commit-whole-buffer)
+    (define-key git-gutter+-mode-map (kbd "C-x n U")   'git-gutter+-unstage-whole-buffer)
+    (setq git-gutter+-modified-sign "  ")
+    (setq git-gutter+-added-sign "++")
+    (setq git-gutter+-deleted-sign "--")
+    (set-face-background 'git-gutter+-modified "purple")
+    (set-face-foreground 'git-gutter+-added "green")
+    (set-face-foreground 'git-gutter+-deleted "red")
+    ))
 
 
 ;; Convenient binding for vc-git-grep
