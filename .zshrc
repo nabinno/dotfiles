@@ -493,6 +493,13 @@ esac
 # export PERL5LIB=$HOME/local/lib/perl5:$PERL5LIB
 ## export PERL_CPANM_OPT="-l ~/local --mirror http://ftp.funet.fi/pub/languages/perl/CPAN/"
 # export PERL_CPANM_OPT="-l ~/local --mirror ~/.cpan/minicpan/"
+function cpanmodulelist () { perl -e "print \"@INC\"" | find -name "*.pm" -print }
+function cpanmoduleversion () { perl -M$1 -le "print \$$1::VERSION" }
+# alias cpan-uninstall='perl -MConfig -MExtUtils::Install -e '"'"'($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1'"'"
+# function cpan-uninstall () {
+#     perl -MConfig -MExtUtils::Install -e '($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1'
+# }
+alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 
 
 # javascript
@@ -534,7 +541,10 @@ function get-git () {
                 Redhat)
                 ;;
                 Debian|Ubuntu)
-                    sudo apt-get install -y python-software-properties
+                    sudo apt-get install -y \
+                         software-properties-common \
+                         python3-software-properties \
+                         python-software-properties
                     sudo add-apt-repository ppa:git-core/ppa
                     sudo apt-get update
                     sudo apt-get install -y git git-flow
@@ -884,8 +894,15 @@ if ! type -p docker > /dev/null; then
                     sudo apt-get update; sudo apt-get install -y docker.io
 	            ;;
                 Ubuntu)
-                    sudo apt-get update; sudo apt-get install -y docker
-	            ;;
+                    case "${DIST_VERSION}" in
+                        12.04)
+			    sudo apt-get update; sudo apt-get install -y docker.io
+			    ;;
+                        14.04)
+			    sudo apt-get update; sudo apt-get install -y docker
+			    ;;
+		    esac
+		    ;;
             esac
             ;;
     esac
@@ -1053,7 +1070,8 @@ function get-dotfiles () {
     fi
     cd ~/.local/dotfiles; wait
     git checkout -- .;  wait
-    git pull;  wait
+    git checkout develop;  wait
+    git pull origin/develop;  wait
     rm -rf                         .emacs.d/lisp/*;  wait
     cp -pr ~/.emacs.d/lisp/*       .emacs.d/lisp/;   wait
     cp -pr ~/.emacs.d/bin/*        .emacs.d/bin/;    wait
@@ -1076,7 +1094,8 @@ function put-dotfiles () {
     fi
     cd ~/.local/dotfiles; wait
     git checkout -- .;  wait
-    git pull;  wait
+    git checkout develop;  wait
+    git pull origin/develop;  wait
     rm -rf                       ~/.emacs.d/lisp/*;  wait
     cp -pr .emacs.d/lisp/*       ~/.emacs.d/lisp/;   wait
     cp -pr .emacs.d/bin/*        ~/.emacs.d/bin/;    wait
@@ -1100,13 +1119,6 @@ alias b='bkup'
 alias bU='bkup-targz'
 alias bin='~/bin'
 alias c='/bin/cp -ipr'
-function cpanmodulelist () { perl -e "print \"@INC\"" | find -name "*.pm" -print }
-function cpanmoduleversion () { perl -M$1 -le "print \$$1::VERSION" }
-# alias cpan-uninstall='perl -MConfig -MExtUtils::Install -e '"'"'($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1'"'"
-# function cpan-uninstall () {
-#     perl -MConfig -MExtUtils::Install -e '($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1'
-# }
-alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 alias d='/bin/rm -fr'
 alias du="du -h"
 alias df="df -h"
