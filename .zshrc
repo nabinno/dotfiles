@@ -1070,7 +1070,7 @@ function get-dotfiles () {
     fi
     cd ~/.local/dotfiles; wait
     git checkout -- .;  wait
-    git checkout develop;  wait
+    git checkout -b develop;  wait
     git pull origin develop;  wait
     rm -rf                         .emacs.d/lisp/*;  wait
     cp -pr ~/.emacs.d/lisp/*       .emacs.d/lisp/;   wait
@@ -1094,7 +1094,7 @@ function put-dotfiles () {
     fi
     cd ~/.local/dotfiles; wait
     git checkout -- .;  wait
-    git checkout develop;  wait
+    git checkout -b develop;  wait
     git pull origin develop;  wait
     rm -rf                       ~/.emacs.d/lisp/*;  wait
     cp -pr .emacs.d/lisp/*       ~/.emacs.d/lisp/;   wait
