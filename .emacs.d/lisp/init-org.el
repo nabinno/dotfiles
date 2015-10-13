@@ -36,6 +36,38 @@
               (sequence "WAITING(w@/!)" "SOMEDAY(S)" "|" "CANCELLED(c@/!)"))))
 
 
+;;; Org capture
+(setq org-capture-templates
+      '(
+        ("m" "Memo" entry (file+headline nil "Memos") "** %?\n   %T")
+        ("M" "Memo (with file link)" entry (file+headline nil "Memos") "** %?\n   %a\n   %T")))
+
+;; code reading
+(defvar org-code-reading-software-name nil)
+(defvar org-code-reading-file "code-reading.org")
+(defun org-code-reading-read-software-name ()
+  (set (make-local-variable 'org-code-reading-software-name)
+       (read-string "Code Reading Software: "
+                    (or org-code-reading-software-name
+                        (file-name-nondirectory
+                         (buffer-file-name))))))
+(defun org-code-reading-get-prefix (lang)
+  (let ((sname (org-code-reading-read-software-name))
+        (fname (file-name-nondirectory
+                (buffer-file-name))))
+    (concat "[" lang "]"
+            "[" sname "]"
+            (if (not (string= sname fname)) (concat "[" fname "]")))))
+(defun org-capture-code-reading ()
+  (interactive)
+  (let* ((prefix (org-code-reading-get-prefix (substring (symbol-name major-mode) 0 -5)))
+         (org-capture-templates
+          '(("c" "Code Reading" entry (file+headline (concat org-directory org-code-reading-file) "Code Readings") "** %(identity prefix) %?\n   %a\n   %T")
+            )))
+    (org-capture nil "c")))
+(define-key global-map "\C-xz" 'org-capture-code-reading)
+
+
 ;;; Org babel
 ;; plantuml
 (setq org-plantuml-jar-path "~/.local/bin/plantuml.jar")
