@@ -531,9 +531,6 @@ function cpan-uninstall () {
 if [ ! -d ~/.local/xbuild ]; then
     get-perl
 fi
-if ! type -p plagger > /dev/null ; then
-    get-plagger
-fi
 alias cpanm='~/.local/perl-5.18/bin/cpanm'
 alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 # alias cpan-uninstall='perl -MConfig -MExtUtils::Install -e '"'"'($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1'"'"
