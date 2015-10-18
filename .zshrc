@@ -490,18 +490,54 @@ esac
 
 # perl
 # ----
-case "${OSTYPE}" in
-    freebsd*|darwin*|linux*)
-        if [ ! -d ~/.local/xbuild ]; then
+function get-perl () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
             git clone https://github.com/tagomoris/xbuild.git ~/.local/xbuild
-        fi
-        if [ ! -d ~/.local/perl-$REQUIRED_PERL_VERSION ]; then
             ~/.local/xbuild/perl-install $REQUIRED_PERL_VERSION.2 ~/.local/perl-$REQUIRED_PERL_VERSION
-        fi
-        alias cpanm='~/.local/perl-5.18/bin/cpanm'
-        ;;
-esac
-# eval $(perl -I$HOME/local/lib/perl5 -Mlocal::lib=$HOME/local)
+            ;;
+    esac
+}
+function get-plagger () {
+    cpanm \
+        YAML::Loader \
+        XML::LibXML \
+        XML::LibXML::SAX \
+        XML::LibXML::XPathContext \
+        XML::Liberal \
+        Text::Glob \
+        Module::Runtime \
+        Params::Util \
+        Digest::SHA1 \
+        Class::Load \
+        XML::RSS \
+        XML::RSS::LibXML \
+        XML::RSS::Liberal \
+        XML::Feed \
+        XML::Feed::RSS \
+        XML::Atom \
+        WebService::Bloglines \
+        Plagger
+}
+function cpanmodulelist () {
+    perl -e "print \"@INC\"" | find -name "*.pm" -print 
+}
+function cpanmoduleversion () {
+    perl -M$1 -le "print \$$1::VERSION" 
+}
+function cpan-uninstall () {
+    perl -MConfig -MExtUtils::Install -e '($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1'
+}
+if [ ! -d ~/.local/xbuild ]; then
+    get-perl
+fi
+if ! type -p plagger > /dev/null ; then
+    get-plagger
+fi
+alias cpanm='~/.local/perl-5.18/bin/cpanm'
+alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
+# alias cpan-uninstall='perl -MConfig -MExtUtils::Install -e '"'"'($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1'"'"
+# eval $(perl -I$HOME/.local/lib/perl5 -Mlocal::lib=$HOME/.local)
 # export PKG_DBDIR=$HOME/local/var/db/pkg
 # export PORT_DBDIR=$HOME/local/var/db/pkg
 # export INSTALL_AS_USER
@@ -510,15 +546,8 @@ esac
 # export MODULEBUILDRC=$HOME/local/.modulebuildrc
 # export PERL_MM_OPT="INSTALL_BASE=$HOME/local"
 # export PERL5LIB=$HOME/local/lib/perl5:$PERL5LIB
-## export PERL_CPANM_OPT="-l ~/local --mirror http://ftp.funet.fi/pub/languages/perl/CPAN/"
+# export PERL_CPANM_OPT="-l ~/local --mirror http://ftp.funet.fi/pub/languages/perl/CPAN/"
 # export PERL_CPANM_OPT="-l ~/local --mirror ~/.cpan/minicpan/"
-function cpanmodulelist () { perl -e "print \"@INC\"" | find -name "*.pm" -print }
-function cpanmoduleversion () { perl -M$1 -le "print \$$1::VERSION" }
-# alias cpan-uninstall='perl -MConfig -MExtUtils::Install -e '"'"'($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1'"'"
-# function cpan-uninstall () {
-#     perl -MConfig -MExtUtils::Install -e '($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1'
-# }
-alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 
 
 # javascript
