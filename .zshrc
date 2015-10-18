@@ -917,7 +917,7 @@ if ! type -p docker > /dev/null; then
                 Ubuntu)
                     case "${DIST_VERSION}" in
                         12.04)
-			    sudo apt-get update; sudo apt-get install -y docker.io
+			    sudo apt-get update; sudo apt-get install -y lxc-docker
 			    ;;
                         14.04)
 			    sudo apt-get update; sudo apt-get install -y docker
