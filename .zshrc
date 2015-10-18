@@ -499,7 +499,7 @@ function get-perl () {
     esac
 }
 function get-plagger () {
-    cpanm \
+    cpanm -fi \
         YAML::Loader \
         XML::LibXML \
         XML::LibXML::SAX \
