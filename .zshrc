@@ -41,6 +41,9 @@ case "${OSTYPE}" in
                 PSUEDONAME=`cat /etc/mandrake-release | sed -e 's/.*(//' | sed -e 's/)//'`
                 REV=`cat /etc/mandrake-release | sed -e 's/.*release //' | sed -e 's/ .*//'`
             elif [ -f /etc/debian_version ] ; then
+                if ! type -p lsb_release > /dev/null; then
+                    sudo apt-get install -y lsb-release
+                fi
                 DIST="$(lsb_release -i -s)"
                 DIST_VERSION="$(lsb_release -s -r)"
                 DIST2="Debian `cat /etc/debian_version`"
@@ -107,6 +110,7 @@ function get-base () {
                 Debian|Ubuntu)
                     sudo apt-get update
                     sudo apt-get install -y \
+                         apt-transport-https \
                          automake \
                          autotools-dev \
                          base-files \
