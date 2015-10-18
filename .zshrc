@@ -100,7 +100,7 @@ export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(par
 
 # base installation
 # -----------------
-function install-base () {
+function get-base () {
     case "${OSTYPE}" in
         linux*)
             case "${DIST}" in
@@ -180,6 +180,7 @@ function install-base () {
                          openssl \
                          psmisc \
                          ruby1.9.3 \
+                         software-properties-common \
                          s3cmd \
                          sqlite3 \
                          telnet \
@@ -192,6 +193,12 @@ function install-base () {
                          zip \
                          zlib1g \
                          zlib1g-dev
+                    sudo add-apt-repository -y \
+                         ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION \
+                         ppa:ondrej/php5 \
+                         ppa:fcwu-tw/ppa \
+                         ppa:git-core/ppa
+                    sudo apt-get update
                     ;;
             esac
             ;;
