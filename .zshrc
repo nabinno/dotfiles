@@ -109,6 +109,22 @@ function get-base () {
             case "${DIST}" in
                 Debian|Ubuntu)
                     sudo apt-get update
+                    case "${DIST_VERSION=}" in
+                        12.04)
+                            sudo apt-get install -y python-software-properties
+                            ;;
+                        14.04)
+                            sudo apt-get install -y \
+                                 software-properties-common \
+                                 python3-software-properties
+                            ;;
+                    esac
+                    sudo add-apt-repository -y \
+                         ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION \
+                         ppa:ondrej/php5 \
+                         ppa:fcwu-tw/ppa \
+                         ppa:git-core/ppa
+                    sudo apt-get update
                     sudo apt-get install -y \
                          apt-transport-https \
                          automake \
@@ -184,7 +200,6 @@ function get-base () {
                          openssl \
                          psmisc \
                          ruby1.9.3 \
-                         software-properties-common \
                          s3cmd \
                          sqlite3 \
                          telnet \
@@ -197,12 +212,6 @@ function get-base () {
                          zip \
                          zlib1g \
                          zlib1g-dev
-                    sudo add-apt-repository -y \
-                         ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION \
-                         ppa:ondrej/php5 \
-                         ppa:fcwu-tw/ppa \
-                         ppa:git-core/ppa
-                    sudo apt-get update
                     ;;
             esac
             ;;
@@ -561,11 +570,19 @@ function get-git () {
             case "${DIST}" in
                 Redhat)
                 ;;
-                Debian|Ubuntu)
-                    sudo apt-get install -y \
-                         software-properties-common \
-                         python3-software-properties \
-                         python-software-properties
+                Debian)
+                ;;
+                Ubuntu)
+                    case "${DIST_VERSION=}" in
+                        12.04)
+                            sudo apt-get install -y python-software-properties
+                            ;;
+                        14.04)
+                            sudo apt-get install -y \
+                                 software-properties-common \
+                                 python3-software-properties
+                            ;;
+                    esac
                     sudo add-apt-repository ppa:git-core/ppa
                     sudo apt-get update
                     sudo apt-get install -y git git-flow
