@@ -66,6 +66,7 @@ REQUIRED_PLAY_VERSION=2.2.3
 REQUIRED_RUBY_VERSION=2.2.0
 REQUIRED_PERL_VERSION=5.18
 REQUIRED_PYTHON_VERSION=2.7.6
+REQUIRED_MYSQL_VERSION=5.6
 REQUIRED_GIT_VERSION=1.9.4
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
@@ -507,16 +508,26 @@ export node='NODE_NO_READLINE=1 node'
 
 # mysql
 # -----
-case "${OSTYPE}" in
-    linux*)
-        case "${DIST}" in
-            Debian|Ubuntu)
-                if ! type -p mysql > /dev/null; then
-                    sudo apt-get update;  sudo apt-get install -y libmysqlclient-dev
-                fi
+function get-mysql () {
+    case "${OSTYPE}" in
+        linux*)
+            case "${DIST}" in
+                Debian)
                 ;;
-        esac
-esac
+                Ubuntu)
+                        sudo apt-get -y remove mysql-server
+                        sudo apt-get -y autoremove
+                        sudo apt-get -y install software-properties-common
+                        sudo add-apt-repository -y ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
+                        sudo apt-get update
+                        sudo apt-get -y install mysql-server
+                    ;;
+            esac
+    esac
+}
+if ! type -p mysql > /dev/null; then
+    get-mysql
+fi
 function my-restart () {
     sudo killall mysqld $1; wait
     sudo /etc/init.d/mysql start; wait
@@ -525,6 +536,7 @@ function my-restart () {
 alias mr="my-restart"
 alias mp="ps aux | \grep -G 'mysql.*'"
 alias ms="sudo /etc/init.d/mysql status"
+alias mk="sudo killall mysqld"
 
 
 # git
