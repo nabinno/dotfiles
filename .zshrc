@@ -119,11 +119,10 @@ function get-base () {
                                  python3-software-properties
                             ;;
                     esac
-                    sudo add-apt-repository -y \
-                         ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION \
-                         ppa:ondrej/php5 \
-                         ppa:fcwu-tw/ppa \
-                         ppa:git-core/ppa
+                    sudo add-apt-repository ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
+                    sudo add-apt-repository ppa:ondrej/php5
+                    sudo add-apt-repository ppa:fcwu-tw/ppa
+                    sudo add-apt-repository ppa:git-core/ppa
                     sudo apt-get update
                     sudo apt-get install -y \
                          apt-transport-https \
