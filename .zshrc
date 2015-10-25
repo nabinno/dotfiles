@@ -101,6 +101,26 @@ export PATH="$HOME/.local/perl-$REQUIRED_PERL_VERSION/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
 
 
+# locale
+# ------
+function set-locale () {
+    case "${OSTYPE}" in
+        linux*)
+            case "${DIST}" in
+                Redhat)
+                    sudo mv /etc/localtime{,.org}
+                    sudo ln -s /usr/share/zoneinfo/Japan /etc/localtime
+                    ;;
+                Debian|Ubuntu)
+                    sudo mv /etc/localtime{,.org}
+                    sudo ln -s /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+
 # base installation
 # -----------------
 function get-base () {
