@@ -977,14 +977,24 @@ if ! type -p docker > /dev/null; then
                     sudo apt-get update; sudo apt-get install -y docker.io
 	            ;;
                 Ubuntu)
+                    sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+                    if [ -f /etc/apt/sources.list.d/docker.list ]; then
+                        sudo rm /etc/apt/sources.list.d/docker.list
+                        sudo touch /etc/apt/sources.list.d/docker.list
+                    fi
                     case "${DIST_VERSION}" in
                         12.04)
-			    sudo apt-get update; sudo apt-get install -y lxc-docker
+                            sudo sh -c 'echo "deb https://apt.dockerproject.org/repo ubuntu-precise main" >> /etc/apt/sources.list.d/docker.list'
 			    ;;
                         14.04)
-			    sudo apt-get update; sudo apt-get install -y docker
+                            sudo sh -c 'echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" >> /etc/apt/sources.list.d/docker.list'
 			    ;;
 		    esac
+                    sudo apt-get update
+                    sudo apt-get purge lxc-docker*
+                    sudo apt-cache policy docker-engine
+		    sudo apt-get update
+                    sudo apt-get install -y docker-engine
 		    ;;
             esac
             ;;
