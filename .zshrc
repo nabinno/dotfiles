@@ -71,6 +71,7 @@ REQUIRED_PERL_VERSION=5.18
 REQUIRED_PYTHON_VERSION=2.7.6
 REQUIRED_MYSQL_VERSION=5.6
 REQUIRED_GIT_VERSION=1.9.4
+REQUIRED_MACPORT_VERSION=2.3.3
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias grep='grep --color=auto'
@@ -125,6 +126,22 @@ function set-locale () {
 # -----------------
 function get-base () {
     case "${OSTYPE}" in
+        darwin*)
+            curl-Ohttps://distfiles.macports.org/MacPorts/MacPorts-$REQUIRED_MACPORT_VERSION.tar.bz2
+            tar xf MacPorts-$REQUIRED_MACPORT_VERSION.tar.bz2
+            cd MacPorts-$REQUIRED_MACPORT_VERSION/
+            ./configure
+            make
+            sudo make install
+            mkdir -pr /opt/mports
+            cd /opt/mports
+            svn checkout https://svn.macports.org/repository/macports/trunk
+            cd /opt/mports/trunk/base
+            ./configure --enable-readline
+            make
+            sudo make install
+            make distclean
+            ;;
         linux*)
             case "${DIST}" in
                 Debian|Ubuntu)
@@ -1113,9 +1130,18 @@ alias where="command -v"
 case "${OSTYPE}" in
     freebsd*|darwin*)
 	alias ls="ls -G -w"
+        alias lf="\ls -p -l -F"
+        alias ll="\ls -p -F -a"
+        alias la="\ls -p -l -F -a"
 	;;
     linux*)
-	alias ls="ls --color"
+        alias ls='ls --color=auto'
+        alias la="\ls -p -l -F -a"
+        alias lf="\ls -p -l -F --hide='.*'"
+        alias ll="\ls -p -F -a"
+        function lt () {
+            \ls -R $1 | \grep ":$" | \sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
+        }
 	;;
 esac
 case "${OSTYPE}" in
@@ -1248,13 +1274,6 @@ alias it="date -R"
 alias j='cd'
 alias k='/bin/mkdir -p'
 function kl () { kill -f $1 }
-alias ls='ls --color=auto'
-alias la="\ls -p -l -F -a"
-alias lf="\ls -p -l -F --hide='.*'"
-alias ll="\ls -p -F -a"
-function lt () {
-    \ls -R $1 | \grep ":$" | \sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
-}
 function chpwd(){ }
 #function chpwd(){ ll }
 function lower () {
