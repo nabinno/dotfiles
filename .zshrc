@@ -594,6 +594,9 @@ export node='NODE_NO_READLINE=1 node'
 # -----
 function get-mysql () {
     case "${OSTYPE}" in
+        darwin*)
+            brew install mysql
+            ;;
         linux*)
             case "${DIST}" in
                 Debian)
