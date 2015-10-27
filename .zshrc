@@ -402,13 +402,42 @@ function get-brew () {
                  jq \
                  lua \
                  maven \
+                 memcached \
                  mruby \
+                 mysql \
+                 nodejs \
+                 pip \
+                 redis \
                  rust \
                  scalaenv \
                  the_silver_searcher \
                  tmux \
                  tree \
                  vert.x
+            npm install -g \
+                bower \
+                grunt-cli \
+                gulp \
+                http-server \
+                html2jade \
+                less \
+                node-plantuml \
+                npm2dot \
+                phantomjs \
+                requirejs \
+                term
+            gem install \
+                bundler \
+                compass \
+                haml \
+                html2slim \
+                rails \
+                rubygems-bundler \
+                sidekiq \
+                unicorn
+            pip install -U \
+                awscli \
+                docker-compose
             ;;
         linux*)
                 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
