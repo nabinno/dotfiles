@@ -932,7 +932,7 @@ esac
 if ! type -p dot > /dev/null; then
     case "${OSTYPE}" in
         freebsd*|darwin*)
-            sudo port install -y graphviz
+            brew install graphviz
             ;;
         linux*)
             case "${DIST}" in
