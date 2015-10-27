@@ -135,12 +135,12 @@ function get-base () {
             sudo make install
             mkdir -pr /opt/mports
             cd /opt/mports
-            svn checkout https://svn.macports.org/repository/macports/trunk
+            sudo svn checkout https://svn.macports.org/repository/macports/trunk
             cd /opt/mports/trunk/base
-            ./configure --enable-readline
-            make
+            sudo ./configure --enable-readline
+            sudo make
             sudo make install
-            make distclean
+            sudo make distclean
             ;;
         linux*)
             case "${DIST}" in
