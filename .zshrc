@@ -127,7 +127,7 @@ function set-locale () {
 function get-base () {
     case "${OSTYPE}" in
         darwin*)
-            curl-Ohttps://distfiles.macports.org/MacPorts/MacPorts-$REQUIRED_MACPORT_VERSION.tar.bz2
+            curl -O https://distfiles.macports.org/MacPorts/MacPorts-$REQUIRED_MACPORT_VERSION.tar.bz2
             tar xf MacPorts-$REQUIRED_MACPORT_VERSION.tar.bz2
             cd MacPorts-$REQUIRED_MACPORT_VERSION/
             ./configure
