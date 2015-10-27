@@ -398,7 +398,6 @@ function get-brew () {
                  elixir-build \
                  erlang \
                  go \
-                 heroku_toolbelt \
                  jq \
                  lua \
                  maven \
@@ -406,7 +405,6 @@ function get-brew () {
                  mruby \
                  mysql \
                  nodejs \
-                 pip \
                  redis \
                  rust \
                  scalaenv \
@@ -435,9 +433,6 @@ function get-brew () {
                 rubygems-bundler \
                 sidekiq \
                 unicorn
-            pip install -U \
-                awscli \
-                docker-compose
             ;;
         linux*)
                 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
@@ -585,6 +580,23 @@ case "${OSTYPE}" in
         esac
         ;;
 esac
+
+
+# python
+# ------
+function get-python () {
+    case "${OSTYPE}" in
+        darwin*)
+            easy_install pip
+            pip install -U \
+                awscli \
+                docker-compose
+        ;;
+    esac
+}
+if ! type -p pip > /dev/null; then
+    get-python
+fi
 
 
 # perl
