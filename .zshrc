@@ -128,6 +128,15 @@ function set-locale () {
 # -----------------
 function get-base () {
     case "${OSTYPE}" in
+        cygwin*)
+            easy_install-2.7 \
+                pip
+            pip install -U \
+                awscli \
+                greenlet \
+                eventlet \
+                setuptools
+            ;;
         darwin*)
             curl -O https://distfiles.macports.org/MacPorts/MacPorts-$REQUIRED_MACPORT_VERSION.tar.bz2
             tar xf MacPorts-$REQUIRED_MACPORT_VERSION.tar.bz2
@@ -377,44 +386,67 @@ case "${OSTYPE}" in
 esac
 
 
-# linuxbrew
-# ---------
-case "${OSTYPE}" in
-    linux*)
-        if ! type -p brew > /dev/null; then
-            ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
-            exec $SHELL -l
-            case "${DIST}" in
-                Redhat)
-                    brew install \
-                         chruby \
-                         ctags \
-                         elixir \
-                         elixir-build \
-                         erlang \
-                         go \
-                         heroku_toolbelt \
-                         jq \
-                         lua \
-                         maven \
-                         mruby \
-                         rust \
-                         scalaenv \
-                         the_silver_searcher \
-                         tmux \
-                         tree \
-                         vert.x
-                    ;;
-                Debian|Ubuntu)
-                    brew install \
-                         jq \
-                         scalaenv \
-                         vert.x
-                    ;;
-            esac
-        fi
-        ;;
-esac
+# homebrew/linuxbrew
+# ------------------
+function get-brew () {
+    case "${OSTYPE}" in
+        darwin*)
+            brew install \
+                 chruby \
+                 ctags \
+                 elixir \
+                 elixir-build \
+                 erlang \
+                 go \
+                 heroku_toolbelt \
+                 jq \
+                 lua \
+                 maven \
+                 mruby \
+                 rust \
+                 scalaenv \
+                 the_silver_searcher \
+                 tmux \
+                 tree \
+                 vert.x
+            ;;
+        linux*)
+                ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
+                exec $SHELL -l
+                case "${DIST}" in
+                    Redhat)
+                        brew install \
+                             chruby \
+                             ctags \
+                             elixir \
+                             elixir-build \
+                             erlang \
+                             go \
+                             heroku_toolbelt \
+                             jq \
+                             lua \
+                             maven \
+                             mruby \
+                             rust \
+                             scalaenv \
+                             the_silver_searcher \
+                             tmux \
+                             tree \
+                             vert.x
+                        ;;
+                    Debian|Ubuntu)
+                        brew install \
+                             jq \
+                             scalaenv \
+                             vert.x
+                        ;;
+                esac
+            ;;
+    esac
+}
+if ! type -p brew > /dev/null; then
+    get-brew
+fi
 
 
 # java
