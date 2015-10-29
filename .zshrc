@@ -587,10 +587,10 @@ esac
 function get-python () {
     case "${OSTYPE}" in
         darwin*)
-            easy_install pip
-            pip install -U \
-                awscli \
-                docker-compose
+            sudo easy_install pip
+            sudo pip install -U \
+                 awscli \
+                 docker-compose
         ;;
     esac
 }
