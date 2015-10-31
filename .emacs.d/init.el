@@ -47,6 +47,8 @@
 ;; (require 'init-osx-keys)
 ;; (require 'init-gui-frames)
 ;; (require 'init-proxies)
+(require 'init-sekka)
+(require 'init-w3m)
 (require 'init-view)
 (require 'init-dired)
 (require 'init-grep)
