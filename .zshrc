@@ -811,13 +811,38 @@ function get-emacs () {
             ;;
     esac
 }
+function get-mu () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            case "${DIST}" in
+                Debian|Ubuntu)
+                    sudo apt-get install -y \
+                         libgmime-2.6-dev \
+                         libxapian-dev \
+                         gnutls-bin \
+                         guile-2.0-dev \
+                         html2text \
+                         xdg-utils \
+                         offlineimap
+                    git clone https://github.com/djcb/mu
+                    cd mu
+                    autoreconf -i && ./configure && make
+                    sudo make install
+                    cd .. && rm -fr mu
+                    ln -s /usr/local/share/emacs/site-lisp/mu4e $HOME/.emacs.d/site-lisp/
+            esac
+            ;;
+    esac
+}
 if ! type -p emacs > /dev/null; then
     get-emacs
 else
     CURRENT_EMACS_VERSION=$(emacs --version | head -n 1 | sed 's/GNU Emacs //' | awk '$0 = substr($0, 1, index($0, ".") + 1)')
     if [[ $REQUIRED_EMACS_VERSION > $CURRENT_EMACS_VERSION ]]; then get-emacs; fi
 fi
-
+if ! type -p mu > /dev/null; then
+    get-mu
+fi
 
 # default shell
 # -------------
@@ -1274,6 +1299,8 @@ function get-dotfiles () {
     cp -pr ~/.emacs.d/bin/*        .emacs.d/bin/;    wait
     cp -pr ~/.emacs.d/eshell/alias .emacs.d/eshell/; wait
     cp -pr ~/.emacs.d/init.el      .emacs.d/;        wait
+    cp -pr ~/.offlineimaprc .
+    cp -pr ~/.offlineimap.py .
     cp -pr ~/.zshrc .
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
@@ -1298,6 +1325,8 @@ function put-dotfiles () {
     cp -pr .emacs.d/bin/*        ~/.emacs.d/bin/;    wait
     cp -pr .emacs.d/eshell/alias ~/.emacs.d/eshell/; wait
     cp -pr .emacs.d/init.el      ~/.emacs.d/;        wait
+    cp -pr .offlineimaprc ~/;                        wait
+    cp -pr .offlineimap.py ~/;                       wait
     cp -pr .zshrc ~/;                                wait
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)

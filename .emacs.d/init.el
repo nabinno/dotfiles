@@ -49,6 +49,7 @@
 ;; (require 'init-proxies)
 (require 'init-sekka)
 (require 'init-w3m)
+(require 'init-mu4e)
 (require 'init-view)
 (require 'init-dired)
 (require 'init-grep)
