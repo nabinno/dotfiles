@@ -1285,6 +1285,7 @@ alias zd=cd-dove
 
 # ### dotfiles ###
 function get-dotfiles () {
+    # pre proc
     cd ~/; wait
     if [ ! -d ~/.local/dotfiles ]; then
         mkdir -p ~/.local
@@ -1294,12 +1295,12 @@ function get-dotfiles () {
     git checkout -- .;  wait
     git checkout -b develop;  wait
     git pull origin develop;  wait
-    rm -rf                         .emacs.d/lisp/*;  wait
-    cp -pr ~/.emacs.d/lisp/*       .emacs.d/lisp/;   wait
-    cp -pr ~/.emacs.d/bin/*        .emacs.d/bin/;    wait
-    cp -pr ~/.emacs.d/eshell/alias .emacs.d/eshell/; wait
-    cp -pr ~/.emacs.d/init.el      .emacs.d/;        wait
-    cp -pr ~/.offlineimaprc .
+    # main proc
+    rm -rf                         .emacs.d/lisp/*;    wait
+    cp -pr ~/.emacs.d/lisp/*       .emacs.d/lisp/;     wait
+    cp -pr ~/.emacs.d/bin/*        .emacs.d/bin/;      wait
+    cp -pr ~/.emacs.d/eshell/alias .emacs.d/eshell/;   wait
+    cp -pr ~/.emacs.d/init.el      .emacs.d/;          wait
     cp -pr ~/.offlineimap.py .
     cp -pr ~/.zshrc .
     case "${OSTYPE}" in
@@ -1307,9 +1308,13 @@ function get-dotfiles () {
             cp -pr ~/.screenrc .
             ;;
     esac
+    # post proc
+    git checkout -- .emacs.d/lisp/init-mu4e.el
+    cp -pr .tmp/.* .
 }
 alias zg=get-dotfiles
 function put-dotfiles () {
+    # pre proc
     current_pwd=`pwd`
     cd ~/
     if [ ! -d ~/.local/dotfiles ]; then
@@ -1320,12 +1325,13 @@ function put-dotfiles () {
     git checkout -- .;  wait
     git checkout -b develop;  wait
     git pull origin develop;  wait
+    rm -rf .emacs.d/lisp/init-mu4e.el
+    # main proc
     rm -rf                       ~/.emacs.d/lisp/*;  wait
     cp -pr .emacs.d/lisp/*       ~/.emacs.d/lisp/;   wait
     cp -pr .emacs.d/bin/*        ~/.emacs.d/bin/;    wait
     cp -pr .emacs.d/eshell/alias ~/.emacs.d/eshell/; wait
     cp -pr .emacs.d/init.el      ~/.emacs.d/;        wait
-    cp -pr .offlineimaprc ~/;                        wait
     cp -pr .offlineimap.py ~/;                       wait
     cp -pr .zshrc ~/;                                wait
     case "${OSTYPE}" in
@@ -1333,6 +1339,8 @@ function put-dotfiles () {
             cp -pr .screenrc ~/; wait
             ;;
     esac
+    # post proc
+    git checkout -- .emacs.d/lisp/init-mu4e.el
     cd $current_pwd
     source ~/.zshrc
 }
