@@ -1327,7 +1327,6 @@ function put-dotfiles () {
     git pull origin develop;  wait
     rm -rf .emacs.d/lisp/init-mu4e.el
     # main proc
-    rm -rf                       ~/.emacs.d/lisp/*;  wait
     cp -pr .emacs.d/lisp/*       ~/.emacs.d/lisp/;   wait
     cp -pr .emacs.d/bin/*        ~/.emacs.d/bin/;    wait
     cp -pr .emacs.d/eshell/alias ~/.emacs.d/eshell/; wait
