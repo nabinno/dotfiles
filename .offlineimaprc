@@ -1,0 +1,41 @@
+[general]
+accounts = Gmail, Work
+maxsyncaccounts = 4
+socktimeout = 60
+pythonfile = ~/.offlineimap.py
+
+[Account Gmail]
+localrepository = LocalGmail
+remoterepository = RemoteGmail
+
+[Account Work]
+localrepository = LocalWork
+remoterepository = RemoteWork
+
+[Repository LocalGmail]
+type = Maildir
+localfolders = ~/Maildir/Gmail
+
+[Repository LocalWork]
+type = Maildir
+localfolders = ~/Maildir/Work
+
+[Repository RemoteGmail]
+type = IMAP
+remotehost = imap.gmail.com
+remoteuser = mygmail-address
+remotepasseval = get_password_emacs("imap.gmail.com", "993")
+ssl = yes
+maxconnections = 1
+realdelete = no
+# configuration of asynchronized maildir
+folderfilter = lambda foldername: foldername not in ["[Gmail]/Spam", "[Gmail]/Important"]
+
+[Repository RemoteWork]
+type = IMAP
+remotehost = mywork-imap-server
+remoteuser = mywork-user
+remotepasseval = get_password_emacs("mywork-imap-server", "secret")
+ssl = yes
+maxconnections = 1
+realdelete = no
