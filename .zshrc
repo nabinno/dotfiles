@@ -286,7 +286,15 @@ case "${OSTYPE}" in
             rbenv install $REQUIRED_RUBY_VERSION
             rbenv rehash
             rbenv global $REQUIRED_RUBY_VERSION
-            gem install bundler
+            gem install \
+                bundler \
+                compass \
+                haml \
+                html2slim \
+                rails \
+                rubygems-bundler \
+                sidekiq \
+                unicorn
         fi
         eval "$(rbenv init -)"
         ;;
