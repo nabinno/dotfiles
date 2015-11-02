@@ -815,21 +815,28 @@ function get-mu () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             case "${DIST}" in
-                Debian|Ubuntu)
-                    sudo apt-get install -y \
-                         libgmime-2.6-dev \
-                         libxapian-dev \
-                         gnutls-bin \
-                         guile-2.0-dev \
-                         html2text \
-                         xdg-utils \
-                         offlineimap
-                    git clone https://github.com/djcb/mu
-                    cd mu
-                    autoreconf -i && ./configure && make
-                    sudo make install
-                    cd .. && rm -fr mu
-                    ln -s /usr/local/share/emacs/site-lisp/mu4e $HOME/.emacs.d/site-lisp/
+                Debian)
+                ;;
+                Ubuntu)
+                    case "${DIST_VERSION}" in
+                        12.04)
+                            sudo apt-get install -y \
+                                 libgmime-2.6-dev \
+                                 libxapian-dev \
+                                 gnutls-bin \
+                                 guile-2.0-dev \
+                                 html2text \
+                                 xdg-utils \
+                                 offlineimap \
+                                 git clone https://github.com/djcb/mu
+                            cd mu
+                            sudo autoreconf -i
+                            ./configure && make
+                            sudo make install
+                            cd .. && rm -fr mu
+                            ln -s /usr/local/share/emacs/site-lisp/mu4e $HOME/.emacs.d/site-lisp/
+                            ;;
+                    esac
             esac
             ;;
     esac
