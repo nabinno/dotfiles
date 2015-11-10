@@ -748,11 +748,14 @@ function get-git () {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
-                    sudo yum install perl-ExtUtils-MakeMaker
+                    sudo yum install -y \
+                         perl-ExtUtils-MakeMaker \
+                         libcurl-devel
                     wget https://www.kernel.org/pub/software/scm/git/git-${REQUIRED_GIT_VERSION}.tar.gz
                     tar zxvf git-${REQUIRED_GIT_VERSION}.tar.gz
                     cd git-${REQUIRED_GIT_VERSION}
-                    ./configure --prefix=/usr/local && make prefix=/usr/local all
+                    ./configure --prefix=/usr/local --with-curl --with-expat
+                    make prefix=/usr/local all
                     sudo make prefix=/usr/local install
                     cd ..
                     rm -fr git-${REQUIRED_GIT_VERSION}
