@@ -1139,7 +1139,7 @@ if ! type -p docker > /dev/null; then
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
-                    sudo yum update
+                    sudo yum install -y docker
                     ;;
                 Debian)
                     sudo apt-get update; sudo apt-get install -y docker.io
