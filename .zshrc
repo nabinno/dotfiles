@@ -781,9 +781,9 @@ function get-git () {
 if ! type -p git > /dev/null; then
     get-git
 else
-    REQUIRED_GIT_VERSION=$(echo $REQUIRED_GIT_VERSION | sed 's/\(.*\..*\)\..*/\1/')
+    REQUIRED_GIT_VERSION_NUM=$(echo $REQUIRED_GIT_VERSION | sed 's/\(.*\..*\)\..*/\1/')
     CURRENT_GIT_VERSION=$(git --version 2>&1 | cut -d\  -f 3 | sed 's/\(.*\..*\)\..*/\1/')
-    if [[ $REQUIRED_GIT_VERSION > $CURRENT_GIT_VERSION ]]; then get-git; fi
+    if [[ $REQUIRED_GIT_VERSION_NUM > $CURRENT_GIT_VERSION ]]; then get-git; fi
 fi
 alias g='git'
 alias ga='git add -v'
