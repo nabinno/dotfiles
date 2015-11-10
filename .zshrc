@@ -110,7 +110,7 @@ function set-locale () {
     case "${OSTYPE}" in
         linux*)
             case "${DIST}" in
-                Redhat)
+                Redhat|RedHat)
                     sudo mv /etc/localtime{,.org}
                     sudo ln -s /usr/share/zoneinfo/Japan /etc/localtime
                     ;;
@@ -283,7 +283,7 @@ function get-ruby () {
             ;;
         linux*)
             case "${DIST}" in
-                Redhat)
+                Redhat|RedHat)
                     sudo yum install -y ruby
                     ;;
                 Debian|Ubuntu)
@@ -467,7 +467,7 @@ function get-brew () {
                 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
                 exec $SHELL -l
                 case "${DIST}" in
-                    Redhat)
+                    Redhat|RedHat)
                         brew install \
                              chruby \
                              ctags \
@@ -521,7 +521,7 @@ function get-java () {
             ;;
         linux*)
             case "${DIST}" in
-                Redhat)
+                Redhat|RedHat)
                     sudo yum install -y java-$REQUIRED_JAVA_VERSION-openjdk
                     sudo yum install -y java-$REQUIRED_JAVA_VERSION-openjdk-devel
                     ;;
@@ -539,7 +539,7 @@ function set-javahome () {
             ;;
         linux*)
             case "${DIST}" in
-                Redhat)
+                Redhat|RedHat)
                     export JAVA_HOME=/usr/lib/jvm/java-$REQUIRED_JAVA_VERSION
                     ;;
                 Debian|Ubuntu)
@@ -566,7 +566,7 @@ function get-sbt () {
             ;;
         linux*)
             case "${DIST}" in
-                Redhat)
+                Redhat|RedHat)
                     curl https://bintray.com/sbt/rpm/rpm | sudo tee /etc/yum.repos.d/bintray-sbt-rpm.repo
                     sudo yum install -y sbt
                     ;;
@@ -737,7 +737,7 @@ function get-git () {
         ;;
         linux*)
             case "${DIST}" in
-                Redhat)
+                Redhat|RedHat)
                 ;;
                 Debian)
                 ;;
@@ -821,7 +821,7 @@ function get-emacs () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             case "${DIST}" in
-                Redhat)
+                Redhat|RedHat)
                     sudo yum install -y ncurses-devel
                     ;;
                 Debian|Ubuntu)
@@ -1056,7 +1056,7 @@ case "${OSTYPE}" in
     ;;
     linux*)
         case "${DIST}" in
-            Redhat)
+            Redhat|RedHat)
             ;;
             Debian|Ubuntu)
                 if ! type -p puml > /dev/null; then npm install -g node-plantuml; fi
@@ -1075,7 +1075,7 @@ if ! type -p dot > /dev/null; then
             ;;
         linux*)
             case "${DIST}" in
-                Redhat)
+                Redhat|RedHat)
                     sudo yum install -y graphviz
                     ;;
                 Debian|Ubuntu)
@@ -1096,7 +1096,7 @@ if ! type -p ab > /dev/null; then
             ;;
         linux*)
             case "${DIST}" in
-                Redhat)
+                Redhat|RedHat)
                     sudo yum install -y httpd-tools
                     ;;
                 Debian|Ubuntu)
@@ -1128,7 +1128,7 @@ if ! type -p docker > /dev/null; then
         ;;
         linux*)
             case "${DIST}" in
-                Redhat)
+                Redhat|RedHat)
                     sudo yum update
                     ;;
                 Debian)
@@ -1209,7 +1209,7 @@ case "${OSTYPE}" in
     ;;
     linux*)
         case "${DIST}" in
-            Redhat)
+            Redhat|RedHat)
                 if ! type -p docker-compose > /dev/null; then pip install -U docker-compose; fi
             ;;
             Debian|Ubuntu)
@@ -1413,7 +1413,7 @@ case "${OSTYPE}" in
         ;;
     linux*)
         case "${DIST}" in
-            Redhat)
+            Redhat|RedHat)
                 alias ip="ps -flW"
                 ;;
             Debian|Ubuntu)
