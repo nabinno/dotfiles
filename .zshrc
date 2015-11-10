@@ -1,4 +1,4 @@
-# BASIC SETTINGS
+ BASIC SETTINGS
 # ===============
 # os detect
 # ---------
@@ -711,6 +711,8 @@ function get-mysql () {
             ;;
         linux*)
             case "${DIST}" in
+                Redhat|RedHat)
+                ;;
                 Debian)
                 ;;
                 Ubuntu)
@@ -729,8 +731,23 @@ if ! type -p mysql > /dev/null; then
 fi
 function my-restart () {
     sudo killall mysqld $1; wait
-    sudo /etc/init.d/mysql start; wait
-    sudo /etc/init.d/mysql status
+    case "${OSTYPE}" in
+        darwin*)
+            brew install mysql
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo service mysql start
+                    sudo service mysql status
+                    ;;
+                Debian|Ubuntu)
+                    sudo /etc/init.d/mysql start
+                    sudo /etc/init.d/mysql status
+                    ;;
+            esac
+            ;;
+    esac
 }
 alias mr="my-restart"
 alias mp="ps aux | \grep -G 'mysql.*'"
@@ -765,7 +782,8 @@ function get-git () {
                 Ubuntu)
                     case "${DIST_VERSION=}" in
                         12.04)
-                            sudo apt-get install -y python-software-properties
+                            sudo apt-get install -y \
+                                 python-software-properties
                             ;;
                         14.04)
                             sudo apt-get install -y \
@@ -1435,7 +1453,7 @@ case "${OSTYPE}" in
     linux*)
         case "${DIST}" in
             Redhat|RedHat)
-                alias ip="ps -flW"
+                alias ip="ps aux"
                 ;;
             Debian|Ubuntu)
                 alias ip="ps aux"
