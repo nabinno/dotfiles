@@ -273,9 +273,29 @@ if [ ! -d ~/.local/bin ]; then mkdir -p ~/.local/bin; fi
 
 # ruby
 # ----
-case "${OSTYPE}" in
-    freebsd*|darwin*|linux*)
-        if ! type -p rbenv > /dev/null; then
+function get-ruby () {
+    case "${OSTYPE}" in
+        freebsd*)
+            port install -y ruby
+            ;;
+        darwin*)
+            brew install -y ruby
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat)
+                    sudo yum install -y ruby
+                    ;;
+                Debian|Ubuntu)
+                    sudo apt-get update -y && sudo apt-get -y ruby
+                    ;;
+                esac
+            ;;
+    esac
+}
+function get-rbenv () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
             install-base
             git clone git://github.com/sstephenson/rbenv.git ~/.local/rbenv
             mkdir ~/.local/rbenv/shims ~/.local/rbenv/versions ~/.local/rbenv/plugins
@@ -295,11 +315,12 @@ case "${OSTYPE}" in
                 rubygems-bundler \
                 sidekiq \
                 unicorn
-        fi
-        eval "$(rbenv init -)"
-        ;;
-esac
-
+            eval "$(rbenv init -)"
+            ;;
+    esac
+}
+if ! type -p ruby > /dev/null;  then get-ruby;  fi
+if ! type -p rbenv > /dev/null; then get-rbenv; fi
 
 # autoparts
 # ---------
