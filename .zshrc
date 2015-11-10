@@ -1250,15 +1250,15 @@ alias where="command -v"
 case "${OSTYPE}" in
     freebsd*|darwin*)
 	alias ls="ls -G -w"
-        alias lf="\ls -p -l -F"
-        alias ll="\ls -p -F -a"
-        alias la="\ls -p -l -F -a"
+        alias lf="\ls -p -l -F -G"
+        alias ll="\ls -p -F -a -G"
+        alias la="\ls -p -l -F -a -G"
 	;;
-    linux*)
+    linux*|cygwin*)
         alias ls='ls --color=auto'
-        alias la="\ls -p -l -F -a"
-        alias lf="\ls -p -l -F --hide='.*'"
-        alias ll="\ls -p -F -a"
+        alias la="\ls -p -l -F -a --color=auto"
+        alias lf="\ls -p -l -F --hide='.*' --color=auto"
+        alias ll="\ls -p -F -a --color=auto"
         function lt () {
             \ls -R $1 | \grep ":$" | \sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
         }
