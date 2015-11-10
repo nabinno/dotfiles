@@ -1,4 +1,4 @@
- BASIC SETTINGS
+# BASIC SETTINGS
 # ===============
 # os detect
 # ---------
@@ -1447,7 +1447,10 @@ alias ic='cat /proc/cpuinfo'
 alias in='netstat -a -n | more'
 alias im='cat /proc/meminfo'
 case "${OSTYPE}" in
-    freebsd*|darwin*|cygwin*)
+    freebsd*|darwin*)
+        alias ip="ps aux"
+        ;;
+    cygwin*)
         alias ip="ps -flW"
         ;;
     linux*)
