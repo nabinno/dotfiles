@@ -620,7 +620,17 @@ function get-python () {
             sudo pip install -U \
                  awscli \
                  docker-compose
-        ;;
+            ;;
+        linux)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo easy_install pip
+                    sudo pip install -U \
+                         awscli \
+                         docker-compose
+                    ;;
+            esac
+            ;;
     esac
 }
 if ! type -p pip > /dev/null; then
