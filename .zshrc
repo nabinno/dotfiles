@@ -1331,7 +1331,7 @@ function get-dotfiles () {
     fi
     cd ~/.local/dotfiles; wait
     git checkout -- .;  wait
-    git checkout -b develop;  wait
+    git checkout -b develop origin/develop;  wait
     git pull origin develop;  wait
     # main proc
     rm -rf                         .emacs.d/lisp/*;    wait
@@ -1361,7 +1361,7 @@ function put-dotfiles () {
     fi
     cd ~/.local/dotfiles; wait
     git checkout -- .;  wait
-    git checkout -b develop;  wait
+    git checkout -b develop origin/develop;  wait
     git pull origin develop;  wait
     rm -rf .emacs.d/lisp/init-mu4e.el
     # main proc
