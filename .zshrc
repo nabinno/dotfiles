@@ -1220,7 +1220,7 @@ case "${OSTYPE}" in
     linux*)
         case "${DIST}" in
             Redhat|RedHat)
-                if ! type -p docker-compose > /dev/null; then pip install -U docker-compose; fi
+                if ! type -p docker-compose > /dev/null; then sudo pip install -U docker-compose; fi
             ;;
             Debian|Ubuntu)
                 if ! type -p docker-compose > /dev/null; then pip install -U docker-compose; fi
