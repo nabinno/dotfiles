@@ -298,7 +298,7 @@ function get-rbenv () {
         freebsd*|darwin*|linux*)
             install-base
             git clone git://github.com/sstephenson/rbenv.git ~/.local/rbenv
-            mkdir ~/.local/rbenv/shims ~/.local/rbenv/versions ~/.local/rbenv/plugins
+            mkdir -p ~/.local/rbenv/shims ~/.local/rbenv/versions ~/.local/rbenv/plugins
             git clone git://github.com/sstephenson/ruby-build.git ~/.local/rbenv/plugins/ruby-build
             git clone https://github.com/sstephenson/rbenv-gem-rehash.git ~/.local/rbenv/plugins/rbenv-gem-rehash
             eval "$(rbenv init -)"
