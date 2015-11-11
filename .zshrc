@@ -622,7 +622,7 @@ function get-python () {
                  awscli \
                  docker-compose
             ;;
-        linux)
+        linux*)
             case "${DIST}" in
                 Redhat|RedHat)
                     sudo easy_install pip
