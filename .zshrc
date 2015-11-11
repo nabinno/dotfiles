@@ -296,7 +296,7 @@ function get-ruby () {
 function get-rbenv () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
-            install-base
+            get-base
             git clone git://github.com/sstephenson/rbenv.git ~/.local/rbenv
             mkdir -p ~/.local/rbenv/shims ~/.local/rbenv/versions ~/.local/rbenv/plugins
             git clone git://github.com/sstephenson/ruby-build.git ~/.local/rbenv/plugins/ruby-build
