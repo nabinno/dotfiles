@@ -755,6 +755,33 @@ alias ms="sudo /etc/init.d/mysql status"
 alias mk="sudo killall mysqld"
 
 
+# nginx
+# -----
+funtion get-nginx () {
+    case "${OSTYPE}" in
+        darwin*)
+            brew tap homebrew/nginx
+            brew install nginx-full --with-status --with-upload-module
+            brew unlink nginx
+            brew link nginx-full
+        ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo rpm -ivh http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
+                    sudo yum install nginx --disablerepo=amzn-main -y
+                    sudo chkconfig nginx on
+                    echo "priority=1" >> /etc/yum.repos.d/nginx.repo
+                ;;
+            esac
+            ;;
+    esac
+}
+if ! type -p nginx > /dev/null; then
+    get-nginx
+fi
+
+
 # git
 # ---
 function get-git () {
