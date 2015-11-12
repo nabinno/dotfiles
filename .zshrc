@@ -598,18 +598,146 @@ fi
 
 # php
 # ---
-case "${OSTYPE}" in
-    freebsd*|darwin*|linux*)
-        case "${DIST}" in
-            Debian|Ubuntu)
-                if ! type -p php > /dev/null; then
+function get-php () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            case "${DIST}" in
+                Debian|Ubuntu)
                     sudo apt-get update
                     sudo apt-get install -y php5-common php5-cli php5-fpm
-                fi
+                    ;;
+            esac
+            ;;
+    esac
+}
+function get-fastcgi () {
+    case "${OSTYPE}" in
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo yum install -y php-fpm
+                    chkconfig php-fpm on
                 ;;
-        esac
+                Ubuntu|Debian)
+                    php-fastcgi-file="#!/bin/bash
+FASTCGI_USER=www-data
+FASTCGI_GROUP=www-data
+ADDRESS=127.0.0.1
+PORT=9000
+PIDFILE=/var/run/php-fastcgi/php-fastcgi.pid
+CHILDREN=6
+PHP5=/usr/bin/php5-cgi
+/usr/bin/spawn-fcgi -a $ADDRESS -p $PORT_DBDIR -P $PIDFILE -C $CHILDREN -u $FASTCGI_USER -g $FASTCGI_GROUP -f $PHP5"
+                    php-fastcgi-file='#!/bin/bash
+PHP_SCRIPT=/usr/bin/php-fastcgi
+FASTCGI_USER=www-data
+FASTCGI_GROUP=www-data
+PID_DIR=/var/run/php-fastcgi
+PID_FILE=/var/run/php-fastcgi/php-fastcgi.pid
+RET_VAL=0
+case "$1" in
+    start)
+        if [[ ! -d $PID_DIR ]]
+        then
+            mkdir $PID_DIR
+            chown $FASTCGI_USER:$FASTCGI_GROUP $PID_DIR
+            chmod 0770 $PID_DIR
+        fi
+        if [[ -r $PID_FILE ]]
+        then
+            echo "php-fastcgi already running with PID `cat $PID_FILE`"
+            RET_VAL=1
+        else
+            $PHP_SCRIPT
+            RET_VAL=$?
+        fi
+        ;;
+    stop)
+        if [[ -r $PID_FILE ]]
+        then
+            kill `cat $PID_FILE`
+            rm $PID_FILE
+            RET_VAL=$?
+        else
+            echo "Could not find PID file $PID_FILE"
+            RET_VAL=1
+        fi
+        ;;
+    restart)
+        if [[ -r $PID_FILE ]]
+        then
+            kill `cat $PID_FILE`
+            rm $PID_FILE
+            RET_VAL=$?
+        else
+            echo "Could not find PID file $PID_FILE"
+        fi
+        $PHP_SCRIPT
+        RET_VAL=$?
+        ;;
+    status)
+        if [[ -r $PID_FILE ]]
+        then
+            echo "php-fastcgi running with PID `cat $PID_FILE`"
+            RET_VAL=$?
+        else
+            echo "Could not find PID file $PID_FILE, php-fastcgi does not appear to be running"
+        fi
+        ;;
+    *)
+        echo "Usage: php-fastcgi {start|stop|restart|status}"
+        RET_VAL=1
         ;;
 esac
+exit $RET_VAL'
+                    sudo apt-get update -y && sudo apt-get install -y \
+                         nginx \
+                         php5-cli \
+                         spawn-fcgi \
+                         psmisc
+                    echo php-fastcgi-file | sudo tee --apend /usr/bin/php-fastcgi
+                    sudo chmod +x /usr/bin/php-fastcgi
+                    echo php-fastcgid-file | sudo tee --apend /etc/init.d/php-fastcgi
+                    sudo chmod +x /etc/init.d/php-fastcgi
+                    sudo update-rc.d php-fastcgi defaults
+                    ;;
+            esac
+            ;;
+    esac
+}
+function php-fastcgi () {
+    case "${OSTYPE}" in
+        darwin*)
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo /etc/init.d/php-fpm $1
+                ;;
+                Ubuntu|Debian)
+                    sudo /etc/init.d/php-fastcgi $1
+                    ;;
+            esac
+            ;;
+    esac
+}
+function fastcgi-restart () {
+    sudo killall php-fpm php-fastcgi $1; wait
+    case "${OSTYPE}" in
+        darwin*)
+            ;;
+        linux*)
+            php-fastcgi start
+            php-fastcgi status
+            ;;
+    esac
+}
+if ! type -p php > /dev/null; then get-php; fi
+if [ ! -f /etc/init.d/php-fastcgi -o ]; then get-fastcgi;  fi
+alias fr="fastcgi-restart"
+alias fp="ps aux | \grep -G 'php.*'"
+alias fs="php-fastcgi status"
+alias fk="sudo killall php-fpm php-fastcgi"
 
 
 # python
@@ -769,6 +897,15 @@ funtion get-nginx () {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
+                    sudo yum install -y \
+                         pcre \
+                         pcre-devel \
+                         zlib \
+                         zlib-devel \
+                         openssl \
+                         openssl-devel \
+                         gcc
+                    sudo useradd -s/sbin/nologin -d/usr/local/nginx -M nginx
                     sudo rpm -ivh http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
                     sudo yum install nginx --disablerepo=amzn-main -y
                     sudo chkconfig nginx on
@@ -778,9 +915,6 @@ funtion get-nginx () {
             ;;
     esac
 }
-if ! type -p nginx > /dev/null; then
-    get-nginx
-fi
 function nginx-restart () {
     sudo killall nginx $1; wait
     case "${OSTYPE}" in
@@ -802,6 +936,7 @@ function nginx-restart () {
             ;;
     esac
 }
+if ! type -p nginx > /dev/null; then get-nginx; fi
 alias nr="nginx-restart"
 alias np="ps aux | \grep -G 'nginx.*'"
 alias ns="sudo /etc/init.d/nginx status"
