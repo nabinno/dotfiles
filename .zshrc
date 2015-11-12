@@ -619,7 +619,7 @@ function get-fastcgi () {
                     chkconfig php-fpm on
                 ;;
                 Ubuntu|Debian)
-                    php-fastcgi-file="#!/bin/bash
+                    php_fastcgi_file="#!/bin/bash
 FASTCGI_USER=www-data
 FASTCGI_GROUP=www-data
 ADDRESS=127.0.0.1
@@ -628,7 +628,7 @@ PIDFILE=/var/run/php-fastcgi/php-fastcgi.pid
 CHILDREN=6
 PHP5=/usr/bin/php5-cgi
 /usr/bin/spawn-fcgi -a $ADDRESS -p $PORT_DBDIR -P $PIDFILE -C $CHILDREN -u $FASTCGI_USER -g $FASTCGI_GROUP -f $PHP5"
-                    php-fastcgi-file='#!/bin/bash
+                    php_fastcgi_file='#!/bin/bash
 PHP_SCRIPT=/usr/bin/php-fastcgi
 FASTCGI_USER=www-data
 FASTCGI_GROUP=www-data
@@ -695,9 +695,11 @@ exit $RET_VAL'
                          php5-cli \
                          spawn-fcgi \
                          psmisc
-                    echo php-fastcgi-file | sudo tee --append /usr/bin/php-fastcgi
+                    sudo rm -fr /usr/bin/php-fastcgi
+                    sudo rm -fr /etc/init.d/php-fastcgi
+                    echo $php_fastcgi_file | sudo tee --append /usr/bin/php-fastcgi
+                    echo $php_fastcgid_file | sudo tee --append /etc/init.d/php-fastcgi
                     sudo chmod +x /usr/bin/php-fastcgi
-                    echo php-fastcgid-file | sudo tee --append /etc/init.d/php-fastcgi
                     sudo chmod +x /etc/init.d/php-fastcgi
                     sudo update-rc.d php-fastcgi defaults
                     ;;
