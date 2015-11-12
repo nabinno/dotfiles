@@ -724,13 +724,13 @@ function php-fastcgid () {
     esac
 }
 function fastcgi-restart () {
-    sudo killall php-fpm php-fastcgi $1; wait
+    sudo killall php-fpm php-fastcgi php-fastcgid $1; wait
     case "${OSTYPE}" in
         darwin*)
             ;;
         linux*)
-            php-fastcgi start
-            php-fastcgi status
+            php-fastcgid start
+            php-fastcgid status
             ;;
     esac
 }
@@ -738,8 +738,8 @@ if ! type -p php > /dev/null; then get-php; fi
 if [ ! -f /etc/init.d/php-fastcgi -o ]; then get-fastcgi;  fi
 alias fr="fastcgi-restart"
 alias fp="ps aux | \grep -G 'php.*'"
-alias fs="php-fastcgi status"
-alias fk="sudo killall php-fpm php-fastcgi"
+alias fs="php-fastcgid status"
+alias fk="sudo killall php-fpm php-fastcgi php-fastcgid"
 
 
 # python
