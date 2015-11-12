@@ -717,7 +717,8 @@ function php-fastcgid () {
                     sudo /etc/init.d/php-fpm $1
                 ;;
                 Ubuntu|Debian)
-                    sudo /etc/init.d/php-fastcgi $1
+                    sudo /etc/init.d/php5-fpm $1
+                    # sudo /etc/init.d/php-fastcgi $1
                     ;;
             esac
             ;;
