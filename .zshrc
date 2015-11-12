@@ -705,7 +705,7 @@ exit $RET_VAL'
             ;;
     esac
 }
-function php-fastcgi () {
+function php-fastcgid () {
     case "${OSTYPE}" in
         darwin*)
             ;;
