@@ -781,6 +781,31 @@ funtion get-nginx () {
 if ! type -p nginx > /dev/null; then
     get-nginx
 fi
+function nginx-restart () {
+    sudo killall nginx $1; wait
+    case "${OSTYPE}" in
+        darwin*)
+            sudo nginx -s reload
+            sudo nginx -s status
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo service nginx start
+                    sudo service nginx status
+                ;;
+                Ubuntu|Debian)
+                    sudo /etc/init.d/nginx start
+                    sudo /etc/init.d/nginx status
+                    ;;
+            esac
+            ;;
+    esac
+}
+alias nr="nginx-restart"
+alias np="ps aux | \grep -G 'nginx.*'"
+alias ns="sudo /etc/init.d/nginx status"
+alias nk="sudo killall nginx"
 
 
 # git
