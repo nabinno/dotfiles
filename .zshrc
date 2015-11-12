@@ -619,7 +619,7 @@ function get-fastcgi () {
                     chkconfig php-fpm on
                 ;;
                 Ubuntu|Debian)
-                    php_fastcgi_file="#!/bin/bash
+                    php_fastcgi_file='#!/bin/bash
 FASTCGI_USER=www-data
 FASTCGI_GROUP=www-data
 ADDRESS=127.0.0.1
@@ -627,7 +627,7 @@ PORT=9000
 PIDFILE=/var/run/php-fastcgi/php-fastcgi.pid
 CHILDREN=6
 PHP5=/usr/bin/php5-cgi
-/usr/bin/spawn-fcgi -a $ADDRESS -p $PORT_DBDIR -P $PIDFILE -C $CHILDREN -u $FASTCGI_USER -g $FASTCGI_GROUP -f $PHP5"
+/usr/bin/spawn-fcgi -a $ADDRESS -p $PORT_DBDIR -P $PIDFILE -C $CHILDREN -u $FASTCGI_USER -g $FASTCGI_GROUP -f $PHP5'
                     php_fastcgid_file='#!/bin/bash
 PHP_SCRIPT=/usr/bin/php-fastcgi
 FASTCGI_USER=www-data
