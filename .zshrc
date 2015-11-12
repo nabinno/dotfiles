@@ -618,17 +618,19 @@ function get-fastcgi () {
                     sudo yum install -y php-fpm
                     chkconfig php-fpm on
                 ;;
-                Ubuntu|Debian)
-                    php_fastcgi_file='#!/bin/bash
+                Ubuntu)
+                    case "${DIST_VERSION}" in
+                        12.04)
+                            php_fastcgi_file='#!/bin/bash
 FASTCGI_USER=www-data
 FASTCGI_GROUP=www-data
 ADDRESS=127.0.0.1
-PORT=9000
-PIDFILE=/var/run/php-fastcgi/php-fastcgi.pid
+PORT=10003
+PIDFILE=/var/run/php5-fpm.pid
 CHILDREN=6
-PHP5=/usr/bin/php5-cgi
+PHP5=/usr/sbin/php5-fpm
 /usr/bin/spawn-fcgi -a $ADDRESS -p $PORT_DBDIR -P $PIDFILE -C $CHILDREN -u $FASTCGI_USER -g $FASTCGI_GROUP -f $PHP5'
-                    php_fastcgid_file='#!/bin/bash
+                            php_fastcgid_file='#!/bin/bash
 PHP_SCRIPT=/usr/bin/php-fastcgi
 FASTCGI_USER=www-data
 FASTCGI_GROUP=www-data
@@ -690,19 +692,29 @@ case "$1" in
         ;;
 esac
 exit $RET_VAL'
-                    sudo apt-get update -y && sudo apt-get install -y \
-                         nginx \
-                         php5-cli \
-                         spawn-fcgi \
-                         psmisc
-                    sudo rm -fr /usr/bin/php-fastcgi
-                    sudo rm -fr /etc/init.d/php-fastcgi
-                    echo $php_fastcgi_file | sudo tee --append /usr/bin/php-fastcgi
-                    echo $php_fastcgid_file | sudo tee --append /etc/init.d/php-fastcgi
-                    sudo chmod +x /usr/bin/php-fastcgi
-                    sudo chmod +x /etc/init.d/php-fastcgi
-                    sudo update-rc.d php-fastcgi defaults
-                    ;;
+                            sudo apt-get update -y
+                            sudo apt-get install -y \
+                                 nginx \
+                                 php5-cli \
+                                 spawn-fcgi \
+                                 psmisc
+                            sudo rm -fr /usr/bin/php-fastcgi
+                            sudo rm -fr /etc/init.d/php-fastcgi
+                            echo $php_fastcgi_file | sudo tee --append /usr/bin/php-fastcgi
+                            echo $php_fastcgid_file | sudo tee --append /etc/init.d/php-fastcgi
+                            sudo chmod +x /usr/bin/php-fastcgi
+                            sudo chmod +x /etc/init.d/php-fastcgi
+                            sudo update-rc.d php-fastcgi defaults
+                            ;;
+                        14.04)
+                            sudo apt-get update -y
+                            sudo apt-get install -y \
+                                 nginx \
+                                 php5-cli \
+                                 spawn-fcgi \
+                                 psmisc
+                            ;;
+                    esac
             esac
             ;;
     esac
@@ -716,9 +728,15 @@ function php-fastcgid () {
                 Redhat|RedHat)
                     sudo /etc/init.d/php-fpm $1
                 ;;
-                Ubuntu|Debian)
-                    sudo /etc/init.d/php5-fpm $1
-                    # sudo /etc/init.d/php-fastcgi $1
+                Ubuntu)
+                    case "${DIST_VERSION}" in
+                        14.04)
+                            sudo service php5-fpm $1
+                            ;;
+                        12.04)
+                            sudo /etc/init.d/php-fastcgi $1
+                            ;;
+                    esac
                     ;;
             esac
             ;;
@@ -736,11 +754,13 @@ function fastcgi-restart () {
     esac
 }
 if ! type -p php > /dev/null; then get-php; fi
-if [ ! -f /etc/init.d/php-fastcgi -o ]; then get-fastcgi;  fi
+if [ ! -f /etc/init.d/php-fastcgi ] && [ ! -f /etc/init.d/php-fpm ] && [ ! -f /etc/init.d/php5-fpm ] ; then
+    get-fastcgi
+fi
 alias fr="fastcgi-restart"
 alias fp="ps aux | \grep -G 'php.*'"
 alias fs="php-fastcgid status"
-alias fk="sudo killall php-fpm php-fastcgi php-fastcgid"
+alias fk="php-fastcgid stop"
 
 
 # python
@@ -919,7 +939,6 @@ funtion get-nginx () {
     esac
 }
 function nginx-restart () {
-    sudo killall nginx $1; wait
     case "${OSTYPE}" in
         darwin*)
             sudo nginx -s reload
@@ -928,12 +947,19 @@ function nginx-restart () {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
-                    sudo service nginx start
+                    sudo service nginx restart
                     sudo service nginx status
                 ;;
-                Ubuntu|Debian)
-                    sudo /etc/init.d/nginx start
-                    sudo /etc/init.d/nginx status
+                Ubuntu)
+                    case "${DIST_VERSION=}" in
+                        12.04)
+                            sudo /etc/init.d/nginx restart
+                            sudo /etc/init.d/nginx status
+                            ;;
+                        14.04)
+                            sudo service nginx restart
+                            sudo service nginx status
+                    esac
                     ;;
             esac
             ;;
