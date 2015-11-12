@@ -695,9 +695,9 @@ exit $RET_VAL'
                          php5-cli \
                          spawn-fcgi \
                          psmisc
-                    echo php-fastcgi-file | sudo tee --apend /usr/bin/php-fastcgi
+                    echo php-fastcgi-file | sudo tee --append /usr/bin/php-fastcgi
                     sudo chmod +x /usr/bin/php-fastcgi
-                    echo php-fastcgid-file | sudo tee --apend /etc/init.d/php-fastcgi
+                    echo php-fastcgid-file | sudo tee --append /etc/init.d/php-fastcgi
                     sudo chmod +x /etc/init.d/php-fastcgi
                     sudo update-rc.d php-fastcgi defaults
                     ;;
