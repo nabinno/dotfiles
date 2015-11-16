@@ -321,7 +321,12 @@ function get-rbenv () {
     esac
 }
 if ! type -p ruby > /dev/null;  then get-ruby;  fi
-if ! type -p rbenv > /dev/null; then get-rbenv; fi
+if ! type -p rbenv > /dev/null; then
+    get-rbenv
+else
+    eval "$(rbenv init -)"
+fi
+
 
 # autoparts
 # ---------
