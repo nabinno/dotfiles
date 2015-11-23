@@ -1,4 +1,4 @@
-FROM quay.io/nabinno/rails-on-autoparts
+FROM quay.io/nabinno/dove-ubuntu12
 USER action
 
 WORKDIR /home/action
@@ -8,4 +8,4 @@ RUN rm -fr .git Dockerfile README.md
 RUN zsh -c "yes | source ~/.zshrc"
 
 EXPOSE 22
-CMD /usr/sbin/sshd -D
+CMD sudo /usr/sbin/sshd -D
