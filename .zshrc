@@ -72,6 +72,7 @@ REQUIRED_PYTHON_VERSION=2.7.6
 REQUIRED_MYSQL_VERSION=5.6
 REQUIRED_GIT_VERSION=1.9.4
 REQUIRED_MACPORT_VERSION=2.3.3
+REQUIRED_TERRAFORM_VERSION=0.6.6
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias grep='grep --color=auto'
@@ -1483,6 +1484,41 @@ case "${OSTYPE}" in
         esac
         ;;
 esac
+
+
+# terraform
+# ---------
+function get-terraform () {
+    current_pwd=`pwd`
+    cd ~/.local/bin
+    rm -fr terraform*
+    case "${OSTYPE}" in
+        darwin*)
+            wget https://releases.hashicorp.com/terraform/${REQUIRED_TERRAFORM_VERSION}/terraform_${REQUIRED_TERRAFORM_VERSION}_darwin_amd64.zip
+            unzip terraform_${REQUIRED_TERRAFORM_VERSION}_darwin_amd64.zip
+            ;;
+        freebsd*)
+            wget https://releases.hashicorp.com/terraform/${REQUIRED_TERRAFORM_VERSION}/terraform_${REQUIRED_TERRAFORM_VERSION}_freebsd_amd64.zip
+            unzip terraform_${REQUIRED_TERRAFORM_VERSION}_freebsd_amd64.zip
+        ;;
+        linux*)
+            wget https://releases.hashicorp.com/terraform/${REQUIRED_TERRAFORM_VERSION}/terraform_${REQUIRED_TERRAFORM_VERSION}_linux_amd64.zip
+            unzip terraform_${REQUIRED_TERRAFORM_VERSION}_linux_amd64.zip
+            ;;
+    esac
+    cd $current_pwd
+}
+if ! type -p terraform > /dev/null; then get-terraform; fi
+function terraform-remote-config () {
+    terraform remote config -backend=S3 -backend-config="bucket=tfstate.d" -backend-config="key=$1.tfstate"
+    terraform remote push
+}
+alias trc="terraform-remote-config"
+alias tr="terraform remote"
+alias ts="terraform show"
+alias tp="terraform plan"
+alias ta="terraform apply"
+alias td="terraform deploy"
 
 
 
