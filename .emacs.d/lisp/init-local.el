@@ -1,4 +1,6 @@
-;;; Basic setting
+;;; init-local --- Local configuraiton
+;;; Commentary:
+;;; Code:
 (setq default-directory "~/")
 
 ;; after init hook
@@ -142,3 +144,4 @@
 
 
 (provide 'init-local)
+;;; init-local.el ends here.
