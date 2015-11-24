@@ -1,3 +1,6 @@
+;;; init-dired --- dired configuration
+;;; Commentary:
+;;; Code:
 (require-package 'dired+)
 
 (setq diredp-hide-details-initially-flag nil)
@@ -150,6 +153,13 @@ other window."
                  (define-key dired-mode-map (kbd "M-[ 1 ; 3 D") 'dired-previous-buffer)
                  ))))
 
+
+;;; ls for darwin
+(when (eq system-type 'darwin)
+  (require 'ls-lisp)
+  (setq ls-lisp-use-insert-directory-program nil))
+
 
 
 (provide 'init-dired)
+;;; init-dired.el ends here.
