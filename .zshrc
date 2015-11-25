@@ -1132,8 +1132,17 @@ function get-mu () {
             ;;
     esac
 }
+function mu-restart () {
+    mv ~/Maildir ~/Maildir.org$(date +%y%m%d)
+    rm -fr ~/.mu
+    rm -fr ~/.offlineimap
+    offlineimap
+    mu index --maildir=~/Maildir
+    mu index --rebuild
+    mu index
+}
 if ! type -p emacs > /dev/null; then
-    get-emacs
+   get-emacs
 else
     CURRENT_EMACS_VERSION=$(emacs --version | head -n 1 | sed 's/GNU Emacs //' | awk '$0 = substr($0, 1, index($0, ".") + 1)')
     if [[ $REQUIRED_EMACS_VERSION > $CURRENT_EMACS_VERSION ]]; then get-emacs; fi
@@ -1141,6 +1150,7 @@ fi
 if ! type -p mu > /dev/null; then
     get-mu
 fi
+
 
 # default shell
 # -------------
@@ -1500,7 +1510,7 @@ function get-terraform () {
         freebsd*)
             wget https://releases.hashicorp.com/terraform/${REQUIRED_TERRAFORM_VERSION}/terraform_${REQUIRED_TERRAFORM_VERSION}_freebsd_amd64.zip
             unzip terraform_${REQUIRED_TERRAFORM_VERSION}_freebsd_amd64.zip
-        ;;
+            ;;
         linux*)
             wget https://releases.hashicorp.com/terraform/${REQUIRED_TERRAFORM_VERSION}/terraform_${REQUIRED_TERRAFORM_VERSION}_linux_amd64.zip
             unzip terraform_${REQUIRED_TERRAFORM_VERSION}_linux_amd64.zip
@@ -1518,7 +1528,7 @@ alias tr="terraform remote"
 alias ts="terraform show"
 alias tp="terraform plan"
 alias ta="terraform apply"
-alias td="terraform deploy"
+alias td="terraform destroy"
 
 
 
