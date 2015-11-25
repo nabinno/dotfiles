@@ -1134,6 +1134,7 @@ function get-mu () {
 }
 function mu-restart () {
     mv ~/Maildir ~/Maildir.org$(date +%y%m%d)
+    mkdir -p ~/Maildir
     rm -fr ~/.mu
     rm -fr ~/.offlineimap
     offlineimap
