@@ -331,15 +331,26 @@ fi
 
 # autoparts
 # ---------
+function get-parts () {
+    case "${OSTYPE}" in
+        linux*)
+            case "${DIST}" in
+                Debian|Ubuntu)
+                    install-base
+                    ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
+                    eval "$(parts env)"
+                    exec $SHELL -l
+                    ;;
+            esac
+            ;;
+    esac
+}
 case "${OSTYPE}" in
     linux*)
         case "${DIST}" in
             Debian|Ubuntu)
                 if ! type -p parts > /dev/null; then
-                    install-base
-                    ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
-                    eval "$(parts env)"
-                    exec $SHELL -l
+                    get-parts
                     parts install \
                           chruby \
                           ctags \
@@ -858,6 +869,67 @@ alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 # javascript
 # ----------
 export node='NODE_NO_READLINE=1 node'
+
+
+# postgresql
+# ----------
+function get-postgresql () {
+    case "${OSTYPE}" in
+        darwin*)
+        ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                ;;
+                Debian)
+                ;;
+                Ubuntu)
+                    case "${DIST_VERSION}" in
+                        12.04)
+                            parts install postgresql
+                            ;;
+                        14.04)
+                            ;;
+                    esac
+            esac
+    esac
+}
+if ! type -p psql > /dev/null; then
+    get-postgresql
+fi
+function pg-restart () {
+    sudo killall postgresql $1; wait
+    case "${OSTYPE}" in
+        darwin*)
+            brew install postgresql
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo service postgresql start
+                    sudo service postgresql status
+                    ;;
+                Debian)
+                    ;;
+                Ubuntu)
+                    case "${DIST_VERSION}" in
+                        12.04)
+                            parts start postgresql
+                            ;;
+                        14.04)
+                            sudo /etc/init.d/postgresql start
+                            sudo /etc/init.d/postgresql status
+                            ;;
+                    esac
+                    ;;
+            esac
+            ;;
+    esac
+}
+alias pgr="pg-restart"
+alias pgp="ps aux | \grep -G 'postgresql.*'"
+alias pgs="sudo /etc/init.d/postgresql status"
+alias pgk="sudo killall postgresql"
 
 
 # mysql
