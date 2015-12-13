@@ -986,8 +986,8 @@ function my-restart () {
                 Ubuntu)
                     case "${DIST_VERSION}" in
                         12.04)
-                            parts restart remysql
-                            parts status remysql
+                            parts restart mysql
+                            parts status mysql
                             ;;
                         14.04)
                             sudo /etc/init.d/mysql restart
@@ -1616,12 +1616,12 @@ function terraform-remote-config () {
     terraform remote config -backend=S3 -backend-config="bucket=tfstate.d" -backend-config="key=$1.tfstate"
     terraform remote push
 }
-alias trc="terraform-remote-config"
-alias tr="terraform remote"
-alias ts="terraform show"
-alias tp="terraform plan"
-alias ta="terraform apply"
-alias td="terraform destroy"
+alias tfrc="terraform-remote-config"
+alias tfr="terraform remote"
+alias tfs="terraform show"
+alias tfp="terraform plan"
+alias tfa="terraform apply"
+alias tfd="terraform destroy"
 
 
 
