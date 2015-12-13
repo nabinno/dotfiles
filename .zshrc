@@ -906,7 +906,7 @@ function pg-restart () {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
-                    sudo service postgresql start
+                    sudo service postgresql restart
                     sudo service postgresql status
                     ;;
                 Debian)
@@ -914,10 +914,11 @@ function pg-restart () {
                 Ubuntu)
                     case "${DIST_VERSION}" in
                         12.04)
-                            parts start postgresql
+                            parts restart postgresql
+                            parts status postgresql
                             ;;
                         14.04)
-                            sudo /etc/init.d/postgresql start
+                            sudo /etc/init.d/postgresql restart
                             sudo /etc/init.d/postgresql status
                             ;;
                     esac
@@ -946,12 +947,19 @@ function get-mysql () {
                 Debian)
                 ;;
                 Ubuntu)
-                        sudo apt-get -y remove mysql-server
-                        sudo apt-get -y autoremove
-                        sudo apt-get -y install software-properties-common
-                        sudo add-apt-repository -y ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
-                        sudo apt-get update
-                        sudo apt-get -y install mysql-server
+                    case "${DIST_VERSION}" in
+                        12.04)
+                            parts install postgresql
+                        ;;
+                        14.04)
+                            sudo apt-get -y remove mysql-server
+                            sudo apt-get -y autoremove
+                            sudo apt-get -y install software-properties-common
+                            sudo add-apt-repository -y ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
+                            sudo apt-get update
+                            sudo apt-get -y install mysql-server
+                            ;;
+                    esac
                     ;;
             esac
     esac
@@ -968,12 +976,24 @@ function my-restart () {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
-                    sudo service mysql start
+                    sudo service mysql restart
                     sudo service mysql status
                     ;;
-                Debian|Ubuntu)
-                    sudo /etc/init.d/mysql start
+                Debian)
+                    sudo /etc/init.d/mysql restart
                     sudo /etc/init.d/mysql status
+                    ;;
+                Ubuntu)
+                    case "${DIST_VERSION}" in
+                        12.04)
+                            parts restart remysql
+                            parts status remysql
+                            ;;
+                        14.04)
+                            sudo /etc/init.d/mysql restart
+                            sudo /etc/init.d/mysql status
+                            ;;
+                    esac
                     ;;
             esac
             ;;
