@@ -1121,6 +1121,30 @@ else
     CURRENT_GIT_VERSION=$(git --version 2>&1 | cut -d\  -f 3 | sed 's/\(.*\..*\)\..*/\1/')
     if [[ $REQUIRED_GIT_VERSION_NUM > $CURRENT_GIT_VERSION ]]; then get-git; fi
 fi
+function get-hub () {
+    case "${OSTYPE}" in
+        freebsd*)
+        ;;
+        darwin*)
+            brew install hub
+        ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                ;;
+                Debian)
+                ;;
+                Ubuntu)
+                    parts install hub
+                ;;
+            esac
+            ;;
+    esac
+}
+if ! type -p hub > /dev/null; then
+    get-hub
+fi
+alias git='hub'
 alias g='git'
 alias ga='git add -v'
 alias galiases="git !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /'"
