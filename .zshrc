@@ -1247,7 +1247,7 @@ function github-pull-repositories () {
         echo '                                ....is now installed!'
     else
         echo ''
-        echo "Usage: git-pull-repositories -r user1,repository1,branch1 -r user2,repository2,branch2 -n dirname .." 1>&2
+        echo "Usage: github-pull-repositories -r user1,repository1,branch1 -r user2,repository2,branch2 -n dirname .." 1>&2
     fi
 }
 
