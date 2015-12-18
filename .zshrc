@@ -1184,11 +1184,71 @@ alias gst='git status -sb'
 alias gswitch='git checkout'
 alias gvlog='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen - %cD (%cr) %C(bold blue)<%an>%Creset%n" --abbrev-commit --date=relative -p ; echo ""'
 alias gwho='git shortlog -s --'
-function parse_git_dirty {
+function parse-git-dirty {
     git diff --no-ext-diff --quiet --exit-code &> /dev/null || echo "*"
 }
-function parse_git_branch {
+function parse-git-branch {
     git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty))/"
+}
+function github-pull-repositories () {
+    # # Setup Example:
+    # function setup-git-pull-repositories () {
+    #     case $1 in
+    #         foo) echo 'npm install';;
+    #         bar) echo 'npm install && bower install';;
+    #     esac
+    # }
+    typeset -A users
+    typeset -A branches
+    typeset -A build_commands
+    while getopts "n:r:" opt; do
+        case $opt in
+            n)
+                dirname=$OPTARG
+                is_dirname='true'
+                ;;
+            r)
+                array=("${(@s:,:)OPTARG}")
+                repository=$array[2]
+                users[$repository]=$array[1]
+                branches[$repository]=$array[3]
+                build_commands[$repository]=`setup-github-pull-repositories $repository`
+                is_repositoy='true'
+                ;;
+        esac
+    done
+    if [ $# -ge 4 ] && [ $is_dirname ] && [ $is_repositoy ]; then
+        directory=$(date +%y%m%d)_$dirname
+        current_pwd=`pwd`
+        cd ~/
+        mkdir -p ~/${directory}
+        cd ~/${directory}
+        for k in ${(@k)build_commands}; do
+            echo ''
+            echo 'Start git clone:' $k
+            echo '--------------------------------------------------'
+            git clone git@github.com:$users[$k]/$k.git; wait
+            cd ./$k
+            echo ''
+            echo 'Start build:' $build_commands[$k] 'in' $k
+            echo '--------------------------------------------------'
+            git checkout $branches[$k]
+            eval $build_commands[$k]; wait
+            cd ~/${directory}
+        done
+        cd ${current_pwd}
+        echo ''
+        echo ''
+        echo '   _______ __  ____        ____'
+        echo '  / ____(_) /_/ __ \__  __/ / /'
+        echo ' / / __/ / __/ /_/ / / / / / /'
+        echo '/ /_/ / / /_/ ____/ /_/ / / /'
+        echo '\____/_/\__/_/    \__,_/_/_/'
+        echo '                                ....is now installed!'
+    else
+        echo ''
+        echo "Usage: git-pull-repositories -r user1,repository1,branch1 -r user2,repository2,branch2 -n dirname .." 1>&2
+    fi
 }
 
 
