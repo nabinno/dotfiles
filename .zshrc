@@ -971,7 +971,6 @@ function my-restart () {
     sudo killall mysqld $1; wait
     case "${OSTYPE}" in
         darwin*)
-            brew install mysql
             ;;
         linux*)
             case "${DIST}" in
@@ -1003,6 +1002,82 @@ alias mr="my-restart"
 alias mp="ps aux | \grep -G 'mysql.*'"
 alias ms="sudo /etc/init.d/mysql status"
 alias mk="sudo killall mysqld"
+
+
+# redis
+# -----
+function get-redis () {
+    case "${OSTYPE}" in
+        darwin*)
+            brew install redis
+            ;;
+        linux*)
+            sudo apt-get update
+            sudo apt-get install -y \
+                 build-essential \
+                 tcl8.5
+            wget http://download.redis.io/releases/redis-stable.tar.gz
+            tar xzf redis-stable.tar.gz
+            cd redis-stable
+            make && make test && sudo make install
+            sudo mkdir /etc/redis
+            sudo mkdir /var/redis
+            sudo cp -f utils/redis_init_script /etc/init.d/redis_6379
+            sudo cp -f redis.conf /etc/redis/6379.conf
+            sudo mkdir /var/redis/6379
+            sudo update-rc.d redis_6379 defaults
+            sudo sed -i 's|daemonize no|daemonize yes|g' /etc/redis/6379.conf
+            sudo sed -i 's|pidfile /var/run/redis.pid|pidfile /var/run/redis_6379.pid|g' /etc/redis/6379.conf
+            sudo sed -i 's|logfile ""|logfile "/var/log/redis_6379.log"|g' /etc/redis/6379.conf
+            sudo sed -i 's|dir \./|dir /var/redis/6379|g' /etc/redis/6379.conf
+            sudo sed -i 's|# bind 127.0.0.1|bind 127.0.0.1|g' /etc/redis/6379.conf
+            cd ..
+            rm -fr redis-stable
+            ;;
+    esac
+}
+if ! type -p redis-cli > /dev/null; then
+    get-redis
+fi
+function redis-restart () {
+    sudo killall redis $1; wait
+    case "${OSTYPE}" in
+        darwin*)
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo service redis restart
+                    sudo service redis status
+                    ;;
+                Debian|Ubuntu)
+                    sudo /etc/init.d/redis_6379 stop
+                    sudo /etc/init.d/redis_6379 start
+                    sudo /etc/init.d/redis_6379 status
+                    ;;
+            esac
+            ;;
+    esac
+}
+function redis-stop () {
+    case "${OSTYPE}" in
+        darwin*)
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo service redis stop
+                    ;;
+                Debian|Ubuntu)
+                    sudo /etc/init.d/redis_6379 stop
+                    ;;
+            esac
+            ;;
+    esac
+}
+alias rdr="redis-restart"
+alias rdp="ps aux | \grep -G 'redis.*'"
+alias rdk="redis-stop"
 
 
 # nginx
