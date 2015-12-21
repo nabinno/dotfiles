@@ -771,7 +771,7 @@ function fastcgi-restart () {
     esac
 }
 if ! type -p php > /dev/null; then get-php; fi
-if [ ! -f /etc/init.d/php-fastcgi ] && [ ! -f /etc/init.d/php-fpm ] && [ ! -f /etc/init.d/php5-fpm ] ; then
+if [ ! -f /etc/init.d/php-fastcgi ] && [ ! -f /etc/init.d/php-fpm ] && [ ! -f /etc/init.d/php5-fpm ] && ! type -p php-fpm > /dev/null ; then
     get-fastcgi
 fi
 alias fr="fastcgi-restart"
@@ -1157,7 +1157,8 @@ function get-git () {
                 Redhat|RedHat)
                     sudo yum install -y \
                          perl-ExtUtils-MakeMaker \
-                         libcurl-devel
+                         libcurl-devel \
+                         hub
                     wget https://www.kernel.org/pub/software/scm/git/git-${REQUIRED_GIT_VERSION}.tar.gz
                     tar zxvf git-${REQUIRED_GIT_VERSION}.tar.gz
                     cd git-${REQUIRED_GIT_VERSION}
