@@ -156,6 +156,9 @@ function get-base () {
             ;;
         linux*)
             case "${DIST}" in
+                Redhat|RedHat)
+                    sudo yum update && sudo yum install -y screen
+                    ;;
                 Debian|Ubuntu)
                     sudo apt-get update
                     case "${DIST_VERSION=}" in
@@ -1158,7 +1161,8 @@ function get-git () {
                     sudo yum install -y \
                          perl-ExtUtils-MakeMaker \
                          libcurl-devel \
-                         hub
+                         hub \
+                         gitflow
                     wget https://www.kernel.org/pub/software/scm/git/git-${REQUIRED_GIT_VERSION}.tar.gz
                     tar zxvf git-${REQUIRED_GIT_VERSION}.tar.gz
                     cd git-${REQUIRED_GIT_VERSION}
@@ -1207,6 +1211,8 @@ function get-hub () {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
+                    sudo yum install -y \
+                         hub
                 ;;
                 Debian)
                 ;;
@@ -1654,7 +1660,7 @@ if ! type -p docker > /dev/null; then
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
-                    sudo yum install -y docker
+                    sudo yum update && sudo yum install -y docker
                     ;;
                 Debian)
                     sudo apt-get update; sudo apt-get install -y docker.io
