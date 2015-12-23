@@ -324,7 +324,13 @@ function get-rbenv () {
             ;;
     esac
 }
-if ! type -p ruby > /dev/null;  then get-ruby;  fi
+if ! type -p ruby > /dev/null; then
+    get-ruby
+else
+    REQUIRED_RUBY_VERSION=$(echo $REQUIRED_RUBY_VERSION | sed 's/\(.*\..*\)\..*/\1/')
+    CURRENT_RUBY_VERSION=$(ruby -v | cut -f 2 -d " " | sed 's/^\([0-9]\{1,\}\.[0-9]\{1,\}\)\..*/\1/')
+    if [[ $REQUIRED_RUBY_VERSION > $CURRENT_RUBY_VERSION ]]; then get-ruby; fi
+fi
 if ! type -p rbenv > /dev/null; then
     get-rbenv
 else
