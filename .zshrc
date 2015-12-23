@@ -1250,7 +1250,9 @@ function get-hub () {
 if ! type -p hub > /dev/null; then
     get-hub
 fi
-alias git='hub'
+case "${OSTYPE}" in
+    freebsd*|darwin*|linux*) alias git='hub' ;;
+esac
 alias g='git'
 alias ga='git add -v'
 alias galiases="git !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /'"
