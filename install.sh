@@ -4,8 +4,8 @@ cd ~/
 if [ -d ~/.local/dotfiles ]; then rm -fr .local/dotfiles; fi
 mkdir -p .local/dotfiles
 git clone https://github.com/nabinno/dotfiles.git .local/dotfiles
-mv -fr ~/.local/dotfiles/* ~/
-mv -fr ~/.local/dotfiles/.* ~/
+mv -f ~/.local/dotfiles/* ~/
+mv -f ~/.local/dotfiles/.* ~/
 rm -fr \
    ~/.git \
    ~/Dockerfile \
