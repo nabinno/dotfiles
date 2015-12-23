@@ -1642,6 +1642,8 @@ fi
 # vagrannt
 # --------
 alias vu='vagrant up'
+alias vt='vagrant halt'
+alias vr='vagrant reload'
 alias vp='vagrant global-status'
 alias vk='vagrant destroy --force'
 alias vl='vagrant box list'
