@@ -1007,9 +1007,27 @@ function my-restart () {
             ;;
     esac
 }
+function my-status () {
+    case "${OSTYPE}" in
+        darwin*)
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) sudo service mysql status ;;
+                Debian)        sudo /etc/init.d/mysql status ;;
+                Ubuntu)
+                    case "${DIST_VERSION}" in
+                        12.04) parts status mysql ;;
+                        14.04) sudo /etc/init.d/mysql status ;;
+                    esac
+                    ;;
+            esac
+            ;;
+    esac
+}
 alias mr="my-restart"
 alias mp="ps aux | \grep -G 'mysql.*'"
-alias ms="sudo /etc/init.d/mysql status"
+alias ms="my-status"
 alias mk="sudo killall mysqld"
 
 
