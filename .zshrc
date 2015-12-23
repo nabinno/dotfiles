@@ -1170,7 +1170,7 @@ function get-git () {
                     make prefix=/usr/local all
                     sudo make prefix=/usr/local install
                     cd ..
-                    rm -fr git-${REQUIRED_GIT_VERSION}
+                    rm -fr git-${REQUIRED_GIT_VERSION} git-${REQUIRED_GIT_VERSION}.tar.gz
                 ;;
                 Debian)
                 ;;
