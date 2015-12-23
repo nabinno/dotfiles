@@ -1648,6 +1648,27 @@ alias vl='vagrant box list'
 alias vd='vagrant box remove'
 alias vsh='vagrant ssh'
 alias vshconfig='vagrant ssh-config'
+function vbm-scaleup () {
+    while getopts "i:s:" opt; do
+        case $opt in
+            i) image=$OPTARG ; is_image='true' ;;
+            s) size=$OPTARG  ; is_size='true'  ;;
+        esac
+    done
+    if [ $# -e 2 ] && [ $is_image ] && [ $is_size ]; then
+        current_basename=$(basename `pwd`)
+        uuid=$(VBoxManage list vms | \grep $current_basename | cut -f 2 -d " " | sed -e 's/[\{\}]//g')
+        VBoxManage clonehd $image.vmdk $.vdi --format vdi; wait
+        VBoxManage modifyhd $image.vdi --resize $size; wait
+        VBoxManage storagectl $uuid --name SATA --remove
+        VBoxManage storagectl $uuid --name SATA --add SATA
+        VBoxManage storageattach $uuid --storagectl SATA --type hdd --medium $image.vdi --port 0
+    else
+        echo ''
+        echo "Usage: vbm-scaleup -i image[.vdmi] -s size[MB]" 1>&2
+    fi
+}
+alias vbm='VBoxManage'
 
 
 # docker
