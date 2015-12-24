@@ -1683,7 +1683,7 @@ function vbm-scaleup () {
             s) size=$OPTARG  ; is_size='true'  ;;
         esac
     done
-    if [ $# -e 2 ] && [ $is_image ] && [ $is_size ]; then
+    if [[ $# = 4 ]] && [ $is_image ] && [ $is_size ]; then
         current_basename=$(basename `pwd`)
         uuid=$(VBoxManage list vms | \grep $current_basename | cut -f 2 -d " " | sed -e 's/[\{\}]//g')
         VBoxManage clonehd $image.vmdk $image.vdi --format vdi; wait
