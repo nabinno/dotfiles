@@ -1686,7 +1686,7 @@ function vbm-scaleup () {
     if [ $# -e 2 ] && [ $is_image ] && [ $is_size ]; then
         current_basename=$(basename `pwd`)
         uuid=$(VBoxManage list vms | \grep $current_basename | cut -f 2 -d " " | sed -e 's/[\{\}]//g')
-        VBoxManage clonehd $image.vmdk $.vdi --format vdi; wait
+        VBoxManage clonehd $image.vmdk $image.vdi --format vdi; wait
         VBoxManage modifyhd $image.vdi --resize $size; wait
         VBoxManage storagectl $uuid --name SATA --remove
         VBoxManage storagectl $uuid --name SATA --add SATA
