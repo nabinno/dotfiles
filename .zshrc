@@ -877,7 +877,19 @@ alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 
 # javascript
 # ----------
+export REQUIRED_NODE_VERSION='v0.11.13'
 export node='NODE_NO_READLINE=1 node'
+export NVM_DIR="/home/vagrant/.nvm"
+function get-nvm () {
+    curl https://raw.githubusercontent.com/creationix/nvm/v0.13.1/install.sh | bash
+    [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+}
+function get-node () {
+    nvm install $REQUIRED_NODE_VERSION
+    nvm use $REQUIRED_NODE_VERSION
+}
+if ! type -p nvm > /dev/null  ; then get-nvm  ; fi
+if ! type -p node > /dev/null ; then get-node ; fi
 
 
 # postgresql
@@ -1170,6 +1182,18 @@ alias nr="nginx-restart"
 alias np="ps aux | \grep -G 'nginx.*'"
 alias ns="sudo /etc/init.d/nginx status"
 alias nk="sudo killall nginx"
+
+
+# filesystem
+# ----------
+function delete-log () {
+    sudo find /home /var /usr -mtime +1 -a \( -name "*.pag" -o -name "*.dir" -o -name "*.log" \) -exec sudo rm {} \;
+}
+function sync-filesystem () {
+    delete-log
+    crontab -r
+    echo '0 0 * * * sudo find /home /var /usr -mtime +1 -a \( -name "*.pag" -o -name "*.dir" -o -name "*.log" \) -exec sudo rm {} \;' | crontab
+}
 
 
 # git
