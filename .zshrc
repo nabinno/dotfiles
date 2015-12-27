@@ -235,7 +235,6 @@ function get-base () {
                          libpq-dev \
                          libqt4-dev \
                          libreadline6-dev \
-                         libreadline5-dev \
                          libreadline-dev \
                          libsndfile1-dev \
                          libsqlite3-dev \
@@ -807,6 +806,9 @@ function get-python () {
                          awscli \
                          docker-compose
                     ;;
+                Debian|Ubuntu)
+                    sudo apt-get update -y
+                    sudo apt-get install -y python-pip
             esac
             ;;
     esac
@@ -1426,8 +1428,8 @@ function get-mu () {
                                  guile-2.0-dev \
                                  html2text \
                                  xdg-utils \
-                                 offlineimap \
-                                 git clone https://github.com/djcb/mu
+                                 offlineimap
+                            git clone https://github.com/djcb/mu
                             cd mu
                             sudo autoreconf -i
                             ./configure && make
