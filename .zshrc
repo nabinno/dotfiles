@@ -345,7 +345,7 @@ function get-parts () {
         linux*)
             case "${DIST}" in
                 Debian|Ubuntu)
-                    install-base
+                    get-base
                     ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
                     eval "$(parts env)"
                     exec $SHELL -l
@@ -970,7 +970,7 @@ function get-mysql () {
                 Ubuntu)
                     case "${DIST_VERSION}" in
                         12.04)
-                            parts install postgresql
+                            parts install mysql
                         ;;
                         14.04)
                             sudo apt-get -y remove mysql-server
