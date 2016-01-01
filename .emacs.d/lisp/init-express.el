@@ -171,7 +171,7 @@
 
 
 ;;; AngularJS
-(require-package 'angularjs-mode)
+(require-package 'angular-mode)
 (require-package 'angular-snippets)
 
 

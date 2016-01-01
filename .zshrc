@@ -156,6 +156,9 @@ function get-base () {
             ;;
         linux*)
             case "${DIST}" in
+                Redhat|RedHat)
+                    sudo yum update && sudo yum install -y screen
+                    ;;
                 Debian|Ubuntu)
                     sudo apt-get update
                     case "${DIST_VERSION=}" in
@@ -232,7 +235,6 @@ function get-base () {
                          libpq-dev \
                          libqt4-dev \
                          libreadline6-dev \
-                         libreadline5-dev \
                          libreadline-dev \
                          libsndfile1-dev \
                          libsqlite3-dev \
@@ -321,7 +323,13 @@ function get-rbenv () {
             ;;
     esac
 }
-if ! type -p ruby > /dev/null;  then get-ruby;  fi
+if ! type -p ruby > /dev/null; then
+    get-ruby
+else
+    REQUIRED_RUBY_VERSION=$(echo $REQUIRED_RUBY_VERSION | sed 's/\(.*\..*\)\..*/\1/')
+    CURRENT_RUBY_VERSION=$(ruby -v | cut -f 2 -d " " | sed 's/^\([0-9]\{1,\}\.[0-9]\{1,\}\)\..*/\1/')
+    if [[ $REQUIRED_RUBY_VERSION > $CURRENT_RUBY_VERSION ]]; then get-ruby; fi
+fi
 if ! type -p rbenv > /dev/null; then
     get-rbenv
 else
@@ -331,15 +339,26 @@ fi
 
 # autoparts
 # ---------
+function get-parts () {
+    case "${OSTYPE}" in
+        linux*)
+            case "${DIST}" in
+                Debian|Ubuntu)
+                    get-base
+                    ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
+                    eval "$(parts env)"
+                    exec $SHELL -l
+                    ;;
+            esac
+            ;;
+    esac
+}
 case "${OSTYPE}" in
     linux*)
         case "${DIST}" in
             Debian|Ubuntu)
                 if ! type -p parts > /dev/null; then
-                    install-base
-                    ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
-                    eval "$(parts env)"
-                    exec $SHELL -l
+                    get-parts
                     parts install \
                           chruby \
                           ctags \
@@ -760,7 +779,7 @@ function fastcgi-restart () {
     esac
 }
 if ! type -p php > /dev/null; then get-php; fi
-if [ ! -f /etc/init.d/php-fastcgi ] && [ ! -f /etc/init.d/php-fpm ] && [ ! -f /etc/init.d/php5-fpm ] ; then
+if [ ! -f /etc/init.d/php-fastcgi ] && [ ! -f /etc/init.d/php-fpm ] && [ ! -f /etc/init.d/php5-fpm ] && ! type -p php-fpm > /dev/null ; then
     get-fastcgi
 fi
 alias fr="fastcgi-restart"
@@ -787,6 +806,9 @@ function get-python () {
                          awscli \
                          docker-compose
                     ;;
+                Debian|Ubuntu)
+                    sudo apt-get update -y
+                    sudo apt-get install -y python-pip
             esac
             ;;
     esac
@@ -857,7 +879,81 @@ alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 
 # javascript
 # ----------
+export REQUIRED_NODE_VERSION='0.11.13'
 export node='NODE_NO_READLINE=1 node'
+export NVM_DIR="/home/vagrant/.nvm"
+function get-nvm () {
+    curl https://raw.githubusercontent.com/creationix/nvm/v0.13.1/install.sh | bash
+    [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+}
+function get-node () {
+    nvm install v$REQUIRED_NODE_VERSION
+    nvm use v$REQUIRED_NODE_VERSION
+}
+if [ ! -f ~/.nvm/nvm.sh ] ; then get-nvm  ; fi
+if ! type -p npm > /dev/null ; then get-node ; fi
+
+
+# postgresql
+# ----------
+function get-postgresql () {
+    case "${OSTYPE}" in
+        darwin*)
+        ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                ;;
+                Debian)
+                ;;
+                Ubuntu)
+                    case "${DIST_VERSION}" in
+                        12.04)
+                            parts install postgresql
+                            ;;
+                        14.04)
+                            ;;
+                    esac
+            esac
+    esac
+}
+if ! type -p psql > /dev/null; then
+    get-postgresql
+fi
+function pg-restart () {
+    sudo killall postgresql $1; wait
+    case "${OSTYPE}" in
+        darwin*)
+            brew install postgresql
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo service postgresql restart
+                    sudo service postgresql status
+                    ;;
+                Debian)
+                    ;;
+                Ubuntu)
+                    case "${DIST_VERSION}" in
+                        12.04)
+                            parts restart postgresql
+                            parts status postgresql
+                            ;;
+                        14.04)
+                            sudo /etc/init.d/postgresql restart
+                            sudo /etc/init.d/postgresql status
+                            ;;
+                    esac
+                    ;;
+            esac
+            ;;
+    esac
+}
+alias pgr="pg-restart"
+alias pgp="ps aux | \grep -G 'postgresql.*'"
+alias pgs="sudo /etc/init.d/postgresql status"
+alias pgk="sudo killall postgresql"
 
 
 # mysql
@@ -874,12 +970,19 @@ function get-mysql () {
                 Debian)
                 ;;
                 Ubuntu)
-                        sudo apt-get -y remove mysql-server
-                        sudo apt-get -y autoremove
-                        sudo apt-get -y install software-properties-common
-                        sudo add-apt-repository -y ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
-                        sudo apt-get update
-                        sudo apt-get -y install mysql-server
+                    case "${DIST_VERSION}" in
+                        12.04)
+                            parts install mysql
+                        ;;
+                        14.04)
+                            sudo apt-get -y remove mysql-server
+                            sudo apt-get -y autoremove
+                            sudo apt-get -y install software-properties-common
+                            sudo add-apt-repository -y ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
+                            sudo apt-get update
+                            sudo apt-get -y install mysql-server
+                            ;;
+                    esac
                     ;;
             esac
     esac
@@ -891,17 +994,46 @@ function my-restart () {
     sudo killall mysqld $1; wait
     case "${OSTYPE}" in
         darwin*)
-            brew install mysql
             ;;
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
-                    sudo service mysql start
+                    sudo service mysql restart
                     sudo service mysql status
                     ;;
-                Debian|Ubuntu)
-                    sudo /etc/init.d/mysql start
+                Debian)
+                    sudo /etc/init.d/mysql restart
                     sudo /etc/init.d/mysql status
+                    ;;
+                Ubuntu)
+                    case "${DIST_VERSION}" in
+                        12.04)
+                            parts restart mysql
+                            parts status mysql
+                            ;;
+                        14.04)
+                            sudo /etc/init.d/mysql restart
+                            sudo /etc/init.d/mysql status
+                            ;;
+                    esac
+                    ;;
+            esac
+            ;;
+    esac
+}
+function my-status () {
+    case "${OSTYPE}" in
+        darwin*)
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) sudo service mysql status ;;
+                Debian)        sudo /etc/init.d/mysql status ;;
+                Ubuntu)
+                    case "${DIST_VERSION}" in
+                        12.04) parts status mysql ;;
+                        14.04) sudo /etc/init.d/mysql status ;;
+                    esac
                     ;;
             esac
             ;;
@@ -909,8 +1041,84 @@ function my-restart () {
 }
 alias mr="my-restart"
 alias mp="ps aux | \grep -G 'mysql.*'"
-alias ms="sudo /etc/init.d/mysql status"
+alias ms="my-status"
 alias mk="sudo killall mysqld"
+
+
+# redis
+# -----
+function get-redis () {
+    case "${OSTYPE}" in
+        darwin*)
+            brew install redis
+            ;;
+        linux*)
+            sudo apt-get update
+            sudo apt-get install -y \
+                 build-essential \
+                 tcl8.5
+            wget http://download.redis.io/releases/redis-stable.tar.gz
+            tar xzf redis-stable.tar.gz
+            cd redis-stable
+            make && make test && sudo make install
+            sudo mkdir /etc/redis
+            sudo mkdir /var/redis
+            sudo cp -f utils/redis_init_script /etc/init.d/redis_6379
+            sudo cp -f redis.conf /etc/redis/6379.conf
+            sudo mkdir /var/redis/6379
+            sudo update-rc.d redis_6379 defaults
+            sudo sed -i 's|daemonize no|daemonize yes|g' /etc/redis/6379.conf
+            sudo sed -i 's|pidfile /var/run/redis.pid|pidfile /var/run/redis_6379.pid|g' /etc/redis/6379.conf
+            sudo sed -i 's|logfile ""|logfile "/var/log/redis_6379.log"|g' /etc/redis/6379.conf
+            sudo sed -i 's|dir \./|dir /var/redis/6379|g' /etc/redis/6379.conf
+            sudo sed -i 's|# bind 127.0.0.1|bind 127.0.0.1|g' /etc/redis/6379.conf
+            cd ..
+            rm -fr redis-stable
+            ;;
+    esac
+}
+if ! type -p redis-cli > /dev/null; then
+    get-redis
+fi
+function redis-restart () {
+    sudo killall redis $1; wait
+    case "${OSTYPE}" in
+        darwin*)
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo service redis restart
+                    sudo service redis status
+                    ;;
+                Debian|Ubuntu)
+                    sudo /etc/init.d/redis_6379 stop
+                    sudo /etc/init.d/redis_6379 start
+                    sudo /etc/init.d/redis_6379 status
+                    ;;
+            esac
+            ;;
+    esac
+}
+function redis-stop () {
+    case "${OSTYPE}" in
+        darwin*)
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo service redis stop
+                    ;;
+                Debian|Ubuntu)
+                    sudo /etc/init.d/redis_6379 stop
+                    ;;
+            esac
+            ;;
+    esac
+}
+alias rdr="redis-restart"
+alias rdp="ps aux | \grep -G 'redis.*'"
+alias rdk="redis-stop"
 
 
 # nginx
@@ -978,6 +1186,18 @@ alias ns="sudo /etc/init.d/nginx status"
 alias nk="sudo killall nginx"
 
 
+# filesystem
+# ----------
+function delete-log () {
+    sudo find /home /var /usr -mtime +1 -a \( -name "*.pag" -o -name "*.dir" -o -name "*.log" \) -exec sudo rm {} \;
+}
+function sync-filesystem () {
+    delete-log
+    crontab -r
+    echo '0 0 * * * sudo find /home /var /usr -mtime +1 -a \( -name "*.pag" -o -name "*.dir" -o -name "*.log" \) -exec sudo rm {} \;' | crontab
+}
+
+
 # git
 # ---
 function get-git () {
@@ -990,7 +1210,9 @@ function get-git () {
                 Redhat|RedHat)
                     sudo yum install -y \
                          perl-ExtUtils-MakeMaker \
-                         libcurl-devel
+                         libcurl-devel \
+                         hub \
+                         gitflow
                     wget https://www.kernel.org/pub/software/scm/git/git-${REQUIRED_GIT_VERSION}.tar.gz
                     tar zxvf git-${REQUIRED_GIT_VERSION}.tar.gz
                     cd git-${REQUIRED_GIT_VERSION}
@@ -998,7 +1220,7 @@ function get-git () {
                     make prefix=/usr/local all
                     sudo make prefix=/usr/local install
                     cd ..
-                    rm -fr git-${REQUIRED_GIT_VERSION}
+                    rm -fr git-${REQUIRED_GIT_VERSION} git-${REQUIRED_GIT_VERSION}.tar.gz
                 ;;
                 Debian)
                 ;;
@@ -1029,6 +1251,34 @@ else
     CURRENT_GIT_VERSION=$(git --version 2>&1 | cut -d\  -f 3 | sed 's/\(.*\..*\)\..*/\1/')
     if [[ $REQUIRED_GIT_VERSION_NUM > $CURRENT_GIT_VERSION ]]; then get-git; fi
 fi
+function get-hub () {
+    case "${OSTYPE}" in
+        freebsd*)
+        ;;
+        darwin*)
+            brew install hub
+        ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo yum install -y \
+                         hub
+                ;;
+                Debian)
+                ;;
+                Ubuntu)
+                    parts install hub
+                ;;
+            esac
+            ;;
+    esac
+}
+if ! type -p hub > /dev/null; then
+    get-hub
+fi
+case "${OSTYPE}" in
+    freebsd*|darwin*|linux*) alias git='hub' ;;
+esac
 alias g='git'
 alias ga='git add -v'
 alias galiases="git !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /'"
@@ -1068,11 +1318,71 @@ alias gst='git status -sb'
 alias gswitch='git checkout'
 alias gvlog='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen - %cD (%cr) %C(bold blue)<%an>%Creset%n" --abbrev-commit --date=relative -p ; echo ""'
 alias gwho='git shortlog -s --'
-function parse_git_dirty {
+function parse-git-dirty {
     git diff --no-ext-diff --quiet --exit-code &> /dev/null || echo "*"
 }
-function parse_git_branch {
+function parse-git-branch {
     git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty))/"
+}
+function github-pull-repositories () {
+    # # Setup Example:
+    # function setup-git-pull-repositories () {
+    #     case $1 in
+    #         foo) echo 'npm install';;
+    #         bar) echo 'npm install && bower install';;
+    #     esac
+    # }
+    typeset -A users
+    typeset -A branches
+    typeset -A build_commands
+    while getopts "n:r:" opt; do
+        case $opt in
+            n)
+                dirname=$OPTARG
+                is_dirname='true'
+                ;;
+            r)
+                array=("${(@s:,:)OPTARG}")
+                repository=$array[2]
+                users[$repository]=$array[1]
+                branches[$repository]=$array[3]
+                build_commands[$repository]=`setup-github-pull-repositories $repository`
+                is_repositoy='true'
+                ;;
+        esac
+    done
+    if [ $# -ge 4 ] && [ $is_dirname ] && [ $is_repositoy ]; then
+        directory=$(date +%y%m%d)_$dirname
+        current_pwd=`pwd`
+        cd ~/
+        mkdir -p ~/${directory}
+        cd ~/${directory}
+        for k in ${(@k)build_commands}; do
+            echo ''
+            echo 'Start git clone:' $k
+            echo '--------------------------------------------------'
+            git clone git@github.com:$users[$k]/$k.git; wait
+            cd ./$k
+            echo ''
+            echo 'Start build:' $build_commands[$k] 'in' $k
+            echo '--------------------------------------------------'
+            git checkout $branches[$k]
+            eval $build_commands[$k]; wait
+            cd ~/${directory}
+        done
+        cd ${current_pwd}
+        echo ''
+        echo ''
+        echo '   _______ __  ____        ____'
+        echo '  / ____(_) /_/ __ \__  __/ / /'
+        echo ' / / __/ / __/ /_/ / / / / / /'
+        echo '/ /_/ / / /_/ ____/ /_/ / / /'
+        echo '\____/_/\__/_/    \__,_/_/_/'
+        echo '                                ....is now installed!'
+    else
+        echo ''
+        echo "Usage: github-pull-repositories -r user1,repository1,branch1 -r user2,repository2,branch2 -n dirname .." 1>&2
+    fi
 }
 
 
@@ -1118,8 +1428,8 @@ function get-mu () {
                                  guile-2.0-dev \
                                  html2text \
                                  xdg-utils \
-                                 offlineimap \
-                                 git clone https://github.com/djcb/mu
+                                 offlineimap
+                            git clone https://github.com/djcb/mu
                             cd mu
                             sudo autoreconf -i
                             ./configure && make
@@ -1132,8 +1442,18 @@ function get-mu () {
             ;;
     esac
 }
+function mu-restart () {
+    mv ~/Maildir ~/Maildir.org$(date +%y%m%d)
+    mkdir -p ~/Maildir
+    rm -fr ~/.mu
+    rm -fr ~/.offlineimap
+    offlineimap
+    mu index --maildir=~/Maildir
+    mu index --rebuild
+    mu index
+}
 if ! type -p emacs > /dev/null; then
-    get-emacs
+   get-emacs
 else
     CURRENT_EMACS_VERSION=$(emacs --version | head -n 1 | sed 's/GNU Emacs //' | awk '$0 = substr($0, 1, index($0, ".") + 1)')
     if [[ $REQUIRED_EMACS_VERSION > $CURRENT_EMACS_VERSION ]]; then get-emacs; fi
@@ -1141,6 +1461,7 @@ fi
 if ! type -p mu > /dev/null; then
     get-mu
 fi
+
 
 # default shell
 # -------------
@@ -1373,12 +1694,35 @@ fi
 # vagrannt
 # --------
 alias vu='vagrant up'
+alias vt='vagrant halt'
+alias vr='vagrant reload'
 alias vp='vagrant global-status'
 alias vk='vagrant destroy --force'
 alias vl='vagrant box list'
 alias vd='vagrant box remove'
 alias vsh='vagrant ssh'
 alias vshconfig='vagrant ssh-config'
+function vbm-scaleup () {
+    while getopts "i:s:" opt; do
+        case $opt in
+            i) image=$OPTARG ; is_image='true' ;;
+            s) size=$OPTARG  ; is_size='true'  ;;
+        esac
+    done
+    if [[ $# = 4 ]] && [ $is_image ] && [ $is_size ]; then
+        current_basename=$(basename `pwd`)
+        uuid=$(VBoxManage list vms | \grep $current_basename | cut -f 2 -d " " | sed -e 's/[\{\}]//g')
+        VBoxManage clonehd $image.vmdk $image.vdi --format vdi; wait
+        VBoxManage modifyhd $image.vdi --resize $size; wait
+        VBoxManage storagectl $uuid --name SATA --remove
+        VBoxManage storagectl $uuid --name SATA --add SATA
+        VBoxManage storageattach $uuid --storagectl SATA --type hdd --medium $image.vdi --port 0
+    else
+        echo ''
+        echo "Usage: vbm-scaleup -i image[.vdmi] -s size[MB]" 1>&2
+    fi
+}
+alias vbm='VBoxManage'
 
 
 # docker
@@ -1391,7 +1735,7 @@ if ! type -p docker > /dev/null; then
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
-                    sudo yum install -y docker
+                    sudo yum update && sudo yum install -y docker
                     ;;
                 Debian)
                     sudo apt-get update; sudo apt-get install -y docker.io
@@ -1500,7 +1844,7 @@ function get-terraform () {
         freebsd*)
             wget https://releases.hashicorp.com/terraform/${REQUIRED_TERRAFORM_VERSION}/terraform_${REQUIRED_TERRAFORM_VERSION}_freebsd_amd64.zip
             unzip terraform_${REQUIRED_TERRAFORM_VERSION}_freebsd_amd64.zip
-        ;;
+            ;;
         linux*)
             wget https://releases.hashicorp.com/terraform/${REQUIRED_TERRAFORM_VERSION}/terraform_${REQUIRED_TERRAFORM_VERSION}_linux_amd64.zip
             unzip terraform_${REQUIRED_TERRAFORM_VERSION}_linux_amd64.zip
@@ -1513,12 +1857,12 @@ function terraform-remote-config () {
     terraform remote config -backend=S3 -backend-config="bucket=tfstate.d" -backend-config="key=$1.tfstate"
     terraform remote push
 }
-alias trc="terraform-remote-config"
-alias tr="terraform remote"
-alias ts="terraform show"
-alias tp="terraform plan"
-alias ta="terraform apply"
-alias td="terraform deploy"
+alias tfrc="terraform-remote-config"
+alias tfr="terraform remote"
+alias tfs="terraform show"
+alias tfp="terraform plan"
+alias tfa="terraform apply"
+alias tfd="terraform destroy"
 
 
 
