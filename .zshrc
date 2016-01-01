@@ -879,7 +879,7 @@ alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 
 # javascript
 # ----------
-export REQUIRED_NODE_VERSION='v0.11.13'
+export REQUIRED_NODE_VERSION='0.11.13'
 export node='NODE_NO_READLINE=1 node'
 export NVM_DIR="/home/vagrant/.nvm"
 function get-nvm () {
@@ -887,11 +887,11 @@ function get-nvm () {
     [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
 }
 function get-node () {
-    nvm install $REQUIRED_NODE_VERSION
-    nvm use $REQUIRED_NODE_VERSION
+    nvm install v$REQUIRED_NODE_VERSION
+    nvm use v$REQUIRED_NODE_VERSION
 }
-if ! type -p nvm > /dev/null  ; then get-nvm  ; fi
-if ! type -p node > /dev/null ; then get-node ; fi
+if [ ! -f ~/.nvm/nvm.sh ] ; then get-nvm  ; fi
+if ! type -p npm > /dev/null ; then get-node ; fi
 
 
 # postgresql
