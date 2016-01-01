@@ -160,7 +160,7 @@ function get-base () {
                     sudo yum update && sudo yum install -y screen
                     ;;
                 Debian|Ubuntu)
-                    sudo apt-get update
+                    sudo apt-get update -y
                     case "${DIST_VERSION=}" in
                         12.04)
                             sudo apt-get install -y python-software-properties
@@ -171,11 +171,9 @@ function get-base () {
                                  python3-software-properties
                             ;;
                     esac
-                    sudo add-apt-repository ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
-                    sudo add-apt-repository ppa:ondrej/php5
-                    sudo add-apt-repository ppa:fcwu-tw/ppa
-                    sudo add-apt-repository ppa:git-core/ppa
-                    sudo apt-get update
+                    sudo add-apt-repository -y ppa:fcwu-tw/ppa
+                    sudo add-apt-repository -y ppa:git-core/ppa
+                    sudo apt-get update -y
                     sudo apt-get install -y \
                          apt-transport-https \
                          automake \
@@ -276,26 +274,6 @@ if [ ! -d ~/.local/bin ]; then mkdir -p ~/.local/bin; fi
 
 # ruby
 # ----
-function get-ruby () {
-    case "${OSTYPE}" in
-        freebsd*)
-            port install -y ruby
-            ;;
-        darwin*)
-            brew install -y ruby
-            ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat)
-                    sudo yum install -y ruby
-                    ;;
-                Debian|Ubuntu)
-                    sudo apt-get update -y && sudo apt-get -y ruby
-                    ;;
-                esac
-            ;;
-    esac
-}
 function get-rbenv () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
@@ -310,19 +288,37 @@ function get-rbenv () {
             rbenv install $REQUIRED_RUBY_VERSION
             rbenv rehash
             rbenv global $REQUIRED_RUBY_VERSION
-            gem install \
-                bundler \
-                compass \
-                haml \
-                html2slim \
-                rails \
-                rubygems-bundler \
-                sidekiq \
-                unicorn
+            get-global-gem-packages
             eval "$(rbenv init -)"
             ;;
     esac
 }
+function get-ruby () {
+    case "${OSTYPE}" in
+        freebsd*)
+            port install -y ruby
+            get-global-gem-packages
+            ;;
+        darwin*)
+            brew install -y ruby
+            get-global-gem-packages
+            ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo yum install -y ruby
+                    get-global-gem-packages
+                    ;;
+                Debian|Ubuntu)
+                    sudo apt-get update -y && sudo apt-get -y ruby
+                    get-global-gem-packages
+                    ;;
+                esac
+            ;;
+    esac
+}
+if ! type -p rbenv > /dev/null; then get-rbenv ; fi
+if type -p rbenv > /dev/null; then eval "$(rbenv init -)" ; fi
 if ! type -p ruby > /dev/null; then
     get-ruby
 else
@@ -330,11 +326,17 @@ else
     CURRENT_RUBY_VERSION=$(ruby -v | cut -f 2 -d " " | sed 's/^\([0-9]\{1,\}\.[0-9]\{1,\}\)\..*/\1/')
     if [[ $REQUIRED_RUBY_VERSION > $CURRENT_RUBY_VERSION ]]; then get-ruby; fi
 fi
-if ! type -p rbenv > /dev/null; then
-    get-rbenv
-else
-    eval "$(rbenv init -)"
-fi
+function get-global-gem-packages () {
+    gem install \
+        bundler \
+        compass \
+        haml \
+        html2slim \
+        rails \
+        rubygems-bundler \
+        sidekiq \
+        unicorn
+}
 
 
 # autoparts
@@ -348,17 +350,17 @@ function get-parts () {
                     ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
                     eval "$(parts env)"
                     exec $SHELL -l
+                    get-parts-packages
                     ;;
             esac
             ;;
     esac
 }
-case "${OSTYPE}" in
-    linux*)
-        case "${DIST}" in
-            Debian|Ubuntu)
-                if ! type -p parts > /dev/null; then
-                    get-parts
+function get-parts-packages () {
+    case "${OSTYPE}" in
+        linux*)
+            case "${DIST}" in
+                Debian|Ubuntu)
                     parts install \
                           chruby \
                           ctags \
@@ -367,78 +369,16 @@ case "${OSTYPE}" in
                           go \
                           heroku_toolbelt \
                           maven \
-                          nodejs \
                           phantomjs \
-                          pip \
                           the_silver_searcher \
                           tree
-                    npm install -g \
-                        bower \
-                        grunt-cli \
-                        gulp \
-                        http-server \
-                        html2jade \
-                        less \
-                        node-plantuml \
-                        npm2dot \
-                        phantomjs \
-                        requirejs \
-                        term
-                    gem install \
-                        bundler \
-                        compass \
-                        haml \
-                        html2slim \
-                        rails \
-                        rubygems-bundler \
-                        sidekiq \
-                        unicorn
-                    pip install -U \
-                        awscli \
-                        docker-compose
-                fi
-                eval "$(parts env)"
-                if ! type -p npm > /dev/null; then
-                    parts install nodejs
-                    npm install -g \
-                        bower \
-                        grunt-cli \
-                        gulp \
-                        html2jade \
-                        http-server \
-                        less \
-                        node-plantuml \
-                        npm2dot \
-                        phantomjs \
-                        requirejs
-                        term
-                fi
-                if ! type -p gem > /dev/null; then
-                    parts install gem
-                    gem install \
-                        bundler \
-                        compass \
-                        haml \
-                        html2slim \
-                        rails \
-                        rubygems-bundler \
-                        sidekiq \
-                        unicorn
-                fi
-                if ! type -p pip > /dev/null; then
-                    parts install pip
-                    pip install -U \
-                        awscli \
-                        docker-compose \
-                        ipython \
-                        pandas \
-                        pulp \
-                        simpy \
-                        boto
-                fi
-	        ;;
-        esac
-esac
+                    ;;
+            esac
+            ;;
+    esac
+}
+if ! type -p parts > /dev/null ; then ; get-parts ; fi
+if type -p parts > /dev/null ; then ; eval "$(parts env)" ; fi
 
 
 # homebrew/linuxbrew
@@ -532,14 +472,14 @@ fi
 # ----
 export PLAY_HOME=/usr/local/play-$REQUIRED_PLAY_VERSION
 export PATH="$PLAY_HOME:$PATH"
-case "${OSTYPE}" in
-    freebsd*|darwin*|linux*)
-        if [ ! -d ~/.jenv ]; then
+function get-jenv () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
             git clone https://github.com/gcuisinier/jenv.git ~/.jenv
             eval "$(jenv init -)"
-        fi
-        ;;
-esac
+            ;;
+    esac
+}
 function get-java () {
     case "${OSTYPE}" in
         freebsd*|darwin*)
@@ -606,6 +546,8 @@ function get-sbt () {
             ;;
     esac
 }
+if ! type -p jenv > /dev/null ; then get-jenv ; fi
+if type -p jenv > /dev/null ; then eval "$(jenv init -)" ; fi
 if ! type -p java > /dev/null; then
     get-java
     set-javahome
@@ -794,21 +736,32 @@ function get-python () {
     case "${OSTYPE}" in
         darwin*)
             sudo easy_install pip
-            sudo pip install -U \
-                 awscli \
-                 docker-compose
+            get-global-pip-packages
             ;;
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
                     sudo easy_install pip
-                    sudo pip install -U \
-                         awscli \
-                         docker-compose
+                    get-global-pip-packages
                     ;;
-                Debian|Ubuntu)
+                Debian)
                     sudo apt-get update -y
                     sudo apt-get install -y python-pip
+                    get-global-pip-packages
+                    ;;
+                Ubuntu)
+                    case "$DIST_VERSION" in
+                        12.04)
+                            parts install pip
+                            get-global-pip-packages
+                        ;;
+                        14.04)
+                            sudo apt-get update -y
+                            sudo apt-get install -y python-pip
+                            get-global-pip-packages
+                        ;;
+                    esac
+                    ;;
             esac
             ;;
     esac
@@ -816,6 +769,58 @@ function get-python () {
 if ! type -p pip > /dev/null; then
     get-python
 fi
+function get-global-pip-packages () {
+    case "$OSTYPE" in
+        darwin*)
+            sudo pip install -U \
+                awscli \
+                docker-compose \
+                ipython \
+                pandas \
+                pulp \
+                simpy \
+                boto
+        ;;
+        linux*)
+            case "$DIST" in
+                RedHat|Redhat|Debian)
+                    sudo pip install -U \
+                         awscli \
+                         docker-compose \
+                         ipython \
+                         pandas \
+                         pulp \
+                         simpy \
+                         boto
+                ;;
+                Ubuntu)
+                    case "$DIST_VERSION" in
+                        12.04)
+                            pip install -U \
+                                 awscli \
+                                 docker-compose \
+                                 ipython \
+                                 pandas \
+                                 pulp \
+                                 simpy \
+                                 boto
+                        ;;
+                        14.04)
+                            sudo pip install -U \
+                                 awscli \
+                                 docker-compose \
+                                 ipython \
+                                 pandas \
+                                 pulp \
+                                 simpy \
+                                 boto
+                        ;;
+                    esac
+                ;;
+            esac
+            ;;
+    esac
+}
 
 
 # perl
@@ -887,8 +892,34 @@ function get-nvm () {
     [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
 }
 function get-node () {
-    nvm install v$REQUIRED_NODE_VERSION
-    nvm use v$REQUIRED_NODE_VERSION
+    case "$OSTYPE" in
+        linux*)
+            case "$DIST" in
+                Redhat|RedHat)
+                    nvm install v$REQUIRED_NODE_VERSION
+                    nvm use v$REQUIRED_NODE_VERSION
+                    ;;
+                Debian|Ubuntu)
+                    parts install nodejs
+                    get-global-npm-packages
+                    ;;
+            esac
+            ;;
+    esac
+}
+function get-global-npm-packages () {
+    npm install -g \
+        bower \
+        grunt-cli \
+        gulp \
+        html2jade \
+        http-server \
+        less \
+        node-plantuml \
+        npm2dot \
+        phantomjs \
+        requirejs \
+        tern
 }
 if [ ! -f ~/.nvm/nvm.sh ] ; then get-nvm  ; fi
 if ! type -p npm > /dev/null ; then get-node ; fi
@@ -970,19 +1001,12 @@ function get-mysql () {
                 Debian)
                 ;;
                 Ubuntu)
-                    case "${DIST_VERSION}" in
-                        12.04)
-                            parts install mysql
-                        ;;
-                        14.04)
-                            sudo apt-get -y remove mysql-server
-                            sudo apt-get -y autoremove
-                            sudo apt-get -y install software-properties-common
-                            sudo add-apt-repository -y ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
-                            sudo apt-get update
-                            sudo apt-get -y install mysql-server
-                            ;;
-                    esac
+                    sudo apt-get -y remove mysql-server
+                    sudo apt-get -y autoremove
+                    sudo apt-get -y install software-properties-common
+                    sudo add-apt-repository -y ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
+                    sudo apt-get update
+                    sudo apt-get -y install mysql-server
                     ;;
             esac
     esac
@@ -1053,28 +1077,63 @@ function get-redis () {
             brew install redis
             ;;
         linux*)
-            sudo apt-get update
-            sudo apt-get install -y \
-                 build-essential \
-                 tcl8.5
-            wget http://download.redis.io/releases/redis-stable.tar.gz
-            tar xzf redis-stable.tar.gz
-            cd redis-stable
-            make && make test && sudo make install
-            sudo mkdir /etc/redis
-            sudo mkdir /var/redis
-            sudo cp -f utils/redis_init_script /etc/init.d/redis_6379
-            sudo cp -f redis.conf /etc/redis/6379.conf
-            sudo mkdir /var/redis/6379
-            sudo update-rc.d redis_6379 defaults
-            sudo sed -i 's|daemonize no|daemonize yes|g' /etc/redis/6379.conf
-            sudo sed -i 's|pidfile /var/run/redis.pid|pidfile /var/run/redis_6379.pid|g' /etc/redis/6379.conf
-            sudo sed -i 's|logfile ""|logfile "/var/log/redis_6379.log"|g' /etc/redis/6379.conf
-            sudo sed -i 's|dir \./|dir /var/redis/6379|g' /etc/redis/6379.conf
-            sudo sed -i 's|# bind 127.0.0.1|bind 127.0.0.1|g' /etc/redis/6379.conf
-            cd ..
-            rm -fr redis-stable
-            ;;
+            case "${DIST}" in
+                Redhat|RedHat)
+                ;;
+                Debian)
+                    sudo apt-get update
+                    sudo apt-get install -y \
+                         build-essential \
+                         tcl8.5
+                    wget http://download.redis.io/releases/redis-stable.tar.gz
+                    tar xzf redis-stable.tar.gz
+                    cd redis-stable
+                    make && make test && sudo make install
+                    sudo mkdir /etc/redis
+                    sudo mkdir /var/redis
+                    sudo cp -f utils/redis_init_script /etc/init.d/redis_6379
+                    sudo cp -f redis.conf /etc/redis/6379.conf
+                    sudo mkdir /var/redis/6379
+                    sudo update-rc.d redis_6379 defaults
+                    sudo sed -i 's|daemonize no|daemonize yes|g' /etc/redis/6379.conf
+                    sudo sed -i 's|pidfile /var/run/redis.pid|pidfile /var/run/redis_6379.pid|g' /etc/redis/6379.conf
+                    sudo sed -i 's|logfile ""|logfile "/var/log/redis_6379.log"|g' /etc/redis/6379.conf
+                    sudo sed -i 's|dir \./|dir /var/redis/6379|g' /etc/redis/6379.conf
+                    sudo sed -i 's|# bind 127.0.0.1|bind 127.0.0.1|g' /etc/redis/6379.conf
+                    cd ..
+                    rm -fr redis-stable
+                    ;;
+                Ubuntu)
+                    case "${DIST_VERSION}" in
+                        12.04)
+                            parts install redis
+                        ;;
+                        14.04)
+                            sudo apt-get update
+                            sudo apt-get install -y \
+                                 build-essential \
+                                 tcl8.5
+                            wget http://download.redis.io/releases/redis-stable.tar.gz
+                            tar xzf redis-stable.tar.gz
+                            cd redis-stable
+                            make && make test && sudo make install
+                            sudo mkdir /etc/redis
+                            sudo mkdir /var/redis
+                            sudo cp -f utils/redis_init_script /etc/init.d/redis_6379
+                            sudo cp -f redis.conf /etc/redis/6379.conf
+                            sudo mkdir /var/redis/6379
+                            sudo update-rc.d redis_6379 defaults
+                            sudo sed -i 's|daemonize no|daemonize yes|g' /etc/redis/6379.conf
+                            sudo sed -i 's|pidfile /var/run/redis.pid|pidfile /var/run/redis_6379.pid|g' /etc/redis/6379.conf
+                            sudo sed -i 's|logfile ""|logfile "/var/log/redis_6379.log"|g' /etc/redis/6379.conf
+                            sudo sed -i 's|dir \./|dir /var/redis/6379|g' /etc/redis/6379.conf
+                            sudo sed -i 's|# bind 127.0.0.1|bind 127.0.0.1|g' /etc/redis/6379.conf
+                            cd ..
+                            rm -fr redis-stable
+                        ;;
+                    esac
+                    ;;
+            esac
     esac
 }
 if ! type -p redis-cli > /dev/null; then
@@ -1204,6 +1263,7 @@ function get-git () {
     case "${OSTYPE}" in
         freebsd*|darwin*)
             port install git-flow
+            brew install hub
         ;;
         linux*)
             case "${DIST}" in
@@ -1221,6 +1281,7 @@ function get-git () {
                     sudo make prefix=/usr/local install
                     cd ..
                     rm -fr git-${REQUIRED_GIT_VERSION} git-${REQUIRED_GIT_VERSION}.tar.gz
+                    sudo yum install -y hub
                 ;;
                 Debian)
                 ;;
@@ -1239,6 +1300,7 @@ function get-git () {
                     sudo add-apt-repository ppa:git-core/ppa
                     sudo apt-get update
                     sudo apt-get install -y git git-flow
+                    parts install hub
                     ;;
             esac
             ;;
@@ -1261,24 +1323,18 @@ function get-hub () {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
-                    sudo yum install -y \
-                         hub
+                    sudo yum install -y hub
                 ;;
                 Debian)
                 ;;
                 Ubuntu)
-                    parts install hub
                 ;;
             esac
             ;;
     esac
 }
-if ! type -p hub > /dev/null; then
-    get-hub
-fi
-case "${OSTYPE}" in
-    freebsd*|darwin*|linux*) alias git='hub' ;;
-esac
+if ! type -p hub > /dev/null ; then get-hub ; fi
+if type -p hub > /dev/null ; then eval "$(hub alias -s)" ; fi
 alias g='git'
 alias ga='git add -v'
 alias galiases="git !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /'"
@@ -1429,12 +1485,12 @@ function get-mu () {
                                  html2text \
                                  xdg-utils \
                                  offlineimap
-                            git clone https://github.com/djcb/mu
+                            \git clone https://github.com/djcb/mu
                             cd mu
                             sudo autoreconf -i
                             ./configure && make
                             sudo make install
-                            cd .. && rm -fr mu
+                            cd .. && sudo rm -fr mu
                             ln -s /usr/local/share/emacs/site-lisp/mu4e $HOME/.emacs.d/site-lisp/
                             ;;
                     esac
@@ -1810,24 +1866,49 @@ function dnsenter () {
 }
 
 # ### docker compose / machine ###
-case "${OSTYPE}" in
-    freebsd*|darwin*)
-    ;;
-    linux*)
-        case "${DIST}" in
-            Redhat|RedHat)
-                if ! type -p docker-compose > /dev/null; then sudo pip install -U docker-compose; fi
+function get-docker-compose () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*)
+        ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo pip install -U docker-compose
+                    ;;
+                Debian)
+                    pip install -U docker-compose
+                    ;;
+                Ubuntu)
+                    case "${DIST_VERSION}" in
+                        12.04)
+                        ;;
+                        14.04)
+                            pip install -U docker-compose
+                        ;;
+                    esac
+	            ;;
+            esac
             ;;
-            Debian|Ubuntu)
-                if ! type -p docker-compose > /dev/null; then pip install -U docker-compose; fi
-                if ! type -p docker-machine > /dev/null; then
+    esac
+}
+function get-docker-machine () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*)
+        ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    ;;
+                Debian|Ubuntu)
                     wget https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_linux-386 -O ~/.local/bin/docker-machine
                     chmod +x ~/.local/bin/docker-machine
-                fi
-	        ;;
-        esac
-        ;;
-esac
+	            ;;
+            esac
+            ;;
+    esac
+}
+if ! type -p docker-compose > /dev/null; then get-docker-compose ; fi
+if ! type -p docker-machine > /dev/null; then get-docker-machine ; fi
 
 
 # terraform
