@@ -124,6 +124,7 @@ export PATH="$HOME/.local/rbenv/bin:$PATH"
 export PATH="$HOME/.local/exenv/bin:$PATH"
 export PATH="$HOME/.local/jenv/bin:$PATH"
 export PATH="$HOME/.local/phpenv/bin:$PATH"
+export PATH="$HOME/.local/pyenv/bin:$PATH"
 export PATH="$HOME/.local/dove/bin:$PATH"
 export PATH="$HOME/.parts/autoparts/bin:$PATH"
 export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
@@ -302,7 +303,6 @@ function get-parts () {
                     get-base
                     ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
                     eval "$(parts env)"
-                    exec $SHELL -l
                     get-parts-packages ;;
             esac
     esac
@@ -330,6 +330,14 @@ if type -p parts > /dev/null ; then ; eval "$(parts env)" ; fi
 # ------------------------------------------
 function get-brew () {
     case "${OSTYPE}" in
+        darwin*) ;;
+        linux*)
+            ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
+            get-brew-packages
+    esac
+}
+function get-brew-packages () {
+    case "${OSTYPE}" in
         darwin*)
             brew install \
                  ctags \
@@ -338,8 +346,6 @@ function get-brew () {
                  the_silver_searcher \
                  tree ;;
         linux*)
-                ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
-                exec $SHELL -l
                 case "${DIST}" in
                     Redhat|RedHat)
                         brew install \
@@ -366,14 +372,8 @@ function get-rbenv () {
             rm -fr ~/.local/rbenv
             git clone git://github.com/sstephenson/rbenv.git ~/.local/rbenv
             mkdir -p ~/.local/rbenv/shims ~/.local/rbenv/versions ~/.local/rbenv/plugins
-            git clone git://github.com/sstephenson/ruby-build.git ~/.local/rbenv/plugins/ruby-build
-            git clone https://github.com/sstephenson/rbenv-gem-rehash.git ~/.local/rbenv/plugins/rbenv-gem-rehash
-            eval "$(rbenv init -)"
-            exec $SHELL -l
-            rbenv install $REQUIRED_RUBY_VERSION
-            rbenv rehash
-            rbenv global $REQUIRED_RUBY_VERSION
-            get-global-gem-packages
+            git clone git://github.com/sstephenson/ruby-build.git       ~/.local/rbenv/plugins/ruby-build
+            git clone git://github.com/sstephenson/rbenv-gem-rehash.git ~/.local/rbenv/plugins/rbenv-gem-rehash
             eval "$(rbenv init -)" ;;
     esac
 }
@@ -382,19 +382,17 @@ if type -p rbenv > /dev/null; then eval "$(rbenv init -)" ; fi
 # ### installation ###
 function get-ruby () {
     case "${OSTYPE}" in
-        freebsd*)
-            port install -y ruby
-            get-global-gem-packages ;;
-        darwin*)
-            brew install -y ruby
+        freebsd*|darwin*)
+            rbenv install $REQUIRED_RUBY_VERSION
+            rbenv rehash
+            rbenv global $REQUIRED_RUBY_VERSION
             get-global-gem-packages ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat)
-                    sudo yum install -y ruby
-                    get-global-gem-packages ;;
-                Debian)
-                    sudo apt-get update -y && sudo apt-get -y ruby
+                Redhat|RedHat|Debian)
+                    rbenv install $REQUIRED_RUBY_VERSION
+                    rbenv rehash
+                    rbenv global $REQUIRED_RUBY_VERSION
                     get-global-gem-packages ;;
                 Ubuntu)
                     case "$DIST_VERSION" in
@@ -407,7 +405,9 @@ function get-ruby () {
                             exec -l $SHELL
                             get-global-gem-packages ;;
                         14.04)
-                            sudo apt-get update -y && sudo apt-get -y ruby
+                            rbenv install $REQUIRED_RUBY_VERSION
+                            rbenv rehash
+                            rbenv global $REQUIRED_RUBY_VERSION
                             get-global-gem-packages ;;
                     esac
             esac
@@ -435,37 +435,57 @@ function get-global-gem-packages () {
 
 # 2. ProgrammingLanguage::Elixir
 # ------------------------------
+REQUIRED_ERLANG_VERSION=18.2
+REQUIRED_ELIXIR_VERSION=1.2.0
+REQUIRED_PHOENIXFRAMEWORK_VERSION=1.1.1
 # ### version control ###
+function get-kerl () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            curl https://raw.githubusercontent.com/yrashk/kerl/master/kerl -o ~/.local/bin/kerl
+            chmod a+x ~/.local/bin/kerl
+    esac
+}
+if ! type -p kerl > /dev/null ; then get-kerl ; fi
 function get-exenv () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
+            rm -fr ~/.local/exenv
             git clone https://github.com/mururu/exenv.git ~/.local/exenv
+            git clone https://github.com/mururu/elixir-build.git
+            cp -f elixir-build/bin/*  ~/.local/exenv/bin/
+            rm -fr elixir-build
             eval "$(exenv init -)" ;;
     esac
 }
 if ! type -p exenv > /dev/null ; then get-exenv ; fi
 if type -p exenv > /dev/null ; then eval "$(exenv init -)" ; fi
 # ### installation ###
+function get-erlang () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            mkdir -p ~/.local/otp
+            kerl build $REQUIRED_ERLANG_VERSION $REQUIRED_ERLANG_VERSION
+            kerl install $REQUIRED_ERLANG_VERSION ~/.local/otp/$REQUIRED_ERLANG_VERSION
+            source ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ;;
+    esac
+}
+if ! type -p erl > /dev/null ; then get-erlang ; fi
+if type -p erl > /dev/null ; then source ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ; fi
 function get-elixir () {
     case "${OSTYPE}" in
-        freebsd*) ;;
-        darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) ;;
-                Debian) ;;
-                Ubuntu)
-                    case "$DIST_VERSION" in
-                        12.04)
-                            parts install \
-                                  elixir \
-                                  erlang ;;
-                        14.04) ;;
-                    esac
-            esac
+        freebsd*|darwin*|linux*)
+            exenv install $REQUIRED_ELIXIR_VERSION
+            exenv rehash
+            exenv global $REQUIRED_ELIXIR_VERSION
+            get-mix-packages ;;
     esac
 }
 if ! type -p iex > /dev/null ; then get-elixir ; fi
+function get-mix-packages () {
+    mix local.hex
+    mix archive.install https://github.com/phoenixframework/phoenix/releases/download/v$REQUIRED_PHOENIXFRAMEWORK_VERSION/phoenix_new-$REQUIRED_PHOENIXFRAMEWORK_VERSION.ez
+}
 
 
 # 2. ProgrammingLanguage::Go
@@ -499,6 +519,7 @@ export PATH="$PLAY_HOME:$PATH"
 function get-jenv () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
+            rm -fr ~/.local/jenv
             git clone https://github.com/gcuisinier/jenv.git ~/.local/jenv
             eval "$(jenv init -)" ;;
     esac
@@ -576,7 +597,10 @@ fi
 function get-phpenv () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
+            rm -fr ~/.local/phpenv
             git clone https://github.com/phpenv/phpenv.git ~/.local/phpenv
+            mkdir -p ~/.local/phpenv/shims ~/.local/phpenv/versions ~/.local/phpenv/plugins
+            git clone https://github.com/php-build/php-build.git ~/.local/phpenv/plugins/php-build
             eval "$(phpenv init -)" ;;
     esac
 }
@@ -746,20 +770,16 @@ alias fk="php-fastcgid stop"
 # ------------------------------
 REQUIRED_PYTHON_VERSION=2.7.6
 # ### version control ###
-function get-virtualenv () {
+function get-pyenv () {
     case "${OSTYPE}" in
-        freebsd*|darwin*) ;;
-        linux*)
-            case "$DIST" in
-                Redhat|RedHat|Debian) ;;
-                Ubuntu)
-                    case "$DIST_VERSION" in
-                        12.04) parts install virtualenv ;;
-                        14.04) ;;
-                    esac
-            esac
+        freebsd*|darwin*|linux*)
+            rm -fr ~/.local/pyenv
+            git clone git://github.com/yyuu/pyenv.git ~/.local/pyenv
+            eval "$(pyenv init -)" ;;
     esac
 }
+if ! type -p pyenv > /dev/null; then get-pyenv ; fi
+if type -p pyenv > /dev/null; then eval "$(pyenv init -)" ; fi
 # ### installation ###
 function get-python () {
     case "${OSTYPE}" in
@@ -1300,6 +1320,19 @@ if ! type -p mu > /dev/null ; then get-mu ; fi
 
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::Filesystem
 # -------------------------------------------------------------------
+# ### inotify ###
+function get-inotify () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*) ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) sudo yum install -y inotify-tools ;;
+                Debian|Ubuntu) sudo apt-get install -y inotify-tools ;;
+            esac
+    esac
+}
+if ! type -p inotifywait > /dev/null ; then get-inotify ; fi
+# ### storage minimization ###
 function delete-log () {
     sudo find /home /var /usr -mtime +1 -a \( -name "*.pag" -o -name "*.dir" -o -name "*.log" \) -exec sudo rm {} \;
 }
@@ -2010,6 +2043,7 @@ alias zd=cd-dove
 # ### dotfiles ###
 function get-dotfiles () {
     # pre proc
+    flag=$1
     cd ~/; wait
     if [ ! -d ~/.local/dotfiles ]; then
         mkdir -p ~/.local
@@ -2032,9 +2066,11 @@ function get-dotfiles () {
     esac
     # post proc
     git checkout -- .emacs.d/lisp/init-mu4e.el
+    if [ $flag -e "init" ] ; then git checkout -- .emacs.d/init.el ; fi
     cp -pr .tmp/.* .
 }
-alias zg=get-dotfiles
+alias zg='get-dotfiles'
+alias zgi='get-dotfiles init'
 function put-dotfiles () {
     # pre proc
     current_pwd=`pwd`
@@ -2134,7 +2170,7 @@ function rename-recursively () {
     done
 }
 alias rnr="rename-recursively"
-alias rr='source ~/.zshrc'
+function rr () { exec -l zsh }
 function rename () {
     for i in *$1* ; do
         \mv -f $i    # (echo $i | sed -e s,$1,$2,g)
