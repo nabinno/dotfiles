@@ -60,12 +60,10 @@
               (add-to-list 'ac-sources 'ac-source-robe)
               (set-auto-complete-as-completion-at-point-function))))
 
-
 
 ;;; ri support
 (require-package 'yari)
 (defalias 'ri 'yari)
-
 
 
 ;;; YAML
