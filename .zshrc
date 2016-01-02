@@ -1412,7 +1412,7 @@ alias gdf='git diff HEAD^'
 alias gdfc='git diff --cached'
 alias gexport='git "!sh -c \"git checkout-index -a -f --prefix=$1/\" -"'
 alias ghist='git log --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --'
-function ghclone () { git clone https://${2}github.com/${1}.git }
+function ghclone () { git clone git@github.com:${1}.git }
 function git-log () { git log ${1} --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit -- }
 alias gl='git-log'
 alias glast='git diff HEAD~1..HEAD'
@@ -2015,10 +2015,10 @@ function get-dotfiles () {
         mkdir -p ~/.local
         sh -c "$(curl -fsSL https://raw.github.com/nabinno/dotfiles/master/install)"; wait
     fi
-    cd ~/.local/dotfiles; wait
-    git checkout -- .;  wait
-    git checkout -b develop origin/develop;  wait
-    git pull origin develop;  wait
+    cd ~/.local/dotfiles
+    git checkout -- .
+    git checkout develop
+    git pull
     # main proc
     rm -rf                         .emacs.d/lisp/*;    wait
     cp -pr ~/.emacs.d/lisp/*       .emacs.d/lisp/;     wait
@@ -2044,9 +2044,9 @@ function put-dotfiles () {
         sh -c "$(curl -fsSL https://raw.github.com/nabinno/dotfiles/master/install)"; wait
     fi
     cd ~/.local/dotfiles; wait
-    git checkout -- .;  wait
-    git checkout -b develop origin/develop;  wait
-    git pull origin develop;  wait
+    git checkout -- .
+    git checkout develop
+    git pull
     rm -rf .emacs.d/lisp/init-mu4e.el
     # main proc
     cp -pr .emacs.d/lisp/*       ~/.emacs.d/lisp/;   wait
