@@ -2066,11 +2066,13 @@ function get-dotfiles () {
     esac
     # post proc
     git checkout -- .emacs.d/lisp/init-mu4e.el
-    if [ $flag -e "init" ] ; then git checkout -- .emacs.d/init.el ; fi
-    cp -pr .tmp/.* .
+    case $flag in
+        init) ;;
+        *) git checkout -- .emacs.d/init.el ;;
+    esac
 }
 alias zg='get-dotfiles'
-alias zgi='get-dotfiles init'
+alias zgi='get-dotfiles "init"'
 function put-dotfiles () {
     # pre proc
     current_pwd=`pwd`
