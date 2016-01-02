@@ -1615,22 +1615,34 @@ function github-pull-repositories () {
 
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::PlantUml
 # -----------------------------------------------------------------
-case "${OSTYPE}" in
-    freebsd*|darwin*) ;;
-    linux*)
-        case "${DIST}" in
-            Redhat|RedHat) ;;
-            Debian|Ubuntu)
-                if ! type -p puml > /dev/null; then npm install -g node-plantuml; fi
-                if [ ! -f ~/.local/bin/plantuml.jar ] ; then
+function get-puml () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*) ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) ;;
+                Debian|Ubuntu)
+                    if type -p npm > /dev/null; then npm install -g node-plantuml; fi
+                    ;;
+            esac
+            ;;
+    esac
+}
+function get-plantuml () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*) ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) ;;
+                Debian|Ubuntu)
                     wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
                     alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng'
-                fi
-                ;;
-        esac
-        ;;
-esac
-if ! type -p dot > /dev/null; then
+                    ;;
+            esac
+            ;;
+    esac
+}
+function get-graphviz () {
     case "${OSTYPE}" in
         freebsd*|darwin*) brew install graphviz ;;
         linux*)
@@ -1643,7 +1655,11 @@ if ! type -p dot > /dev/null; then
             esac
             ;;
     esac
-fi
+}
+if ! type -p puml > /dev/null ; then get-puml ; fi
+if [ ! -f ~/.local/bin/plantuml.jar ] ; then get-plantuml ; fi
+if [ -f ~/.local/bin/plantuml.jar ] ; then alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng' ; fi
+if ! type -p dot > /dev/null ; then get-graphviz ; fi
 
 
 # 4. IntegratedDevelopmentEnvironment::SoftwareDebugging::Benchmark
