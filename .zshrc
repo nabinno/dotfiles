@@ -28,9 +28,6 @@
 # 4. IntegratedDevelopmentEnvironment::SoftwareDeployment::Terraform
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Keybind
-# 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Editor
-# 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Zmv
-# 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Prediction
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Terminal
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Alias
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Screen
@@ -96,7 +93,6 @@ case "${OSTYPE}" in
             fi
             OSSTR="${OS} ${DIST} ${REV}(${PSUEDONAME} ${KERNEL} ${MACH})"
         fi
-        ;;
 esac
 
 
@@ -147,14 +143,11 @@ function set-locale () {
             case "${DIST}" in
                 Redhat|RedHat)
                     sudo mv /etc/localtime{,.org}
-                    sudo ln -s /usr/share/zoneinfo/Japan /etc/localtime
-                    ;;
+                    sudo ln -s /usr/share/zoneinfo/Japan /etc/localtime ;;
                 Debian|Ubuntu)
                     sudo mv /etc/localtime{,.org}
-                    sudo ln -s /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
-                    ;;
+                    sudo ln -s /usr/share/zoneinfo/Asia/Tokyo /etc/localtime ;;
             esac
-            ;;
     esac
 }
 
@@ -186,8 +179,7 @@ function get-base () {
             sudo make
             sudo make install
             sudo make distclean
-            brew install -y ruby
-            ;;
+            brew install -y ruby ;;
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
@@ -196,8 +188,7 @@ function get-base () {
                         screen \
                         ruby \
                         git \
-                        curl
-                    ;;
+                        curl ;;
                 Debian|Ubuntu)
                     sudo apt-get update -y
                     case "${DIST_VERSION=}" in
@@ -205,8 +196,7 @@ function get-base () {
                         14.04)
                             sudo apt-get install -y \
                                  software-properties-common \
-                                 python3-software-properties
-                            ;;
+                                 python3-software-properties ;;
                     esac
                     sudo add-apt-repository -y ppa:fcwu-tw/ppa
                     sudo add-apt-repository -y ppa:git-core/ppa
@@ -296,10 +286,8 @@ function get-base () {
                          xz-utils \
                          zip \
                          zlib1g \
-                         zlib1g-dev
-                    ;;
+                         zlib1g-dev ;;
             esac
-            ;;
     esac
 }
 
@@ -315,10 +303,8 @@ function get-parts () {
                     ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
                     eval "$(parts env)"
                     exec $SHELL -l
-                    get-parts-packages
-                    ;;
+                    get-parts-packages ;;
             esac
-            ;;
     esac
 }
 function get-parts-packages () {
@@ -332,10 +318,8 @@ function get-parts-packages () {
                           phantomjs \
                           the_silver_searcher \
                           tree \
-                          uuid
-                    ;;
+                          uuid ;;
             esac
-            ;;
     esac
 }
 if ! type -p parts > /dev/null ; then ; get-parts ; fi
@@ -352,8 +336,7 @@ function get-brew () {
                  jq \
                  memcached \
                  the_silver_searcher \
-                 tree
-            ;;
+                 tree ;;
         linux*)
                 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
                 exec $SHELL -l
@@ -362,14 +345,11 @@ function get-brew () {
                         brew install \
                              ctags \
                              jq \
-                             tree \
-                        ;;
+                             tree ;;
                     Debian|Ubuntu)
                         brew install \
-                             jq
-                        ;;
+                             jq ;;
                 esac
-            ;;
     esac
 }
 if ! type -p brew > /dev/null ; then get-brew ; fi
@@ -394,8 +374,7 @@ function get-rbenv () {
             rbenv rehash
             rbenv global $REQUIRED_RUBY_VERSION
             get-global-gem-packages
-            eval "$(rbenv init -)"
-            ;;
+            eval "$(rbenv init -)" ;;
     esac
 }
 if ! type -p rbenv > /dev/null; then get-rbenv ; fi
@@ -405,22 +384,18 @@ function get-ruby () {
     case "${OSTYPE}" in
         freebsd*)
             port install -y ruby
-            get-global-gem-packages
-            ;;
+            get-global-gem-packages ;;
         darwin*)
             brew install -y ruby
-            get-global-gem-packages
-            ;;
+            get-global-gem-packages ;;
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
                     sudo yum install -y ruby
-                    get-global-gem-packages
-                    ;;
+                    get-global-gem-packages ;;
                 Debian)
                     sudo apt-get update -y && sudo apt-get -y ruby
-                    get-global-gem-packages
-                    ;;
+                    get-global-gem-packages ;;
                 Ubuntu)
                     case "$DIST_VERSION" in
                         12.04)
@@ -430,16 +405,12 @@ function get-ruby () {
                                   chruby \
                                   ruby_install
                             exec -l $SHELL
-                            get-global-gem-packages
-                            ;;
+                            get-global-gem-packages ;;
                         14.04)
                             sudo apt-get update -y && sudo apt-get -y ruby
-                            get-global-gem-packages
-                            ;;
+                            get-global-gem-packages ;;
                     esac
-                    ;;
-                esac
-            ;;
+            esac
     esac
 }
 if ! type -p ruby > /dev/null; then
@@ -469,8 +440,7 @@ function get-exenv () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             git clone https://github.com/mururu/exenv.git ~/.local/exenv
-            eval "$(exenv init -)"
-            ;;
+            eval "$(exenv init -)" ;;
     esac
 }
 if ! type -p exenv > /dev/null ; then get-exenv ; fi
@@ -489,13 +459,10 @@ function get-elixir () {
                         12.04)
                             parts install \
                                   elixir \
-                                  erlang
-                            ;;
+                                  erlang ;;
                         14.04) ;;
                     esac
-                    ;;
-                esac
-            ;;
+            esac
     esac
 }
 if ! type -p iex > /dev/null ; then get-elixir ; fi
@@ -516,9 +483,7 @@ function get-go () {
                         12.04) parts install go ;;
                         14.04) ;;
                     esac
-                    ;;
-                esac
-            ;;
+            esac
     esac
 }
 if ! type -p go > /dev/null ; then get-go ; fi
@@ -535,8 +500,7 @@ function get-jenv () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             git clone https://github.com/gcuisinier/jenv.git ~/.local/jenv
-            eval "$(jenv init -)"
-            ;;
+            eval "$(jenv init -)" ;;
     esac
 }
 if ! type -p jenv > /dev/null ; then get-jenv ; fi
@@ -549,14 +513,11 @@ function get-java () {
             case "${DIST}" in
                 Redhat|RedHat)
                     sudo yum install -y java-$REQUIRED_JAVA_VERSION-openjdk
-                    sudo yum install -y java-$REQUIRED_JAVA_VERSION-openjdk-devel
-                    ;;
+                    sudo yum install -y java-$REQUIRED_JAVA_VERSION-openjdk-devel ;;
                 Debian|Ubuntu)
                     sudo apt-get update
-                    sudo apt-get install -y openjdk-7-jdk
-                    ;;
+                    sudo apt-get install -y openjdk-7-jdk ;;
             esac
-            ;;
     esac
 }
 function set-javahome () {
@@ -567,7 +528,6 @@ function set-javahome () {
                 Redhat|RedHat) export JAVA_HOME=/usr/lib/jvm/java-$REQUIRED_JAVA_VERSION ;;
                 Debian|Ubuntu) export JAVA_HOME=/usr/lib/jvm/default-java ;;
             esac
-            ;;
     esac
 }
 function get-play () {
@@ -576,29 +536,23 @@ function get-play () {
             wget http://downloads.typesafe.com/play/$REQUIRED_PLAY_VERSION/play-$REQUIRED_PLAY_VERSION.zip
             unzip play-$REQUIRED_PLAY_VERSION.zip
             mv play-$REQUIRED_PLAY_VERSION ~/.local/
-            rm -fr play-$REQUIRED_PLAY_VERSION.zip
-            ;;
+            rm -fr play-$REQUIRED_PLAY_VERSION.zip ;;
     esac
 }
 function get-sbt () {
     case "${OSTYPE}" in
-        freebsd*|darwin*)
-            sudo port install sbt
-            ;;
+        freebsd*|darwin*) sudo port install sbt ;;
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
                     curl https://bintray.com/sbt/rpm/rpm | sudo tee /etc/yum.repos.d/bintray-sbt-rpm.repo
-                    sudo yum install -y sbt
-                    ;;
+                    sudo yum install -y sbt ;;
                 Debian|Ubuntu)
                     echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
                     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823
                     sudo apt-get update
-                    sudo apt-get install -y sbt
-                    ;;
+                    sudo apt-get install -y sbt ;;
             esac
-            ;;
     esac
 }
 if ! type -p java > /dev/null; then
@@ -607,10 +561,10 @@ if ! type -p java > /dev/null; then
 else
     REQUIRED_JAVA_VERSION=$(echo $REQUIRED_JAVA_VERSION | sed 's/\(.*\..*\)\..*/\1/')
     CURRENT_JAVA_VERSION=$(java -version 2>&1 | head -n 1 | cut -d\" -f 2 | sed 's/\(.*\..*\)\..*/\1/')
-    if [[ $REQUIRED_JAVA_VERSION > $CURRENT_JAVA_VERSION ]]; then get-java; fi
+    if [[ $REQUIRED_JAVA_VERSION > $CURRENT_JAVA_VERSION ]] ; then get-java; fi
     set-javahome
 fi
-if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ]; then
+if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ] ; then
     get-play
     get-sbt
 fi
@@ -623,8 +577,7 @@ function get-phpenv () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             git clone https://github.com/phpenv/phpenv.git ~/.local/phpenv
-            eval "$(phpenv init -)"
-            ;;
+            eval "$(phpenv init -)" ;;
     esac
 }
 if ! type -p phpenv > /dev/null ; then get-phpenv ; fi
@@ -636,24 +589,19 @@ function get-php () {
             case "${DIST}" in
                 Debian)
                     sudo apt-get update
-                    sudo apt-get install -y php5-common php5-cli php5-fpm
-                    ;;
+                    sudo apt-get install -y php5-common php5-cli php5-fpm ;;
                 Ubuntu)
                     case "$DIST_VERSION" in
                         12.04)
                             parts install \
                                   php5 \
                                   composer \
-                                  phpunit
-                        ;;
+                                  phpunit ;;
                         14.04)
                             sudo apt-get update
-                            sudo apt-get install -y php5-common php5-cli php5-fpm
-                            ;;
+                            sudo apt-get install -y php5-common php5-cli php5-fpm ;;
                     esac
-                    ;;
             esac
-            ;;
     esac
 }
 function get-fastcgi () {
@@ -662,8 +610,7 @@ function get-fastcgi () {
             case "${DIST}" in
                 Redhat|RedHat)
                     sudo yum install -y php-fpm
-                    chkconfig php-fpm on
-                ;;
+                    chkconfig php-fpm on ;;
                 Ubuntu)
                     case "${DIST_VERSION}" in
                         12.04)
@@ -750,19 +697,16 @@ exit $RET_VAL'
                             echo $php_fastcgid_file | sudo tee --append /etc/init.d/php-fastcgi
                             sudo chmod +x /usr/bin/php-fastcgi
                             sudo chmod +x /etc/init.d/php-fastcgi
-                            sudo update-rc.d php-fastcgi defaults
-                            ;;
+                            sudo update-rc.d php-fastcgi defaults ;;
                         14.04)
                             sudo apt-get update -y
                             sudo apt-get install -y \
                                  nginx \
                                  php5-cli \
                                  spawn-fcgi \
-                                 psmisc
-                            ;;
+                                 psmisc ;;
                     esac
             esac
-            ;;
     esac
 }
 function php-fastcgid () {
@@ -776,9 +720,7 @@ function php-fastcgid () {
                         12.04) sudo /etc/init.d/php-fastcgi $1 ;;
                         14.04) sudo service php5-fpm $1 ;;
                     esac
-                    ;;
             esac
-            ;;
     esac
 }
 function fastcgi-restart () {
@@ -787,8 +729,7 @@ function fastcgi-restart () {
         darwin*) ;;
         linux*)
             php-fastcgid start
-            php-fastcgid status
-            ;;
+            php-fastcgid status ;;
     esac
 }
 if ! type -p php > /dev/null; then get-php; fi
@@ -816,9 +757,7 @@ function get-virtualenv () {
                         12.04) parts install virtualenv ;;
                         14.04) ;;
                     esac
-                    ;;
             esac
-            ;;
     esac
 }
 # ### installation ###
@@ -826,23 +765,19 @@ function get-python () {
     case "${OSTYPE}" in
         cygwin*)
             easy_install-2.7 pip
-            get-global-pip-packages
-            ;;
+            get-global-pip-packages ;;
         darwin*)
             sudo easy_install pip
-            get-global-pip-packages
-            ;;
+            get-global-pip-packages ;;
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
                     sudo easy_install pip
-                    get-global-pip-packages
-                    ;;
+                    get-global-pip-packages ;;
                 Debian)
                     sudo apt-get update -y
                     sudo apt-get install -y python-pip
-                    get-global-pip-packages
-                    ;;
+                    get-global-pip-packages ;;
                 Ubuntu)
                     case "$DIST_VERSION" in
                         12.04)
@@ -851,17 +786,13 @@ function get-python () {
                                   setuptools \
                                   pypy \
                                   pip
-                            get-global-pip-packages
-                        ;;
+                            get-global-pip-packages ;;
                         14.04)
                             sudo apt-get update -y
                             sudo apt-get install -y python-pip
-                            get-global-pip-packages
-                        ;;
+                            get-global-pip-packages ;;
                     esac
-                    ;;
             esac
-            ;;
     esac
 }
 if ! type -p pip > /dev/null ; then get-python ; fi
@@ -875,8 +806,7 @@ function get-global-pip-packages () {
                 pandas \
                 pulp \
                 simpy \
-                boto
-            ;;
+                boto ;;
         linux*)
             case "$DIST" in
                 RedHat|Redhat|Debian)
@@ -887,8 +817,7 @@ function get-global-pip-packages () {
                          pandas \
                          pulp \
                          simpy \
-                         boto
-                    ;;
+                         boto ;;
                 Ubuntu)
                     case "$DIST_VERSION" in
                         12.04)
@@ -899,8 +828,7 @@ function get-global-pip-packages () {
                                  pandas \
                                  pulp \
                                  simpy \
-                                 boto
-                        ;;
+                                 boto ;;
                         14.04)
                             sudo pip install -U \
                                  awscli \
@@ -909,12 +837,9 @@ function get-global-pip-packages () {
                                  pandas \
                                  pulp \
                                  simpy \
-                                 boto
-                        ;;
+                                 boto ;;
                     esac
-                ;;
             esac
-            ;;
     esac
 }
 
@@ -927,8 +852,7 @@ function get-perl () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             git clone https://github.com/tagomoris/xbuild.git ~/.local/xbuild
-            ~/.local/xbuild/perl-install $REQUIRED_PERL_VERSION.2 ~/.local/perl-$REQUIRED_PERL_VERSION
-            ;;
+            ~/.local/xbuild/perl-install $REQUIRED_PERL_VERSION.2 ~/.local/perl-$REQUIRED_PERL_VERSION ;;
     esac
 }
 if [ ! -d ~/.local/xbuild ] ; then get-perl ; fi
@@ -999,14 +923,11 @@ function get-node () {
             case "$DIST" in
                 Redhat|RedHat)
                     nvm install v$REQUIRED_NODE_VERSION
-                    nvm use v$REQUIRED_NODE_VERSION
-                    ;;
+                    nvm use v$REQUIRED_NODE_VERSION ;;
                 Debian|Ubuntu)
                     parts install nodejs
-                    get-global-npm-packages
-                    ;;
+                    get-global-npm-packages ;;
             esac
-            ;;
     esac
 }
 function get-global-npm-packages () {
@@ -1041,9 +962,7 @@ function get-remote-procedure-call () {
                         12.04) parts install protobuf ;;
                         14.04) ;;
                     esac
-                    ;;
-                esac
-            ;;
+            esac
     esac
 }
 
@@ -1075,23 +994,18 @@ function pg-restart () {
             case "${DIST}" in
                 Redhat|RedHat)
                     sudo service postgresql restart
-                    sudo service postgresql status
-                    ;;
+                    sudo service postgresql status ;;
                 Debian) ;;
                 Ubuntu)
                     case "${DIST_VERSION}" in
                         12.04)
                             parts restart postgresql
-                            parts status postgresql
-                            ;;
+                            parts status postgresql ;;
                         14.04)
                             sudo /etc/init.d/postgresql restart
-                            sudo /etc/init.d/postgresql status
-                            ;;
+                            sudo /etc/init.d/postgresql status ;;
                     esac
-                    ;;
             esac
-            ;;
     esac
 }
 alias pgr="pg-restart"
@@ -1117,8 +1031,7 @@ function get-mysql () {
                     sudo apt-get -y install software-properties-common
                     sudo add-apt-repository -y ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
                     sudo apt-get update
-                    sudo apt-get -y install mysql-server
-                    ;;
+                    sudo apt-get -y install mysql-server ;;
             esac
     esac
 }
@@ -1131,26 +1044,18 @@ function my-restart () {
             case "${DIST}" in
                 Redhat|RedHat)
                     sudo service mysql restart
-                    sudo service mysql status
-                    ;;
+                    sudo service mysql status ;;
                 Debian)
                     sudo /etc/init.d/mysql restart
-                    sudo /etc/init.d/mysql status
-                    ;;
+                    sudo /etc/init.d/mysql status ;;
                 Ubuntu)
                     case "${DIST_VERSION}" in
-                        12.04)
-                            parts restart mysql
-                            parts status mysql
-                            ;;
-                        14.04)
-                            sudo /etc/init.d/mysql restart
-                            sudo /etc/init.d/mysql status
-                            ;;
+                        12.04) parts restart mysql
+                               parts status mysql ;;
+                        14.04) sudo /etc/init.d/mysql restart
+                               sudo /etc/init.d/mysql status ;;
                     esac
-                    ;;
             esac
-            ;;
     esac
 }
 function my-status () {
@@ -1165,9 +1070,7 @@ function my-status () {
                         12.04) parts status mysql ;;
                         14.04) sudo /etc/init.d/mysql status ;;
                     esac
-                    ;;
             esac
-            ;;
     esac
 }
 alias mr="my-restart"
@@ -1206,8 +1109,7 @@ function get-redis () {
                     sudo sed -i 's|dir \./|dir /var/redis/6379|g' /etc/redis/6379.conf
                     sudo sed -i 's|# bind 127.0.0.1|bind 127.0.0.1|g' /etc/redis/6379.conf
                     cd ..
-                    rm -fr redis-stable
-                    ;;
+                    rm -fr redis-stable ;;
                 Ubuntu)
                     case "${DIST_VERSION}" in
                         12.04) parts install redis ;;
@@ -1232,10 +1134,8 @@ function get-redis () {
                             sudo sed -i 's|dir \./|dir /var/redis/6379|g' /etc/redis/6379.conf
                             sudo sed -i 's|# bind 127.0.0.1|bind 127.0.0.1|g' /etc/redis/6379.conf
                             cd ..
-                            rm -fr redis-stable
-                        ;;
+                            rm -fr redis-stable ;;
                     esac
-                    ;;
             esac
     esac
 }
@@ -1248,15 +1148,12 @@ function redis-restart () {
             case "${DIST}" in
                 Redhat|RedHat)
                     sudo service redis restart
-                    sudo service redis status
-                    ;;
+                    sudo service redis status ;;
                 Debian|Ubuntu)
                     sudo /etc/init.d/redis_6379 stop
                     sudo /etc/init.d/redis_6379 start
-                    sudo /etc/init.d/redis_6379 status
-                    ;;
+                    sudo /etc/init.d/redis_6379 status ;;
             esac
-            ;;
     esac
 }
 function redis-stop () {
@@ -1267,7 +1164,6 @@ function redis-stop () {
                 Redhat|RedHat) sudo service redis stop ;;
                 Debian|Ubuntu) sudo /etc/init.d/redis_6379 stop ;;
             esac
-            ;;
     esac
 }
 alias rdr="redis-restart"
@@ -1283,8 +1179,7 @@ funtion get-nginx () {
             brew tap homebrew/nginx
             brew install nginx-full --with-status --with-upload-module
             brew unlink nginx
-            brew link nginx-full
-        ;;
+            brew link nginx-full ;;
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
@@ -1300,37 +1195,30 @@ funtion get-nginx () {
                     sudo rpm -ivh http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
                     sudo yum install nginx --disablerepo=amzn-main -y
                     sudo chkconfig nginx on
-                    echo "priority=1" >> /etc/yum.repos.d/nginx.repo
-                ;;
+                    echo "priority=1" >> /etc/yum.repos.d/nginx.repo ;;
             esac
-            ;;
     esac
 }
 function nginx-restart () {
     case "${OSTYPE}" in
         darwin*)
             sudo nginx -s reload
-            sudo nginx -s status
-            ;;
+            sudo nginx -s status ;;
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
                     sudo service nginx restart
-                    sudo service nginx status
-                ;;
+                    sudo service nginx status ;;
                 Ubuntu)
                     case "${DIST_VERSION=}" in
                         12.04)
                             sudo /etc/init.d/nginx restart
-                            sudo /etc/init.d/nginx status
-                            ;;
+                            sudo /etc/init.d/nginx status ;;
                         14.04)
                             sudo service nginx restart
                             sudo service nginx status
                     esac
-                    ;;
             esac
-            ;;
     esac
 }
 if ! type -p nginx > /dev/null; then get-nginx; fi
@@ -1351,8 +1239,7 @@ function get-emacs () {
                 Redhat|RedHat) sudo yum install -y ncurses-devel ;;
                 Debian|Ubuntu)
                     sudo apt-get install -y build-essential libncurses-dev
-                    sudo apt-get build-dep emacs
-                    ;;
+                    sudo apt-get build-dep emacs ;;
             esac
             current_pwd=`pwd`
             wget http://core.ring.gr.jp/pub/GNU/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
@@ -1361,8 +1248,7 @@ function get-emacs () {
             ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no
             make
             yes | sudo make install;  wait
-            cd $current_pwd; rm -fr emacs-$REQUIRED_EMACS_VERSION*
-            ;;
+            cd $current_pwd; rm -fr emacs-$REQUIRED_EMACS_VERSION* ;;
     esac
 }
 if ! type -p emacs > /dev/null; then
@@ -1376,8 +1262,7 @@ function get-mu () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             case "${DIST}" in
-                Debian)
-                ;;
+                Debian) ;;
                 Ubuntu)
                     case "${DIST_VERSION}" in
                         12.04)
@@ -1395,11 +1280,9 @@ function get-mu () {
                             ./configure && make
                             sudo make install
                             cd .. && sudo rm -fr mu
-                            ln -s /usr/local/share/emacs/site-lisp/mu4e $HOME/.emacs.d/site-lisp/
-                            ;;
+                            ln -s /usr/local/share/emacs/site-lisp/mu4e $HOME/.emacs.d/site-lisp/ ;;
                     esac
             esac
-            ;;
     esac
 }
 function mu-restart () {
@@ -1433,18 +1316,13 @@ REQUIRED_GIT_VERSION=1.9.4
 # ### installation ###
 function get-git () {
     case "${OSTYPE}" in
-        freebsd*|darwin*)
-            port install git-flow
-            brew install hub
-        ;;
+        freebsd*|darwin*) get-git-flow ;;
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
                     sudo yum install -y \
                          perl-ExtUtils-MakeMaker \
-                         libcurl-devel \
-                         hub \
-                         gitflow
+                         libcurl-devel
                     wget https://www.kernel.org/pub/software/scm/git/git-${REQUIRED_GIT_VERSION}.tar.gz
                     tar zxvf git-${REQUIRED_GIT_VERSION}.tar.gz
                     cd git-${REQUIRED_GIT_VERSION}
@@ -1453,28 +1331,28 @@ function get-git () {
                     sudo make prefix=/usr/local install
                     cd ..
                     rm -fr git-${REQUIRED_GIT_VERSION} git-${REQUIRED_GIT_VERSION}.tar.gz
-                    sudo yum install -y hub
-                ;;
+                    get-git-flow ;;
                 Debian) ;;
                 Ubuntu)
                     case "${DIST_VERSION=}" in
-                        12.04)
-                            sudo apt-get install -y \
-                                 python-software-properties
-                            ;;
-                        14.04)
-                            sudo apt-get install -y \
-                                 software-properties-common \
-                                 python3-software-properties
-                            ;;
+                        12.04) sudo apt-get install -y python-software-properties ;;
+                        14.04) sudo apt-get install -y software-properties-common python3-software-properties ;;
                     esac
                     sudo add-apt-repository ppa:git-core/ppa
-                    sudo apt-get update
-                    sudo apt-get install -y git git-flow
-                    parts install hub
-                    ;;
+                    sudo apt-get update -y
+                    sudo apt-get install -y git
+                    get-git-flow ;;
             esac
-            ;;
+    esac
+}
+function get-git-flow () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*) port install git-flow ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) sudo yum install -y gitflow ;;
+                Debian|Ubuntu) sudo apt-get install -y git-flow ;;
+            esac
     esac
 }
 if ! type -p git > /dev/null; then
@@ -1498,13 +1376,19 @@ function get-hub () {
                         12.04) parts install hub ;;
                         14.04) ;;
                     esac
-                    ;;
             esac
-            ;;
     esac
 }
 if ! type -p hub > /dev/null ; then get-hub ; fi
 if type -p hub > /dev/null ; then eval "$(hub alias -s)" ; fi
+# ### gibo ###
+function get-gibo () {
+    case "${OSTYPE}" in
+        freebsd*) ;;
+        darwin*|linux*) brew install gibo ;;
+    esac
+}
+if ! type -p gibo > /dev/null ; then get-gibo ; fi
 # ### alias ###
 alias g='git'
 alias ga='git add -v'
@@ -1545,12 +1429,8 @@ alias gst='git status -sb'
 alias gswitch='git checkout'
 alias gvlog='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen - %cD (%cr) %C(bold blue)<%an>%Creset%n" --abbrev-commit --date=relative -p ; echo ""'
 alias gwho='git shortlog -s --'
-function parse-git-dirty {
-    git diff --no-ext-diff --quiet --exit-code &> /dev/null || echo "*"
-}
-function parse-git-branch {
-    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty))/"
-}
+function parse-git-dirty { git diff --no-ext-diff --quiet --exit-code &> /dev/null || echo "*" }
+function parse-git-branch { git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty))/" }
 function github-pull-repositories () {
     # # Setup Example:
     # function setup-git-pull-repositories () {
@@ -1622,10 +1502,8 @@ function get-puml () {
             case "${DIST}" in
                 Redhat|RedHat) ;;
                 Debian|Ubuntu)
-                    if type -p npm > /dev/null; then npm install -g node-plantuml; fi
-                    ;;
+                    if type -p npm > /dev/null; then npm install -g node-plantuml; fi ;;
             esac
-            ;;
     esac
 }
 function get-plantuml () {
@@ -1636,10 +1514,8 @@ function get-plantuml () {
                 Redhat|RedHat) ;;
                 Debian|Ubuntu)
                     wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
-                    alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng'
-                    ;;
+                    alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng' ;;
             esac
-            ;;
     esac
 }
 function get-graphviz () {
@@ -1649,11 +1525,9 @@ function get-graphviz () {
             case "${DIST}" in
                 Redhat|RedHat) sudo yum install -y graphviz ;;
                 Debian|Ubuntu)
-                    sudo apt-get update
-                    sudo apt-get install -y graphviz
-                    ;;
+                    sudo apt-get update -y
+                    sudo apt-get install -y graphviz ;;
             esac
-            ;;
     esac
 }
 if ! type -p puml > /dev/null ; then get-puml ; fi
@@ -1672,7 +1546,6 @@ function get-ab () {
                 Redhat|RedHat) sudo yum install -y httpd-tools ;;
                 Debian|Ubuntu) sudo apt-get install -y apache2-utils ;;
             esac
-            ;;
     esac
 }
 if ! type -p ab > /dev/null ; then get-ab ; fi
@@ -1737,10 +1610,8 @@ function get-docker () {
                     sudo apt-get purge lxc-docker*
                     sudo apt-cache policy docker-engine
 		    sudo apt-get update
-                    sudo apt-get install -y docker-engine
-		    ;;
+                    sudo apt-get install -y docker-engine ;;
             esac
-            ;;
     esac
 }
 if ! type -p docker > /dev/null ; then get-docker ; fi
@@ -1769,13 +1640,13 @@ function datach () { docker start $1 ; docker atach $1 }
 function denv () { docker run --rm $1 env }
 function dip () {
     CI=$(docker ps -l -q)
-    if [ $1 ]; then
+    if [ $1 ] ; then
 	docker inspect --format {{.NetworkSettings.IPAddress}} $1
 	docker inspect --format {{.NetworkSettings.Ports}} $1
     else
 	docker inspect --format {{.NetworkSettings.IPAddress}} $CI
 	docker inspect --format {{.NetworkSettings.Ports}} $CI
-	fi
+    fi
 }
 function dnsenter () {
     CI=$(docker ps -l -q)
@@ -1800,9 +1671,7 @@ function get-docker-compose () {
                         12.04) ;;
                         14.04) pip install -U docker-compose ;;
                     esac
-	            ;;
             esac
-            ;;
     esac
 }
 function get-docker-machine () {
@@ -1813,10 +1682,8 @@ function get-docker-machine () {
                 Redhat|RedHat) ;;
                 Debian|Ubuntu)
                     wget https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_linux-386 -O ~/.local/bin/docker-machine
-                    chmod +x ~/.local/bin/docker-machine
-	            ;;
+                    chmod +x ~/.local/bin/docker-machine ;;
             esac
-            ;;
     esac
 }
 if ! type -p docker-compose > /dev/null; then get-docker-compose ; fi
@@ -1869,15 +1736,13 @@ case ${UID} in
 	PROMPT2="%B%{${fg[red]}%}%_#%{${reset_color}%}%b "
 	SPROMPT="%B%{${fg[red]}%}%r is correct? [n,y,a,e]:%{${reset_color}%}%b "
 	[ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
-        PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') ${PROMPT}"
-	;;
+        PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') ${PROMPT}" ;;
     *)
 	PROMPT="%{${fg[red]}%}%/%%%{${reset_color}%} "
 	PROMPT2="%{${fg[red]}%}%_%%%{${reset_color}%} "
 	SPROMPT="%{${fg[red]}%}%r is correct? [n,y,a,e]:%{${reset_color}%} "
 	[ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
-        PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') ${PROMPT}"
-	;;
+        PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') ${PROMPT}" ;;
 esac
 setopt auto_cd         # auto change directory
 setopt auto_pushd      # auto directory pushd that you can get dirs list by cd -[tab]
@@ -1911,20 +1776,11 @@ setopt share_history        # share command history data
 # fpath=(~/.zsh/functions/Completion ${fpath})
 # autoload -U compinit
 # compinit -u
-
-
-# 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Editor
-# ------------------------------------------------------------------
+# ### editor ###
 # autoload zed
-
-
-# 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Zmv
-# ---------------------------------------------------------------
+# ### zmv ###
 autoload -Uz zmv
-
-
-# 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Prediction
-# ----------------------------------------------------------------------
+# ### prediction ###
 # autoload predict-on
 # predict-off
 
@@ -1934,40 +1790,32 @@ autoload -Uz zmv
 unset LSCOLORS
 zstyle ':completion:*' use-cache true
 case "${TERM}" in
-    xterm|screen.xterm)
-	export TERM=xterm-color
-	;;
+    xterm|screen.xterm) export TERM=xterm-color ;;
     kterm)
 	export TERM=kterm-color
         # set BackSpace control character
-	stty erase
-	;;
+	stty erase ;;
     cons25)
 	unset LANG
 	export LSCOLORS=ExFxCxdxBxegedabagacad
 	export LS_COLORS='di=01;34:ln=01;35:so=01;32:ex=01;31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
-	zstyle ':completion:*' list-colors \
-	    'di=;34;1' 'ln=;35;1' 'so=;32;1' 'ex=31;1' 'bd=46;34' 'cd=43;34'
-	;;
+	zstyle ':completion:*' list-colors 'di=;34;1' 'ln=;35;1' 'so=;32;1' 'ex=31;1' 'bd=46;34' 'cd=43;34' ;;
     indumb|emacs)
 	# PROMPT="%n@%~%(!.#.$)"
 	PROMPT="%{${fg[red]}%}%/%%%{${reset_color}%} "
         PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') ${PROMPT}"
 	RPROMPT=""
-	unsetopt zle
-	;;
+	unsetopt zle ;;
 esac
 # ### set terminal title including current directory ###
 case "${TERM}" in
     kterm*|xterm*)
-	precmd() {
+	precmd () {
 	    echo -ne "\033]0;${USER}@${HOST%%.*}:${PWD}\007"
 	}
 	export LSCOLORS=gxfxcxdxbxegedabagacad
 	export LS_COLORS='di=36;40:ln=35;40:so=32;40:pi=33;40:ex=31;40:bd=34;46:cd=34;43:su=0;41:sg=0;46:tw=0;42:ow=0;43:'
-	zstyle ':completion:*' list-colors \
-	    'di=36' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
-	;;
+	zstyle ':completion:*' list-colors 'di=36' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34' ;;
 esac
 
 
@@ -2013,8 +1861,7 @@ case "${OSTYPE}" in
 	alias ls="ls -G -w"
         alias lf="\ls -p -l -F -G"
         alias ll="\ls -p -F -a -G"
-        alias la="\ls -p -l -F -a -G"
-	;;
+        alias la="\ls -p -l -F -a -G" ;;
     linux*|cygwin*)
         alias ls='ls --color=auto'
         alias la="\ls -p -l -F -a --color=auto"
@@ -2023,20 +1870,16 @@ case "${OSTYPE}" in
         function lt () {
             \ls -R $1 | \grep ":$" | \sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
         }
-	;;
 esac
 case "${OSTYPE}" in
     darwin*)
 	alias updateports="sudo port selfupdate; sudo port outdated"
-	alias portupgrade="sudo port upgrade installed"
-	;;
+	alias portupgrade="sudo port upgrade installed" ;;
     freebsd*)
 	case ${UID} in
 	    0)
-		updateports()
-		{
-		    if [ -f /usr/ports/.portsnap.INDEX ]
-		    then
+		updateports() {
+		    if [ -f /usr/ports/.portsnap.INDEX ] ; then
 			portsnap fetch update
 		    else
 			portsnap fetch extract update
@@ -2044,23 +1887,19 @@ case "${OSTYPE}" in
 		    (cd /usr/ports/; make index)
 		    portversion -v -l \<
 		}
-		alias appsupgrade='pkgdb -F && BATCH=YES NO_CHECKSUM=YES portupgrade -a'
-		;;
+		alias appsupgrade='pkgdb -F && BATCH=YES NO_CHECKSUM=YES portupgrade -a' ;;
 	esac
-	;;
 esac
 
 
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Screen
 # -------------------------------------------------------------
 # ### srcreen for opening ssh ###
-function ssh_screen(){
+function ssh_screen () {
     eval server=\${$#}
     screen -t $server ssh "$@"
 }
-if [ x$TERM = xscreen ]; then
-    alias ssh=ssh_screen
-fi
+if [ x$TERM = xscreen ] ; then alias ssh=ssh_screen ; fi
 # ### screen for status line ###
 if [ "$TERM" = "screen" ]; then
     export LSCOLORS=gxfxcxdxbxegedabagacad
@@ -2071,32 +1910,22 @@ if [ "$TERM" = "screen" ]; then
     # see [zsh-workers:13180]
     # http://www.zsh.org/mla/workers/2000/msg03993.html
 	emulate -L zsh
-	local -a cmd; cmd=(${(z)2})
+	local -a cmd ; cmd=(${(z)2})
 	case $cmd[1] in
 	    fg)
-		if (( $#cmd == 1 )); then
+		if (( $#cmd == 1 )) ; then
 		    cmd=(builtin jobs -l %+)
 		else
 		    cmd=(builtin jobs -l $cmd[2])
-		fi
-		;;
-	    %*)
-		cmd=(builtin jobs -l $cmd[1])
-		;;
-	    cd)
-		if (( $#cmd == 2)); then
-		    cmd[1]=$cmd[2]
-		fi
-		;;
-	    *)
-		echo -n "k$cmd[1]:t\\"
-		return
-		;;
+		fi ;;
+	    %*) cmd=(builtin jobs -l $cmd[1]) ;;
+	    cd) if (( $#cmd == 2)) ; then cmd[1]=$cmd[2] ; fi ;;
+	    *) echo -n "k$cmd[1]:t\\" ; return ;;
 	esac
 	local -A jt; jt=(${(kv)jobtexts})
 	$cmd >>(read num rest
-	    cmd=(${(z)${(e):-\$jt$num}})
-	    echo -n "k$cmd[1]:t\\") 2>/dev/null
+	        cmd=(${(z)${(e):-\$jt$num}})
+	        echo -n "k$cmd[1]:t\\") 2>/dev/null
     }
     chpwd
 fi
@@ -2117,13 +1946,10 @@ function get-heroku () {
                         12.04)
                             parts install \
                                   heroku_toolbelt \
-                                  hk
-                            ;;
+                                  hk ;;
                         14.04) ;;
                     esac
-                    ;;
-                esac
-            ;;
+            esac
     esac
 }
 
@@ -2143,9 +1969,7 @@ function get-google-cloud-platform () {
                         12.04) parts install googlecloudsdk ;;
                         14.04) ;;
                     esac
-                    ;;
-                esac
-            ;;
+            esac
     esac
 }
 
@@ -2169,9 +1993,7 @@ function get-amazon-web-services () {
                             ;;
                         14.04) ;;
                     esac
-                    ;;
-                esac
-            ;;
+            esac
     esac
 }
 
@@ -2206,9 +2028,7 @@ function get-dotfiles () {
     cp -pr ~/.offlineimap.py .
     cp -pr ~/.zshrc .
     case "${OSTYPE}" in
-        freebsd*|darwin*|linux*)
-            cp -pr ~/.screenrc .
-            ;;
+        freebsd*|darwin*|linux*) cp -pr ~/.screenrc . ;;
     esac
     # post proc
     git checkout -- .emacs.d/lisp/init-mu4e.el
@@ -2236,9 +2056,7 @@ function put-dotfiles () {
     cp -pr .offlineimap.py ~/;                       wait
     cp -pr .zshrc ~/;                                wait
     case "${OSTYPE}" in
-        freebsd*|darwin*|linux*)
-            cp -pr .screenrc ~/; wait
-            ;;
+        freebsd*|darwin*|linux*) cp -pr .screenrc ~/; wait ;;
     esac
     # post proc
     git checkout -- .emacs.d/lisp/init-mu4e.el
@@ -2271,22 +2089,13 @@ alias ic='cat /proc/cpuinfo'
 alias in='netstat -a -n | more'
 alias im='cat /proc/meminfo'
 case "${OSTYPE}" in
-    freebsd*|darwin*)
-        alias ip="ps aux"
-        ;;
-    cygwin*)
-        alias ip="ps -flW"
-        ;;
+    freebsd*|darwin*) alias ip="ps aux" ;;
+    cygwin*) alias ip="ps -flW" ;;
     linux*)
         case "${DIST}" in
-            Redhat|RedHat)
-                alias ip="ps aux"
-                ;;
-            Debian|Ubuntu)
-                alias ip="ps aux"
-                ;;
+            Redhat|RedHat) alias ip="ps aux" ;;
+            Debian|Ubuntu) alias ip="ps aux" ;;
         esac
-        ;;
 esac
 alias it="date -R"
 alias j='cd'
@@ -2315,26 +2124,26 @@ alias re='e ~/.zshrc'
 alias reb='cp -ip ~/.zshrc ~/.zshrc.org$(date +%y%m%d)'
 function rename () {
     for i in *$1* ; do
-    \mv -f $i `echo $i | sed -e s,$1,$2,g`
+        \mv -f $i `echo $i | sed -e s,$1,$2,g`
     done
 }
 alias rn="rename"
 function rename-recursively () {
     find . -print | while read file ; do
-    \mv -f $file ${file//$1/$2}
+        \mv -f $file ${file//$1/$2}
     done
 }
 alias rnr="rename-recursively"
 alias rr='source ~/.zshrc'
 function rename () {
     for i in *$1* ; do
-    \mv -f $i    # (echo $i | sed -e s,$1,$2,g)
+        \mv -f $i    # (echo $i | sed -e s,$1,$2,g)
     done
 }
 alias rn="rename"
 function rename-recursively () {
     find . -print | while read file ; do
-    \mv -f $file ${file//$1/$2}
+        \mv -f $file ${file//$1/$2}
     done
 }
 alias rnr="rename-recursively"
