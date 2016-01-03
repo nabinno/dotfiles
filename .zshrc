@@ -926,7 +926,7 @@ alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 
 # 2. ProgrammingLanguage::Javascript
 # ----------------------------------
-export REQUIRED_NODE_VERSION='0.11.13'
+export REQUIRED_NODE_VERSION='5.3.0'
 export NVM_DIR="/home/vagrant/.nvm"
 export node='NODE_NO_READLINE=1 node'
 # ### version control ###
@@ -940,14 +940,9 @@ if [ -f ~/.nvm/nvm.sh ] ; then source "$NVM_DIR/nvm.sh"  ; fi
 function get-node () {
     case "$OSTYPE" in
         linux*)
-            case "$DIST" in
-                Redhat|RedHat)
-                    nvm install v$REQUIRED_NODE_VERSION
-                    nvm use v$REQUIRED_NODE_VERSION ;;
-                Debian|Ubuntu)
-                    parts install nodejs
-                    get-global-npm-packages ;;
-            esac
+            nvm install v$REQUIRED_NODE_VERSION
+            nvm use v$REQUIRED_NODE_VERSION
+            get-global-npm-packages ;;
     esac
 }
 function get-global-npm-packages () {
