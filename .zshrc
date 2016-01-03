@@ -2042,37 +2042,41 @@ function cd-dove () {
 alias zd=cd-dove
 # ### dotfiles ###
 function get-dotfiles () {
-    # pre proc
-    flag=$1
-    cd ~/; wait
-    if [ ! -d ~/.local/dotfiles ]; then
-        mkdir -p ~/.local
-        sh -c "$(curl -fsSL https://raw.github.com/nabinno/dotfiles/master/install)"; wait
+    while getopts ":w:ih" opt ; do
+        case $opt in
+            "m") is_mu4e=true ;;
+            "i") is_init_el=true ;;
+            "h") echo ''
+                 echo "Usage: get-dotfiles [-mih]" 1>&2
+                 is_exit=true ;;
+            "?") echo "$0: Invalid option -$OPTARG" 1>&2
+                 echo "Usage: $0 [-mih]" 1>&2
+                 is_exit=true ;;
+        esac
+    done
+    if ! [ $is_exit ] ; then
+        cd ~/; wait
+        if [ ! -d ~/.local/dotfiles ]; then
+            mkdir -p ~/.local
+            sh -c "$(curl -fsSL https://raw.github.com/nabinno/dotfiles/master/install)"; wait
+        fi
+        cd ~/.local/dotfiles
+        git checkout -- .
+        git checkout develop
+        git pull
+        rm -rf                         .emacs.d/lisp/*;    wait
+        cp -pr ~/.emacs.d/lisp/*       .emacs.d/lisp/;     wait
+        cp -pr ~/.emacs.d/bin/*        .emacs.d/bin/;      wait
+        cp -pr ~/.emacs.d/eshell/alias .emacs.d/eshell/;   wait
+        cp -pr ~/.emacs.d/init.el      .emacs.d/;          wait
+        cp -pr ~/.offlineimap.py .
+        cp -pr ~/.zshrc .
+        case "${OSTYPE}" in (freebsd*|darwin*|linux*) cp -pr ~/.screenrc . ;; esac
+        [ $is_mu4e ]    || git checkout -- .emacs.d/lisp/init-mu4e.el
+        [ $is_init_el ] || git checkout -- .emacs.d/init.el
     fi
-    cd ~/.local/dotfiles
-    git checkout -- .
-    git checkout develop
-    git pull
-    # main proc
-    rm -rf                         .emacs.d/lisp/*;    wait
-    cp -pr ~/.emacs.d/lisp/*       .emacs.d/lisp/;     wait
-    cp -pr ~/.emacs.d/bin/*        .emacs.d/bin/;      wait
-    cp -pr ~/.emacs.d/eshell/alias .emacs.d/eshell/;   wait
-    cp -pr ~/.emacs.d/init.el      .emacs.d/;          wait
-    cp -pr ~/.offlineimap.py .
-    cp -pr ~/.zshrc .
-    case "${OSTYPE}" in
-        freebsd*|darwin*|linux*) cp -pr ~/.screenrc . ;;
-    esac
-    # post proc
-    git checkout -- .emacs.d/lisp/init-mu4e.el
-    case $flag in
-        init) ;;
-        *) git checkout -- .emacs.d/init.el ;;
-    esac
 }
 alias zg='get-dotfiles'
-alias zgi='get-dotfiles "init"'
 function put-dotfiles () {
     # pre proc
     current_pwd=`pwd`
@@ -2099,7 +2103,7 @@ function put-dotfiles () {
     # post proc
     git checkout -- .emacs.d/lisp/init-mu4e.el
     cd $current_pwd
-    source ~/.zshrc
+    exec -l zsh
 }
 alias zp=put-dotfiles
 # ### other ###
