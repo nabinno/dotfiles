@@ -1413,7 +1413,11 @@ if type -p hub > /dev/null ; then eval "$(hub alias -s)" ; fi
 function get-gibo () {
     case "${OSTYPE}" in
         freebsd*) ;;
-        darwin*|linux*) brew install gibo ;;
+        darwin*|linux*)
+            case $DIST in
+                RedHat|Redhat) ;;
+                Debian|Ubuntu) brew install gibo ;;
+            esac
     esac
 }
 if ! type -p gibo > /dev/null ; then get-gibo ; fi
