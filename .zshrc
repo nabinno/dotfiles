@@ -291,6 +291,76 @@ function get-base () {
             esac
     esac
 }
+function get-wget () {
+    case $OSTYPE in
+        darwin*) brew install wget ;;
+        freebsd*) port install wget ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) sudo yum install -y wget ;;
+                Debian|Ubuntu) sudo apt-get install -y wget ;;
+            esac
+    esac
+}
+function get-autoconf () {
+    if ! type -p wget > /dev/null ; then get-wget ; fi
+    case "${OSTYPE}" in
+        freebsd*) ;;
+        darwin*) ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) gnu-get autoconf-2.69 ;;
+                Debian|Ubuntu)
+                    wget http://ftp.debian.org/debian/pool/main/a/automake-1.14/automake_1.14.1-3_all.deb
+                    sudo dpkg -i automake_1.14.1-3_all.deb
+            esac
+    esac
+}
+function get-boost () {
+    if ! type -p wget > /dev/null ; then get-wget ; fi
+    case "${OSTYPE}" in
+        freebsd*) ;;
+        darwin*) ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    wget http://sourceforge.net/projects/boost/files/boost/1.53.0/boost_1_53_0.tar.gz
+                    tar xvf boost_1_53_0.tar.gz
+                    cd boost_1_53_0
+                    ./bootstrap.sh
+                    sudo ./b2 install
+                    cd ..
+                    rm -rf boost_1_53_0.tar.gz boost_1_53_0 ;;
+                Debian|Ubuntu)
+                    sudo apt-get install -y \
+                         libboost-dev \
+                         libboost-test-dev \
+                         libboost-program-options-dev \
+                         libboost-system-dev \
+                         libboost-filesystem-dev \
+                         libevent-dev ;;
+            esac
+    esac
+}
+function gnu-get () {
+    typeset -A softwares
+    array=("${(@s:-:)1}")
+    version=$array[2]
+    softwares[$version]=$array[1]
+    if ! type -p wget > /dev/null ; then get-wget ; fi
+    if [ $# -ge 1 ] ; then
+        for k in ${(@k)softwares}; do
+            wget http://ftp.gnu.org/gnu/$softwares[$k]/$softwares[$k]-$k.tar.gz
+            tar xvf $softwares[$k]-$k.tar.gz
+            cd $softwares[$k]-$k
+            ./configure --prefix=/usr
+            make
+            sudo make install
+            cd ..
+            rm -fr $softwares[$k]-$k $softwares[$k]-$k.tar.gz
+        done
+    fi
+}
 
 
 # 1. BasicSettings::PackageManager::Autoparts
@@ -768,57 +838,44 @@ alias fk="php-fastcgid stop"
 
 # 2. ProgrammingLanguage::Python
 # ------------------------------
-REQUIRED_PYTHON_VERSION=2.7.6
+REQUIRED_PYTHON_VERSION=2.7.11
 # ### version control ###
 function get-pyenv () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             rm -fr ~/.local/pyenv
             git clone git://github.com/yyuu/pyenv.git ~/.local/pyenv
-            eval "$(pyenv init -)" ;;
+            git clone git://github.com/yyuu/pyenv-virtualenv.git ~/.local/pyenv/plugins/pyenv-virtualenv
+            cd ~/.local/pyenv/bin/
+            ln -s -t . ~/.local/pyenv/plugins/python-build/bin/*
+            ln -s -t . ~/.local/pyenv/plugins/pyenv-virtualenv/bin/*
+            eval "$(pyenv init -)"
+            eval "$(pyenv virtualenv-init -)" ;;
     esac
 }
 if ! type -p pyenv > /dev/null; then get-pyenv ; fi
-if type -p pyenv > /dev/null; then eval "$(pyenv init -)" ; fi
+if type -p pyenv > /dev/null; then eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)" ; fi
 # ### installation ###
 function get-python () {
     case "${OSTYPE}" in
-        cygwin*)
-            easy_install-2.7 pip
-            get-global-pip-packages ;;
-        darwin*)
-            sudo easy_install pip
-            get-global-pip-packages ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat)
-                    sudo easy_install pip
-                    get-global-pip-packages ;;
-                Debian)
-                    sudo apt-get update -y
-                    sudo apt-get install -y python-pip
-                    get-global-pip-packages ;;
-                Ubuntu)
-                    case "$DIST_VERSION" in
-                        12.04)
-                            parts install \
-                                  python \
-                                  setuptools \
-                                  pypy \
-                                  pip
-                            get-global-pip-packages ;;
-                        14.04)
-                            sudo apt-get update -y
-                            sudo apt-get install -y python-pip
-                            get-global-pip-packages ;;
-                    esac
-            esac
+        cygwin*) ;;
+        freebsd*|darwin*|linux*)
+            pyenv install $REQUIRED_PYTHON_VERSION
+            pyenv rehash
+            pyenv global $REQUIRED_PYTHON_VERSION
     esac
 }
-if ! type -p pip > /dev/null ; then get-python ; fi
+if ! type -p easy_install > /dev/null; then get-python ; fi
+function get-pip () {
+    case "${OSTYPE}" in
+        cygwin*|freebsd*|darwin*|linux*)
+            easy_install pip
+            get-global-pip-packages ;;
+    esac
+}
 function get-global-pip-packages () {
     case "$OSTYPE" in
-        darwin*)
+        freebsd*|darwin*|linux*)
             sudo pip install -U \
                 awscli \
                 docker-compose \
@@ -827,41 +884,9 @@ function get-global-pip-packages () {
                 pulp \
                 simpy \
                 boto ;;
-        linux*)
-            case "$DIST" in
-                RedHat|Redhat|Debian)
-                    sudo pip install -U \
-                         awscli \
-                         docker-compose \
-                         ipython \
-                         pandas \
-                         pulp \
-                         simpy \
-                         boto ;;
-                Ubuntu)
-                    case "$DIST_VERSION" in
-                        12.04)
-                            pip install -U \
-                                 awscli \
-                                 docker-compose \
-                                 ipython \
-                                 pandas \
-                                 pulp \
-                                 simpy \
-                                 boto ;;
-                        14.04)
-                            sudo pip install -U \
-                                 awscli \
-                                 docker-compose \
-                                 ipython \
-                                 pandas \
-                                 pulp \
-                                 simpy \
-                                 boto ;;
-                    esac
-            esac
     esac
 }
+if ! type -p pip > /dev/null ; then get-pip ; fi
 
 
 # 2. ProgrammingLanguage::Perl
@@ -964,20 +989,55 @@ if [ ! -f "$NVM_DIR/v$REQUIRED_NODE_VERSION/bin/npm" ] ; then get-node  ; fi
 
 # 2. ProgrammingLanguage::RemoteProcedureCall
 # -------------------------------------------
-function get-remote-procedure-call () {
+function get-protobuf () {
     case "${OSTYPE}" in
         freebsd*) ;;
         darwin*) ;;
         linux*)
             case "${DIST}" in
                 Redhat|RedHat) ;;
-                Debian) ;;
-                Ubuntu)
-                    case "$DIST_VERSION" in
-                        12.04) parts install protobuf ;;
-                        14.04) ;;
-                    esac
+                Ubuntu) case "$DIST_VERSION" in (12.04) parts install protobuf ;; esac
             esac
+    esac
+}
+function get-thrift () {
+    case "${OSTYPE}" in
+        freebsd*) ;;
+        darwin*) brew install thrift ;;
+        linux*)
+            # pre proc
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo yum -y groupinstall "Development Tools"
+                    sudo yum install -y libevent-devel zlib-devel openssl-devel
+                    gnu-get automake-1.14 bison-2.5.1 ;;
+                Debian|Ubuntu)
+                    sudo apt-get install -y \
+                         libevent-dev \
+                         automake \
+                         libtool \
+                         flex \
+                         bison \
+                         pkg-config \
+                         g++ \
+                         libssl-dev \
+                         ant \
+                         libmono-dev \
+                         ruby1.8-dev \
+                         libcommons-lang-java \
+                         php5-dev ;;
+            esac
+            get-autoconf
+            get-boost
+            # main proc
+            git clone https://git-wip-us.apache.org/repos/asf/thrift.git
+            cd thrift
+            ./bootstrap.sh
+            ./configure --with-lua=no
+            make
+            sudo make install
+            cd ..
+            rm -fr thrift ;;
     esac
 }
 
@@ -1371,6 +1431,7 @@ function get-git () {
                     sudo apt-get install -y git
                     get-git-flow ;;
             esac
+            git config --global push.default simple
     esac
 }
 function get-git-flow () {
@@ -1975,10 +2036,9 @@ function get-heroku () {
                 Debian) ;;
                 Ubuntu)
                     case "$DIST_VERSION" in
-                        12.04)
-                            parts install \
-                                  heroku_toolbelt \
-                                  hk ;;
+                        12.04) parts install \
+                                     heroku_toolbelt \
+                                     hk ;;
                         14.04) ;;
                     esac
             esac
@@ -2018,11 +2078,9 @@ function get-amazon-web-services () {
                 Debian) ;;
                 Ubuntu)
                     case "$DIST_VERSION" in
-                        12.04)
-                            parts install \
-                                  elasticbeanstalk \
-                                  s3cmd
-                            ;;
+                        12.04) parts install \
+                                     elasticbeanstalk \
+                                     s3cmd ;;
                         14.04) ;;
                     esac
             esac
@@ -2124,7 +2182,7 @@ function gresreg () {
 	rm $i.tmp;
     done
 }
-alias e='emacsclient -c t'
+alias e='emacsclient -t'
 alias ij='jobs -l'
 alias ic='cat /proc/cpuinfo'
 alias in='netstat -a -n | more'
