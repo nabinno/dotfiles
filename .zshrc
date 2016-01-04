@@ -470,8 +470,8 @@ function get-erlang () {
             source ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ;;
     esac
 }
-if ! type -p erl > /dev/null ; then get-erlang ; fi
-if type -p erl > /dev/null ; then source ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ; fi
+if [ ! -f ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ] ; then get-erlang ; fi
+if [ -f ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ] ; then source ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ; fi
 function get-elixir () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
@@ -934,8 +934,8 @@ function get-nvm () {
     curl https://raw.githubusercontent.com/creationix/nvm/v0.13.1/install.sh | bash
     [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
 }
-if [ ! -f ~/.nvm/nvm.sh ] ; then get-nvm  ; fi
-if [ -f ~/.nvm/nvm.sh ] ; then source "$NVM_DIR/nvm.sh"  ; fi
+if [ -s "$NVM_DIR/nvm.sh" ] ; then source "$NVM_DIR/nvm.sh"  ; fi
+if [ ! -s "$NVM_DIR/nvm.sh" ] ; then get-nvm  ; fi
 # ### installation ###
 function get-node () {
     case "$OSTYPE" in
@@ -959,7 +959,7 @@ function get-global-npm-packages () {
         requirejs \
         tern
 }
-if ! type -p npm > /dev/null ; then get-node ; fi
+if [ ! -f "$NVM_DIR/v$REQUIRED_NODE_VERSION/bin/npm" ] ; then get-node  ; fi
 
 
 # 2. ProgrammingLanguage::RemoteProcedureCall
