@@ -138,6 +138,17 @@ export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(par
 
 # 1. BasicSettings::Locale
 # ------------------------
+function get-ntp () {
+    case "${OSTYPE}" in
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo yum install -y ntp ;;
+                Debian|Ubuntu)
+                    sudo apt-get install -y ntp ;;
+            esac
+    esac
+}
 function set-locale () {
     case "${OSTYPE}" in
         linux*)
