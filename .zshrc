@@ -970,7 +970,7 @@ function get-nvm () {
     curl https://raw.githubusercontent.com/creationix/nvm/v0.13.1/install.sh | bash
     [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
 }
-if [ -s "$NVM_DIR/nvm.sh" ] ; then source "$NVM_DIR/nvm.sh"  ; fi
+if [ -s "$NVM_DIR/nvm.sh" ] ; then source "$NVM_DIR/nvm.sh" && nvm use v$REQUIRED_NODE_VERSION ; fi
 if [ ! -s "$NVM_DIR/nvm.sh" ] ; then get-nvm  ; fi
 # ### installation ###
 function get-node () {
