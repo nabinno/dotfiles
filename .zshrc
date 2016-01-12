@@ -382,7 +382,8 @@ function get-nix () {
     case "${OSTYPE}" in
         darwin*|linux*)
             cd ~
-            sudo curl https://nixos.org/nix/install | sudo sh
+            curl https://nixos.org/nix/install | sh
+            sudo chown -R vagrant /nix
             source ~/.nix-profile/etc/profile.d/nix.sh ;;
     esac
 }
