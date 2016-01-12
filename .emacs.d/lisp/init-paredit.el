@@ -3,8 +3,8 @@
 ;;; Code:
 (require-package 'paredit)
 ;; (autoload 'enable-paredit-mode "paredit")
-(add-hook 'after-init-hook 'disable-paredit-mode)
-(add-hook 'prog-mode-hook 'disable-paredit-mode)
+;; (add-hook 'after-init-hook 'disable-paredit-mode)
+;; (add-hook 'prog-mode-hook 'disable-paredit-mode)
 
 ;; Enable paredit for a couple for non lisp modes; tweak
 ;; paredit-space-for-delimiter-predicates to avoid inserting spaces

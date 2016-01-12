@@ -3,6 +3,7 @@
 # 1. BasicSettings::EnvironmentVariable::Locale
 # 1. BasicSettings::EnvironmentVariable::Local
 # 1. BasicSettings::BaseInstallation
+# 1. BasicSettings::PackageManager::Nix
 # 1. BasicSettings::PackageManager::Autoparts
 # 1. BasicSettings::PackageManager::Homebrew
 # 2. ProgrammingLanguage::Ruby
@@ -31,6 +32,7 @@
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Terminal
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Alias
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Screen
+# 4. IntegratedDevelopmentEnvironment::Chat::Slack
 # 5. Platform::Heroku
 # 5. Platform::GoogleCloudPlatform
 # 5. Platform::AmazonWebServices
@@ -372,6 +374,32 @@ function gnu-get () {
         done
     fi
 }
+
+
+# 1. BasicSettings::PackageManager::Nix
+# -------------------------------------
+function get-nix () {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            cd ~
+            sudo curl https://nixos.org/nix/install | sudo sh
+            source ~/.nix-profile/etc/profile.d/nix.sh ;;
+    esac
+}
+function get-nix-packages () {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            nix-build \
+                ctags \
+                heroku_toolbelt \
+                phantomjs \
+                the_silver_searcher \
+                tree \
+                uuid ;;
+    esac
+}
+if [ -f ~/.nix-profile/etc/profile.d/nix.sh ] ; then source ~/.nix-profile/etc/profile.d/nix.sh ; fi
+if [ ! -f ~/.nix-profile/etc/profile.d/nix.sh ] ; then get-nix ; fi
 
 
 # 1. BasicSettings::PackageManager::Autoparts
@@ -962,7 +990,7 @@ alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 
 # 2. ProgrammingLanguage::Javascript
 # ----------------------------------
-export REQUIRED_NODE_VERSION='5.3.0'
+export REQUIRED_NODE_VERSION='4.2.4'
 export NVM_DIR="/home/vagrant/.nvm"
 export node='NODE_NO_READLINE=1 node'
 # ### version control ###
@@ -970,7 +998,7 @@ function get-nvm () {
     curl https://raw.githubusercontent.com/creationix/nvm/v0.13.1/install.sh | bash
     [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
 }
-if [ -s "$NVM_DIR/nvm.sh" ] ; then source "$NVM_DIR/nvm.sh" && nvm use v$REQUIRED_NODE_VERSION ; fi
+if [ -s "$NVM_DIR/nvm.sh" ] ; then source "$NVM_DIR/nvm.sh" && nvm use v$REQUIRED_NODE_VERSION > /dev/null ; fi
 if [ ! -s "$NVM_DIR/nvm.sh" ] ; then get-nvm  ; fi
 # ### installation ###
 function get-node () {
@@ -2033,6 +2061,18 @@ if [ "$TERM" = "screen" ]; then
     }
     chpwd
 fi
+
+
+# 4. IntegratedDevelopmentEnvironment::Chat::Slack
+# ------------------------------------------------
+function get-slackchat () {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            wget https://github.com/vektorlab/slackcat/releases/download/v0.7/slackcat-0.7-linux-amd64 -O ~/.local/bin/slackchat
+            chmod +x ~/.local/bin/slackchat
+        ;;
+    esac
+}
 
 
 # 5. Platform::Heroku
