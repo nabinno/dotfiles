@@ -6,6 +6,7 @@
 # 1. BasicSettings::PackageManager::Nix
 # 1. BasicSettings::PackageManager::Autoparts
 # 1. BasicSettings::PackageManager::Homebrew
+# 1. BasicSettings::PackageManager::Anyenv
 # 2. ProgrammingLanguage::Ruby
 # 2. ProgrammingLanguage::Elixir
 # 2. ProgrammingLanguage::Go
@@ -117,17 +118,13 @@ export MAILPATH=$HOME/MailBox/postmaster/maildir
 export MANPATH=$HOME/.linuxbrew/share/man:$MANPATH
 export INFOPATH=$HOME/.linuxbrew/share/info:$INFOPATH
 export LD_LIBRARY_PATH=$HOME/.linuxbrew/lib:$LD_LIBRARY_PATH
-export RBENV_ROOT="$HOME/.local/rbenv"
 export PATH=$HOME/bin:$HOME/local/bin:$PATH
 export PATH="/opt/local/bin:$PATH"
 export PATH="/opt/local/sbin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.local/rbenv/bin:$PATH"
 export PATH="$HOME/.local/exenv/bin:$PATH"
-export PATH="$HOME/.local/jenv/bin:$PATH"
-export PATH="$HOME/.local/phpenv/bin:$PATH"
-export PATH="$HOME/.local/pyenv/bin:$PATH"
 export PATH="$HOME/.local/dove/bin:$PATH"
+export PATH="$HOME/.anyenv/bin:$PATH"
 export PATH="$HOME/.parts/autoparts/bin:$PATH"
 export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
 export PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
@@ -471,24 +468,29 @@ function get-brew-packages () {
 if ! type -p brew > /dev/null ; then get-brew ; fi
 
 
+# 1. BasicSettings::PackageManager::Anyenv
+# ----------------------------------------
+function get-anyenv () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            git clone https://github.com/riywo/anyenv ~/.anyenv
+            eval "$(anyenv init -)" ;;
+    esac
+}
+if ! type -p anyenv > /dev/null; then get-anyenv ; fi
+if type -p anyenv > /dev/null; then eval "$(anyenv init -)" ; fi
+
+
 # 2. ProgrammingLanguage::Ruby
 # ----------------------------
 REQUIRED_RUBY_VERSION=2.2.0
 # ### version control ###
 function get-rbenv () {
     case "${OSTYPE}" in
-        freebsd*|darwin*|linux*)
-            get-base
-            rm -fr ~/.local/rbenv
-            git clone git://github.com/sstephenson/rbenv.git ~/.local/rbenv
-            mkdir -p ~/.local/rbenv/shims ~/.local/rbenv/versions ~/.local/rbenv/plugins
-            git clone git://github.com/sstephenson/ruby-build.git       ~/.local/rbenv/plugins/ruby-build
-            git clone git://github.com/sstephenson/rbenv-gem-rehash.git ~/.local/rbenv/plugins/rbenv-gem-rehash
-            eval "$(rbenv init -)" ;;
+        freebsd*|darwin*|linux*) anyenv install rbenv && exec -l zsh ;;
     esac
 }
 if ! type -p rbenv > /dev/null; then get-rbenv ; fi
-if type -p rbenv > /dev/null; then eval "$(rbenv init -)" ; fi
 # ### installation ###
 function get-ruby () {
     case "${OSTYPE}" in
@@ -600,6 +602,13 @@ function get-mix-packages () {
 
 # 2. ProgrammingLanguage::Go
 # --------------------------
+# ### version control ###
+function get-goenv () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*) anyenv install goenv && exec -l zsh ;;
+    esac
+}
+if ! type -p goenv > /dev/null ; then get-goenv ; fi
 function get-go () {
     case "${OSTYPE}" in
         freebsd*) ;;
@@ -628,14 +637,10 @@ export PATH="$PLAY_HOME:$PATH"
 # ### version control ###
 function get-jenv () {
     case "${OSTYPE}" in
-        freebsd*|darwin*|linux*)
-            rm -fr ~/.local/jenv
-            git clone https://github.com/gcuisinier/jenv.git ~/.local/jenv
-            eval "$(jenv init -)" ;;
+        freebsd*|darwin*|linux*) anyenv install jenv && exec -l zsh ;;
     esac
 }
 if ! type -p jenv > /dev/null ; then get-jenv ; fi
-if type -p jenv > /dev/null ; then eval "$(jenv init -)" ; fi
 # ### installation ###
 function get-java () {
     case "${OSTYPE}" in
@@ -706,17 +711,12 @@ fi
 # ### version control ###
 function get-phpenv () {
     case "${OSTYPE}" in
-        freebsd*|darwin*|linux*)
-            rm -fr ~/.local/phpenv
-            git clone https://github.com/phpenv/phpenv.git ~/.local/phpenv
-            mkdir -p ~/.local/phpenv/shims ~/.local/phpenv/versions ~/.local/phpenv/plugins
-            git clone https://github.com/php-build/php-build.git ~/.local/phpenv/plugins/php-build
-            eval "$(phpenv init -)" ;;
+        freebsd*|darwin*|linux*) anyenv install phpenv && exec -l zsh ;;
     esac
 }
 if ! type -p phpenv > /dev/null ; then get-phpenv ; fi
-if type -p phpenv > /dev/null ; then eval "$(phpenv init -)" ; fi
 # ### installation ###
+REQUIRED_JAVA_VERSION=5.6.17
 function get-php () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
@@ -738,6 +738,7 @@ function get-php () {
             esac
     esac
 }
+if ! type -p php > /dev/null; then get-php; fi
 function get-fastcgi () {
     case "${OSTYPE}" in
         linux*)
@@ -843,6 +844,9 @@ exit $RET_VAL'
             esac
     esac
 }
+if [ ! -f /etc/init.d/php-fastcgi ] && [ ! -f /etc/init.d/php-fpm ] && [ ! -f /etc/init.d/php5-fpm ] && ! type -p php-fpm > /dev/null ; then
+    get-fastcgi
+fi
 function php-fastcgid () {
     case "${OSTYPE}" in
         darwin*) ;;
@@ -866,10 +870,6 @@ function fastcgi-restart () {
             php-fastcgid status ;;
     esac
 }
-if ! type -p php > /dev/null; then get-php; fi
-if [ ! -f /etc/init.d/php-fastcgi ] && [ ! -f /etc/init.d/php-fpm ] && [ ! -f /etc/init.d/php5-fpm ] && ! type -p php-fpm > /dev/null ; then
-    get-fastcgi
-fi
 alias fr="fastcgi-restart"
 alias fp="ps aux | \grep -G 'php.*'"
 alias fs="php-fastcgid status"
@@ -882,19 +882,10 @@ REQUIRED_PYTHON_VERSION=2.7.11
 # ### version control ###
 function get-pyenv () {
     case "${OSTYPE}" in
-        freebsd*|darwin*|linux*)
-            rm -fr ~/.local/pyenv
-            git clone git://github.com/yyuu/pyenv.git ~/.local/pyenv
-            git clone git://github.com/yyuu/pyenv-virtualenv.git ~/.local/pyenv/plugins/pyenv-virtualenv
-            cd ~/.local/pyenv/bin/
-            ln -s -t . ~/.local/pyenv/plugins/python-build/bin/*
-            ln -s -t . ~/.local/pyenv/plugins/pyenv-virtualenv/bin/*
-            eval "$(pyenv init -)"
-            eval "$(pyenv virtualenv-init -)" ;;
+        freebsd*|darwin*|linux*) anyenv install pyenv && exec -l zsh ;;
     esac
 }
-if ! type -p pyenv > /dev/null; then get-pyenv ; fi
-if type -p pyenv > /dev/null; then eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)" ; fi
+if ! type -p pyenv > /dev/null ; then get-pyenv ; fi
 # ### installation ###
 function get-python () {
     case "${OSTYPE}" in
@@ -931,37 +922,49 @@ if ! type -p pip > /dev/null ; then get-pip ; fi
 
 # 2. ProgrammingLanguage::Perl
 # ----------------------------
-REQUIRED_PERL_VERSION=5.18
+REQUIRED_PERL_VERSION=5.18.2
+# ### version control ###
+function get-plenv () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*) anyenv install plenv && exec -l zsh ;;
+    esac
+}
+if ! type -p plenv > /dev/null ; then get-plenv ; fi
 # ### installation ###
 function get-perl () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
-            git clone https://github.com/tagomoris/xbuild.git ~/.local/xbuild
-            ~/.local/xbuild/perl-install $REQUIRED_PERL_VERSION.2 ~/.local/perl-$REQUIRED_PERL_VERSION ;;
+            plenv install $REQUIRED_PERL_VERSION
+            plenv rehash
+            plenv global $REQUIRED_PERL_VERSION
+            plenv install-cpanm
     esac
 }
-if [ ! -d ~/.local/xbuild ] ; then get-perl ; fi
+if ! type -p perl > /dev/null ; then get-perl ; fi
 # ### plagger ###
-function get-plagger () {
+function get-global-cpan-packages () {
     cpanm -fi \
-        YAML::Loader \
-        XML::LibXML \
-        XML::LibXML::SAX \
-        XML::LibXML::XPathContext \
-        XML::Liberal \
-        Text::Glob \
-        Module::Runtime \
-        Params::Util \
-        Digest::SHA1 \
-        Class::Load \
-        XML::RSS \
-        XML::RSS::LibXML \
-        XML::RSS::Liberal \
-        XML::Feed \
-        XML::Feed::RSS \
-        XML::Atom \
-        WebService::Bloglines \
-        Plagger
+          # plagger
+          YAML::Loader \
+          XML::LibXML \
+          XML::LibXML::SAX \
+          XML::LibXML::XPathContext \
+          XML::Liberal \
+          Text::Glob \
+          Module::Runtime \
+          Params::Util \
+          Digest::SHA1 \
+          Class::Load \
+          XML::RSS \
+          XML::RSS::LibXML \
+          XML::RSS::Liberal \
+          XML::Feed \
+          XML::Feed::RSS \
+          XML::Atom \
+          WebService::Bloglines \
+          Plagger \
+          # other
+          Carton
 }
 # ### cpan ###
 function cpanmodulelist () {
@@ -973,7 +976,6 @@ function cpanmoduleversion () {
 function cpan-uninstall () {
     perl -MConfig -MExtUtils::Install -e '($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1'
 }
-alias cpanm='~/.local/perl-5.18/bin/cpanm'
 alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 # alias cpan-uninstall='perl -MConfig -MExtUtils::Install -e '"'"'($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1'"'"
 # eval $(perl -I$HOME/.local/lib/perl5 -Mlocal::lib=$HOME/.local)
@@ -992,21 +994,21 @@ alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 # 2. ProgrammingLanguage::Javascript
 # ----------------------------------
 export REQUIRED_NODE_VERSION='4.2.4'
-export NVM_DIR="/home/vagrant/.nvm"
 export node='NODE_NO_READLINE=1 node'
 # ### version control ###
-function get-nvm () {
-    curl https://raw.githubusercontent.com/creationix/nvm/v0.13.1/install.sh | bash
-    [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+function get-ndenv () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*) anyenv install ndenv && exec -l zsh ;;
+    esac
 }
-if [ -s "$NVM_DIR/nvm.sh" ] ; then source "$NVM_DIR/nvm.sh" && nvm use v$REQUIRED_NODE_VERSION > /dev/null ; fi
-if [ ! -s "$NVM_DIR/nvm.sh" ] ; then get-nvm  ; fi
+if ! type -p ndenv > /dev/null ; then get-ndenv ; fi
 # ### installation ###
 function get-node () {
     case "$OSTYPE" in
         linux*)
-            nvm install v$REQUIRED_NODE_VERSION
-            nvm use v$REQUIRED_NODE_VERSION
+            ndenv install v$REQUIRED_NODE_VERSION
+            ndenv rehash
+            ndenv global v$REQUIRED_NODE_VERSION
             get-global-npm-packages ;;
     esac
 }
