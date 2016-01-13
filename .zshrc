@@ -521,13 +521,6 @@ function get-ruby () {
             get-global-gem-packages ;;
     esac
 }
-if ! type -p ruby > /dev/null; then
-    get-ruby
-else
-    _REQUIRED_RUBY_VERSION=$(echo $REQUIRED_RUBY_VERSION | sed 's/\(.*\..*\)\..*/\1/')
-    _CURRENT_RUBY_VERSION=$(ruby -v | cut -f 2 -d " " | sed 's/^\([0-9]\{1,\}\.[0-9]\{1,\}\)\..*/\1/')
-    if [[ $_REQUIRED_RUBY_VERSION > $_CURRENT_RUBY_VERSION ]]; then get-ruby; fi
-fi
 function get-global-gem-packages () {
     gem install \
         bundler \
@@ -539,6 +532,15 @@ function get-global-gem-packages () {
         sidekiq \
         unicorn
 }
+if ! type -p ruby > /dev/null; then
+    get-ruby
+else
+    rm -f ~/.ruby-version
+    rbenv global $REQUIRED_RUBY_VERSION
+    _REQUIRED_RUBY_VERSION=$(echo $REQUIRED_RUBY_VERSION | sed 's/\(.*\..*\)\..*/\1/')
+    _CURRENT_RUBY_VERSION=$(ruby -v | cut -f 2 -d " " | sed 's/^\([0-9]\{1,\}\.[0-9]\{1,\}\)\..*/\1/')
+    if [[ $_REQUIRED_RUBY_VERSION > $_CURRENT_RUBY_VERSION ]]; then get-ruby; fi
+fi
 
 
 # 2. ProgrammingLanguage::Elixir
@@ -626,8 +628,8 @@ if ! type -p go > /dev/null ; then get-go ; fi
 
 # 2. ProgrammingLanguage::Java
 # ----------------------------
-REQUIRED_JAVA_VERSION=1.7.0
 REQUIRED_OPENJDK_VERSION=8u76b00
+REQUIRED_OEPNJDK_SHORT_VERSION=1.8
 REQUIRED_PLAY_VERSION=2.2.3
 export PLAY_HOME=/usr/local/play-$REQUIRED_PLAY_VERSION
 export PATH="$PLAY_HOME:$PATH"
@@ -640,32 +642,36 @@ function get-jenv () {
 if ! type -p jenv > /dev/null ; then get-jenv ; fi
 # ### installation ###
 function get-java () {
-    nix-install openjdk-$REQUIRED_OPENJDK_VERSION
     case "${OSTYPE}" in
-        freebsd*|darwin*) sudo pkg install -y openjdk ;;
+        freebsd*|darwin*)
+            nix-install openjdk-$REQUIRED_OPENJDK_VERSION
+            jenv add ~/.nix-profile
+            jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat)
-                    sudo yum install -y java-$REQUIRED_JAVA_VERSION-openjdk
-                    sudo yum install -y java-$REQUIRED_JAVA_VERSION-openjdk-devel ;;
-                Debian|Ubuntu)
-                    sudo apt-get update
-                    sudo apt-get install -y openjdk-7-jdk ;;
+                Redhat|RedHat|Debian)
+                    nix-install openjdk-$REQUIRED_OPENJDK_VERSION
+                    jenv add ~/.nix-profile
+                    jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        12.04)
+                            sudo apt-get update && sudo apt-get install -y openjdk-8-jdk
+                            jenv add /usr/lib/jvm/java-1.8.0-openjdk-amd64/
+                            jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
+                        14.04)
+                            nix-install openjdk-$REQUIRED_OPENJDK_VERSION
+                            jenv add ~/.nix-profile
+                            jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
+                    esac
             esac
     esac
 }
 function set-javahome () {
     case "${OSTYPE}" in
-        freebsd*|darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat)
-                    export JAVA_HOME=/usr/lib/jvm/java-$REQUIRED_JAVA_VERSION
-                    jenv add `echo $JAVA_HOME`;;
-                Debian|Ubuntu)
-                    export JAVA_HOME=/usr/lib/jvm/default-java
-                    jenv add `echo $JAVA_HOME`;;
-            esac
+        freebsd*|darwin*|linux*)
+            export JAVA_HOME=~/.nix-profile
+            jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
     esac
 }
 function get-play () {
@@ -693,19 +699,9 @@ function get-sbt () {
             esac
     esac
 }
-if ! type -p java > /dev/null; then
-    get-java
-    set-javahome
-else
-    _REQUIRED_JAVA_VERSION=$(echo $REQUIRED_JAVA_VERSION | sed 's/\(.*\..*\)\..*/\1/')
-    _CURRENT_JAVA_VERSION=$(java -version 2>&1 | head -n 1 | cut -d\" -f 2 | sed 's/\(.*\..*\)\..*/\1/')
-    if [[ $_REQUIRED_JAVA_VERSION > $_CURRENT_JAVA_VERSION ]] ; then get-java; fi
-    set-javahome
-fi
-if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ] ; then
-    get-play
-    get-sbt
-fi
+if ! type -p java > /dev/null ; then get-java && set-javahome ; fi
+if type -p java > /dev/null ; then set-javahome ; fi
+if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ] ; then get-play && get-sbt ; fi
 
 
 # 2. ProgrammingLanguage::Php
@@ -965,15 +961,9 @@ function get-global-cpan-packages () {
           Carton
 }
 # ### cpan ###
-function cpanmodulelist () {
-    perl -e "print \"@INC\"" | find -name "*.pm" -print
-}
-function cpanmoduleversion () {
-    perl -M$1 -le "print \$$1::VERSION"
-}
-function cpan-uninstall () {
-    perl -MConfig -MExtUtils::Install -e '($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1'
-}
+function cpanmodulelist () { perl -e "print \"@INC\"" | find -name "*.pm" -print }
+function cpanmoduleversion () { perl -M$1 -le "print \$$1::VERSION" }
+function cpan-uninstall () { perl -MConfig -MExtUtils::Install -e '($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1' }
 alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 # alias cpan-uninstall='perl -MConfig -MExtUtils::Install -e '"'"'($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1'"'"
 # eval $(perl -I$HOME/.local/lib/perl5 -Mlocal::lib=$HOME/.local)
@@ -1024,90 +1014,56 @@ function get-global-npm-packages () {
         requirejs \
         tern
 }
-if [ ! -f "$NVM_DIR/v$REQUIRED_NODE_VERSION/bin/npm" ] ; then get-node  ; fi
+if ! type -p npm > /dev/null ; then get-node ; fi
+if type -p npm > /dev/null ; then ndenv global v$REQUIRED_NODE_VERSION ; fi
 
 
 # 2. ProgrammingLanguage::RemoteProcedureCall
 # -------------------------------------------
 function get-protobuf () {
     case "${OSTYPE}" in
-        freebsd*) ;;
-        darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) ;;
-                Ubuntu) case "$DIST_VERSION" in (12.04) parts install protobuf ;; esac
-            esac
+        freebsd*|darwin*|linux*) nix-install protobuf-2.6.1 ;;
     esac
 }
 function get-thrift () {
     case "${OSTYPE}" in
-        freebsd*) ;;
-        darwin*) brew install thrift ;;
-        linux*)
-            # pre proc
-            case "${DIST}" in
-                Redhat|RedHat)
-                    sudo yum -y groupinstall "Development Tools"
-                    sudo yum install -y libevent-devel zlib-devel openssl-devel
-                    gnu-get automake-1.14 bison-2.5.1 ;;
-                Debian|Ubuntu)
-                    sudo apt-get install -y \
-                         libevent-dev \
-                         automake \
-                         libtool \
-                         flex \
-                         bison \
-                         pkg-config \
-                         g++ \
-                         libssl-dev \
-                         ant \
-                         libmono-dev \
-                         ruby1.8-dev \
-                         libcommons-lang-java \
-                         php5-dev ;;
-            esac
-            get-autoconf
-            get-boost
-            # main proc
-            git clone https://git-wip-us.apache.org/repos/asf/thrift.git
-            cd thrift
-            ./bootstrap.sh
-            ./configure --with-lua=no
-            make
-            sudo make install
-            cd ..
-            rm -fr thrift ;;
+        freebsd*|darwin*|linux*) nix-install thrift-0.9.2 ;;
     esac
 }
+if ! type -p protoc > /dev/null ; then get-protobuf ; fi
+if ! type -p thrift > /dev/null ; then get-thrift ; fi
 
 
 # 3. Daemon::Database::Postgresql
 # -------------------------------
+REQUIRED_POSTGRESQL_VERSION=9.4.5
 # ### installation ###
 function get-postgresql () {
     case "${OSTYPE}" in
-        darwin*) ;;
+        darwin*) nix-install postgresql-$REQUIRED_POSTGRESQL_VERSION ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat) ;;
-                Debian) ;;
+                Redhat|RedHat|Debian) nix-install postgresql-$REQUIRED_POSTGRESQL_VERSION ;;
                 Ubuntu)
                     case "${DIST_VERSION}" in
                         12.04) parts install postgresql ;;
-                        14.04) ;;
+                        14.04) nix-install postgresql-$REQUIRED_POSTGRESQL_VERSION ;;
                     esac
             esac
     esac
 }
 if ! type -p psql > /dev/null ; then get-postgresql ; fi
 function pg-restart () {
-    sudo killall postgresql $1; wait
     case "${OSTYPE}" in
-        darwin*) brew install postgresql ;;
+        darwin*)
+            sudo service postgresql stop
+            sudo service postgresql start
+            sudo service postgresql status ;;
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
+                    sudo service postgresql stop
+                    sudo service postgresql start
                     sudo service postgresql restart
                     sudo service postgresql status ;;
                 Debian) ;;
@@ -1117,127 +1073,95 @@ function pg-restart () {
                             parts restart postgresql
                             parts status postgresql ;;
                         14.04)
-                            sudo /etc/init.d/postgresql restart
-                            sudo /etc/init.d/postgresql status ;;
+                            sudo service postgresql stop
+                            sudo service postgresql start
+                            sudo service postgresql status ;;
                     esac
             esac
     esac
 }
 alias pgr="pg-restart"
 alias pgp="ps aux | \grep -G 'postgresql.*'"
-alias pgs="sudo /etc/init.d/postgresql status"
+alias pgs="sudo service postgresql status"
 alias pgk="sudo killall postgresql"
 
 
 # 3. Daemon::Database::Mysql
 # --------------------------
-REQUIRED_MYSQL_VERSION=5.6
+REQUIRED_MYSQL_VERSION=5.5.45
 # ### installation ###
 function get-mysql () {
     case "${OSTYPE}" in
-        darwin*) brew install mysql ;;
+        darwin*) nix-install mysql-$REQUIRED_MYSQL_VERSION ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat) ;;
-                Debian) ;;
+                Redhat|RedHat|Debian) nix-install mysql-$REQUIRED_MYSQL_VERSION ;;
                 Ubuntu)
-                    sudo apt-get -y remove mysql-server
-                    sudo apt-get -y autoremove
-                    sudo apt-get -y install software-properties-common
-                    sudo add-apt-repository -y ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
-                    sudo apt-get update
-                    sudo apt-get -y install mysql-server ;;
+                    case $DIST_VERSION in
+                        12.04)
+                            sudo apt-get -y remove mysql-server
+                            sudo apt-get -y autoremove
+                            sudo apt-get -y install software-properties-common
+                            sudo add-apt-repository -y ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
+                            sudo apt-get update
+                            sudo apt-get -y install mysql-server ;;
+                        14.04) nix-install mysql-$REQUIRED_MYSQL_VERSION ;;
+                    esac
             esac
     esac
 }
 if ! type -p mysql > /dev/null ; then get-mysql ; fi
 function my-restart () {
-    sudo killall mysqld $1; wait
     case "${OSTYPE}" in
-        darwin*) ;;
+        darwin*)
+            sudo service mysql stop
+            sudo service mysql start
+            sudo service mysql status ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat)
-                    sudo service mysql restart
+                Redhat|RedHat|Debian)
+                    sudo service mysql stop
+                    sudo service mysql start
                     sudo service mysql status ;;
-                Debian|Ubuntu)
-                    sudo /etc/init.d/mysql restart
-                    sudo /etc/init.d/mysql status ;;
-            esac
-    esac
-}
-function my-status () {
-    case "${OSTYPE}" in
-        darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) sudo service mysql status ;;
-                Debian|Ubuntu) sudo /etc/init.d/mysql status ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        12.04)
+                            sudo /etc/init.d/mysql restart
+                            sudo /etc/init.d/mysql status ;;
+                        14.04)
+                            sudo service mysql stop
+                            sudo service mysql start
+                            sudo service mysql status ;;
+                    esac
             esac
     esac
 }
 alias mr="my-restart"
 alias mp="ps aux | \grep -G 'mysql.*'"
-alias ms="my-status"
+alias ms="sudo service mysql status"
 alias mk="sudo killall mysqld"
 
 
 # 3. Daemon::Database::Redis
 # --------------------------
+REQUIRED_REDIS_VERSION=3.0.2
 # ### installation ###
 function get-redis () {
     case "${OSTYPE}" in
-        darwin*) brew install redis ;;
+        darwin*)
+            nix-install redis-$REQUIRED_REDIS_VERSION
+            nohup redis-server >/dev/null 2>&1 </dev/null & ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat) ;;
-                Debian)
-                    sudo apt-get update
-                    sudo apt-get install -y \
-                         build-essential \
-                         tcl8.5
-                    wget http://download.redis.io/releases/redis-stable.tar.gz
-                    tar xzf redis-stable.tar.gz
-                    cd redis-stable
-                    make && make test && sudo make install
-                    sudo mkdir /etc/redis
-                    sudo mkdir /var/redis
-                    sudo cp -f utils/redis_init_script /etc/init.d/redis_6379
-                    sudo cp -f redis.conf /etc/redis/6379.conf
-                    sudo mkdir /var/redis/6379
-                    sudo update-rc.d redis_6379 defaults
-                    sudo sed -i 's|daemonize no|daemonize yes|g' /etc/redis/6379.conf
-                    sudo sed -i 's|pidfile /var/run/redis.pid|pidfile /var/run/redis_6379.pid|g' /etc/redis/6379.conf
-                    sudo sed -i 's|logfile ""|logfile "/var/log/redis_6379.log"|g' /etc/redis/6379.conf
-                    sudo sed -i 's|dir \./|dir /var/redis/6379|g' /etc/redis/6379.conf
-                    sudo sed -i 's|# bind 127.0.0.1|bind 127.0.0.1|g' /etc/redis/6379.conf
-                    cd ..
-                    rm -fr redis-stable ;;
+                Redhat|RedHat|Debian)
+                    nix-install redis-$REQUIRED_REDIS_VERSION
+                    nohup redis-server >/dev/null 2>&1 </dev/null & ;;
                 Ubuntu)
                     case "${DIST_VERSION}" in
                         12.04) parts install redis ;;
                         14.04)
-                            sudo apt-get update
-                            sudo apt-get install -y \
-                                 build-essential \
-                                 tcl8.5
-                            wget http://download.redis.io/releases/redis-stable.tar.gz
-                            tar xzf redis-stable.tar.gz
-                            cd redis-stable
-                            make && make test && sudo make install
-                            sudo mkdir /etc/redis
-                            sudo mkdir /var/redis
-                            sudo cp -f utils/redis_init_script /etc/init.d/redis_6379
-                            sudo cp -f redis.conf /etc/redis/6379.conf
-                            sudo mkdir /var/redis/6379
-                            sudo update-rc.d redis_6379 defaults
-                            sudo sed -i 's|daemonize no|daemonize yes|g' /etc/redis/6379.conf
-                            sudo sed -i 's|pidfile /var/run/redis.pid|pidfile /var/run/redis_6379.pid|g' /etc/redis/6379.conf
-                            sudo sed -i 's|logfile ""|logfile "/var/log/redis_6379.log"|g' /etc/redis/6379.conf
-                            sudo sed -i 's|dir \./|dir /var/redis/6379|g' /etc/redis/6379.conf
-                            sudo sed -i 's|# bind 127.0.0.1|bind 127.0.0.1|g' /etc/redis/6379.conf
-                            cd ..
-                            rm -fr redis-stable ;;
+                            nix-install redis-$REQUIRED_REDIS_VERSION
+                            nohup redis-server >/dev/null 2>&1 </dev/null & ;;
                     esac
             esac
     esac
@@ -1252,10 +1176,7 @@ function redis-restart () {
                 Redhat|RedHat)
                     sudo service redis restart
                     sudo service redis status ;;
-                Debian|Ubuntu)
-                    sudo /etc/init.d/redis_6379 stop
-                    sudo /etc/init.d/redis_6379 start
-                    sudo /etc/init.d/redis_6379 status ;;
+                Debian|Ubuntu) ;;
             esac
     esac
 }
@@ -1265,7 +1186,7 @@ function redis-stop () {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat) sudo service redis stop ;;
-                Debian|Ubuntu) sudo /etc/init.d/redis_6379 stop ;;
+                Debian|Ubuntu) ;;
             esac
     esac
 }
@@ -1276,58 +1197,23 @@ alias rdk="redis-stop"
 
 # 3. Daemon::HttpServer::Nginx
 # ----------------------------
+REQUIRED_NGINX_VERSION=1.9.9
 funtion get-nginx () {
     case "${OSTYPE}" in
-        darwin*)
-            brew tap homebrew/nginx
-            brew install nginx-full --with-status --with-upload-module
-            brew unlink nginx
-            brew link nginx-full ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat)
-                    sudo yum install -y \
-                         pcre \
-                         pcre-devel \
-                         zlib \
-                         zlib-devel \
-                         openssl \
-                         openssl-devel \
-                         gcc
-                    sudo useradd -s/sbin/nologin -d/usr/local/nginx -M nginx
-                    sudo rpm -ivh http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
-                    sudo yum install nginx --disablerepo=amzn-main -y
-                    sudo chkconfig nginx on
-                    echo "priority=1" >> /etc/yum.repos.d/nginx.repo ;;
-            esac
+        darwin*|linux*) nix-install nginx-$REQUIRED_NGINX_VERSION ;;
     esac
 }
 function nginx-restart () {
     case "${OSTYPE}" in
-        darwin*)
+        darwin*|linux*)
             sudo nginx -s reload
             sudo nginx -s status ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat)
-                    sudo service nginx restart
-                    sudo service nginx status ;;
-                Ubuntu)
-                    case "${DIST_VERSION=}" in
-                        12.04)
-                            sudo /etc/init.d/nginx restart
-                            sudo /etc/init.d/nginx status ;;
-                        14.04)
-                            sudo service nginx restart
-                            sudo service nginx status
-                    esac
-            esac
     esac
 }
 if ! type -p nginx > /dev/null; then get-nginx; fi
 alias nr="nginx-restart"
 alias np="ps aux | \grep -G 'nginx.*'"
-alias ns="sudo /etc/init.d/nginx status"
+alias ns="sudo nginx -s status"
 alias nk="sudo killall nginx"
 
 
@@ -1367,24 +1253,21 @@ function get-mu () {
             case "${DIST}" in
                 Debian) ;;
                 Ubuntu)
-                    case "${DIST_VERSION}" in
-                        12.04)
-                            sudo apt-get install -y \
-                                 libgmime-2.6-dev \
-                                 libxapian-dev \
-                                 gnutls-bin \
-                                 guile-2.0-dev \
-                                 html2text \
-                                 xdg-utils \
-                                 offlineimap
-                            \git clone https://github.com/djcb/mu
-                            cd mu
-                            sudo autoreconf -i
-                            ./configure && make
-                            sudo make install
-                            cd .. && sudo rm -fr mu
-                            ln -s /usr/local/share/emacs/site-lisp/mu4e $HOME/.emacs.d/site-lisp/ ;;
-                    esac
+                    sudo apt-get install -y \
+                         libgmime-2.6-dev \
+                         libxapian-dev \
+                         gnutls-bin \
+                         guile-2.0-dev \
+                         html2text \
+                         xdg-utils \
+                         offlineimap
+                    \git clone https://github.com/djcb/mu
+                    cd mu
+                    sudo autoreconf -i
+                    ./configure && make
+                    sudo make install
+                    cd .. && sudo rm -fr mu
+                    ln -s /usr/local/share/emacs/site-lisp/mu4e $HOME/.emacs.d/site-lisp/ ;;
             esac
     esac
 }
@@ -2068,19 +1951,14 @@ function get-slackchat () {
 # -------------------
 function get-heroku () {
     case "${OSTYPE}" in
-        freebsd*) ;;
-        darwin*) ;;
+        freebsd*|darwin*) nix-install heroku-3.42.20 ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat) ;;
-                Debian) ;;
+                Redhat|RedHat|Debian) nix-install heroku-3.42.20 ;;
                 Ubuntu)
-                    case "$DIST_VERSION" in
-                        12.04) parts install \
-                                     heroku_toolbelt \
-                                     hk ;;
-                        14.04) ;;
-                    esac
+                    parts install \
+                          heroku_toolbelt \
+                          hk ;;
             esac
     esac
 }
