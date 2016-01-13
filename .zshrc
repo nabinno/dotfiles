@@ -377,18 +377,26 @@ function gnu-get () {
 # -------------------------------------
 function get-nix () {
     case "${OSTYPE}" in
-        darwin*|linux*)
-            cd ~
-            curl https://nixos.org/nix/install | sh
-            nix-channel --add http://nixos.org/channels/nixpkgs-unstable
-            nix-channel --update
-            sudo groupadd -g 20000 nixbld
-            for i in `seq 1 10` ; do
-                sudo useradd -u `expr 20000 + $i` -g nixbld -c "Nix build user $i" -d /var/empty -s /noshell
-            done
-            sudo echo "build-users-group = nixbld" >> /etc/nix/nix.conf
-            sudo chown -R vagrant /nix
-            source ~/.nix-profile/etc/profile.d/nix.sh ;;
+        darwin*) cd ~ && curl https://nixos.org/nix/install | sh ;;
+        linux*)
+            case $DIST in
+                Redhat|RedHat|Debian) cd ~ && curl https://nixos.org/nix/install | sh ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        14.04) cd ~ && curl https://nixos.org/nix/install | sh ;;
+                        12.04)
+                            cd ~ && curl https://nixos.org/nix/install | sh
+                            nix-channel --add http://nixos.org/channels/nixpkgs-unstable
+                            nix-channel --update
+                            sudo groupadd -g 20000 nixbld
+                            for i in `seq 1 10` ; do
+                                sudo useradd -u `expr 20000 + $i` -g nixbld -c "Nix build user $i" -d /var/empty -s /noshell
+                            done
+                            sudo echo "build-users-group = nixbld" >> /etc/nix/nix.conf
+                            sudo chown -R vagrant /nix
+                            source ~/.nix-profile/etc/profile.d/nix.sh ;;
+                    esac
+            esac
     esac
 }
 function get-nix-packages () {
@@ -405,10 +413,11 @@ function get-nix-packages () {
 }
 if [ -f ~/.nix-profile/etc/profile.d/nix.sh ] ; then source ~/.nix-profile/etc/profile.d/nix.sh ; fi
 if [ ! -f ~/.nix-profile/etc/profile.d/nix.sh ] ; then get-nix ; fi
-alias nix-install='sudo nix-env --install '
-alias nix-uninstall='sudo nix-env --uninstall '
-alias nix-search='sudo nix-env -qa | \grep '
-alias nix-list='sudo nix-env -q --installed'
+if [ "$OSTYPE" = "linux*" ] && [ "$DIST" = "Ubuntu"] && [ "$DIST_VERSION" = "12.04" ] ; then alias nix-env='sudo nix-env' ; fi
+alias nix-install='nix-env --install '
+alias nix-uninstall='nix-env --uninstall '
+alias nix-search='nix-env -qa | \grep '
+alias nix-list='nix-env -q --installed'
 
 
 # 1. BasicSettings::PackageManager::Autoparts
