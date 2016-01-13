@@ -380,6 +380,13 @@ function get-nix () {
         darwin*|linux*)
             cd ~
             curl https://nixos.org/nix/install | sh
+            nix-channel --add http://nixos.org/channels/nixpkgs-unstable
+            nix-channel --update
+            sudo groupadd -g 20000 nixbld
+            for i in `seq 1 10` ; do
+                sudo useradd -u `expr 20000 + $i` -g nixbld -c "Nix build user $i" -d /var/empty -s /noshell
+            done
+            sudo echo "build-users-group = nixbld" >> /etc/nix/nix.conf
             sudo chown -R vagrant /nix
             source ~/.nix-profile/etc/profile.d/nix.sh ;;
     esac
@@ -398,6 +405,10 @@ function get-nix-packages () {
 }
 if [ -f ~/.nix-profile/etc/profile.d/nix.sh ] ; then source ~/.nix-profile/etc/profile.d/nix.sh ; fi
 if [ ! -f ~/.nix-profile/etc/profile.d/nix.sh ] ; then get-nix ; fi
+alias nix-install='sudo nix-env --install '
+alias nix-uninstall='sudo nix-env --uninstall '
+alias nix-search='sudo nix-env -qa | \grep '
+alias nix-list='sudo nix-env -q --installed'
 
 
 # 1. BasicSettings::PackageManager::Autoparts
@@ -494,43 +505,19 @@ if ! type -p rbenv > /dev/null; then get-rbenv ; fi
 # ### installation ###
 function get-ruby () {
     case "${OSTYPE}" in
-        freebsd*|darwin*)
+        freebsd*|darwin*|linux*)
             rbenv install $REQUIRED_RUBY_VERSION
             rbenv rehash
             rbenv global $REQUIRED_RUBY_VERSION
             get-global-gem-packages ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat|Debian)
-                    rbenv install $REQUIRED_RUBY_VERSION
-                    rbenv rehash
-                    rbenv global $REQUIRED_RUBY_VERSION
-                    get-global-gem-packages ;;
-                Ubuntu)
-                    case "$DIST_VERSION" in
-                        12.04)
-                            parts install \
-                                  ruby2.2 \
-                                  ruby2.1 \
-                                  chruby \
-                                  ruby_install
-                            exec -l $SHELL
-                            get-global-gem-packages ;;
-                        14.04)
-                            rbenv install $REQUIRED_RUBY_VERSION
-                            rbenv rehash
-                            rbenv global $REQUIRED_RUBY_VERSION
-                            get-global-gem-packages ;;
-                    esac
-            esac
     esac
 }
 if ! type -p ruby > /dev/null; then
     get-ruby
 else
-    REQUIRED_RUBY_VERSION=$(echo $REQUIRED_RUBY_VERSION | sed 's/\(.*\..*\)\..*/\1/')
-    CURRENT_RUBY_VERSION=$(ruby -v | cut -f 2 -d " " | sed 's/^\([0-9]\{1,\}\.[0-9]\{1,\}\)\..*/\1/')
-    if [[ $REQUIRED_RUBY_VERSION > $CURRENT_RUBY_VERSION ]]; then get-ruby; fi
+    _REQUIRED_RUBY_VERSION=$(echo $REQUIRED_RUBY_VERSION | sed 's/\(.*\..*\)\..*/\1/')
+    _CURRENT_RUBY_VERSION=$(ruby -v | cut -f 2 -d " " | sed 's/^\([0-9]\{1,\}\.[0-9]\{1,\}\)\..*/\1/')
+    if [[ $_REQUIRED_RUBY_VERSION > $_CURRENT_RUBY_VERSION ]]; then get-ruby; fi
 fi
 function get-global-gem-packages () {
     gem install \
@@ -695,9 +682,9 @@ if ! type -p java > /dev/null; then
     get-java
     set-javahome
 else
-    REQUIRED_JAVA_VERSION=$(echo $REQUIRED_JAVA_VERSION | sed 's/\(.*\..*\)\..*/\1/')
-    CURRENT_JAVA_VERSION=$(java -version 2>&1 | head -n 1 | cut -d\" -f 2 | sed 's/\(.*\..*\)\..*/\1/')
-    if [[ $REQUIRED_JAVA_VERSION > $CURRENT_JAVA_VERSION ]] ; then get-java; fi
+    _REQUIRED_JAVA_VERSION=$(echo $REQUIRED_JAVA_VERSION | sed 's/\(.*\..*\)\..*/\1/')
+    _CURRENT_JAVA_VERSION=$(java -version 2>&1 | head -n 1 | cut -d\" -f 2 | sed 's/\(.*\..*\)\..*/\1/')
+    if [[ $_REQUIRED_JAVA_VERSION > $_CURRENT_JAVA_VERSION ]] ; then get-java; fi
     set-javahome
 fi
 if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ] ; then
@@ -716,10 +703,11 @@ function get-phpenv () {
 }
 if ! type -p phpenv > /dev/null ; then get-phpenv ; fi
 # ### installation ###
-REQUIRED_JAVA_VERSION=5.6.17
+REQUIRED_PHP_VERSION=5.6.16
 function get-php () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
+            nix-install php-5.6.16
             case "${DIST}" in
                 Debian)
                     sudo apt-get update
@@ -1162,16 +1150,9 @@ function my-restart () {
                 Redhat|RedHat)
                     sudo service mysql restart
                     sudo service mysql status ;;
-                Debian)
+                Debian|Ubuntu)
                     sudo /etc/init.d/mysql restart
                     sudo /etc/init.d/mysql status ;;
-                Ubuntu)
-                    case "${DIST_VERSION}" in
-                        12.04) parts restart mysql
-                               parts status mysql ;;
-                        14.04) sudo /etc/init.d/mysql restart
-                               sudo /etc/init.d/mysql status ;;
-                    esac
             esac
     esac
 }
@@ -1181,12 +1162,7 @@ function my-status () {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat) sudo service mysql status ;;
-                Debian)        sudo /etc/init.d/mysql status ;;
-                Ubuntu)
-                    case "${DIST_VERSION}" in
-                        12.04) parts status mysql ;;
-                        14.04) sudo /etc/init.d/mysql status ;;
-                    esac
+                Debian|Ubuntu) sudo /etc/init.d/mysql status ;;
             esac
     esac
 }
@@ -1371,8 +1347,8 @@ function get-emacs () {
 if ! type -p emacs > /dev/null; then
    get-emacs
 else
-    CURRENT_EMACS_VERSION=$(emacs --version | head -n 1 | sed 's/GNU Emacs //' | awk '$0 = substr($0, 1, index($0, ".") + 1)')
-    if [[ $REQUIRED_EMACS_VERSION > $CURRENT_EMACS_VERSION ]]; then get-emacs; fi
+    _CURRENT_EMACS_VERSION=$(emacs --version | head -n 1 | sed 's/GNU Emacs //' | awk '$0 = substr($0, 1, index($0, ".") + 1)')
+    if [[ $_REQUIRED_EMACS_VERSION > $_CURRENT_EMACS_VERSION ]]; then get-emacs; fi
 fi
 # ### mu4e ###
 function get-mu () {
@@ -1489,9 +1465,9 @@ function get-git-flow () {
 if ! type -p git > /dev/null; then
     get-git
 else
-    REQUIRED_GIT_VERSION_NUM=$(echo $REQUIRED_GIT_VERSION | sed 's/\(.*\..*\)\..*/\1/')
-    CURRENT_GIT_VERSION=$(git --version 2>&1 | cut -d\  -f 3 | sed 's/\(.*\..*\)\..*/\1/')
-    if [[ $REQUIRED_GIT_VERSION_NUM > $CURRENT_GIT_VERSION ]]; then get-git; fi
+    _REQUIRED_GIT_VERSION_NUM=$(echo $REQUIRED_GIT_VERSION | sed 's/\(.*\..*\)\..*/\1/')
+    _CURRENT_GIT_VERSION=$(git --version 2>&1 | cut -d\  -f 3 | sed 's/\(.*\..*\)\..*/\1/')
+    if [[ $_REQUIRED_GIT_VERSION_NUM > $_CURRENT_GIT_VERSION ]]; then get-git; fi
 fi
 # ### hub ###
 function get-hub () {
