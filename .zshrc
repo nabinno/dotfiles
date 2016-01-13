@@ -627,6 +627,7 @@ if ! type -p go > /dev/null ; then get-go ; fi
 # 2. ProgrammingLanguage::Java
 # ----------------------------
 REQUIRED_JAVA_VERSION=1.7.0
+REQUIRED_OPENJDK_VERSION=8u76b00
 REQUIRED_PLAY_VERSION=2.2.3
 export PLAY_HOME=/usr/local/play-$REQUIRED_PLAY_VERSION
 export PATH="$PLAY_HOME:$PATH"
@@ -639,6 +640,7 @@ function get-jenv () {
 if ! type -p jenv > /dev/null ; then get-jenv ; fi
 # ### installation ###
 function get-java () {
+    nix-install openjdk-$REQUIRED_OPENJDK_VERSION
     case "${OSTYPE}" in
         freebsd*|darwin*) sudo pkg install -y openjdk ;;
         linux*)
@@ -657,8 +659,12 @@ function set-javahome () {
         freebsd*|darwin*) ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat) export JAVA_HOME=/usr/lib/jvm/java-$REQUIRED_JAVA_VERSION ;;
-                Debian|Ubuntu) export JAVA_HOME=/usr/lib/jvm/default-java ;;
+                Redhat|RedHat)
+                    export JAVA_HOME=/usr/lib/jvm/java-$REQUIRED_JAVA_VERSION
+                    jenv add `echo $JAVA_HOME`;;
+                Debian|Ubuntu)
+                    export JAVA_HOME=/usr/lib/jvm/default-java
+                    jenv add `echo $JAVA_HOME`;;
             esac
     esac
 }
@@ -715,22 +721,17 @@ if ! type -p phpenv > /dev/null ; then get-phpenv ; fi
 REQUIRED_PHP_VERSION=5.6.16
 function get-php () {
     case "${OSTYPE}" in
-        freebsd*|darwin*|linux*)
-            nix-install php-5.6.16
+        freebsd*|darwin*) nix-install php-$REQUIRED_PHP_VERSION ;;
+        linux*)
             case "${DIST}" in
-                Debian)
-                    sudo apt-get update
-                    sudo apt-get install -y php5-common php5-cli php5-fpm ;;
+                Debian) nix-install php-$REQUIRED_PHP_VERSION ;;
                 Ubuntu)
                     case "$DIST_VERSION" in
-                        12.04)
-                            parts install \
-                                  php5 \
-                                  composer \
-                                  phpunit ;;
-                        14.04)
-                            sudo apt-get update
-                            sudo apt-get install -y php5-common php5-cli php5-fpm ;;
+                        12.04) parts install \
+                                     php5 \
+                                     composer \
+                                     phpunit ;;
+                        14.04) nix-install php-$REQUIRED_PHP_VERSION ;;
                     esac
             esac
     esac
