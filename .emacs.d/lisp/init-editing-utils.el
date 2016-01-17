@@ -186,6 +186,12 @@
 
 (global-set-key (kbd "C-M-<backspace>") 'kill-back-to-indentation)
 
+;;----------------------------------------------------------------------------
+;; Visual regexp
+;;----------------------------------------------------------------------------
+(require-package 'visual-regexp)
+(define-key global-map (kbd "C-M-r") 'vr/replace)
+(define-key global-map (kbd "C-M-m") 'vr/mc-mark)
 
 ;;----------------------------------------------------------------------------
 ;; Page break lines
