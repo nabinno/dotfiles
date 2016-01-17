@@ -94,6 +94,14 @@
     ))
 
 
+;;; Git grep
+(require-package 'helm-git-grep)
+(global-set-key (kbd "C-c ; G") 'helm-git-grep)
+(define-key isearch-mode-map (kbd "C-c ; G") 'helm-git-grep-from-isearch)
+(eval-after-load 'helm
+  '(define-key helm-map (kbd "C-c ; G") 'helm-git-grep-from-helm))
+
+
 ;; Convenient binding for vc-git-grep
 (global-set-key (kbd "C-x v f") 'vc-git-grep)
 
