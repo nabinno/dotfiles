@@ -6,6 +6,7 @@
 # 1. BasicSettings::PackageManager::Nix
 # 1. BasicSettings::PackageManager::Autoparts
 # 1. BasicSettings::PackageManager::Homebrew
+# 1. BasicSettings::PackageManager::WindowsManagementFramework
 # 1. BasicSettings::PackageManager::Anyenv
 # 2. ProgrammingLanguage::Ruby
 # 2. ProgrammingLanguage::Elixir
@@ -141,10 +142,8 @@ function get-ntp () {
     case "${OSTYPE}" in
         linux*)
             case "${DIST}" in
-                Redhat|RedHat)
-                    sudo yum install -y ntp ;;
-                Debian|Ubuntu)
-                    sudo apt-get install -y ntp ;;
+                Redhat|RedHat) sudo yum install -y ntp ;;
+                Debian|Ubuntu) sudo apt-get install -y ntp ;;
             esac
     esac
 }
@@ -486,6 +485,37 @@ function get-brew-packages () {
     esac
 }
 if ! type -p brew > /dev/null ; then get-brew ; fi
+
+
+# 1. BasicSettings::PackageManager::WindowsManagementFramework
+# ------------------------------------------------------------
+if [ "$OSTYPE" = "cygwin*" ] ; then
+    alias get-package='powershell /c get-package'
+    alias get-packageprovider='powershell /c get-packageprovider'
+    alias find-package='powershell /c find-package'
+    alias install-package='powershell /c install-package'
+    alias uninstall-package='powershell /c uninstall-package'
+    function get-wmf () {
+        find-package && get-packageprovider -name chocolatey
+    }
+    function get-global-wmf-packages () {
+        install-package -name \
+                        FoxitReader \
+                        GoogleChrome \
+                        Gpg4win \
+                        InkScape \
+                        IrfanView \
+                        WinSplitRevolution \
+                        autohotkey \
+                        googledrive \
+                        cygwin \
+                        terminals \
+                        vagrant \
+                        xmind \
+                        xyzzy \
+                        zoomit
+    }
+fi
 
 
 # 1. BasicSettings::PackageManager::Anyenv
