@@ -1074,11 +1074,7 @@ function get-postgresql () {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat|Debian) nix-install postgresql-$REQUIRED_POSTGRESQL_VERSION ;;
-                Ubuntu)
-                    case "${DIST_VERSION}" in
-                        12.04) parts install postgresql ;;
-                        14.04) nix-install postgresql-$REQUIRED_POSTGRESQL_VERSION ;;
-                    esac
+                Ubuntu) parts install postgresql ;;
             esac
     esac
 }
@@ -1094,25 +1090,28 @@ function pg-restart () {
                 Redhat|RedHat)
                     sudo service postgresql stop
                     sudo service postgresql start
-                    sudo service postgresql restart
                     sudo service postgresql status ;;
                 Debian) ;;
                 Ubuntu)
-                    case "${DIST_VERSION}" in
-                        12.04)
-                            parts restart postgresql
-                            parts status postgresql ;;
-                        14.04)
-                            sudo service postgresql stop
-                            sudo service postgresql start
-                            sudo service postgresql status ;;
-                    esac
+                    parts restart postgresql
+                    parts status postgresql ;;
+            esac
+    esac
+}
+function pg-status () {
+    case "${OSTYPE}" in
+        darwin*) sudo service postgresql status ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) sudo service postgresql status ;;
+                Debian) ;;
+                Ubuntu) parts status postgresql ;;
             esac
     esac
 }
 alias pgr="pg-restart"
 alias pgp="ps aux | \grep -G 'postgresql.*'"
-alias pgs="sudo service postgresql status"
+alias pgs="pg-status"
 alias pgk="sudo killall postgresql"
 
 
@@ -1186,13 +1185,7 @@ function get-redis () {
                 Redhat|RedHat|Debian)
                     nix-install redis-$REQUIRED_REDIS_VERSION
                     nohup redis-server >/dev/null 2>&1 </dev/null & ;;
-                Ubuntu)
-                    case "${DIST_VERSION}" in
-                        12.04) parts install redis ;;
-                        14.04)
-                            nix-install redis-$REQUIRED_REDIS_VERSION
-                            nohup redis-server >/dev/null 2>&1 </dev/null & ;;
-                    esac
+                Ubuntu) parts install redis ;;
             esac
     esac
 }
@@ -1206,7 +1199,10 @@ function redis-restart () {
                 Redhat|RedHat)
                     sudo service redis restart
                     sudo service redis status ;;
-                Debian|Ubuntu) ;;
+                Debian) ;;
+                Ubuntu)
+                    parts restart redis
+                    parts status redis ;;
             esac
     esac
 }
@@ -1216,12 +1212,25 @@ function redis-stop () {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat) sudo service redis stop ;;
-                Debian|Ubuntu) ;;
+                Debian) ;;
+                Ubuntu) parts stop redis ;;
+            esac
+    esac
+}
+function redis-status () {
+    case "${OSTYPE}" in
+        darwin*) ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) sudo service redis status ;;
+                Debian) ;;
+                Ubuntu) parts status redis ;;
             esac
     esac
 }
 alias rdr="redis-restart"
 alias rdp="ps aux | \grep -G 'redis.*'"
+alias rds="redis-status"
 alias rdk="redis-stop"
 
 
