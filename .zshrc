@@ -675,13 +675,13 @@ function get-java () {
     case "${OSTYPE}" in
         freebsd*|darwin*)
             nix-install openjdk-$REQUIRED_OPENJDK_VERSION
-            jenv add ~/.nix-profile
+            jenv add ~/.nix-profile/lib/openjdk
             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
         linux*)
             case "${DIST}" in
                 Redhat|RedHat|Debian)
                     nix-install openjdk-$REQUIRED_OPENJDK_VERSION
-                    jenv add ~/.nix-profile
+                    jenv add ~/.nix-profile/lib/openjdk
                     jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                 Ubuntu)
                     case $DIST_VERSION in
@@ -691,7 +691,7 @@ function get-java () {
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                         14.04)
                             nix-install openjdk-$REQUIRED_OPENJDK_VERSION
-                            jenv add ~/.nix-profile
+                            jenv add ~/.nix-profile/lib/openjdk
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                     esac
             esac
@@ -700,7 +700,7 @@ function get-java () {
 function set-javahome () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
-            export JAVA_HOME=~/.nix-profile
+            export JAVA_HOME=~/.nix-profile/lib/openjdk
             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
     esac
 }
