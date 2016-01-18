@@ -540,7 +540,6 @@ function get-rbenv () {
         freebsd*|darwin*|linux*) anyenv install rbenv && exec -l zsh ;;
     esac
 }
-if ! type -p rbenv > /dev/null; then get-rbenv ; fi
 # ### installation ###
 function get-ruby () {
     case "${OSTYPE}" in
@@ -562,14 +561,18 @@ function get-global-gem-packages () {
         sidekiq \
         unicorn
 }
-if ! type -p ruby > /dev/null; then
-    get-ruby
+if ! type -p rbenv > /dev/null; then
+    get-rbenv ;
 else
-    rm -f ~/.ruby-version
-    rbenv global $REQUIRED_RUBY_VERSION
-    _REQUIRED_RUBY_VERSION=$(echo $REQUIRED_RUBY_VERSION | sed 's/\(.*\..*\)\..*/\1/')
-    _CURRENT_RUBY_VERSION=$(ruby -v | cut -f 2 -d " " | sed 's/^\([0-9]\{1,\}\.[0-9]\{1,\}\)\..*/\1/')
-    if [[ $_REQUIRED_RUBY_VERSION > $_CURRENT_RUBY_VERSION ]]; then get-ruby; fi
+    if ! type -p ruby > /dev/null; then
+        get-ruby
+    else
+        rm -f ~/.ruby-version
+        rbenv global $REQUIRED_RUBY_VERSION
+        _REQUIRED_RUBY_VERSION=$(echo $REQUIRED_RUBY_VERSION | sed 's/\(.*\..*\)\..*/\1/')
+        _CURRENT_RUBY_VERSION=$(ruby -v | cut -f 2 -d " " | sed 's/^\([0-9]\{1,\}\.[0-9]\{1,\}\)\..*/\1/')
+        if [[ $_REQUIRED_RUBY_VERSION > $_CURRENT_RUBY_VERSION ]]; then get-ruby; fi
+    fi
 fi
 
 
