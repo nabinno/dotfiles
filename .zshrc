@@ -703,7 +703,7 @@ function get-java () {
 function set-javahome () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
-            export JAVA_HOME=~/.nix-profile/lib/openjdk
+            export JAVA_HOME=~/.nix-profile
             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
     esac
 }
