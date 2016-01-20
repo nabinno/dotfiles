@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-~/.parts/bin/puml generate --unicode "$*"
+puml generate --unicode "$*"
