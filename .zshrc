@@ -1124,10 +1124,10 @@ REQUIRED_MYSQL_VERSION=5.5.45
 # ### installation ###
 function get-mysql () {
     case "${OSTYPE}" in
-        darwin*) nix-install mysql-$REQUIRED_MYSQL_VERSION ;;
+        darwin*) nix-install mysql-$REQUIRED_MYSQL_VERSION && set-mysql ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat|Debian) nix-install mysql-$REQUIRED_MYSQL_VERSION ;;
+                Redhat|RedHat|Debian) nix-install mysql-$REQUIRED_MYSQL_VERSION && set-mysql ;;
                 Ubuntu)
                     case $DIST_VERSION in
                         12.04)
@@ -1137,12 +1137,17 @@ function get-mysql () {
                             sudo add-apt-repository -y ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
                             sudo apt-get update
                             sudo apt-get -y install mysql-server ;;
-                        14.04) nix-install mysql-$REQUIRED_MYSQL_VERSION ;;
+                        14.04) nix-install mysql-$REQUIRED_MYSQL_VERSION && set-mysql ;;
                     esac
             esac
     esac
 }
 if ! type -p mysql > /dev/null ; then get-mysql ; fi
+function set-mysql () {
+    echo "innodb_file_format = Barracuda" | sudo tee -a /etc/mysql/my.cnf
+    echo "innodb_file_per_table = 1"      | sudo tee -a /etc/mysql/my.cnf
+    echo "innodb_large_prefix"            | sudo tee -a /etc/mysql/my.cnf
+}
 function my-restart () {
     case "${OSTYPE}" in
         darwin*)
@@ -1168,9 +1173,23 @@ function my-restart () {
             esac
     esac
 }
+function my-status () {
+    case "${OSTYPE}" in
+        darwin*) sudo service mysql status ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian) sudo service mysql status ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        12.04) sudo /etc/init.d/mysql status ;;
+                        14.04) sudo service mysql status ;;
+                    esac
+            esac
+    esac
+}
 alias mr="my-restart"
 alias mp="ps aux | \grep -G 'mysql.*'"
-alias ms="sudo service mysql status"
+alias ms="my-status"
 alias mk="sudo killall mysqld"
 
 
@@ -1240,22 +1259,43 @@ alias rdk="redis-stop"
 # 3. Daemon::HttpServer::Nginx
 # ----------------------------
 REQUIRED_NGINX_VERSION=1.9.9
-funtion get-nginx () {
+function get-nginx () {
     case "${OSTYPE}" in
         darwin*|linux*) nix-install nginx-$REQUIRED_NGINX_VERSION ;;
     esac
 }
+function set-nginx () {
+    useradd -s /bin/false nginx
+    sudo sed -i "s|^\(#user  nobody;\)|#\1\nuser  nginx;|g"                                                      ~/.nix-profile/conf/nginx.conf
+    sudo sed -i "s|^\(worker_processes  1;\)|#\1\nworker_processes  auto;|g"                                     ~/.nix-profile/conf/nginx.conf
+    sudo sed -i "s|^#\(log_format  main  '$remote_addr - $remote_user [$time_local] \"$request\" '\)|\1|g"       ~/.nix-profile/conf/nginx.conf
+    sudo sed -i "s|^#\(                  '$status $body_bytes_sent \"$http_referer\" '\)|\1|g"                   ~/.nix-profile/conf/nginx.conf
+    sudo sed -i "s|^#\(                  '\"$http_user_agent\" \"$http_x_forwarded_for\"';\)|\1|g"               ~/.nix-profile/conf/nginx.conf
+    sudo sed -i "s|^\(#gzip  on;\)|\1\ninclude/etc/nginx/conf.d/\*.conf;\ninclude/etc/nginx/sites-enabled/\*;|g" ~/.nix-profile/conf/nginx.conf
+    sudo mkdir -rf /etc/nginx/sites-enabled
+    sudo mkdir -rf /etc/nginx/sites-available
+    sudo mkdir -rf /etc/nginx/conf.d
+    sudo ln -s /etc/nginx/sites-available/* /etc/nginx/sites-enabled
+}
 function nginx-restart () {
     case "${OSTYPE}" in
         darwin*|linux*)
-            sudo nginx -s reload
+            sudo nginx -s stop
+            sudo nginx
+            sudo nginx -s status ;;
+    esac
+}
+function nginx-status () {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            sudo nginx -t
             sudo nginx -s status ;;
     esac
 }
 if ! type -p nginx > /dev/null; then get-nginx; fi
 alias nr="nginx-restart"
 alias np="ps aux | \grep -G 'nginx.*'"
-alias ns="sudo nginx -s status"
+alias ns="nginx-status"
 alias nk="sudo killall nginx"
 
 
