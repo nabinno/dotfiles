@@ -490,11 +490,15 @@ if ! type -p brew > /dev/null ; then get-brew ; fi
 # 1. BasicSettings::PackageManager::WindowsManagementFramework
 # ------------------------------------------------------------
 if [ "$OSTYPE" = "cygwin" ] ; then
-    function get-package ()         { powershell /c 'get-package' }
-    function get-packageprovider () { powershell /c 'get-packageprovider' }
-    function find-package ()        { powershell /c 'find-package $*' }
-    function install-package ()     { powershell /c 'install-package $*' }
-    function uninstall-package ()   { powershell /c 'uninstall-package $*' }
+    function abstract-powershell () {
+        local args=$(echo $*)
+        powershell /c $args
+    }
+    function get-package ()         { abstract-powershell $0 $* }
+    function get-packageprovider () { abstract-powershell $0 $* }
+    function find-package ()        { abstract-powershell $0 $* }
+    function install-package ()     { abstract-powershell $0 $* }
+    function uninstall-package ()   { abstract-powershell $0 $* }
     function get-apt-cyg () {
         wget https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg -O /usr/local/bin/apt-cyg
         chmod 755 apt-cyg
