@@ -172,7 +172,7 @@ if [ ! -d ~/.local/bin ] ; then mkdir -p ~/.local/bin ; fi
 REQUIRED_MACPORT_VERSION=2.3.3
 function get-base () {
     case "${OSTYPE}" in
-        cygwin*) ;;
+        cygwin) ;;
         freebsd*) port install -y ruby ;;
         darwin*)
             curl -O https://distfiles.macports.org/MacPorts/MacPorts-$REQUIRED_MACPORT_VERSION.tar.bz2
@@ -489,7 +489,7 @@ if ! type -p brew > /dev/null ; then get-brew ; fi
 
 # 1. BasicSettings::PackageManager::WindowsManagementFramework
 # ------------------------------------------------------------
-if [ "$OSTYPE" = "cygwin*" ] ; then
+if [ "$OSTYPE" = "cygwin" ] ; then
     alias get-package='powershell /c get-package'
     alias get-packageprovider='powershell /c get-packageprovider'
     alias find-package='powershell /c find-package'
@@ -916,7 +916,7 @@ if ! type -p pyenv > /dev/null ; then get-pyenv ; fi
 # ### installation ###
 function get-python () {
     case "${OSTYPE}" in
-        cygwin*) ;;
+        cygwin) ;;
         freebsd*|darwin*|linux*)
             pyenv install $REQUIRED_PYTHON_VERSION
             pyenv rehash
@@ -926,7 +926,7 @@ function get-python () {
 if ! type -p easy_install > /dev/null; then get-python ; fi
 function get-pip () {
     case "${OSTYPE}" in
-        cygwin*|freebsd*|darwin*|linux*)
+        cygwin|freebsd*|darwin*|linux*)
             easy_install pip
             get-global-pip-packages ;;
     esac
@@ -1026,11 +1026,17 @@ if ! type -p ndenv > /dev/null ; then get-ndenv ; fi
 # ### installation ###
 function get-node () {
     case "$OSTYPE" in
+        cygwin) install-package nodejs ;;
         linux*)
             ndenv install v$REQUIRED_NODE_VERSION
             ndenv rehash
             ndenv global v$REQUIRED_NODE_VERSION
             get-global-npm-packages ;;
+    esac
+}
+function set-node () {
+    case "$OSTYPE" in
+        linux*) ndenv global v$REQUIRED_NODE_VERSION
     esac
 }
 function get-global-npm-packages () {
@@ -1048,7 +1054,7 @@ function get-global-npm-packages () {
         tern
 }
 if ! type -p npm > /dev/null ; then get-node ; fi
-if type -p npm > /dev/null ; then ndenv global v$REQUIRED_NODE_VERSION ; fi
+if type -p npm > /dev/null ; then set-node ; fi
 
 
 # 2. ProgrammingLanguage::RemoteProcedureCall
@@ -1948,7 +1954,7 @@ case "${OSTYPE}" in
         alias lf="\ls -p -l -F -G"
         alias ll="\ls -p -F -a -G"
         alias la="\ls -p -l -F -a -G" ;;
-    linux*|cygwin*)
+    linux*|cygwin)
         alias ls='ls --color=auto'
         alias la="\ls -p -l -F -a --color=auto"
         alias lf="\ls -p -l -F --hide='.*' --color=auto"
@@ -2189,7 +2195,7 @@ alias in='netstat -a -n | more'
 alias im='cat /proc/meminfo'
 case "${OSTYPE}" in
     freebsd*|darwin*) alias ip="ps aux" ;;
-    cygwin*) alias ip="ps -flW" ;;
+    cygwin) alias ip="ps -flW" ;;
     linux*)
         case "${DIST}" in
             Redhat|RedHat) alias ip="ps aux" ;;
