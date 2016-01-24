@@ -965,10 +965,10 @@ function get-python () {
             pyenv global $REQUIRED_PYTHON_VERSION
     esac
 }
-if ! type -p easy_install > /dev/null; then get-python ; fi
+if ! type -p python > /dev/null; then get-python ; fi
 function get-pip () {
     case "${OSTYPE}" in
-        cygwin|freebsd*|darwin*|linux*)
+        freebsd*|darwin*|linux*)
             easy_install pip
             get-global-pip-packages ;;
     esac
