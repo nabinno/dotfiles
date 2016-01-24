@@ -311,6 +311,23 @@ function get-wget () {
             esac
     esac
 }
+function get-rlwrap () {
+    if ! type -p wget > /dev/null ; then get-wget ; fi
+    case "${OSTYPE}" in
+        freebsd*|darwin*) ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) sudo yum install -y rlwrap ;;
+                Debian|Ubuntu) sudo apt-get install -y rlwrap ;;
+            esac
+            local current_pwd=`pwd`
+            mkdir -p ~/.local/rlwrap
+            cd ~/.local/rlwrap
+            wget http://www.linuxification.at/download/rlwrap-extensions-V12-0.01.tar.gz
+            tar xvfz rlwrap-extensions-V12-0.01.tar.gz
+            cd $current_pwd
+    esac
+}
 function get-autoconf () {
     if ! type -p wget > /dev/null ; then get-wget ; fi
     case "${OSTYPE}" in
@@ -1123,6 +1140,7 @@ if ! type -p thrift > /dev/null ; then get-thrift ; fi
 # 3. Daemon::Database::Postgresql
 # -------------------------------
 REQUIRED_POSTGRESQL_VERSION=9.4.5
+PSQL_PAGER=less -S
 # ### installation ###
 function get-postgresql () {
     case "${OSTYPE}" in
@@ -1169,6 +1187,7 @@ alias pgr="pg-restart"
 alias pgp="ps aux | \grep -G 'postgresql.*'"
 alias pgs="pg-status"
 alias pgk="sudo killall postgresql"
+alias psql='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus psql'
 
 
 # 3. Daemon::Database::Mysql
@@ -1244,6 +1263,7 @@ alias mr="my-restart"
 alias mp="ps aux | \grep -G 'mysql.*'"
 alias ms="my-status"
 alias mk="sudo killall mysqld"
+alias mysql="rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus mysql -uroot --pager='less -S'"
 
 
 # 3. Daemon::Database::Redis
@@ -1307,6 +1327,7 @@ alias rdr="redis-restart"
 alias rdp="ps aux | \grep -G 'redis.*'"
 alias rds="redis-status"
 alias rdk="redis-stop"
+alias redis-cli='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus redis-cli'
 
 
 # 3. Daemon::HttpServer::Nginx
@@ -1366,7 +1387,7 @@ function get-emacs () {
                     sudo apt-get install -y build-essential libncurses-dev
                     sudo apt-get build-dep emacs ;;
             esac
-            current_pwd=`pwd`
+            local current_pwd=`pwd`
             wget http://core.ring.gr.jp/pub/GNU/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
             tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
             cd emacs-$REQUIRED_EMACS_VERSION
@@ -1599,8 +1620,8 @@ function github-pull-repositories () {
         esac
     done
     if [ $# -ge 4 ] && [ $is_dirname ] && [ $is_repositoy ]; then
-        directory=$(date +%y%m%d)_$dirname
-        current_pwd=`pwd`
+        local directory=$(date +%y%m%d)_$dirname
+        local current_pwd=`pwd`
         cd ~/
         mkdir -p ~/${directory}
         cd ~/${directory}
@@ -1834,7 +1855,7 @@ if ! type -p docker-machine > /dev/null; then get-docker-machine ; fi
 # ------------------------------------------------------------------
 REQUIRED_TERRAFORM_VERSION=0.6.6
 function get-terraform () {
-    current_pwd=`pwd`
+    local current_pwd=`pwd`
     cd ~/.local/bin
     rm -fr terraform*
     case "${OSTYPE}" in
@@ -2190,7 +2211,7 @@ function get-dotfiles () {
 alias zg='get-dotfiles'
 function put-dotfiles () {
     # pre proc
-    current_pwd=`pwd`
+    local current_pwd=`pwd`
     cd ~/
     if [ ! -d ~/.local/dotfiles ]; then
         mkdir -p ~/.local
