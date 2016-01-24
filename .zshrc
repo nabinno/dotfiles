@@ -1140,7 +1140,7 @@ if ! type -p thrift > /dev/null ; then get-thrift ; fi
 # 3. Daemon::Database::Postgresql
 # -------------------------------
 REQUIRED_POSTGRESQL_VERSION=9.4.5
-PSQL_PAGER=less -S
+PSQL_PAGER='less -S'
 # ### installation ###
 function get-postgresql () {
     case "${OSTYPE}" in
