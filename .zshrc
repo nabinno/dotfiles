@@ -490,30 +490,71 @@ if ! type -p brew > /dev/null ; then get-brew ; fi
 # 1. BasicSettings::PackageManager::WindowsManagementFramework
 # ------------------------------------------------------------
 if [ "$OSTYPE" = "cygwin" ] ; then
-    alias get-package='powershell /c get-package'
-    alias get-packageprovider='powershell /c get-packageprovider'
-    alias find-package='powershell /c find-package'
-    alias install-package='powershell /c install-package'
-    alias uninstall-package='powershell /c uninstall-package'
+    function get-package ()         { powershell /c 'get-package' }
+    function get-packageprovider () { powershell /c 'get-packageprovider' }
+    function find-package ()        { powershell /c 'find-package $*' }
+    function install-package ()     { powershell /c 'install-package $*' }
+    function uninstall-package ()   { powershell /c 'uninstall-package $*' }
+    function get-apt-cyg () {
+        wget https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg -O /usr/local/bin/apt-cyg
+        chmod 755 apt-cyg
+        get-global-aptcyg-packages
+    }
+    function get-global-aptcyg-packages () {
+        apt-cyg install \
+                base-cygwin \
+                base-files \
+                bash \
+                binutils \
+                cron \
+                curl \
+                cygrunsrv \
+                cygutils \
+                cygwin \
+                cygwin-devel \
+                findutils \
+                gawk \
+                git \
+                gnuplot \
+                grep \
+                hostname \
+                info \
+                less \
+                mintty \
+                ping \
+                renameutils \
+                rsync \
+                run \
+                screen \
+                sed \
+                shutdown \
+                tar \
+                tree \
+                unzip \
+                util-linux \
+                vim \
+                which \
+                whois \
+                wget \
+                zip \
+                zoo \
+                zsh
+    }
+    if ! apt-cyg > /dev/null ; then get-apt-cyg ; fi
     function get-wmf () {
         find-package && get-packageprovider -name chocolatey
     }
     function get-global-wmf-packages () {
-        install-package -name \
-                        FoxitReader \
-                        GoogleChrome \
-                        Gpg4win \
-                        InkScape \
-                        IrfanView \
-                        WinSplitRevolution \
-                        autohotkey \
-                        googledrive \
-                        cygwin \
-                        terminals \
-                        vagrant \
-                        xmind \
-                        xyzzy \
-                        zoomit
+        install-package FoxitReader
+        install-package Gpg4win
+        install-package InkScape
+        install-package IrfanView
+        install-package WinSplitRevolution
+        install-package googledrive
+        install-package 7zip
+        install-package f.lux
+        install-package terminals
+        install-package vagrant
     }
 fi
 
@@ -543,6 +584,7 @@ function get-rbenv () {
 # ### installation ###
 function get-ruby () {
     case "${OSTYPE}" in
+        cygwin) apt-cyg install ruby ;;
         freebsd*|darwin*|linux*)
             rbenv install $REQUIRED_RUBY_VERSION
             rbenv rehash
@@ -916,7 +958,7 @@ if ! type -p pyenv > /dev/null ; then get-pyenv ; fi
 # ### installation ###
 function get-python () {
     case "${OSTYPE}" in
-        cygwin) ;;
+        cygwin) apt-cyg install python ;;
         freebsd*|darwin*|linux*)
             pyenv install $REQUIRED_PYTHON_VERSION
             pyenv rehash
@@ -960,6 +1002,7 @@ if ! type -p plenv > /dev/null ; then get-plenv ; fi
 # ### installation ###
 function get-perl () {
     case "${OSTYPE}" in
+        cygwin) apt-cyg install perl ;;
         freebsd*|darwin*|linux*)
             plenv install $REQUIRED_PERL_VERSION
             plenv rehash
@@ -1311,6 +1354,7 @@ REQUIRED_EMACS_VERSION=24.5
 # ### installation ###
 function get-emacs () {
     case "${OSTYPE}" in
+        cygwin) apt-cyg install emacs ;;
         freebsd*|darwin*|linux*)
             case "${DIST}" in
                 Redhat|RedHat) sudo yum install -y ncurses-devel ;;
