@@ -132,6 +132,7 @@ export PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
 export PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
 export PATH="$HOME/.linuxbrew/bin:$PATH"
 export PATH="$HOME/.cask/bin:$PATH"
+export PATH="$HOME/.local/google-cloud-sdk/bin:$PATH"
 export PATH="$HOME/.local/perl-$REQUIRED_PERL_VERSION/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
 
@@ -997,8 +998,7 @@ function get-pip () {
 function get-global-pip-packages () {
     case "$OSTYPE" in
         freebsd*|darwin*|linux*)
-            sudo pip install -U \
-                awscli \
+            pip install -U \
                 docker-compose \
                 ipython \
                 pandas \
@@ -2123,44 +2123,78 @@ function get-heroku () {
 
 # 5. Platform::GoogleCloudPlatform
 # --------------------------------
-function get-google-cloud-platform () {
+function get-gcloud () {
     case "${OSTYPE}" in
-        freebsd*) ;;
-        darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) ;;
-                Debian) ;;
-                Ubuntu)
-                    case "$DIST_VERSION" in
-                        12.04) parts install googlecloudsdk ;;
-                        14.04) ;;
-                    esac
-            esac
+        cygwin|darwin*|linux*)
+            curl https://sdk.cloud.google.com | bash
+            exec -l $SHELL ;;
     esac
 }
+function set-gcloud () {
+    case "${OSTYPE}" in
+        cygwin|darwin*|linux*)
+            source '/home/vagrant/.local/google-cloud-sdk/completion.zsh.inc'
+            source '/home/vagrant/.local/google-cloud-sdk/path.zsh.inc'
+            source '/home/vagrant/.local/google-cloud-sdk/completion.zsh.inc' ;;
+    esac
+}
+if ! type -p gcloud > /dev/null ; then get-gcloud ; fi
+if type -p gcloud > /dev/null ; then set-gcloud ; fi
+
+
+
+# 5. Platform::GoogleCloudPlatform::GoogleContainerEngine
+# --------------------------------------------------------
+# #
+# # CHEATSHEET
+# #
+# # 1. Pod
+# kubectl get pod
+# kubectl describe pod [pod-name]
+# kubectl attach [pod-name]
+# kubectl logs [-f] [pod-name] [-c container-name]
+#
+# # 2. Replication Controller
+# kubectl get rc
+# kubectl describe rc [rc-name]
+# kubectl rolling-update [rc-name] [new-image-url]
+# kubectl rolling-update [rc-name] -f [new-rc-schema-json-file-path]
+# kubectl scale rc [rc-name] --replicas=[num]
+#
+# # 3. Service
+# kubectl service service
+# kubectl describe service [service-name]
+#
+# # 4. Cluster
+# kubectl cluster-info
+# gcloud compute instance-groups managed resize [gke-cluster-instance-group] --size [num]
+#
+# # 9. Create a secure tunnel ###
+# ssh -f -nNT -L 8080:127.0.0.1:8080 core@<master-public-ip>
+#
+function get-kubectl () {
+    case $OSTYPE in
+        darwin*)
+            wget https://storage.googleapis.com/kubernetes-release/release/v1.0.1/bin/darwin/amd64/kubectl -O ~/.local/bin/kubectl
+            chmod +x ~/.local/bin/kubectl ;;
+        linux*)
+            wget https://storage.googleapis.com/kubernetes-release/release/v1.0.1/bin/linux/amd64/kubectl -O  ~/.local/bin/kubectl
+            chmod +x ~/.local/bin/kubectl ;;
+    esac
+}
+if ! type kubectl > /dev/null ; then get-kubectl ; fi
 
 
 # 5. Platform::AmazonWebServices
 # ------------------------------
-function get-amazon-web-services () {
+function get-aws () {
+    if ! type -p pip > /dev/null ; then get-pip ; fi
     case "${OSTYPE}" in
         freebsd*) ;;
-        darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) ;;
-                Debian) ;;
-                Ubuntu)
-                    case "$DIST_VERSION" in
-                        12.04) parts install \
-                                     elasticbeanstalk \
-                                     s3cmd ;;
-                        14.04) ;;
-                    esac
-            esac
+        darwin*|linux*) pip install -U awscli s3cmd ;;
     esac
 }
+if ! type -p aws > /dev/null ; then get-awscli ; fi
 
 
 # 9. Other::Customized
