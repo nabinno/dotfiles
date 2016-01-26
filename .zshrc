@@ -22,6 +22,7 @@
 # 3. Daemon::Database::Redis
 # 3. Daemon::HttpServer::Nginx
 # 4. IntegratedDevelopmentEnvironment::Emacs
+# 4. IntegratedDevelopmentEnvironment::Emacs::Ctags
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::Filesystem
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::Git
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::PlantUml
@@ -420,7 +421,6 @@ function get-nix-packages () {
     case "${OSTYPE}" in
         darwin*|linux*)
             nix-build \
-                ctags \
                 heroku_toolbelt \
                 phantomjs \
                 the_silver_searcher \
@@ -457,7 +457,6 @@ function get-parts-packages () {
             case "${DIST}" in
                 Debian|Ubuntu)
                     parts install \
-                          ctags \
                           heroku_toolbelt \
                           phantomjs \
                           the_silver_searcher \
@@ -484,7 +483,6 @@ function get-brew-packages () {
     case "${OSTYPE}" in
         darwin*)
             brew install \
-                 ctags \
                  jq \
                  memcached \
                  the_silver_searcher \
@@ -493,7 +491,6 @@ function get-brew-packages () {
                 case "${DIST}" in
                     Redhat|RedHat)
                         brew install \
-                             ctags \
                              jq \
                              tree ;;
                     Debian|Ubuntu)
@@ -1439,6 +1436,23 @@ function mu-restart () {
     mu index
 }
 if ! type -p mu > /dev/null ; then get-mu ; fi
+
+
+# 4. IntegratedDevelopmentEnvironment::Emacs::Ctags
+# -------------------------------------------------
+REQUIRED_EMACS_VERSION=5.8
+function get-ctags () {
+    local current_pwd=`pwd`
+    wget http://prdownloads.sourceforge.net/ctags/ctags-$REQUIRED_EMACS_VERSION.tar.gz
+    tar zxf ctags-$REQUIRED_EMACS_VERSION.tar.gz
+    cd ctags-$REQUIRED_EMACS_VERSION
+    ./configure --prefix=$HOME/.local
+    make
+    sudo make install
+    cd $current_pwd
+}
+if ! type -p ctags > /dev/null ; then get-ctags ; fi
+alias ctags=~/.local/bin/ctags
 
 
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::Filesystem
