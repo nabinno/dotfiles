@@ -24,6 +24,8 @@
 
 (add-hook 'ruby-mode-hook 'subword-mode)
 
+(defun ruby-mode-set-encoding () ())
+
 ;; TODO: hippie-expand ignoring : for names in ruby-mode
 ;; TODO: hippie-expand adaptor for auto-complete sources
 
