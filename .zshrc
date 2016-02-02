@@ -1400,6 +1400,18 @@ else
     _CURRENT_EMACS_VERSION=$(emacs --version | head -n 1 | sed 's/GNU Emacs //' | awk '$0 = substr($0, 1, index($0, ".") + 1)')
     if [[ $_REQUIRED_EMACS_VERSION > $_CURRENT_EMACS_VERSION ]]; then get-emacs; fi
 fi
+# ### aspell ###
+function get-aspell () {
+    case "${OSTYPE}" in
+        darwin*) brew install --with-lang-ena aspell ;;
+        freebsd*) ;;
+        linux*)
+            case "${DIST}" in
+                Debian|Ubuntu) sudo apt-get install -y aspell ;;
+            esac
+    esac
+}
+if ! type -p aspell > /dev/null ; then get-aspell ; fi
 # ### mu4e ###
 function get-mu () {
     case "${OSTYPE}" in
@@ -2250,6 +2262,7 @@ function get-dotfiles () {
         cp -pr ~/.emacs.d/eshell/alias .emacs.d/eshell/;   wait
         cp -pr ~/.emacs.d/init.el      .emacs.d/;          wait
         cp -pr ~/.offlineimap.py .
+        cp -pr ~/.aspell.conf .
         cp -pr ~/.zshrc .
         case "${OSTYPE}" in (freebsd*|darwin*|linux*) cp -pr ~/.screenrc . ;; esac
         [ $is_mu4e ]    || git checkout -- .emacs.d/lisp/init-mu4e.el
@@ -2276,6 +2289,7 @@ function put-dotfiles () {
     cp -pr .emacs.d/eshell/alias ~/.emacs.d/eshell/; wait
     cp -pr .emacs.d/init.el      ~/.emacs.d/;        wait
     cp -pr .offlineimap.py ~/;                       wait
+    cp -pr .aspell.conf ~/;                          wait
     cp -pr .zshrc ~/;                                wait
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) cp -pr .screenrc ~/; wait ;;
