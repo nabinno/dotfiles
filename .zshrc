@@ -620,7 +620,8 @@ function get-global-gem-packages () {
         rails \
         rubygems-bundler \
         sidekiq \
-        unicorn
+        unicorn \
+        git-trend
 }
 if ! type -p rbenv > /dev/null; then
     get-rbenv ;
@@ -1616,6 +1617,14 @@ alias gst='git status -sb'
 alias gswitch='git checkout'
 alias gvlog='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen - %cD (%cr) %C(bold blue)<%an>%Creset%n" --abbrev-commit --date=relative -p ; echo ""'
 alias gwho='git shortlog -s --'
+function git-trend () {
+    g trend -n 10
+    g trend -l ruby -n 5
+    g trend -l elixir -n 5
+    g trend -l erlang -n 5
+    g trend -l JavaScript -n 5
+    g trend -l php -n 3
+}
 function parse-git-dirty { git diff --no-ext-diff --quiet --exit-code &> /dev/null || echo "*" }
 function parse-git-branch { git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty))/" }
 function github-pull-repositories () {
