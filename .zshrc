@@ -1274,55 +1274,34 @@ function get-redis () {
             nix-install redis-$REQUIRED_REDIS_VERSION
             nohup redis-server >/dev/null 2>&1 </dev/null & ;;
         linux*)
-            case "${DIST}" in
-                Redhat|RedHat|Debian)
-                    nix-install redis-$REQUIRED_REDIS_VERSION
-                    nohup redis-server >/dev/null 2>&1 </dev/null & ;;
-                Ubuntu) parts install redis ;;
-            esac
+            nix-install redis-$REQUIRED_REDIS_VERSION
+            nohup redis-server >/dev/null 2>&1 </dev/null & ;;
     esac
 }
 if ! type -p redis-cli > /dev/null ; then get-redis ; fi
 function redis-restart () {
-    sudo killall redis $1; wait
     case "${OSTYPE}" in
         darwin*) ;;
         linux*)
-            case "${DIST}" in
-                Redhat|RedHat)
-                    sudo service redis restart
-                    sudo service redis status ;;
-                Debian) ;;
-                Ubuntu)
-                    parts restart redis
-                    parts status redis ;;
-            esac
+            pkill redis-server
+            nohup redis-server >/dev/null 2>&1 </dev/null &
+            ps aux | \grep -G 'redis.*' ;;
     esac
 }
 function redis-stop () {
     case "${OSTYPE}" in
         darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) sudo service redis stop ;;
-                Debian) ;;
-                Ubuntu) parts stop redis ;;
-            esac
+        linux*) pkill redis-server ;;
     esac
 }
 function redis-status () {
     case "${OSTYPE}" in
         darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) sudo service redis status ;;
-                Debian) ;;
-                Ubuntu) parts status redis ;;
-            esac
+        linux*) ps aux | \grep -G 'redis.*' ;;
     esac
 }
 alias rdr="redis-restart"
-alias rdp="ps aux | \grep -G 'redis.*'"
+alias rdp="redis-status"
 alias rds="redis-status"
 alias rdk="redis-stop"
 alias redis-cli='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus redis-cli'
@@ -2243,7 +2222,7 @@ function cd-dove () {
 alias zd=cd-dove
 # ### dotfiles ###
 function get-dotfiles () {
-    while getopts ":w:ih" opt ; do
+    while getopts ":m:ih" opt ; do
         case $opt in
             "m") is_mu4e=true ;;
             "i") is_init_el=true ;;
