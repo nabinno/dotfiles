@@ -1283,7 +1283,7 @@ function redis-restart () {
     case "${OSTYPE}" in
         darwin*) ;;
         linux*)
-            pkill redis-server
+            sudo pkill redis-server
             nohup redis-server >/dev/null 2>&1 </dev/null &
             ps aux | \grep -G 'redis.*' ;;
     esac
@@ -1291,7 +1291,7 @@ function redis-restart () {
 function redis-stop () {
     case "${OSTYPE}" in
         darwin*) ;;
-        linux*) pkill redis-server ;;
+        linux*) sudo pkill redis-server ;;
     esac
 }
 function redis-status () {
