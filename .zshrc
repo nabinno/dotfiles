@@ -1307,6 +1307,62 @@ alias rdk="redis-stop"
 alias redis-cli='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus redis-cli'
 
 
+# 3. Daemon::Database::Memcached
+# ------------------------------
+REQUIRED_MEMCACHED_VERSION=
+function get-memcached () {
+    case "${OSTYPE}" in
+        darwin*) ;;
+        linux*) ;;
+    esac
+}
+if ! type -p memcached > /dev/null ; then get-memcached ; fi
+function memcached-restart () {
+    case "${OSTYPE}" in
+        darwin*) ;;
+        linux*)
+            case $DIST in
+                Redhat|RedHat)
+                    sudo service memcached stop
+                    sudo service memcached start
+                    sudo service memcached status ;;
+                Debian|Ubuntu)
+                    sudo pkill memcached
+                    nohup memcached >/dev/null 2>&1 </dev/null &
+                    ps aux | \grep -G 'memcached.*' ;;
+            esac
+    esac
+}
+function memcached-stop () {
+    case "${OSTYPE}" in
+        darwin*) ;;
+        linux*)
+            case $DIST in
+                Redhat|RedHat) sudo service memcached stop ;;
+                Debian|Ubutnu) sudo pkill memcached ;;
+            esac
+    esac
+}
+function memcached-status () {
+    case "${OSTYPE}" in
+        darwin*) ;;
+        linux*)
+            case $DIST in
+                Redhat|RedHat) sudo service memcached status ;;
+                Debian|Ubuntu) ps aux | \grep -G 'memcached.*' ;;
+            esac
+    esac
+}
+alias mcr="memcached-restart"
+alias mcp="memcached-status"
+alias mcs="memcached-status"
+alias mck="memcached-stop"
+alias memcached-display='memcached-tool 127.0.0.1:11211 display'
+alias memcached-stats='memcached-tool 127.0.0.1:11211 stats'
+alias memcached-dump='memcached-tool 127.0.0.1:11211 dump'
+
+
+
 # 3. Daemon::HttpServer::Nginx
 # ----------------------------
 REQUIRED_NGINX_VERSION=1.9.9
