@@ -2156,7 +2156,6 @@ if ! type -p gcloud > /dev/null ; then get-gcloud ; fi
 if type -p gcloud > /dev/null ; then set-gcloud ; fi
 
 
-
 # 5. Platform::GoogleCloudPlatform::GoogleContainerEngine
 # --------------------------------------------------------
 # #
@@ -2251,6 +2250,7 @@ function get-dotfiles () {
         cp -pr ~/.emacs.d/init.el      .emacs.d/;          wait
         cp -pr ~/.offlineimap.py .
         cp -pr ~/.aspell.conf .
+        cp -pr ~/.zshenv .
         cp -pr ~/.zshrc .
         case "${OSTYPE}" in (freebsd*|darwin*|linux*) cp -pr ~/.screenrc . ;; esac
         [ $is_mu4e ]    || git checkout -- .emacs.d/lisp/init-mu4e.el
@@ -2278,6 +2278,7 @@ function put-dotfiles () {
     cp -pr .emacs.d/init.el      ~/.emacs.d/;        wait
     cp -pr .offlineimap.py ~/;                       wait
     cp -pr .aspell.conf ~/;                          wait
+    cp -pr .zshenv ~/;                               wait
     cp -pr .zshrc ~/;                                wait
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) cp -pr .screenrc ~/; wait ;;
