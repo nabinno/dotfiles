@@ -1300,23 +1300,33 @@ function redis-status () {
         linux*) ps aux | \grep -G 'redis.*' ;;
     esac
 }
+alias redis-cli='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus redis-cli'
+alias redis-cli-monitor='redis-cli monitor'
+alias redis-cli-info='redis-cli info'
+alias redis-cli-dump='redis-cli bgsave'
 alias rdr="redis-restart"
 alias rdp="redis-status"
 alias rds="redis-status"
+alias rdi="redis-cli-info"
+alias rdm="redis-cli-monitor"
 alias rdk="redis-stop"
-alias redis-cli='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus redis-cli'
 
 
 # 3. Daemon::Database::Memcached
 # ------------------------------
-REQUIRED_MEMCACHED_VERSION=
+REQUIRED_MEMCACHED_VERSION=1.4.20
 function get-memcached () {
     case "${OSTYPE}" in
         darwin*) ;;
-        linux*) ;;
+        linux*) nix-install memcached-$REQUIRED_MEMCACHED_VERSION ;;
     esac
 }
 if ! type -p memcached > /dev/null ; then get-memcached ; fi
+function get-memcached-tool() {
+    wget https://raw.githubusercontent.com/memcached/memcached/master/scripts/memcached-tool -O ~/.local/bin/memcached-tool
+    chmod +x ~/.local/bin/memcached-tool
+}
+if ! type -p memcached-tool > /dev/null ; then get-memcached-tool ; fi
 function memcached-restart () {
     case "${OSTYPE}" in
         darwin*) ;;
@@ -1337,9 +1347,9 @@ function memcached-stop () {
     case "${OSTYPE}" in
         darwin*) ;;
         linux*)
-            case $DIST in
+            case "${DIST}" in
                 Redhat|RedHat) sudo service memcached stop ;;
-                Debian|Ubutnu) sudo pkill memcached ;;
+                Debian|Ubuntu) sudo /usr/bin/pkill memcached ;;
             esac
     esac
 }
@@ -1353,13 +1363,15 @@ function memcached-status () {
             esac
     esac
 }
+alias memcached-monitor='memcached-tool 127.0.0.1:11211 display'
+alias memcached-info='memcached-tool 127.0.0.1:11211 stats'
+alias memcached-dump='memcached-tool 127.0.0.1:11211 dump'
 alias mcr="memcached-restart"
 alias mcp="memcached-status"
 alias mcs="memcached-status"
+alias mci="memcached-info"
+alias mcm="memcached-monitor"
 alias mck="memcached-stop"
-alias memcached-display='memcached-tool 127.0.0.1:11211 display'
-alias memcached-stats='memcached-tool 127.0.0.1:11211 stats'
-alias memcached-dump='memcached-tool 127.0.0.1:11211 dump'
 
 
 
