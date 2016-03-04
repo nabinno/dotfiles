@@ -1113,10 +1113,16 @@ function get-global-npm-packages () {
         npm2dot \
         phantomjs \
         requirejs \
+        yamljs \
         tern
 }
 if ! type -p npm > /dev/null ; then get-node ; fi
 if type -p npm > /dev/null ; then set-node ; fi
+function rebuild-sass () {
+    npm uninstall --save-dev gulp-sass
+    npm install --save-dev gulp-sass@2
+    npm rebuild node-sass
+}
 
 
 # 2. ProgrammingLanguage::RemoteProcedureCall
