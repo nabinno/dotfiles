@@ -133,6 +133,7 @@ export PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
 export PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
 export PATH="$HOME/.linuxbrew/bin:$PATH"
 export PATH="$HOME/.cask/bin:$PATH"
+export PATH="$HOME/.go.d/bin:$PATH"
 export PATH="$HOME/.local/google-cloud-sdk/bin:$PATH"
 export PATH="$HOME/.local/perl-$REQUIRED_PERL_VERSION/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
@@ -695,6 +696,8 @@ function get-mix-packages () {
 
 # 2. ProgrammingLanguage::Go
 # --------------------------
+export REQUIRED_GO_VERSION=1.4.2
+export GOPATH=~/.go.d
 # ### version control ###
 function get-goenv () {
     case "${OSTYPE}" in
@@ -708,7 +711,7 @@ function get-go () {
         darwin*) ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat) ;;
+                Redhat|RedHat) goenv install $REQUIRED_GO_VERSION ;;
                 Debian) ;;
                 Ubuntu)
                     case "$DIST_VERSION" in
@@ -719,6 +722,18 @@ function get-go () {
     esac
 }
 if ! type -p go > /dev/null ; then get-go ; fi
+function set-go () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            goenv global $REQUIRED_GO_VERSION ;;
+    esac
+}
+function get-global-go-packages () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            go get github.com/peco/peco/cmd/peco
+    esac
+}
 
 
 # 2. ProgrammingLanguage::Java
