@@ -1669,7 +1669,7 @@ alias gdfc='git diff --cached'
 alias gexport='git "!sh -c \"git checkout-index -a -f --prefix=$1/\" -"'
 alias ghist='git log --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --'
 function ghclone () { git clone git@github.com:${1}.git }
-function git-log () { git log ${1} --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit -- }
+function git-log () { \git log ${1} --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit -- }
 alias gl='git-log'
 alias glast='git diff HEAD~1..HEAD'
 alias glf='git log --decorate=full --graph --pretty=full'
