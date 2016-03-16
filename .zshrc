@@ -1001,7 +1001,7 @@ function get-python () {
     esac
 }
 if ! type -p python > /dev/null; then get-python ; fi
-function get-pip () {
+function get-pip () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             easy_install pip
@@ -1149,7 +1149,7 @@ function get-protobuf () {
 }
 function get-thrift () {
     case "${OSTYPE}" in
-        freebsd*|darwin*|linux*) nix-install thrift-0.9.2 ;;
+        freebsd*|darwin*|linux*) nix-install thrift-0.9.3 ;;
     esac
 }
 if ! type -p protoc > /dev/null ; then get-protobuf ; fi
@@ -1158,7 +1158,7 @@ if ! type -p thrift > /dev/null ; then get-thrift ; fi
 
 # 3. Daemon::Database::Postgresql
 # -------------------------------
-REQUIRED_POSTGRESQL_VERSION=9.4.5
+REQUIRED_POSTGRESQL_VERSION=9.4.6
 PSQL_PAGER='less -S'
 # ### installation ###
 function get-postgresql () {
@@ -2293,10 +2293,17 @@ function get-aws () {
     if ! type -p pip > /dev/null ; then get-pip ; fi
     case "${OSTYPE}" in
         freebsd*) ;;
-        darwin*|linux*) pip install -U awscli s3cmd ;;
+        darwin*|linux*)
+            pip install -U awscli s3cmd
+            fix-compdef-problem
     esac
 }
-if ! type -p aws > /dev/null ; then get-awscli ; fi
+function fix-compdef-problem () {
+    touch ~/.zshenv
+    echo 'autoload -Uz compinit
+compinit' >> ~/.zshenv
+}
+if ! type -p aws > /dev/null ; then get-aws ; fi
 
 
 # 9. Other::Customized
