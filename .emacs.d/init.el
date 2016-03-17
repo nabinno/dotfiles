@@ -48,7 +48,6 @@
 ;; (require 'init-gui-frames)
 ;; (require 'init-proxies)
 (require 'init-sekka)
-(require 'init-translation)
 (require 'init-w3m)
 ;; (require 'init-mu4e)
 (require 'init-view)
@@ -125,6 +124,7 @@
 
 (require 'init-eshell)
 (require 'init-marmalade)
+(require 'init-translation)
 (require 'init-misc)
 
 ;; (require 'init-dash)
