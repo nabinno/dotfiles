@@ -163,6 +163,11 @@
      (sqlite . t))))
 
 
+;;; org-trello
+(require-package 'org-trello)
+(add-hook 'org-mode-hook 'org-trello-mode)
+
+
 ;;; Temporary setting
 (global-set-key (kbd "C-c l") 'org-store-link)
 (global-set-key (kbd "C-c a") 'org-agenda)
