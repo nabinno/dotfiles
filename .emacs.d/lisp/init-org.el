@@ -163,6 +163,22 @@
      (sqlite . t))))
 
 
+;;; org-trello
+(require-package 'org-trello)
+(add-hook 'org-mode-hook 'org-trello-mode)
+
+
+;;; org-page
+(require-package 'org-page)
+(require-package 'blog-admin)
+(setq blog-admin-backend-path "~/nabinno.github.io")
+(setq blog-admin-backend-type 'org-page)
+
+
+;;; org-tree-slide
+(require-package 'org-tree-slide)
+
+
 ;;; Temporary setting
 (global-set-key (kbd "C-c l") 'org-store-link)
 (global-set-key (kbd "C-c a") 'org-agenda)

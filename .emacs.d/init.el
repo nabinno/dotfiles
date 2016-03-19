@@ -124,6 +124,7 @@
 
 (require 'init-eshell)
 (require 'init-marmalade)
+(require 'init-translation)
 (require 'init-misc)
 
 ;; (require 'init-dash)

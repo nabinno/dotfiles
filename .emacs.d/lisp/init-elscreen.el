@@ -3,6 +3,7 @@
 ;;; Code:
 (require-package 'elscreen)
 
+
 (setq elscreen-prefix-key (kbd "M-[ 1 ; 5 q"))
 (setq elscreen-display-tab nil)
 (setq elscreen-tab-display-kill-screen nil)
