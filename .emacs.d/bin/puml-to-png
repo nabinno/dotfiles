@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
-~/.parts/bin/puml generate "$1" -o "$2"
-~/.parts/bin/http-server "$3"
+
+puml generate "$1" -o "$2"
+if [ ! -f "$2" ] ; then http-server $3 ; fi

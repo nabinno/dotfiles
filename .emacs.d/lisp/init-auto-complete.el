@@ -12,9 +12,15 @@
 (define-key ac-completing-map (kbd "C-p") 'ac-previous)
 (define-key ac-completing-map (kbd "SPC") 'ac-complete)
 
-;;----------------------------------------------------------------------------
-;; Use Emacs' built-in TAB completion hooks to trigger AC (Emacs >= 23.2)
-;;----------------------------------------------------------------------------
+(dolist (mode
+         '(emacs-lisp ruby js js2 cperl elixir erlang python jade haml))
+  (add-hook (intern (format "%s-mode-hook" mode))
+            '(lambda ()
+               (auto-complete-mode t)
+               )))
+
+
+;;; Use Emacs' built-in TAB completion hooks to trigger AC (Emacs >= 23.2)
 (setq tab-always-indent 'complete)  ;; use 't when auto-complete is disabled
 (add-to-list 'completion-styles 'initials t)
 ;; Stop completion-at-point from popping up completion buffers so eagerly
@@ -42,7 +48,6 @@
 
 (add-hook 'auto-complete-mode-hook 'set-auto-complete-as-completion-at-point-function)
 
-
 (set-default 'ac-sources
              '(ac-source-imenu
                ac-source-dictionary
@@ -61,11 +66,10 @@
                 inferior-emacs-lisp-mode))
   (add-to-list 'ac-modes mode))
 
-
-;; Exclude very large buffers from dabbrev
+
+;;; Exclude very large buffers from dabbrev
 (defun sanityinc/dabbrev-friend-buffer (other-buffer)
   (< (buffer-size other-buffer) (* 1 1024 1024)))
-
 (setq dabbrev-friend-buffer-function 'sanityinc/dabbrev-friend-buffer)
 
 

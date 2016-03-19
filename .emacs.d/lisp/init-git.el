@@ -19,9 +19,9 @@
 ;;  '(diff-removed ((t (:foreground "#991414" :background nil :inherit nil)))))
 (custom-set-faces
  '(magit-diff-added ((t (:background "black" :foreground "green"))))
- '(magit-diff-added-highlight ((t (:background "green" :foreground "black"))))
+ '(magit-diff-added-highlight ((t (:background "black" :foreground "green"))))
  '(magit-diff-removed ((t (:background "black" :foreground "pink"))))
- '(magit-diff-removed-highlight ((t (:background "pink" :foreground "black"))))
+ '(magit-diff-removed-highlight ((t (:background "black" :foreground "pink"))))
  '(magit-hash ((t (:foreground "red")))))
 
 ;; Hint: customize `magit-repo-dirs' so that you can use C-u M-F12 to
@@ -92,6 +92,14 @@
     (set-face-foreground 'git-gutter+-added "green")
     (set-face-foreground 'git-gutter+-deleted "red")
     ))
+
+
+;;; Git grep
+(require-package 'helm-git-grep)
+(global-set-key (kbd "C-c ; G") 'helm-git-grep)
+(define-key isearch-mode-map (kbd "C-c ; G") 'helm-git-grep-from-isearch)
+(eval-after-load 'helm
+  '(define-key helm-map (kbd "C-c ; G") 'helm-git-grep-from-helm))
 
 
 ;; Convenient binding for vc-git-grep

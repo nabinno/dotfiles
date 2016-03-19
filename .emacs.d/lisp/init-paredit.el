@@ -1,13 +1,16 @@
+;;; init-paredit --- basic paredit configuration
+;;; Commentary:
+;;; Code:
 (require-package 'paredit)
 ;; (autoload 'enable-paredit-mode "paredit")
-(add-hook 'after-init-hook 'enable-paredit-mode)
-(add-hook 'prog-mode-hook 'enable-paredit-mode)
+(add-hook 'after-init-hook 'disable-paredit-mode)
+(add-hook 'prog-mode-hook 'disable-paredit-mode)
 
 ;; Enable paredit for a couple for non lisp modes; tweak
 ;; paredit-space-for-delimiter-predicates to avoid inserting spaces
 ;; before open parens.
 (dolist (mode
-         '(ruby js js2 cperl elixir erlang python jade haml))
+         '(emacs-lisp ruby js js2 cperl elixir erlang python jade haml))
   (add-hook (intern (format "%s-mode-hook" mode))
             '(lambda ()
                (add-to-list
@@ -20,7 +23,6 @@
   (unless (or (memq major-mode '(inferior-emacs-lisp-mode cider-repl-mode))
               (minibufferp))
     (local-set-key (kbd "RET") 'paredit-newline)))
-
 (add-hook 'paredit-mode-hook 'maybe-map-paredit-newline)
 
 (after-load 'paredit
@@ -36,7 +38,6 @@
 
   ;; Allow my global binding of M-? to work when paredit is active
   (define-key paredit-mode-map (kbd "M-?") nil))
-
 
 ;; Compatibility with other modes
 (suspend-mode-during-cua-rect-selection 'paredit-mode)
@@ -59,8 +60,7 @@
       (enable-paredit-mode)))
 
 
-;; Enable some handy paredit functions in all prog modes
-
+;;; Enable some handy paredit functions in all prog modes
 (require-package 'paredit-everywhere)
 (add-hook 'prog-mode-hook 'paredit-everywhere-mode)
 (add-hook 'css-mode-hook 'paredit-everywhere-mode)
@@ -68,7 +68,7 @@
     (define-key paredit-everywhere-mode-map [remap kill-sentence] 'paredit-kill))
 
 
-;; Keybind
+;;; Keybind
 (add-hook 'paredit-mode-hook
           (lambda ()
             (mapc (lambda (pair)
@@ -91,7 +91,8 @@
                     ("M-[ [" . paredit-wrap-square)
                     ))))
 
-;; Emacs Lisp
+
+;;; Emacs Lisp
 (fset 'paredit--next-block-elisp "\C-a\C-[\C-f\C-[\C-f\C-[\C-b")
 (fset 'paredit--previous-block-elisp "\C-a\C-[\C-b")
 (add-hook 'emacs-lisp-mode-hook
@@ -105,7 +106,8 @@
                     ("" . paredit--previous-block-elisp)
                     ))))
 
-;; JavaScript
+
+;;; JavaScript
 (fset 'paredit--next-block-js "\C-a\C-[\C-f\C-[\C-f\C-[\C-f\C-[\C-f\C-[\C-b")
 (fset 'paredit--previous-block-js "\C-a\C-[\C-b")
 (add-hook 'js2-mode-hook
@@ -116,9 +118,10 @@
                       (define-key paredit-mode-map
                         (read-kbd-macro key) func)))
                   '(("" . paredit--next-block-js)
-                    ("" . paredit--previous-block-js)
-                    ))))
+                    ("" . paredit--previous-block-js)))
+            ))
 
 
 
 (provide 'init-paredit)
+;;; init-paredit.el ends here.
