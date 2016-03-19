@@ -725,9 +725,10 @@ if ! type -p go > /dev/null ; then get-go ; fi
 function set-go () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
-            goenv global $REQUIRED_GO_VERSION ;;
+            goenv global $REQUIRED_GO_VERSION > /dev/null ;;
     esac
 }
+if type -p go > /dev/null ; then set-go ; fi
 function get-global-go-packages () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
@@ -1852,7 +1853,7 @@ alias vbm='VBoxManage'
 
 # 4. IntegratedDevelopmentEnvironment::SoftwareDeployment::Docker
 # ---------------------------------------------------------------
-# ### installation ###
+# ### setup ###
 function get-docker () {
     case "${OSTYPE}" in
         freebsd*|darwin*) ;;
@@ -1879,7 +1880,37 @@ function get-docker () {
     esac
 }
 if ! type -p docker > /dev/null ; then get-docker ; fi
+function docker-restart () {
+    case "${OSTYPE}" in
+        darwin*)
+            sudo service docker stop
+            sudo service docker start
+            sudo service docker status ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo service docker stop
+                    sudo service docker start
+                    sudo service docker status ;;
+                Debian|Ubuntu) ;;
+            esac
+    esac
+}
+function docker-status () {
+    case "${OSTYPE}" in
+        darwin*) sudo service docker status ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) sudo service docker status ;;
+                Debian|Ubuntu) ;;
+            esac
+    esac
+}
 # ### alias ###
+alias dcr="docker-restart"
+alias dcp="ps aux | \grep -G 'docker.*'"
+alias dcs="docker-status"
+alias dck="sudo killall docker"
 alias dc='docker commit $(docker ps -l -q)'
 alias dd='docker rmi -f'
 alias dda='docker rmi -f $(docker images -q)'
