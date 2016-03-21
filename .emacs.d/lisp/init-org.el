@@ -175,8 +175,8 @@
 (setq blog-admin-backend-type 'org-page)
 
 
-;;; org-tree-slide
-(require-package 'org-tree-slide)
+;; ;;; org-tree-slide
+;; (require-package 'org-tree-slide)
 
 
 ;;; Temporary setting
