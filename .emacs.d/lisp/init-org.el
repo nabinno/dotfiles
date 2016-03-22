@@ -165,7 +165,6 @@
 
 ;;; org-trello
 (require-package 'org-trello)
-(add-hook 'org-mode-hook 'org-trello-mode)
 
 
 ;;; org-page
@@ -175,8 +174,8 @@
 (setq blog-admin-backend-type 'org-page)
 
 
-;; ;;; org-tree-slide
-;; (require-package 'org-tree-slide)
+;;; org-tree-slide
+(require-package 'org-tree-slide)
 
 
 ;;; Temporary setting
