@@ -91,6 +91,36 @@
   (add-to-list 'auto-mode-alist '("\\.coffee\\.erb\\'" . coffee-mode)))
 
 
+;;; TypeScript
+(require-package 'tide)
+(require-package 'typescript-mode)
+
+;; Flycheck specifics
+(when (> emacs-major-version 23)
+  (require-package 'flycheck-typescript-tslint)
+  (after-load 'flycheck
+    (add-hook 'typescript-mode-hook #'flycheck-typescript-tslint-setup)
+
+    (defun sanityinc/flycheck-typescript-reconfigure ()
+      "Reconfigure flycheck typescript settings, e.g. after changing cabal file."
+      (interactive)
+      (unless (eq major-mode 'typescript-mode)
+        (error "Expected to be in typescript-mode"))
+      (flycheck-typescript-clear-config-cache)
+      (flycheck-typescript-configure)
+      (flycheck-mode -1)
+      (flycheck-mode))
+
+    (defadvice typescript-mode-stylish-buffer (around skip-if-flycheck-errors activate)
+      "Don't run stylish-buffer if the buffer appears to have a syntax error.
+This isn't a hard guarantee, since flycheck might sometimes not run until the file has
+been saved."
+      (unless (flycheck-has-current-errors-p 'error)
+        ad-do-it))
+
+    (require 'flycheck-typescript-tslint)))
+
+
 ;;; Run and interact with an inferior JS via js-comint.el
 (setq inferior-js-program-command "js")
 
