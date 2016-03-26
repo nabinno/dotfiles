@@ -165,7 +165,6 @@
 
 ;;; org-trello
 (require-package 'org-trello)
-(add-hook 'org-mode-hook 'org-trello-mode)
 
 
 ;;; org-page
