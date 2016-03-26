@@ -1026,7 +1026,17 @@ if ! type -p pip > /dev/null ; then get-pip ; fi
 
 # 2. ProgrammingLanguage::Perl
 # ----------------------------
-REQUIRED_PERL_VERSION=5.18.2
+REQUIRED_PERL_VERSION=5.20.3
+# export INSTALL_AS_USER
+# export LD_LIBRARY_PATH=$HOME/.local/lib
+# export MODULEBUILDRC=$HOME/.local/.modulebuildrc
+# export PERL5LIB=$HOME/.local/lib/perl5:$PERL5LIB
+export PERL_CPANM_OPT="--prompt --reinstall -l ~/.local/perl --mirror http://cpan.cpantesters.org"
+# export PERL_CPANM_OPT="-l ~/.local --mirror ~/.cpan/minicpan/"
+# export PERL_MM_OPT="INSTALL_BASE=$HOME/.local"
+# export PKG_DBDIR=$HOME/.local/var/db/pkg
+# export PORT_DBDIR=$HOME/.local/var/db/pkg
+# export TMPDIR=$HOME/.local/tmp
 # ### version control ###
 function get-plenv () {
     case "${OSTYPE}" in
@@ -1038,56 +1048,89 @@ if ! type -p plenv > /dev/null ; then get-plenv ; fi
 function get-perl () {
     case "${OSTYPE}" in
         cygwin) apt-cyg install perl ;;
-        freebsd*|darwin*|linux*)
+        freebsd*|darwin*)
             plenv install $REQUIRED_PERL_VERSION
             plenv rehash
             plenv global $REQUIRED_PERL_VERSION
-            plenv install-cpanm
+            plenv install-cpanm ;;
+        linux*)
+            case $DIST in
+                Redhat|RedHat)
+                    nix-install perl-$REQUIRED_PERL_VERSION
+                    nix-install perl-App-cpanminus ;;
+                Debian|Ubuntu)
+                    plenv install $REQUIRED_PERL_VERSION
+                    plenv rehash
+                    plenv global $REQUIRED_PERL_VERSION
+                    plenv install-cpanm ;;
+            esac
     esac
 }
 if ! type -p perl > /dev/null ; then get-perl ; fi
+# eval $(perl -I$HOME/.local/lib/perl5 -Mlocal::lib=$HOME/.local)
 # ### plagger ###
+function get-plagger () {
+    case "${OSTYPE}" in
+        cygwin) ;;
+        freebsd*|darwin*)
+            cpanm -fi YAML::Loader \
+                  XML::LibXML \
+                  XML::LibXML::SAX \
+                  XML::LibXML::XPathContext \
+                  XML::Liberal \
+                  Text::Glob \
+                  Module::Runtime \
+                  Params::Util \
+                  Digest::SHA1 \
+                  Class::Load \
+                  XML::RSS \
+                  XML::RSS::LibXML \
+                  XML::RSS::Liberal \
+                  XML::Feed \
+                  XML::Feed::RSS \
+                  XML::Atom \
+                  WebService::Bloglines \
+                  Plagger ;;
+        linux*)
+            case $DIST in
+                Redhat|RedHat) ;;
+                Debian|Ubuntu)
+                    cpanm -fi YAML::Loader \
+                          XML::LibXML \
+                          XML::LibXML::SAX \
+                          XML::LibXML::XPathContext \
+                          XML::Liberal \
+                          Text::Glob \
+                          Module::Runtime \
+                          Params::Util \
+                          Digest::SHA1 \
+                          Class::Load \
+                          XML::RSS \
+                          XML::RSS::LibXML \
+                          XML::RSS::Liberal \
+                          XML::Feed \
+                          XML::Feed::RSS \
+                          XML::Atom \
+                          WebService::Bloglines \
+                          Plagger
+            esac
+    esac
+}
+function get-org-asana () {
+    yes | cpanm -fi Moose \
+          WWW::Asana \
+          Org::Parser \
+          YAML
+}
 function get-global-cpan-packages () {
-    cpanm -fi \
-          # plagger
-          YAML::Loader \
-          XML::LibXML \
-          XML::LibXML::SAX \
-          XML::LibXML::XPathContext \
-          XML::Liberal \
-          Text::Glob \
-          Module::Runtime \
-          Params::Util \
-          Digest::SHA1 \
-          Class::Load \
-          XML::RSS \
-          XML::RSS::LibXML \
-          XML::RSS::Liberal \
-          XML::Feed \
-          XML::Feed::RSS \
-          XML::Atom \
-          WebService::Bloglines \
-          Plagger \
-          # other
-          Carton
+    yes | cpanm -fi Carton
 }
 # ### cpan ###
-function cpanmodulelist () { perl -e "print \"@INC\"" | find -name "*.pm" -print }
-function cpanmoduleversion () { perl -M$1 -le "print \$$1::VERSION" }
+function cpan-module-list () { perl -e "print \"@INC\"" | find -name "*.pm" -print }
+function cpan-module-version () { perl -M$1 -le "print \$$1::VERSION" }
 function cpan-uninstall () { perl -MConfig -MExtUtils::Install -e '($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1' }
 alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 # alias cpan-uninstall='perl -MConfig -MExtUtils::Install -e '"'"'($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1'"'"
-# eval $(perl -I$HOME/.local/lib/perl5 -Mlocal::lib=$HOME/.local)
-# export PKG_DBDIR=$HOME/local/var/db/pkg
-# export PORT_DBDIR=$HOME/local/var/db/pkg
-# export INSTALL_AS_USER
-# export LD_LIBRARY_PATH=$HOME/local/lib
-# export TMPDIR=$HOME/local/tmp
-# export MODULEBUILDRC=$HOME/local/.modulebuildrc
-# export PERL_MM_OPT="INSTALL_BASE=$HOME/local"
-# export PERL5LIB=$HOME/local/lib/perl5:$PERL5LIB
-# export PERL_CPANM_OPT="-l ~/local --mirror http://ftp.funet.fi/pub/languages/perl/CPAN/"
-# export PERL_CPANM_OPT="-l ~/local --mirror ~/.cpan/minicpan/"
 
 
 # 2. ProgrammingLanguage::Javascript
@@ -2509,3 +2552,9 @@ alias v="cat"
 function t () { \mv (.*~|.*.org*|*.org*|*.tar.gz|*.stackdump|*.tar.gz|*.asx|*.0|*.msi|*.wav|*.doc|*.pdf|$1) .old/ }
 # ### other source file ###
 if [ -f ~/.zshrc.mine ]; then source ~/.zshrc.mine; fi
+
+PATH="/home/vagrant/perl5/bin${PATH+:}${PATH}"; export PATH;
+PERL5LIB="/home/vagrant/perl5/lib/perl5${PERL5LIB+:}${PERL5LIB}"; export PERL5LIB;
+PERL_LOCAL_LIB_ROOT="/home/vagrant/perl5${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"; export PERL_LOCAL_LIB_ROOT;
+PERL_MB_OPT="--install_base \"/home/vagrant/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=/home/vagrant/perl5"; export PERL_MM_OPT;
