@@ -78,6 +78,13 @@
 (add-hook 'org-mode-hook 'org-mode-init)
 
 
+;;; OX
+(require-package 'ox-gfm)
+
+(unless (require 'ox-qmd nil 'noerror)
+  (el-get-bundle 0x60df/ox-qmd))
+
+
 ;;; Org clock
 ;; Save the running clock and all clock history when exiting Emacs, load it on startup
 (setq org-clock-persistence-insinuate t)
