@@ -2391,8 +2391,9 @@ function cd-dove () {
 alias zd=cd-dove
 # ### dotfiles ###
 function get-dotfiles () {
-    while getopts ":m:ih" opt ; do
+    while getopts ":c:m:ih" opt ; do
         case $opt in
+            "c") is_credential=true ;;
             "m") is_mu4e=true ;;
             "i") is_init_el=true ;;
             "h") echo ''
@@ -2423,8 +2424,9 @@ function get-dotfiles () {
         cp -pr ~/.zshenv .
         cp -pr ~/.zshrc .
         case "${OSTYPE}" in (freebsd*|darwin*|linux*) cp -pr ~/.screenrc . ;; esac
-        [ $is_mu4e ]    || git checkout -- .emacs.d/lisp/init-mu4e.el
-        [ $is_init_el ] || git checkout -- .emacs.d/init.el
+        [ $is_credential ] || git checkout -- .emacs.d/lisp/init-credential.el
+        [ $is_mu4e ]       || git checkout -- .emacs.d/lisp/init-mu4e.el
+        [ $is_init_el ]    || git checkout -- .emacs.d/init.el
     fi
 }
 alias zg='get-dotfiles'
@@ -2441,6 +2443,7 @@ function put-dotfiles () {
     git checkout develop
     git pull
     rm -rf .emacs.d/lisp/init-mu4e.el
+    rm -rf .emacs.d/lisp/init-credential.el
     # main proc
     cp -pr .emacs.d/lisp/*       ~/.emacs.d/lisp/;   wait
     cp -pr .emacs.d/bin/*        ~/.emacs.d/bin/;    wait
@@ -2455,6 +2458,7 @@ function put-dotfiles () {
     esac
     # post proc
     git checkout -- .emacs.d/lisp/init-mu4e.el
+    git checkout -- .emacs.d/lisp/init-credential.el
     cd $current_pwd
     exec -l zsh
 }
