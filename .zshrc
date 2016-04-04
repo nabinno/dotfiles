@@ -1250,7 +1250,7 @@ alias pgr="pg-restart"
 alias pgp="ps aux | \grep -G 'postgresql.*'"
 alias pgs="pg-status"
 alias pgk="sudo killall postgresql"
-alias psql='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus psql'
+# alias psql='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus psql'
 
 
 # 3. Daemon::Database::Mysql
@@ -1326,7 +1326,7 @@ alias mr="my-restart"
 alias mp="ps aux | \grep -G 'mysql.*'"
 alias ms="my-status"
 alias mk="sudo killall mysqld"
-alias mysql="rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus mysql -uroot --pager='less -S'"
+# alias mysql="rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus mysql -uroot --pager='less -S'"
 
 
 # 3. Daemon::Database::Redis
@@ -1365,7 +1365,7 @@ function redis-status () {
         linux*) ps aux | \grep -G 'redis.*' ;;
     esac
 }
-alias redis-cli='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus redis-cli'
+# alias redis-cli='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus redis-cli'
 alias redis-cli-monitor='redis-cli monitor'
 alias redis-cli-info='redis-cli info'
 alias redis-cli-dump='redis-cli bgsave'
