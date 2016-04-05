@@ -1693,13 +1693,9 @@ if ! type -p gibo > /dev/null ; then get-gibo ; fi
 function get-bfg () {
     REQUIRED_BFG_VERSION=1.12.12
     case "${OSTYPE}" in
-        freebsd*) ;;
-        darwin*|linux*)
-            case $DIST in
-                RedHat|Redhat|Debian|Ubuntu)
-                    wget http://repo1.maven.org/maven2/com/madgag/bfg/${REQUIRED_BFG_VERSION}/bfg-${REQUIRED_BFG_VERSION}.jar  -O ~/.local/bin/bfg.jar
-                    alias bfg='java -jar ~/.local/bin/bfg.jar' ;;
-            esac
+        freebsd*|darwin*|linux*)
+            wget http://repo1.maven.org/maven2/com/madgag/bfg/${REQUIRED_BFG_VERSION}/bfg-${REQUIRED_BFG_VERSION}.jar  -O ~/.local/bin/bfg.jar
+            alias bfg='java -jar ~/.local/bin/bfg.jar' ;;
     esac
 }
 if [ ! -f ~/.local/bin/bfg.jar ] ; then get-bfg ; fi
