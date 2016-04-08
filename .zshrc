@@ -781,7 +781,7 @@ function get-java () {
 function set-javahome () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
-            export JAVA_HOME=~/.nix-profile
+            export JAVA_HOME=~/.nix-profile/lib/openjdk
             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
     esac
 }
@@ -1135,7 +1135,7 @@ alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 
 # 2. ProgrammingLanguage::Javascript
 # ----------------------------------
-export REQUIRED_NODE_VERSION='4.2.4'
+export REQUIRED_NODE_VERSION='5.8.0'
 export node='NODE_NO_READLINE=1 node'
 # ### version control ###
 function get-ndenv () {
@@ -1250,7 +1250,7 @@ alias pgr="pg-restart"
 alias pgp="ps aux | \grep -G 'postgresql.*'"
 alias pgs="pg-status"
 alias pgk="sudo killall postgresql"
-alias psql='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus psql'
+# alias psql='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus psql'
 
 
 # 3. Daemon::Database::Mysql
@@ -1326,7 +1326,7 @@ alias mr="my-restart"
 alias mp="ps aux | \grep -G 'mysql.*'"
 alias ms="my-status"
 alias mk="sudo killall mysqld"
-alias mysql="rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus mysql -uroot --pager='less -S'"
+# alias mysql="rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus mysql -uroot --pager='less -S'"
 
 
 # 3. Daemon::Database::Redis
@@ -1365,7 +1365,7 @@ function redis-status () {
         linux*) ps aux | \grep -G 'redis.*' ;;
     esac
 }
-alias redis-cli='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus redis-cli'
+# alias redis-cli='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus redis-cli'
 alias redis-cli-monitor='redis-cli monitor'
 alias redis-cli-info='redis-cli info'
 alias redis-cli-dump='redis-cli bgsave'
@@ -1682,13 +1682,21 @@ function get-gibo () {
     case "${OSTYPE}" in
         freebsd*) ;;
         darwin*|linux*)
-            case $DIST in
-                RedHat|Redhat) ;;
-                Debian|Ubuntu) brew install gibo ;;
-            esac
+            brew install gibo ;;
     esac
 }
 if ! type -p gibo > /dev/null ; then get-gibo ; fi
+# ### bfg ###
+function get-bfg () {
+    REQUIRED_BFG_VERSION=1.12.12
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            wget http://repo1.maven.org/maven2/com/madgag/bfg/${REQUIRED_BFG_VERSION}/bfg-${REQUIRED_BFG_VERSION}.jar  -O ~/.local/bin/bfg.jar
+            alias bfg='java -jar ~/.local/bin/bfg.jar' ;;
+    esac
+}
+if [ ! -f ~/.local/bin/bfg.jar ] ; then get-bfg ; fi
+if [ -f ~/.local/bin/bfg.jar ] ; then alias bfg='java -jar ~/.local/bin/bfg.jar' ; fi
 # ### alias ###
 alias g='git'
 alias ga='git add -v'
@@ -2391,8 +2399,9 @@ function cd-dove () {
 alias zd=cd-dove
 # ### dotfiles ###
 function get-dotfiles () {
-    while getopts ":m:ih" opt ; do
+    while getopts ":c:m:ih" opt ; do
         case $opt in
+            "c") is_credential=true ;;
             "m") is_mu4e=true ;;
             "i") is_init_el=true ;;
             "h") echo ''
@@ -2423,8 +2432,9 @@ function get-dotfiles () {
         cp -pr ~/.zshenv .
         cp -pr ~/.zshrc .
         case "${OSTYPE}" in (freebsd*|darwin*|linux*) cp -pr ~/.screenrc . ;; esac
-        [ $is_mu4e ]    || git checkout -- .emacs.d/lisp/init-mu4e.el
-        [ $is_init_el ] || git checkout -- .emacs.d/init.el
+        [ $is_credential ] || git checkout -- .emacs.d/lisp/init-credential.el
+        [ $is_mu4e ]       || git checkout -- .emacs.d/lisp/init-mu4e.el
+        [ $is_init_el ]    || git checkout -- .emacs.d/init.el
     fi
 }
 alias zg='get-dotfiles'
@@ -2441,6 +2451,7 @@ function put-dotfiles () {
     git checkout develop
     git pull
     rm -rf .emacs.d/lisp/init-mu4e.el
+    rm -rf .emacs.d/lisp/init-credential.el
     # main proc
     cp -pr .emacs.d/lisp/*       ~/.emacs.d/lisp/;   wait
     cp -pr .emacs.d/bin/*        ~/.emacs.d/bin/;    wait
@@ -2455,6 +2466,7 @@ function put-dotfiles () {
     esac
     # post proc
     git checkout -- .emacs.d/lisp/init-mu4e.el
+    git checkout -- .emacs.d/lisp/init-credential.el
     cd $current_pwd
     exec -l zsh
 }
