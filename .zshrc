@@ -781,7 +781,7 @@ function get-java () {
 function set-javahome () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
-            export JAVA_HOME=~/.nix-profile
+            export JAVA_HOME=~/.nix-profile/lib/openjdk
             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
     esac
 }
@@ -1135,7 +1135,7 @@ alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 
 # 2. ProgrammingLanguage::Javascript
 # ----------------------------------
-export REQUIRED_NODE_VERSION='4.2.4'
+export REQUIRED_NODE_VERSION='5.8.0'
 export node='NODE_NO_READLINE=1 node'
 # ### version control ###
 function get-ndenv () {
@@ -1682,10 +1682,7 @@ function get-gibo () {
     case "${OSTYPE}" in
         freebsd*) ;;
         darwin*|linux*)
-            case $DIST in
-                RedHat|Redhat) ;;
-                Debian|Ubuntu) brew install gibo ;;
-            esac
+            brew install gibo ;;
     esac
 }
 if ! type -p gibo > /dev/null ; then get-gibo ; fi
