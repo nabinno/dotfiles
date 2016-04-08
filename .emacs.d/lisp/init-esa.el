@@ -1,8 +1,7 @@
 ;;; init-esa --- esa configuration
 ;;; Commentary:
 ;;; Code:
-(unless (require 'esa nil 'noerror)
-    (el-get-bundle nabinno/esa.el))
+(require-package 'esa)
 
 (global-set-key (kbd "C-c ; e l") 'esa-list)
 (global-set-key (kbd "C-c ; e b") 'esa-buffer-wip)
