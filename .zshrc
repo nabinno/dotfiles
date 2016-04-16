@@ -1498,7 +1498,7 @@ function get-emacs () {
                     sudo apt-get build-dep emacs ;;
             esac
             local current_pwd=`pwd`
-            wget http://core.ring.gr.jp/pub/GNU/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
+            wget https://ftp.gnu.org/gnu/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
             tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
             cd emacs-$REQUIRED_EMACS_VERSION
             ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no
