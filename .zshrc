@@ -129,13 +129,10 @@ export PATH="$HOME/.local/dove/bin:$PATH"
 export PATH="$HOME/.anyenv/bin:$PATH"
 export PATH="$HOME/.parts/autoparts/bin:$PATH"
 export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
-export PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
-export PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
 export PATH="$HOME/.linuxbrew/bin:$PATH"
 export PATH="$HOME/.cask/bin:$PATH"
 export PATH="$HOME/.go.d/bin:$PATH"
-export PATH="$HOME/.local/google-cloud-sdk/bin:$PATH"
-export PATH="$HOME/.local/perl-$REQUIRED_PERL_VERSION/bin:$PATH"
+export PATH="$HOME/google-cloud-sdk/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
 
 
@@ -506,15 +503,6 @@ if ! type -p brew > /dev/null ; then get-brew ; fi
 # 1. BasicSettings::PackageManager::WindowsManagementFramework
 # ------------------------------------------------------------
 if [ "$OSTYPE" = "cygwin" ] ; then
-    function abstract-powershell () {
-        local args=$(echo $*)
-        powershell /c $args
-    }
-    function get-package ()         { abstract-powershell $0 $* }
-    function get-packageprovider () { abstract-powershell $0 $* }
-    function find-package ()        { abstract-powershell $0 $* }
-    function install-package ()     { abstract-powershell $0 $* }
-    function uninstall-package ()   { abstract-powershell $0 $* }
     function get-apt-cyg () {
         wget https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg -O /usr/local/bin/apt-cyg
         chmod 755 apt-cyg
@@ -528,18 +516,21 @@ if [ "$OSTYPE" = "cygwin" ] ; then
                 binutils \
                 cron \
                 curl \
+                ctags \
                 cygrunsrv \
                 cygutils \
                 cygwin \
                 cygwin-devel \
                 findutils \
                 gawk \
+                gcc-core \
                 git \
                 gnuplot \
                 grep \
                 hostname \
                 info \
                 less \
+                make \
                 mintty \
                 ping \
                 renameutils \
@@ -561,21 +552,29 @@ if [ "$OSTYPE" = "cygwin" ] ; then
                 zsh
     }
     if ! apt-cyg > /dev/null ; then get-apt-cyg ; fi
-    function get-wmf () {
-        find-package && get-packageprovider -name chocolatey
-    }
-    function get-global-wmf-packages () {
-        install-package FoxitReader
-        install-package Gpg4win
-        install-package InkScape
-        install-package IrfanView
-        install-package WinSplitRevolution
-        install-package googledrive
-        install-package 7zip
-        install-package f.lux
-        install-package terminals
-        install-package vagrant
-    }
+    # function abstract-powershell () {
+    #     local args=$(echo $*)
+    #     /cygdrive/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe /c $args
+    # }
+    # function get-package ()         { abstract-powershell $0 $* }
+    # function get-packageprovider () { abstract-powershell $0 $* }
+    # function find-package ()        { abstract-powershell $0 $* }
+    # function install-package ()     { abstract-powershell $0 $* }
+    # function uninstall-package ()   { abstract-powershell $0 $* }
+    # function get-wmf ()             { find-package && get-packageprovider -name chocolatey }
+    # function get-global-wmf-packages () {
+    #     install-package FoxitReader
+    #     install-package Gpg4win
+    #     install-package InkScape
+    #     install-package IrfanView
+    #     install-package WinSplitRevolution
+    #     install-package googledrive
+    #     install-package 7zip
+    #     install-package f.lux
+    #     install-package nodejs
+    #     install-package terminals
+    #     install-package vagrant
+    # }
 fi
 
 
@@ -984,6 +983,7 @@ alias fk="php-fastcgid stop"
 # 2. ProgrammingLanguage::Python
 # ------------------------------
 REQUIRED_PYTHON_VERSION=2.7.11
+export PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
 # ### version control ###
 function get-pyenv () {
     case "${OSTYPE}" in
@@ -994,7 +994,10 @@ if ! type -p pyenv > /dev/null ; then get-pyenv ; fi
 # ### installation ###
 function get-python () {
     case "${OSTYPE}" in
-        cygwin) apt-cyg install python ;;
+        cygwin)
+            apt-cyg install \
+                    python
+                    python-setuptools ;;
         freebsd*|darwin*|linux*)
             pyenv install $REQUIRED_PYTHON_VERSION
             pyenv rehash
@@ -1004,6 +1007,14 @@ function get-python () {
 if ! type -p python > /dev/null; then get-python ; fi
 function get-pip () {
     case "${OSTYPE}" in
+        cygwin)
+            if type -p easy_install-2.7 > /dev/null ; then
+                easy_install-2.7 https://pypi.python.org/packages/source/p/pip/pip-1.4.1.tar.gz
+                get-global-pip-packages
+            elif type -p easy_install-2.7 > /dev/null ; then
+                easy_install https://pypi.python.org/packages/source/p/pip/pip-1.4.1.tar.gz
+                get-global-pip-packages
+            fi ;;
         freebsd*|darwin*|linux*)
             easy_install pip
             get-global-pip-packages ;;
@@ -1037,6 +1048,12 @@ export PERL_CPANM_OPT="--prompt --reinstall -l ~/.local/perl --mirror http://cpa
 # export PKG_DBDIR=$HOME/.local/var/db/pkg
 # export PORT_DBDIR=$HOME/.local/var/db/pkg
 # export TMPDIR=$HOME/.local/tmp
+export PATH="$HOME/.local/perl-$REQUIRED_PERL_VERSION/bin:$PATH"
+PATH="~/perl5/bin${PATH+:}${PATH}"; export PATH;
+PERL5LIB="~/perl5/lib/perl5${PERL5LIB+:}${PERL5LIB}"; export PERL5LIB;
+PERL_LOCAL_LIB_ROOT="~/perl5${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"; export PERL_LOCAL_LIB_ROOT;
+PERL_MB_OPT="--install_base \"~/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=~/perl5"; export PERL_MM_OPT;
 # ### version control ###
 function get-plenv () {
     case "${OSTYPE}" in
@@ -1145,9 +1162,13 @@ function get-ndenv () {
 }
 if ! type -p ndenv > /dev/null ; then get-ndenv ; fi
 # ### installation ###
+case "$OSTYPE" in
+    cygwin)
+        function node { /cygdrive/c/Progra~1/nodejs/node.exe $* ; }
+        function npm  { /cygdrive/c/Progra~1/nodejs/npm      $* ; } ;;
+esac
 function get-node () {
     case "$OSTYPE" in
-        cygwin) install-package nodejs ;;
         linux*)
             ndenv install v$REQUIRED_NODE_VERSION
             ndenv rehash
@@ -1439,7 +1460,6 @@ alias mcm="memcached-monitor"
 alias mck="memcached-stop"
 
 
-
 # 3. Daemon::HttpServer::Nginx
 # ----------------------------
 REQUIRED_NGINX_VERSION=1.9.9
@@ -1567,14 +1587,17 @@ if ! type -p mu > /dev/null ; then get-mu ; fi
 # -------------------------------------------------
 REQUIRED_EMACS_VERSION=5.8
 function get-ctags () {
-    local current_pwd=`pwd`
-    wget http://prdownloads.sourceforge.net/ctags/ctags-$REQUIRED_EMACS_VERSION.tar.gz
-    tar zxf ctags-$REQUIRED_EMACS_VERSION.tar.gz
-    cd ctags-$REQUIRED_EMACS_VERSION
-    ./configure --prefix=$HOME/.local
-    make
-    sudo make install
-    cd $current_pwd
+    case "${OSTYPE}" in
+        freebsd*linux*)
+            local current_pwd=`pwd`
+            wget http://prdownloads.sourceforge.net/ctags/ctags-$REQUIRED_EMACS_VERSION.tar.gz
+            tar zxf ctags-$REQUIRED_EMACS_VERSION.tar.gz
+            cd ctags-$REQUIRED_EMACS_VERSION
+            ./configure --prefix=$HOME/.local
+            make
+            sudo make install
+            cd $current_pwd ;;
+    esac
 }
 if ! type -p ctags > /dev/null ; then get-ctags ; fi
 alias ctags=~/.local/bin/ctags
@@ -2318,9 +2341,9 @@ function get-gcloud () {
 function set-gcloud () {
     case "${OSTYPE}" in
         cygwin|darwin*|linux*)
-            source '/home/vagrant/.local/google-cloud-sdk/completion.zsh.inc'
-            source '/home/vagrant/.local/google-cloud-sdk/path.zsh.inc'
-            source '/home/vagrant/.local/google-cloud-sdk/completion.zsh.inc' ;;
+            source ~/google-cloud-sdk/completion.zsh.inc
+            source ~/google-cloud-sdk/path.zsh.inc
+            source ~/google-cloud-sdk/completion.zsh.inc ;;
     esac
 }
 if ! type -p gcloud > /dev/null ; then get-gcloud ; fi
@@ -2481,7 +2504,7 @@ alias c='/bin/cp -ipr'
 alias d='/bin/rm -fr'
 alias du="du -h"
 alias df="df -h"
-alias grep='egrep -ano'
+# alias grep='egrep -ano'
 alias egrep='\egrep -H -n'
 function gresreg () {
     for i in $(\grep -lr $1 *) ; do
@@ -2556,7 +2579,7 @@ function rename-recursively () {
 alias rnr="rename-recursively"
 alias s='/bin/ln -s'
 alias scp='/usr/bin/scp -Cpr'
-alias su="su -l"
+# alias su="su -l"
 alias u='tar zxvf'
 alias U='tar zcvf $1.tar.gz $1'
 alias uz='unzip'
@@ -2564,9 +2587,3 @@ alias v="cat"
 function t () { \mv (.*~|.*.org*|*.org*|*.tar.gz|*.stackdump|*.tar.gz|*.asx|*.0|*.msi|*.wav|*.doc|*.pdf|$1) .old/ }
 # ### other source file ###
 if [ -f ~/.zshrc.mine ]; then source ~/.zshrc.mine; fi
-
-PATH="/home/vagrant/perl5/bin${PATH+:}${PATH}"; export PATH;
-PERL5LIB="/home/vagrant/perl5/lib/perl5${PERL5LIB+:}${PERL5LIB}"; export PERL5LIB;
-PERL_LOCAL_LIB_ROOT="/home/vagrant/perl5${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"; export PERL_LOCAL_LIB_ROOT;
-PERL_MB_OPT="--install_base \"/home/vagrant/perl5\""; export PERL_MB_OPT;
-PERL_MM_OPT="INSTALL_BASE=/home/vagrant/perl5"; export PERL_MM_OPT;
