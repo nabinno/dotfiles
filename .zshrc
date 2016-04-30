@@ -692,10 +692,10 @@ function get-mix-packages () {
     mix archive.install https://github.com/phoenixframework/phoenix/releases/download/v$REQUIRED_PHOENIXFRAMEWORK_VERSION/phoenix_new-$REQUIRED_PHOENIXFRAMEWORK_VERSION.ez
 }
 function get-ex_top () {
+    cd ~
     git clone https://github.com/utkarshkukreti/ex_top
-    cd ex_top
-    mix escript.build
-    cp -fr ./ex_top ~/.local/bin/
+    cd ex_top && mix escript.build && cp -fr ./ex_top ~/.local/bin/
+    cd ~ && rm -fr ex_top
 }
 if ! type -p ex_top > /dev/null ; then get-ex_top ; fi
 
@@ -1902,18 +1902,18 @@ function get-wrk () {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
+                    cd ~
                     sudo yum groupinstall 'Development Tools'
                     sudo yum install openssl-devel
                     git clone https://github.com/wg/wrk.git
-                    cd wrk
-                    make
-                    cp wrk ~/.local/bin ;;
+                    cd wrk && make && cp wrk ~/.local/bin
+                    cd ~ && rm -fr wrk ;;
                 Debian|Ubuntu)
+                    cd ~
                     sudo apt-get install build-essential libssl-dev
                     git clone https://github.com/wg/wrk.git
-                    cd wrk
-                    make
-                    cp wrk ~/.local/bin ;;
+                    cd wrk && make && cp wrk ~/.local/bin
+                    cd ~ && rm -fr wrk ;;
             esac
     esac
 }
