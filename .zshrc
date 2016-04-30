@@ -691,6 +691,13 @@ function get-mix-packages () {
     mix local.hex
     mix archive.install https://github.com/phoenixframework/phoenix/releases/download/v$REQUIRED_PHOENIXFRAMEWORK_VERSION/phoenix_new-$REQUIRED_PHOENIXFRAMEWORK_VERSION.ez
 }
+function get-ex_top () {
+    git clone https://github.com/utkarshkukreti/ex_top
+    cd ex_top
+    mix escript.build
+    cp -fr ./ex_top ~/.local/bin/
+}
+if ! type -p ex_top > /dev/null ; then get-ex_top ; fi
 
 
 # 2. ProgrammingLanguage::Go
@@ -1505,7 +1512,7 @@ alias nk="sudo killall nginx"
 
 # 4. IntegratedDevelopmentEnvironment::Emacs
 # ------------------------------------------
-REQUIRED_EMACS_VERSION=24.5
+export REQUIRED_EMACS_VERSION=24.5
 # ### installation ###
 function get-emacs () {
     case "${OSTYPE}" in
@@ -1585,14 +1592,14 @@ if ! type -p mu > /dev/null ; then get-mu ; fi
 
 # 4. IntegratedDevelopmentEnvironment::Emacs::Ctags
 # -------------------------------------------------
-REQUIRED_EMACS_VERSION=5.8
+REQUIRED_CTAGS_VERSION=5.8
 function get-ctags () {
     case "${OSTYPE}" in
         freebsd*linux*)
             local current_pwd=`pwd`
-            wget http://prdownloads.sourceforge.net/ctags/ctags-$REQUIRED_EMACS_VERSION.tar.gz
-            tar zxf ctags-$REQUIRED_EMACS_VERSION.tar.gz
-            cd ctags-$REQUIRED_EMACS_VERSION
+            wget http://prdownloads.sourceforge.net/ctags/ctags-$REQUIRED_CTAGS_VERSION.tar.gz
+            tar zxf ctags-$REQUIRED_CTAGS_VERSION.tar.gz
+            cd ctags-$REQUIRED_CTAGS_VERSION
             ./configure --prefix=$HOME/.local
             make
             sudo make install
@@ -1888,6 +1895,29 @@ function get-ab () {
     esac
 }
 if ! type -p ab > /dev/null ; then get-ab ; fi
+function get-wrk () {
+    case "${OSTYPE}" in
+        freebsd*) ;;
+        darwin*) brew install wrk ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo yum groupinstall 'Development Tools'
+                    sudo yum install openssl-devel
+                    git clone https://github.com/wg/wrk.git
+                    cd wrk
+                    make
+                    cp wrk ~/.local/bin ;;
+                Debian|Ubuntu)
+                    sudo apt-get install build-essential libssl-dev
+                    git clone https://github.com/wg/wrk.git
+                    cd wrk
+                    make
+                    cp wrk ~/.local/bin ;;
+            esac
+    esac
+}
+if ! type -p wrk > /dev/null ; then get-wrk ; fi
 
 
 # 4. IntegratedDevelopmentEnvironment::OsLevelVirtualization::Vagrannt
@@ -2033,7 +2063,7 @@ function get-docker-compose () {
         freebsd*|darwin*) ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat) sudo pip install -U docker-compose ;;
+                Redhat|RedHat) pip install -U docker-compose ;;
                 Debian) pip install -U docker-compose ;;
                 Ubuntu)
                     case "${DIST_VERSION}" in
