@@ -1,3 +1,7 @@
+;;; init-editing ---  editing configuration
+;;; Commentary:
+;;; Code:
+
 (require-package 'unfill)
 (require-package 'whole-line-or-region)
 
@@ -386,11 +390,13 @@ With arg N, insert N newlines."
 (require-package 'highlight-escape-sequences)
 (hes-mode)
 
+
 
 (require-package 'guide-key)
 (setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-x 5" "C-c ;" "C-c ; f" "C-c ' f" "C-x n"))
 (guide-key-mode 1)
 (diminish 'guide-key-mode)
+
 
 
 ;; ;;; Time/Date
@@ -398,5 +404,16 @@ With arg N, insert N newlines."
 ;; (require-package 'wwtime)
 
 
+
+;;; Normalize
+(defun ucs-normalize-NFC-buffer ()
+  "Normalize character codes with NFC in this buffer."
+  (interactive)
+  (setq buffer-read-only nil)
+  (ucs-normalize-NFC-region (point-min) (point-max))
+  (setq buffer-read-only t))
+(global-set-key (kbd "C-c ; c") 'ucs-normalize-NFC-buffer)
+
 
 (provide 'init-editing-utils)
+;;; init-editing.el ends here
