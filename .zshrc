@@ -10,6 +10,7 @@
 # 1. BasicSettings::PackageManager::Anyenv
 # 2. ProgrammingLanguage::Ruby
 # 2. ProgrammingLanguage::Elixir
+# 2. ProgrammingLanguage::Haskell
 # 2. ProgrammingLanguage::Go
 # 2. ProgrammingLanguage::Java
 # 2. ProgrammingLanguage::Php
@@ -23,6 +24,7 @@
 # 3. Daemon::HttpServer::Nginx
 # 4. IntegratedDevelopmentEnvironment::Emacs
 # 4. IntegratedDevelopmentEnvironment::Emacs::Ctags
+# 4. IntegratedDevelopmentEnvironment::Emacs::Pandoc
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::Filesystem
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::Git
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::PlantUml
@@ -698,6 +700,29 @@ function get-ex_top () {
     cd ~ && rm -fr ex_top
 }
 if ! type -p ex_top > /dev/null ; then get-ex_top ; fi
+
+
+# 2. ProgrammingLanguage::Haskell
+# -------------------------------
+export REQUIRED_GHC_VERSION=7.10.3
+export REQUIRED_CABAL_VERSION=1.22.9.0
+function get-ghc {
+    case $OSTYPE in
+        freebsd*|darwin*|linux*)
+            nix-install ghc-${REQUIRED_GHC_VERSION}
+            get-cabal ;;
+    esac
+}
+function get-cabal {
+    case $OSTYPE in
+        freebsd*|darwin*|linux*)
+            nix-install cabal-install-${REQUIRED_CABAL_VERSION}
+            cabal update
+            get-cabal-packages ;;
+    esac
+}
+if ! type -p ghc > /dev/null ; then get-ghc ; fi
+if ! type -p cabal > /dev/null ; then get-cabal ; fi
 
 
 # 2. ProgrammingLanguage::Go
@@ -1608,6 +1633,19 @@ function get-ctags () {
 }
 if ! type -p ctags > /dev/null ; then get-ctags ; fi
 alias ctags=~/.local/bin/ctags
+
+
+# 4. IntegratedDevelopmentEnvironment::Emacs::Pandoc
+# --------------------------------------------------
+REQUIRED_PANDOC_VERSION=1.17.0.3
+function get-pandoc {
+    case $OSTYPE in
+        freebsd*|darwin*|linux*) nix-install pandoc-${REQUIRED_PANDOC_VERSION} ;;
+    esac
+}
+if ! type -p pandoc > /dev/null ; then get-pandoc ; fi
+alias pandocpdf="pandoc -V documentclass=ltjarticle --latex-engine=lualatex -t pdf"
+alias pandocslide="pandoc -t slidy -s"
 
 
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::Filesystem
