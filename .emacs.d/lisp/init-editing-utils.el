@@ -410,9 +410,30 @@ With arg N, insert N newlines."
   "Normalize character codes with NFC in this buffer."
   (interactive)
   (setq buffer-read-only nil)
+  (ucs-normalize-NFC-region (point-min) (point-max)))
+
+(defun ucs-normalize-NFC-buffer-in-read-only ()
+  "Normalize character codes with NFC in this read-only buffer."
+  (interactive)
+  (setq buffer-read-only nil)
   (ucs-normalize-NFC-region (point-min) (point-max))
   (setq buffer-read-only t))
-(global-set-key (kbd "C-c ; c") 'ucs-normalize-NFC-buffer)
+
+(defun recenter-top-bottom-with-normalize-NFC-buffer ()
+  "Setup recenter top-bottom with normalize-NFC-buffer."
+  (interactive)
+  (recenter-top-bottom)
+  (ucs-normalize-NFC-buffer))
+
+(defun recenter-top-bottom-with-normalize-NFC-buffer-in-read-only ()
+  "Setup recenter top-bottom with normalize-NFC-buffer-in-read-only."
+  (interactive)
+  (recenter-top-bottom)
+  (ucs-normalize-NFC-buffer-in-read-only))
+
+(global-set-key (kbd "C-l") 'recenter-top-bottom-with-normalize-NFC-buffer)
+(global-set-key (kbd "C-M-l") 'recenter-top-bottom-with-normalize-NFC-buffer-in-read-only)
+
 
 
 (provide 'init-editing-utils)
