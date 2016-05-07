@@ -718,8 +718,7 @@ export REQUIRED_CABAL_VERSION=1.22.9.0
 function get-ghc {
     case $OSTYPE in
         freebsd*|darwin*|linux*)
-            nix-install ghc-${REQUIRED_GHC_VERSION}
-            get-cabal ;;
+            nix-install ghc-${REQUIRED_GHC_VERSION} ;;
     esac
 }
 function get-cabal {
@@ -730,7 +729,7 @@ function get-cabal {
             get-cabal-packages ;;
     esac
 }
-if ! type -p ghc > /dev/null ; then get-ghc ; fi
+if ! type -p ghc > /dev/null ; then get-ghc && get-cabal ; fi
 if ! type -p cabal > /dev/null ; then get-cabal ; fi
 
 
@@ -747,18 +746,8 @@ function get-goenv () {
 if ! type -p goenv > /dev/null ; then get-goenv ; fi
 function get-go () {
     case "${OSTYPE}" in
-        freebsd*) ;;
-        darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) goenv install $REQUIRED_GO_VERSION ;;
-                Debian) ;;
-                Ubuntu)
-                    case "$DIST_VERSION" in
-                        12.04) parts install go ;;
-                        14.04) ;;
-                    esac
-            esac
+        freebsd*|darwin*) ;;
+        linux*) goenv install $REQUIRED_GO_VERSION ;;
     esac
 }
 if ! type -p go > /dev/null ; then get-go ; fi
@@ -807,6 +796,7 @@ function get-java () {
                 Ubuntu)
                     case $DIST_VERSION in
                         12.04)
+                            sudo add-apt-repositoryppa:openjdk-r/ppa
                             sudo apt-get update && sudo apt-get install -y openjdk-8-jdk
                             jenv add /usr/lib/jvm/java-1.8.0-openjdk-amd64/
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
