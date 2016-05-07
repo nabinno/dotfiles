@@ -10,6 +10,7 @@
 # 1. BasicSettings::PackageManager::Anyenv
 # 2. ProgrammingLanguage::Ruby
 # 2. ProgrammingLanguage::Elixir
+# 2. ProgrammingLanguage::Haskell
 # 2. ProgrammingLanguage::Go
 # 2. ProgrammingLanguage::Java
 # 2. ProgrammingLanguage::Php
@@ -23,6 +24,7 @@
 # 3. Daemon::HttpServer::Nginx
 # 4. IntegratedDevelopmentEnvironment::Emacs
 # 4. IntegratedDevelopmentEnvironment::Emacs::Ctags
+# 4. IntegratedDevelopmentEnvironment::Emacs::Pandoc
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::Filesystem
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::Git
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::PlantUml
@@ -45,6 +47,15 @@
 
 # 1. BasicSettings::OsDetect
 # --------------------------
+local OS=
+local KERNEL=
+local DIST=
+local DIST2=
+local PSUEDONAME=
+local REV=
+local MACH=
+local OSSTR=
+local CURRENT_USER=$(whoami)
 case "${OSTYPE}" in
     freebsd*|darwin*|linux*)
         [ -z "$PS1" ] && return
@@ -409,7 +420,7 @@ function get-nix () {
                                 sudo useradd -u `expr 20000 + $i` -g nixbld -c "Nix build user $i" -d /var/empty -s /noshell
                             done
                             sudo echo "build-users-group = nixbld" >> /etc/nix/nix.conf
-                            sudo chown -R vagrant /nix
+                            sudo chown -R ${CURRENT_USER} /nix
                             source ~/.nix-profile/etc/profile.d/nix.sh ;;
                     esac
             esac
@@ -429,10 +440,22 @@ function get-nix-packages () {
 if [ -f ~/.nix-profile/etc/profile.d/nix.sh ] ; then source ~/.nix-profile/etc/profile.d/nix.sh ; fi
 if [ ! -f ~/.nix-profile/etc/profile.d/nix.sh ] ; then get-nix ; fi
 if [ "$OSTYPE" = "linux*" ] && [ "$DIST" = "Ubuntu"] && [ "$DIST_VERSION" = "12.04" ] ; then alias nix-env='sudo nix-env' ; fi
-alias nix-install='nix-env --install '
-alias nix-uninstall='nix-env --uninstall '
-alias nix-search='nix-env -qa | \grep '
-alias nix-list='nix-env -q --installed'
+function nix-install   {
+    case "${OSTYPE}" in
+        darwin*) nix-env --install $1 ;;
+        linux*)
+            case $DIST in
+                Redhat|RedHat|Debian) nix-env --install $1 ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        14.04) nix-env --install $1 ;;
+                    esac
+            esac
+    esac
+}
+function nix-uninstall { nix-env --uninstall $1 }
+function nix-search    { nix-env -qa | \grep $1 }
+function nix-list      { nix-env -q --installed $1 }
 
 
 # 1. BasicSettings::PackageManager::Autoparts
@@ -692,12 +715,52 @@ function get-mix-packages () {
     mix archive.install https://github.com/phoenixframework/phoenix/releases/download/v$REQUIRED_PHOENIXFRAMEWORK_VERSION/phoenix_new-$REQUIRED_PHOENIXFRAMEWORK_VERSION.ez
 }
 function get-ex_top () {
+    cd ~
     git clone https://github.com/utkarshkukreti/ex_top
-    cd ex_top
-    mix escript.build
-    cp -fr ./ex_top ~/.local/bin/
+    cd ex_top && mix escript.build && cp -fr ./ex_top ~/.local/bin/
+    cd ~ && rm -fr ex_top
 }
 if ! type -p ex_top > /dev/null ; then get-ex_top ; fi
+
+
+# 2. ProgrammingLanguage::Haskell
+# -------------------------------
+export REQUIRED_GHC_VERSION=7.10.3
+export REQUIRED_CABAL_VERSION=1.22.9.0
+function get-ghc {
+    case $OSTYPE in
+        freebsd*|darwin*) nix-install ghc-${REQUIRED_GHC_VERSION} ;;
+        linux*)
+            case $DIST in
+                Redhat*|RedHat*|Debian) nix-install ghc-${REQUIRED_GHC_VERSION} ;;
+                Ubuntu*)
+                    case $DIST_VERSION in
+                        14.04)  nix-install ghc-${REQUIRED_GHC_VERSION} ;;
+                    esac
+            esac
+    esac
+}
+function get-cabal {
+    case $OSTYPE in
+        freebsd*|darwin*)
+            nix-install cabal-install-${REQUIRED_CABAL_VERSION}
+            cabal update ;;
+        linux*)
+            case $DIST in
+                Redhat*|RedHat*|Debian)
+                    nix-install cabal-install-${REQUIRED_CABAL_VERSION}
+                    cabal update ;;
+                Ubuntu*)
+                    case $DIST_VERSION in
+                        14.04)
+                            nix-install cabal-install-${REQUIRED_CABAL_VERSION}
+                            cabal update ;;
+                    esac
+            esac
+    esac
+}
+if ! type -p ghc > /dev/null ; then get-ghc && get-cabal ; fi
+if ! type -p cabal > /dev/null ; then get-cabal ; fi
 
 
 # 2. ProgrammingLanguage::Go
@@ -713,18 +776,8 @@ function get-goenv () {
 if ! type -p goenv > /dev/null ; then get-goenv ; fi
 function get-go () {
     case "${OSTYPE}" in
-        freebsd*) ;;
-        darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) goenv install $REQUIRED_GO_VERSION ;;
-                Debian) ;;
-                Ubuntu)
-                    case "$DIST_VERSION" in
-                        12.04) parts install go ;;
-                        14.04) ;;
-                    esac
-            esac
+        freebsd*|darwin*) ;;
+        linux*) goenv install $REQUIRED_GO_VERSION ;;
     esac
 }
 if ! type -p go > /dev/null ; then get-go ; fi
@@ -773,6 +826,7 @@ function get-java () {
                 Ubuntu)
                     case $DIST_VERSION in
                         12.04)
+                            sudo add-apt-repositoryppa:openjdk-r/ppa
                             sudo apt-get update && sudo apt-get install -y openjdk-8-jdk
                             jenv add /usr/lib/jvm/java-1.8.0-openjdk-amd64/
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
@@ -786,9 +840,24 @@ function get-java () {
 }
 function set-javahome () {
     case "${OSTYPE}" in
-        freebsd*|darwin*|linux*)
+        freebsd*|darwin*)
             export JAVA_HOME=~/.nix-profile/lib/openjdk
             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian)
+                    export JAVA_HOME=~/.nix-profile/lib/openjdk
+                    jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        12.04)
+                            export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
+                            jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
+                        14.04)
+                            export JAVA_HOME=~/.nix-profile/lib/openjdk
+                            jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
+                    esac
+            esac
     esac
 }
 function get-play () {
@@ -824,6 +893,7 @@ if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ] ; then get-play && get-sbt ; fi
 # 2. ProgrammingLanguage::Php
 # ---------------------------
 # ### version control ###
+REQUIRED_PHP_VERSION=5.6.20
 function get-phpenv () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) anyenv install phpenv && exec -l zsh ;;
@@ -831,22 +901,9 @@ function get-phpenv () {
 }
 if ! type -p phpenv > /dev/null ; then get-phpenv ; fi
 # ### installation ###
-REQUIRED_PHP_VERSION=5.6.16
 function get-php () {
     case "${OSTYPE}" in
-        freebsd*|darwin*) nix-install php-$REQUIRED_PHP_VERSION ;;
-        linux*)
-            case "${DIST}" in
-                Debian) nix-install php-$REQUIRED_PHP_VERSION ;;
-                Ubuntu)
-                    case "$DIST_VERSION" in
-                        12.04) parts install \
-                                     php5 \
-                                     composer \
-                                     phpunit ;;
-                        14.04) nix-install php-$REQUIRED_PHP_VERSION ;;
-                    esac
-            esac
+        freebsd*|darwin*|linux*) nix-install php-$REQUIRED_PHP_VERSION ;;
     esac
 }
 if ! type -p php > /dev/null; then get-php; fi
@@ -1235,15 +1292,47 @@ PSQL_PAGER='less -S'
 # ### installation ###
 function get-postgresql () {
     case "${OSTYPE}" in
-        darwin*) nix-install postgresql-$REQUIRED_POSTGRESQL_VERSION ;;
+        darwin*)
+            nix-install postgresql-$REQUIRED_POSTGRESQL_VERSION
+            set-postgresql ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat|Debian) nix-install postgresql-$REQUIRED_POSTGRESQL_VERSION ;;
+                Redhat|RedHat|Debian)
+                    nix-install postgresql-$REQUIRED_POSTGRESQL_VERSION
+                    set-postgresql ;;
                 Ubuntu) parts install postgresql ;;
             esac
     esac
 }
+function set-postgresql {
+    case "${OSTYPE}" in
+        darwin*)
+            if [ ! -d ~/.nix-profile/var/lib/postgres/data ]; then
+                local own=$(whoami)
+                sudo mkdir -p ~/.nix-profile/var/lib/postgres/data
+                sudo chown -R ${own}:${own} /nix
+                export PGDATA=~/.nix-profile/var/lib/postgres/data
+                initdb –-encoding=UTF8 —-no-locale
+            else
+                export PGDATA=~/.nix-profile/var/lib/postgres/data
+            fi ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian)
+                    if [ ! -d ~/.nix-profile/var/lib/postgres/data ]; then
+                        local own=$(whoami)
+                        sudo mkdir -p ~/.nix-profile/var/lib/postgres/data
+                        sudo chown -R ${own}:${own} /nix
+                        export PGDATA=~/.nix-profile/var/lib/postgres/data
+                        initdb –-encoding=UTF8 —-no-locale
+                    else
+                        export PGDATA=~/.nix-profile/var/lib/postgres/data
+                    fi ;;
+            esac
+    esac
+}
 if ! type -p psql > /dev/null ; then get-postgresql ; fi
+if   type -p psql > /dev/null ; then set-postgresql ; fi
 function pg-restart () {
     case "${OSTYPE}" in
         darwin*)
@@ -1367,8 +1456,18 @@ function get-redis () {
             nix-install redis-$REQUIRED_REDIS_VERSION
             nohup redis-server >/dev/null 2>&1 </dev/null & ;;
         linux*)
-            nix-install redis-$REQUIRED_REDIS_VERSION
-            nohup redis-server >/dev/null 2>&1 </dev/null & ;;
+            case "${DIST}" in
+                Redhat|RedHat|Debian)
+                    nix-install redis-$REQUIRED_REDIS_VERSION
+                    nohup redis-server >/dev/null 2>&1 </dev/null & ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        12.04) parts install redis ;;
+                        14.04)
+                            nix-install redis-$REQUIRED_REDIS_VERSION
+                            nohup redis-server >/dev/null 2>&1 </dev/null & ;;
+                    esac
+            esac
     esac
 }
 if ! type -p redis-cli > /dev/null ; then get-redis ; fi
@@ -1559,21 +1658,24 @@ function get-mu () {
             case "${DIST}" in
                 Debian) ;;
                 Ubuntu)
-                    sudo apt-get install -y \
-                         libgmime-2.6-dev \
-                         libxapian-dev \
-                         gnutls-bin \
-                         guile-2.0-dev \
-                         html2text \
-                         xdg-utils \
-                         offlineimap
-                    \git clone https://github.com/djcb/mu
-                    cd mu
-                    sudo autoreconf -i
-                    ./configure && make
-                    sudo make install
-                    cd .. && sudo rm -fr mu
-                    ln -s /usr/local/share/emacs/site-lisp/mu4e $HOME/.emacs.d/site-lisp/ ;;
+                    case $DIST_VERSION in
+                        14.04)
+                            sudo apt-get install -y \
+                                 libgmime-2.6-dev \
+                                 libxapian-dev \
+                                 gnutls-bin \
+                                 guile-2.0-dev \
+                                 html2text \
+                                 xdg-utils \
+                                 offlineimap
+                            \git clone https://github.com/djcb/mu
+                            cd mu
+                            sudo autoreconf -i
+                            ./configure && make
+                            sudo make install
+                            cd .. && sudo rm -fr mu
+                            ln -s /usr/local/share/emacs/site-lisp/mu4e $HOME/.emacs.d/site-lisp/ ;;
+                    esac
             esac
     esac
 }
@@ -1608,6 +1710,19 @@ function get-ctags () {
 }
 if ! type -p ctags > /dev/null ; then get-ctags ; fi
 alias ctags=~/.local/bin/ctags
+
+
+# 4. IntegratedDevelopmentEnvironment::Emacs::Pandoc
+# --------------------------------------------------
+REQUIRED_PANDOC_VERSION=1.17.0.3
+function get-pandoc {
+    case $OSTYPE in
+        freebsd*|darwin*|linux*) nix-install pandoc-${REQUIRED_PANDOC_VERSION} ;;
+    esac
+}
+if ! type -p pandoc > /dev/null ; then get-pandoc ; fi
+alias pandocpdf="pandoc -V documentclass=ltjarticle --latex-engine=lualatex -t pdf"
+alias pandocslide="pandoc -t slidy -s"
 
 
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::Filesystem
@@ -1902,18 +2017,18 @@ function get-wrk () {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
+                    cd ~
                     sudo yum groupinstall 'Development Tools'
                     sudo yum install openssl-devel
                     git clone https://github.com/wg/wrk.git
-                    cd wrk
-                    make
-                    cp wrk ~/.local/bin ;;
+                    cd wrk && make && cp wrk ~/.local/bin
+                    cd ~ && rm -fr wrk ;;
                 Debian|Ubuntu)
+                    cd ~
                     sudo apt-get install build-essential libssl-dev
                     git clone https://github.com/wg/wrk.git
-                    cd wrk
-                    make
-                    cp wrk ~/.local/bin ;;
+                    cd wrk && make && cp wrk ~/.local/bin
+                    cd ~ && rm -fr wrk ;;
             esac
     esac
 }
@@ -2456,6 +2571,7 @@ function get-dotfiles () {
         case $opt in
             "c") is_credential=true ;;
             "m") is_mu4e=true ;;
+            "e") is_esa=true ;;
             "i") is_init_el=true ;;
             "h") echo ''
                  echo "Usage: get-dotfiles [-mih]" 1>&2
@@ -2487,6 +2603,7 @@ function get-dotfiles () {
         case "${OSTYPE}" in (freebsd*|darwin*|linux*) cp -pr ~/.screenrc . ;; esac
         [ $is_credential ] || git checkout -- .emacs.d/lisp/init-credential.el
         [ $is_mu4e ]       || git checkout -- .emacs.d/lisp/init-mu4e.el
+        [ $is_esa ]        || git checkout -- .emacs.d/lisp/init-esa.el
         [ $is_init_el ]    || git checkout -- .emacs.d/init.el
     fi
 }
@@ -2504,6 +2621,7 @@ function put-dotfiles () {
     git checkout develop
     git pull
     rm -rf .emacs.d/lisp/init-mu4e.el
+    rm -rf .emacs.d/lisp/init-esa.el
     rm -rf .emacs.d/lisp/init-credential.el
     # main proc
     cp -pr .emacs.d/lisp/*       ~/.emacs.d/lisp/;   wait
@@ -2519,6 +2637,7 @@ function put-dotfiles () {
     esac
     # post proc
     git checkout -- .emacs.d/lisp/init-mu4e.el
+    git checkout -- .emacs.d/lisp/init-esa.el
     git checkout -- .emacs.d/lisp/init-credential.el
     cd $current_pwd
     exec -l zsh
@@ -2617,3 +2736,4 @@ alias v="cat"
 function t () { \mv (.*~|.*.org*|*.org*|*.tar.gz|*.stackdump|*.tar.gz|*.asx|*.0|*.msi|*.wav|*.doc|*.pdf|$1) .old/ }
 # ### other source file ###
 if [ -f ~/.zshrc.mine ]; then source ~/.zshrc.mine; fi
+
