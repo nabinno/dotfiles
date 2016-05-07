@@ -1,3 +1,7 @@
+;;; init-editing ---  editing configuration
+;;; Commentary:
+;;; Code:
+
 (require-package 'unfill)
 (require-package 'whole-line-or-region)
 
@@ -386,11 +390,13 @@ With arg N, insert N newlines."
 (require-package 'highlight-escape-sequences)
 (hes-mode)
 
+
 
 (require-package 'guide-key)
 (setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-x 5" "C-c ;" "C-c ; f" "C-c ' f" "C-x n"))
 (guide-key-mode 1)
 (diminish 'guide-key-mode)
+
 
 
 ;; ;;; Time/Date
@@ -398,5 +404,37 @@ With arg N, insert N newlines."
 ;; (require-package 'wwtime)
 
 
+
+;;; Normalize
+(defun ucs-normalize-NFC-buffer ()
+  "Normalize character codes with NFC in this buffer."
+  (interactive)
+  (setq buffer-read-only nil)
+  (ucs-normalize-NFC-region (point-min) (point-max)))
+
+(defun ucs-normalize-NFC-buffer-in-read-only ()
+  "Normalize character codes with NFC in this read-only buffer."
+  (interactive)
+  (setq buffer-read-only nil)
+  (ucs-normalize-NFC-region (point-min) (point-max))
+  (setq buffer-read-only t))
+
+(defun recenter-top-bottom-with-normalize-NFC-buffer ()
+  "Setup recenter top-bottom with normalize-NFC-buffer."
+  (interactive)
+  (recenter-top-bottom)
+  (ucs-normalize-NFC-buffer))
+
+(defun recenter-top-bottom-with-normalize-NFC-buffer-in-read-only ()
+  "Setup recenter top-bottom with normalize-NFC-buffer-in-read-only."
+  (interactive)
+  (recenter-top-bottom)
+  (ucs-normalize-NFC-buffer-in-read-only))
+
+(global-set-key (kbd "C-l") 'recenter-top-bottom-with-normalize-NFC-buffer)
+(global-set-key (kbd "C-M-l") 'recenter-top-bottom-with-normalize-NFC-buffer-in-read-only)
+
+
 
 (provide 'init-editing-utils)
+;;; init-editing.el ends here
