@@ -47,6 +47,15 @@
 
 # 1. BasicSettings::OsDetect
 # --------------------------
+local OS=
+local KERNEL=
+local DIST=
+local DIST2=
+local PSUEDONAME=
+local REV=
+local MACH=
+local OSSTR=
+local CURRENT_USER=$(whoami)
 case "${OSTYPE}" in
     freebsd*|darwin*|linux*)
         [ -z "$PS1" ] && return
@@ -411,7 +420,7 @@ function get-nix () {
                                 sudo useradd -u `expr 20000 + $i` -g nixbld -c "Nix build user $i" -d /var/empty -s /noshell
                             done
                             sudo echo "build-users-group = nixbld" >> /etc/nix/nix.conf
-                            sudo chown -R vagrant /nix
+                            sudo chown -R ${CURRENT_USER} /nix
                             source ~/.nix-profile/etc/profile.d/nix.sh ;;
                     esac
             esac
@@ -1260,15 +1269,47 @@ PSQL_PAGER='less -S'
 # ### installation ###
 function get-postgresql () {
     case "${OSTYPE}" in
-        darwin*) nix-install postgresql-$REQUIRED_POSTGRESQL_VERSION ;;
+        darwin*)
+            nix-install postgresql-$REQUIRED_POSTGRESQL_VERSION
+            set-postgresql ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat|Debian) nix-install postgresql-$REQUIRED_POSTGRESQL_VERSION ;;
+                Redhat|RedHat|Debian)
+                    nix-install postgresql-$REQUIRED_POSTGRESQL_VERSION
+                    set-postgresql ;;
                 Ubuntu) parts install postgresql ;;
             esac
     esac
 }
+function set-postgresql {
+    case "${OSTYPE}" in
+        darwin*)
+            if [ ! -d ~/.nix-profile/var/lib/postgres/data ]; then
+                local own=$(whoami)
+                sudo mkdir -p ~/.nix-profile/var/lib/postgres/data
+                sudo chown -R ${own}:${own} /nix
+                export PGDATA=~/.nix-profile/var/lib/postgres/data
+                initdb –-encoding=UTF8 —-no-locale
+            else
+                export PGDATA=~/.nix-profile/var/lib/postgres/data
+            fi ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian)
+                    if [ ! -d ~/.nix-profile/var/lib/postgres/data ]; then
+                        local own=$(whoami)
+                        sudo mkdir -p ~/.nix-profile/var/lib/postgres/data
+                        sudo chown -R ${own}:${own} /nix
+                        export PGDATA=~/.nix-profile/var/lib/postgres/data
+                        initdb –-encoding=UTF8 —-no-locale
+                    else
+                        export PGDATA=~/.nix-profile/var/lib/postgres/data
+                    fi ;;
+            esac
+    esac
+}
 if ! type -p psql > /dev/null ; then get-postgresql ; fi
+if   type -p psql > /dev/null ; then set-postgresql ; fi
 function pg-restart () {
     case "${OSTYPE}" in
         darwin*)
@@ -2655,3 +2696,4 @@ alias v="cat"
 function t () { \mv (.*~|.*.org*|*.org*|*.tar.gz|*.stackdump|*.tar.gz|*.asx|*.0|*.msi|*.wav|*.doc|*.pdf|$1) .old/ }
 # ### other source file ###
 if [ -f ~/.zshrc.mine ]; then source ~/.zshrc.mine; fi
+
