@@ -893,7 +893,7 @@ if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ] ; then get-play && get-sbt ; fi
 # 2. ProgrammingLanguage::Php
 # ---------------------------
 # ### version control ###
-REQUIRED_PHP_VERSION=5.6.16
+REQUIRED_PHP_VERSION=5.6.20
 function get-phpenv () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) anyenv install phpenv && exec -l zsh ;;
@@ -1648,21 +1648,24 @@ function get-mu () {
             case "${DIST}" in
                 Debian) ;;
                 Ubuntu)
-                    sudo apt-get install -y \
-                         libgmime-2.6-dev \
-                         libxapian-dev \
-                         gnutls-bin \
-                         guile-2.0-dev \
-                         html2text \
-                         xdg-utils \
-                         offlineimap
-                    \git clone https://github.com/djcb/mu
-                    cd mu
-                    sudo autoreconf -i
-                    ./configure && make
-                    sudo make install
-                    cd .. && sudo rm -fr mu
-                    ln -s /usr/local/share/emacs/site-lisp/mu4e $HOME/.emacs.d/site-lisp/ ;;
+                    case $DIST_VERSION in
+                        14.04)
+                            sudo apt-get install -y \
+                                 libgmime-2.6-dev \
+                                 libxapian-dev \
+                                 gnutls-bin \
+                                 guile-2.0-dev \
+                                 html2text \
+                                 xdg-utils \
+                                 offlineimap
+                            \git clone https://github.com/djcb/mu
+                            cd mu
+                            sudo autoreconf -i
+                            ./configure && make
+                            sudo make install
+                            cd .. && sudo rm -fr mu
+                            ln -s /usr/local/share/emacs/site-lisp/mu4e $HOME/.emacs.d/site-lisp/ ;;
+                    esac
             esac
     esac
 }
