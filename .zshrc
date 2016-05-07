@@ -717,16 +717,34 @@ export REQUIRED_GHC_VERSION=7.10.3
 export REQUIRED_CABAL_VERSION=1.22.9.0
 function get-ghc {
     case $OSTYPE in
-        freebsd*|darwin*|linux*)
-            nix-install ghc-${REQUIRED_GHC_VERSION} ;;
+        freebsd*|darwin*) nix-install ghc-${REQUIRED_GHC_VERSION} ;;
+        linux*)
+            case $DIST in
+                Redhat*|RedHat*|Debian) nix-install ghc-${REQUIRED_GHC_VERSION} ;;
+                Ubuntu*)
+                    case $DIST_VERSION in
+                        14.04)  nix-install ghc-${REQUIRED_GHC_VERSION} ;;
+                    esac
+            esac
     esac
 }
 function get-cabal {
     case $OSTYPE in
-        freebsd*|darwin*|linux*)
+        freebsd*|darwin*)
             nix-install cabal-install-${REQUIRED_CABAL_VERSION}
-            cabal update
-            get-cabal-packages ;;
+            cabal update ;;
+        linux*)
+            case $DIST in
+                Redhat*|RedHat*|Debian)
+                    nix-install cabal-install-${REQUIRED_CABAL_VERSION}
+                    cabal update ;;
+                Ubuntu*)
+                    case $DIST_VERSION in
+                        14.04)
+                            nix-install cabal-install-${REQUIRED_CABAL_VERSION}
+                            cabal update ;;
+                    esac
+            esac
     esac
 }
 if ! type -p ghc > /dev/null ; then get-ghc && get-cabal ; fi
@@ -848,6 +866,7 @@ if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ] ; then get-play && get-sbt ; fi
 # 2. ProgrammingLanguage::Php
 # ---------------------------
 # ### version control ###
+REQUIRED_PHP_VERSION=5.6.16
 function get-phpenv () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) anyenv install phpenv && exec -l zsh ;;
@@ -855,22 +874,9 @@ function get-phpenv () {
 }
 if ! type -p phpenv > /dev/null ; then get-phpenv ; fi
 # ### installation ###
-REQUIRED_PHP_VERSION=5.6.16
 function get-php () {
     case "${OSTYPE}" in
-        freebsd*|darwin*) nix-install php-$REQUIRED_PHP_VERSION ;;
-        linux*)
-            case "${DIST}" in
-                Debian) nix-install php-$REQUIRED_PHP_VERSION ;;
-                Ubuntu)
-                    case "$DIST_VERSION" in
-                        12.04) parts install \
-                                     php5 \
-                                     composer \
-                                     phpunit ;;
-                        14.04) nix-install php-$REQUIRED_PHP_VERSION ;;
-                    esac
-            esac
+        freebsd*|darwin*|linux*) nix-install php-$REQUIRED_PHP_VERSION ;;
     esac
 }
 if ! type -p php > /dev/null; then get-php; fi
