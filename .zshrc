@@ -851,7 +851,6 @@ function set-javahome () {
                 Ubuntu)
                     case $DIST_VERSION in
                         12.04)
-                            jenv add /usr/lib/jvm/java-1.8.0-openjdk-amd64/
                             export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                         14.04)
