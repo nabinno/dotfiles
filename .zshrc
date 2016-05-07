@@ -715,10 +715,13 @@ function get-mix-packages () {
     mix archive.install https://github.com/phoenixframework/phoenix/releases/download/v$REQUIRED_PHOENIXFRAMEWORK_VERSION/phoenix_new-$REQUIRED_PHOENIXFRAMEWORK_VERSION.ez
 }
 function get-ex_top () {
-    cd ~
-    git clone https://github.com/utkarshkukreti/ex_top
-    cd ex_top && mix escript.build && cp -fr ./ex_top ~/.local/bin/
-    cd ~ && rm -fr ex_top
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            cd ~
+            git clone https://github.com/utkarshkukreti/ex_top
+            cd ex_top && mix escript.build && cp -fr ./ex_top ~/.local/bin/
+            cd ~ && rm -fr ex_top ;;
+    esac
 }
 if ! type -p ex_top > /dev/null ; then get-ex_top ; fi
 
