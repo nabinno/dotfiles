@@ -1456,8 +1456,18 @@ function get-redis () {
             nix-install redis-$REQUIRED_REDIS_VERSION
             nohup redis-server >/dev/null 2>&1 </dev/null & ;;
         linux*)
-            nix-install redis-$REQUIRED_REDIS_VERSION
-            nohup redis-server >/dev/null 2>&1 </dev/null & ;;
+            case "${DIST}" in
+                Redhat|RedHat|Debian)
+                    nix-install redis-$REQUIRED_REDIS_VERSION
+                    nohup redis-server >/dev/null 2>&1 </dev/null & ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        12.04) parts install redis ;;
+                        14.04)
+                            nix-install redis-$REQUIRED_REDIS_VERSION
+                            nohup redis-server >/dev/null 2>&1 </dev/null & ;;
+                    esac
+            esac
     esac
 }
 if ! type -p redis-cli > /dev/null ; then get-redis ; fi
