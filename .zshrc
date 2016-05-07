@@ -440,10 +440,22 @@ function get-nix-packages () {
 if [ -f ~/.nix-profile/etc/profile.d/nix.sh ] ; then source ~/.nix-profile/etc/profile.d/nix.sh ; fi
 if [ ! -f ~/.nix-profile/etc/profile.d/nix.sh ] ; then get-nix ; fi
 if [ "$OSTYPE" = "linux*" ] && [ "$DIST" = "Ubuntu"] && [ "$DIST_VERSION" = "12.04" ] ; then alias nix-env='sudo nix-env' ; fi
-alias nix-install='nix-env --install '
-alias nix-uninstall='nix-env --uninstall '
-alias nix-search='nix-env -qa | \grep '
-alias nix-list='nix-env -q --installed'
+function nix-install   {
+    case "${OSTYPE}" in
+        darwin*) nix-env --install $1 ;;
+        linux*)
+            case $DIST in
+                Redhat|RedHat|Debian) nix-env --install $1 ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        14.04) nix-env --install $1 ;;
+                    esac
+            esac
+    esac
+}
+function nix-uninstall { nix-env --uninstall $1 }
+function nix-search    { nix-env -qa | \grep $1 }
+function nix-list      { nix-env -q --installed $1 }
 
 
 # 1. BasicSettings::PackageManager::Autoparts
@@ -828,9 +840,24 @@ function get-java () {
 }
 function set-javahome () {
     case "${OSTYPE}" in
-        freebsd*|darwin*|linux*)
+        freebsd*|darwin*)
             export JAVA_HOME=~/.nix-profile/lib/openjdk
             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian)
+                    export JAVA_HOME=~/.nix-profile/lib/openjdk
+                    jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        12.04)
+                            export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
+                            jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
+                        14.04)
+                            export JAVA_HOME=~/.nix-profile/lib/openjdk
+                            jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
+                    esac
+            esac
     esac
 }
 function get-play () {
