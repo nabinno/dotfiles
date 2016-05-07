@@ -2535,6 +2535,7 @@ function get-dotfiles () {
         case $opt in
             "c") is_credential=true ;;
             "m") is_mu4e=true ;;
+            "e") is_esa=true ;;
             "i") is_init_el=true ;;
             "h") echo ''
                  echo "Usage: get-dotfiles [-mih]" 1>&2
@@ -2566,6 +2567,7 @@ function get-dotfiles () {
         case "${OSTYPE}" in (freebsd*|darwin*|linux*) cp -pr ~/.screenrc . ;; esac
         [ $is_credential ] || git checkout -- .emacs.d/lisp/init-credential.el
         [ $is_mu4e ]       || git checkout -- .emacs.d/lisp/init-mu4e.el
+        [ $is_esa ]        || git checkout -- .emacs.d/lisp/init-esa.el
         [ $is_init_el ]    || git checkout -- .emacs.d/init.el
     fi
 }
@@ -2583,6 +2585,7 @@ function put-dotfiles () {
     git checkout develop
     git pull
     rm -rf .emacs.d/lisp/init-mu4e.el
+    rm -rf .emacs.d/lisp/init-esa.el
     rm -rf .emacs.d/lisp/init-credential.el
     # main proc
     cp -pr .emacs.d/lisp/*       ~/.emacs.d/lisp/;   wait
@@ -2598,6 +2601,7 @@ function put-dotfiles () {
     esac
     # post proc
     git checkout -- .emacs.d/lisp/init-mu4e.el
+    git checkout -- .emacs.d/lisp/init-esa.el
     git checkout -- .emacs.d/lisp/init-credential.el
     cd $current_pwd
     exec -l zsh
