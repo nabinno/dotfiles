@@ -139,6 +139,7 @@ export PATH="/opt/local/sbin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.local/exenv/bin:$PATH"
 export PATH="$HOME/.local/dove/bin:$PATH"
+export PATH="$HOME/.local/NUnit/bin:$PATH"
 export PATH="$HOME/.anyenv/bin:$PATH"
 export PATH="$HOME/.parts/autoparts/bin:$PATH"
 export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
@@ -994,6 +995,7 @@ function get-global-go-packages () {
 # ---------------------------------------
 REQUIRED_DOTNETFRAMEWORK_VERSION=4.0.30319
 REQUIRED_MONO_VERSION=4.0.4.1
+REQUIRED_NUNIT_VERSION=3.2.1
 function get-dotnet {
     case "${OSTYPE}" in
         cygwin)
@@ -1061,24 +1063,28 @@ function get-omnisharp {
             git submodule update --init --recursive
             copy OmniSharp\config-cygwin.json OmniSharp\config.json
             msbuild
-            cp OmniSharp/bin/Debug/OmniSharp.exe ~/.local/bin/
             cd ..
-            rm -fr omnisharp-server ;;
+            mv omnisharp-server ~/.local/ ;;
         freebsd*|darwin*|linux*)
             git clone https://github.com/OmniSharp/omnisharp-server.git
             cd omnisharp-server
             git submodule update --init --recursive
             xbuild
-            cp OmniSharp/bin/Debug/OmniSharp.exe ~/.local/bin/
             cd ..
-            rm -fr omnisharp-server ;;
+            mv omnisharp-server ~/.local/ ;;
     esac
 }
 function set-omnisharp {
-    alias omnisharp='mono ~/.local/bin/OmniSharp.exe '
+    alias omnisharp='mono ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe'
 }
 if [ ! -f ~/.local/bin/OmniSharp.exe ] ; then get-omnisharp ; fi
 if [   -f ~/.local/bin/OmniSharp.exe ] ; then set-omnisharp ; fi
+function get-nunit {
+    wget https://github.com/nunit/nunit/releases/download/${REQUIRED_NUNIT_VERSION}/NUnit-${REQUIRED_NUNIT_VERSION}.zip
+    unzip NUnit-${REQUIRED_NUNIT_VERSION}.zip -d ~/.local/NUnit
+    rm -f NUnit-${REQUIRED_NUNIT_VERSION}.zip
+}
+if ! type -p nunit-console > /dev/null ; then get-nunit ; fi
 
 
 # 2. ProgrammingLanguage::Java
