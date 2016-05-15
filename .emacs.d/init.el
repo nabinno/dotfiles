@@ -103,14 +103,15 @@
 (require 'init-restclient)
 ;; (require 'init-perl)
 
+(require 'init-csharp)
 (require 'init-java)
 ;; (require 'init-scala)
-
+(cond ((string-equal system-type "cygwin") (require 'init-android)))
 (require 'init-analytics)
 (require 'init-orchestration)
 
 (require 'init-origami)
-(require 'init-paredit)
+;; (require 'init-paredit)
 (require 'init-project)
 ;; (require 'init-lisp)
 ;; (require 'init-slime)
@@ -141,6 +142,7 @@
 (require-package 'regex-tool)
 
 (require 'init-irc)
+;; (require 'init-esa)
 (require 'init-proced)
 
 ;;----------------------------------------------------------------------------
