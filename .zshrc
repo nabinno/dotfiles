@@ -4,14 +4,17 @@
 # 1. BasicSettings::EnvironmentVariable::Local
 # 1. BasicSettings::BaseInstallation
 # 1. BasicSettings::PackageManager::Nix
+# 1. BasicSettings::PackageManager::Chef # TODO
 # 1. BasicSettings::PackageManager::Autoparts
 # 1. BasicSettings::PackageManager::Homebrew
 # 1. BasicSettings::PackageManager::WindowsManagementFramework
 # 1. BasicSettings::PackageManager::Anyenv
+# 1. BasicSettings::PackageManager::Docker
 # 2. ProgrammingLanguage::Ruby
 # 2. ProgrammingLanguage::Elixir
 # 2. ProgrammingLanguage::Haskell
 # 2. ProgrammingLanguage::Go
+# 2. ProgrammingLanguage::DotNetFramework
 # 2. ProgrammingLanguage::Java
 # 2. ProgrammingLanguage::Php
 # 2. ProgrammingLanguage::Python
@@ -30,7 +33,6 @@
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::PlantUml
 # 4. IntegratedDevelopmentEnvironment::SoftwareDebugging::Benchmark
 # 4. IntegratedDevelopmentEnvironment::OsLevelVirtualization::Vagrant
-# 4. IntegratedDevelopmentEnvironment::SoftwareDeployment::Docker
 # 4. IntegratedDevelopmentEnvironment::SoftwareDeployment::Terraform
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Keybind
@@ -183,7 +185,25 @@ if [ ! -d ~/.local/bin ] ; then mkdir -p ~/.local/bin ; fi
 REQUIRED_MACPORT_VERSION=2.3.3
 function get-base () {
     case "${OSTYPE}" in
-        cygwin) ;;
+        cygwin)
+            wget https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg
+            chmod 755 apt-cyg
+            mv -f apt-cyg /usr/bin/
+            apt-cyg install \
+                    cygrunsrv \
+                    openssh \
+                    curl \
+                    gcc-g++ \
+                    gcc-core \
+                    patch \
+                    libbz2-devel \
+                    pkg-config \
+                    libsqlite3-devel \
+                    perl-DBD-SQLite \
+                    perl-WWW-Curl \
+                    make \
+                    libcrypt-devel \
+                    libcurl-devel ;;
         freebsd*) port install -y ruby ;;
         darwin*)
             curl -O https://distfiles.macports.org/MacPorts/MacPorts-$REQUIRED_MACPORT_VERSION.tar.bz2
@@ -209,6 +229,7 @@ function get-base () {
                         screen \
                         ruby \
                         git \
+                        libicu \
                         curl ;;
                 Debian|Ubuntu)
                     sudo apt-get update -y
@@ -402,18 +423,45 @@ function gnu-get () {
 
 # 1. BasicSettings::PackageManager::Nix
 # -------------------------------------
-function get-nix () {
+function get-nix {
     case "${OSTYPE}" in
-        darwin*) cd ~ && curl https://nixos.org/nix/install | sh ;;
+        cygwin*)
+            curl http://nixos.org/releases/nix/nix-1.11.2/nix-1.11.2.tar.bz2 > nix-1.11.2.tar.bz2
+            tar jxf nix-1.11.2.tar.bz2
+            cd nix-1.11.2
+            ./configure
+            make
+            make install
+            mkdir ~/.nixpkgs
+            echo "{ allowBroken = true; }" > ~/.nixpkgs/config.nix
+            echo -e "nameserver 8.8.8.8\nnameserver 8.8.4.4" > /etc/resolv.conf
+            # ### OPTIONAL: needed for things like postgresql, mysql ###
+            CYGWIN_NAME=`basename \`cygpath -w /\` | cut -c 8-`
+            sed -i'' -e 's/\"CYGWIN cygserver\"/\"CYGWIN cygserver ${service_name}\"/' /usr/bin/cygserver-config
+            cygserver-config --yes --name $CYGWIN_NAME
+            cygrunsrv --start $CYGWIN_NAME
+            # # ### OPTIONAL: if you need ssh connection to this ###
+            # CYGWIN_NAME=`basename \`cygpath -w /\` | cut -c 8-`
+            # ssh-host-config --yes --cygwin ntsec --name sshd-$CYGWIN_NAME --port 3000
+            # # <enter password>
+            # cygrunsrv --start sshd-$CYGWIN_NAME
+            ;;
+        darwin*)
+            cd ~ && curl https://nixos.org/nix/install | sh
+            sudo chown -R ${CURRENT_USER} /nix ;;
         linux*)
             case $DIST in
-                Redhat|RedHat|Debian) cd ~ && curl https://nixos.org/nix/install | sh ;;
+                Redhat|RedHat|Debian)
+                    cd ~ && curl https://nixos.org/nix/install | sh
+                    sudo chown -R ${CURRENT_USER} /nix ;;
                 Ubuntu)
                     case $DIST_VERSION in
-                        14.04) cd ~ && curl https://nixos.org/nix/install | sh ;;
+                        14.04)
+                            cd ~ && curl https://nixos.org/nix/install | sh
+                            sudo chown -R ${CURRENT_USER} /nix ;;
                         12.04)
                             cd ~ && curl https://nixos.org/nix/install | sh
-                            nix-channel --add http://nixos.org/channels/nixpkgs-unstable
+                            nix-channel --add https://nixos.org/channels/nixpkgs-unstable
                             nix-channel --update
                             sudo groupadd -g 20000 nixbld
                             for i in `seq 1 10` ; do
@@ -426,21 +474,13 @@ function get-nix () {
             esac
     esac
 }
-function get-nix-packages () {
+function set-nix {
     case "${OSTYPE}" in
-        darwin*|linux*)
-            nix-build \
-                heroku_toolbelt \
-                phantomjs \
-                the_silver_searcher \
-                tree \
-                uuid ;;
+        cygwin*) source /usr/local/etc/profile.d/nix.sh ;;
+        darwin*|linux*) source ~/.nix-profile/etc/profile.d/nix.sh ;;
     esac
 }
-if [ -f ~/.nix-profile/etc/profile.d/nix.sh ] ; then source ~/.nix-profile/etc/profile.d/nix.sh ; fi
-if [ ! -f ~/.nix-profile/etc/profile.d/nix.sh ] ; then get-nix ; fi
-if [ "$OSTYPE" = "linux*" ] && [ "$DIST" = "Ubuntu"] && [ "$DIST_VERSION" = "12.04" ] ; then alias nix-env='sudo nix-env' ; fi
-function nix-install   {
+function nix-install {
     case "${OSTYPE}" in
         darwin*) nix-env --install $1 ;;
         linux*)
@@ -453,9 +493,34 @@ function nix-install   {
             esac
     esac
 }
-function nix-uninstall { nix-env --uninstall $1 }
-function nix-search    { nix-env -qa | \grep $1 }
-function nix-list      { nix-env -q --installed $1 }
+function nix-uninstall     { nix-env --uninstall $1 }
+function nix-search        { nix-env -qa $1 }
+function nix-list          { nix-env -q }
+function nix-list-versions { nix-env -qc }
+function nix-update        { nix-env --upgrade $1 }
+function get-nix-packages {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            nix-install \
+                heroku_toolbelt \
+                phantomjs \
+                the_silver_searcher \
+                tree \
+                perf \
+                uuid ;;
+    esac
+}
+if [ ! -f ~/.nix-profile/etc/profile.d/nix.sh ] ; then get-nix ; fi
+if [   -f ~/.nix-profile/etc/profile.d/nix.sh ] ; then set-nix ; fi
+
+
+# 1. BasicSettings::PackageManager::Chef
+# --------------------------------------
+REQUIRED_CHEF_VERSION=0.11.2
+function get-chef {
+    nix-install chefdk-${REQUIRED_CHEF_VERSION}
+}
+if ! type -p chef > /dev/null ; then get-chef ; fi
 
 
 # 1. BasicSettings::PackageManager::Autoparts
@@ -614,6 +679,131 @@ if ! type -p anyenv > /dev/null; then get-anyenv ; fi
 if type -p anyenv > /dev/null; then eval "$(anyenv init -)" ; fi
 
 
+# 1. BasicSettings::PackageManager::Docker
+# ----------------------------------------
+# ### setup ###
+function get-docker () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*) ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) sudo yum update && sudo yum install -y docker ;;
+                Debian) sudo apt-get update; sudo apt-get install -y docker.io ;;
+                Ubuntu)
+                    sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+                    if [ -f /etc/apt/sources.list.d/docker.list ]; then
+                        sudo rm /etc/apt/sources.list.d/docker.list
+                        sudo touch /etc/apt/sources.list.d/docker.list
+                    fi
+                    case "${DIST_VERSION}" in
+                        12.04) sudo sh -c 'echo "deb https://apt.dockerproject.org/repo ubuntu-precise main" >> /etc/apt/sources.list.d/docker.list' ;;
+                        14.04) sudo sh -c 'echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" >> /etc/apt/sources.list.d/docker.list' ;;
+		    esac
+                    sudo apt-get update
+                    sudo apt-get purge lxc-docker*
+                    sudo apt-cache policy docker-engine
+		    sudo apt-get update
+                    sudo apt-get install -y docker-engine ;;
+            esac
+    esac
+}
+if ! type -p docker > /dev/null ; then get-docker ; fi
+function docker-restart () {
+    case "${OSTYPE}" in
+        darwin*)
+            sudo service docker stop
+            sudo service docker start
+            sudo service docker status ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo service docker stop
+                    sudo service docker start
+                    sudo service docker status ;;
+                Debian|Ubuntu) ;;
+            esac
+    esac
+}
+function docker-status () {
+    case "${OSTYPE}" in
+        darwin*) sudo service docker status ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) sudo service docker status ;;
+                Debian|Ubuntu) ;;
+            esac
+    esac
+}
+# ### alias ###
+alias dcr="docker-restart"
+alias dcp="ps aux | \grep -G 'docker.*'"
+alias dcs="docker-status"
+alias dck="sudo killall docker"
+alias dc='docker commit $(docker ps -l -q)'
+alias dd='docker rmi -f'
+alias dda='docker rmi -f $(docker images -q)'
+alias ddel='docker rmi -f'
+alias ddela='docker rmi -f $(docker images -q)'
+function dh () { docker history $1 | less -S }
+alias dj='docker run -i -t'
+alias dk='docker rm -f'
+alias dka='docker rm -f $(docker ps -a -q)'
+alias dkd='dka ; dda'
+alias dkill='docker rm -f'
+alias dkilla='docker rm -f $(docker ps -a -q)'
+alias docker='sudo docker'
+alias dl='docker images | less -S'
+alias dls='docker images | less -S'
+alias dp='docker ps -a | less -S'
+alias dps='docker ps -a | less -S'
+function dsshd () { docker run -t -d -p 5000:3000 -P $1 /usr/sbin/sshd -D }
+alias dr='docker tag'
+alias dv='docker images -viz'
+function datach () { docker start $1 ; docker atach $1 }
+function denv () { docker run --rm $1 env }
+function dip () {
+    CI=$(docker ps -l -q)
+    if [ $1 ] ; then
+	docker inspect --format {{.NetworkSettings.IPAddress}} $1
+	docker inspect --format {{.NetworkSettings.Ports}} $1
+    else
+	docker inspect --format {{.NetworkSettings.IPAddress}} $CI
+	docker inspect --format {{.NetworkSettings.Ports}} $CI
+    fi
+}
+function dnsenter () {
+    CI=$(docker ps -l -q)
+    if [ $1 ] ; then
+	PID=$(docker inspect --format {{.State.Pid}} $1)
+        nsenter --target $PID --mount --uts --ipc --net --pid
+    else
+	PID=$(docker inspect --format {{.State.Pid}} $CI)
+        nsenter --target $PID --mount --uts --ipc --net --pid
+    fi
+}
+# ### docker compose / machine ###
+function get-docker-compose () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*) ;;
+        linux*) nix-install docker-compose ;;
+    esac
+}
+function get-docker-machine () {
+    case "${OSTYPE}" in
+        freebsd*|darwin*) ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) ;;
+                Debian|Ubuntu)
+                    wget https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_linux-386 -O ~/.local/bin/docker-machine
+                    chmod +x ~/.local/bin/docker-machine ;;
+            esac
+    esac
+}
+if ! type -p docker-compose > /dev/null; then get-docker-compose ; fi
+if ! type -p docker-machine > /dev/null; then get-docker-machine ; fi
+
+
 # 2. ProgrammingLanguage::Ruby
 # ----------------------------
 REQUIRED_RUBY_VERSION=2.2.0
@@ -639,6 +829,7 @@ function get-global-gem-packages () {
         bundler \
         compass \
         haml \
+        slim \
         html2slim \
         rails \
         rubygems-bundler \
@@ -799,9 +990,100 @@ function get-global-go-packages () {
 }
 
 
+# 2. ProgrammingLanguage::DotNetFramework
+# ---------------------------------------
+REQUIRED_DOTNETFRAMEWORK_VERSION=4.0.30319
+REQUIRED_MONO_VERSION=4.0.4.1
+function get-dotnet {
+    case "${OSTYPE}" in
+        cygwin)
+            # ### dotnet ###
+            wget https://dotnetcli.blob.core.windows.net/dotnet/beta/Binaries/Latest/dotnet-dev-rhel-x64.latest.tar.gz
+            apt-cyg install -y libicu libuuid libcurl openssl libunwind
+            mkdir ~/dotnet
+            tar xf dotnet-dev-rhel-x64.latest.tar.gz -C ~/dotnet --verbose
+            rm -fr dotnet-dev-rhel-x64.latest.tar.gz ;;
+        freebsd*|darwin*) ;;
+        linux*)
+            # ### mono ###
+            nix-install \
+                dotnetbuildhelpers \
+                mono-${REQUIRED_MONO_VERSION} \
+                mono-addins-1.2 \
+                mono-dll-fixer \
+                mono-zeroconf-0.9.0
+            # ### dnvm ###
+            curl -sSL https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.sh | DNX_BRANCH=dev sh
+            source ~/.dnx/dnvm/dnvm.sh
+            dnvm upgrade -u
+            # ### dotnet ###
+            case $DIST in
+                Redhat*|RedHat*)
+                    wget https://dotnetcli.blob.core.windows.net/dotnet/beta/Binaries/Latest/dotnet-dev-rhel-x64.latest.tar.gz
+                    sudo yum install -y libicu libuuid libcurl openssl libunwind
+                    mkdir ~/dotnet
+                    tar xf dotnet-dev-rhel-x64.latest.tar.gz -C ~/dotnet --verbose
+                    rm -fr dotnet-dev-rhel-x64.latest.tar.gz ;;
+                Debian|Ubuntu*)
+                    case $DIST_VERSION in
+                        14.04)
+                            sudo sh -c 'echo "deb [arch=amd64] http://apt-mo.trafficmanager.net/repos/dotnet/ trusty main" > /etc/apt/sources.list.d/dotnetdev.list'
+                            sudo apt-key adv --keyserver apt-mo.trafficmanager.net --recv-keys 417A0893
+                            sudo apt-get update
+                            sudo apt-get install dotnet=1.0.0.001598-1 ;;
+                    esac
+            esac ;;
+    esac
+}
+function set-dotnet {
+    case "${OSTYPE}" in
+        cygwin)
+            export PATH="/cygdrive/C/Windows/Microsoft.NET/Framework64/v${REQUIRED_DOTNETFRAMEWORK_VERSION}:$PATH"
+            export DOTNET_HOME=$HOME/dotnet
+            export PATH=$PATH:$DOTNET_HOME ;;
+        freebsd*|darwin*) ;;
+        linux*)
+            export DOTNET_HOME=$HOME/dotnet
+            export PATH=$PATH:$DOTNET_HOME ;;
+    esac
+}
+case "${OSTYPE}" in
+    cygwin) ;;
+    freebsd*|darwin*|linux*)
+        if ! type -p \mcs > /dev/null ; then get-dotnet ; fi
+        if   type -p \mcs > /dev/null ; then set-dotnet ; fi ;;
+esac
+function get-omnisharp {
+    case "${OSTYPE}" in
+        cygwin)
+            git clone https://github.com/OmniSharp/omnisharp-server.git
+            cd omnisharp-server
+            git submodule update --init --recursive
+            copy OmniSharp\config-cygwin.json OmniSharp\config.json
+            msbuild
+            cp OmniSharp/bin/Debug/OmniSharp.exe ~/.local/bin/
+            cd ..
+            rm -fr omnisharp-server ;;
+        freebsd*|darwin*|linux*)
+            git clone https://github.com/OmniSharp/omnisharp-server.git
+            cd omnisharp-server
+            git submodule update --init --recursive
+            xbuild
+            cp OmniSharp/bin/Debug/OmniSharp.exe ~/.local/bin/
+            cd ..
+            rm -fr omnisharp-server ;;
+    esac
+}
+function set-omnisharp {
+    alias omnisharp='mono ~/.local/bin/OmniSharp.exe '
+}
+if [ ! -f ~/.local/bin/OmniSharp.exe ] ; then get-omnisharp ; fi
+if [   -f ~/.local/bin/OmniSharp.exe ] ; then set-omnisharp ; fi
+
+
 # 2. ProgrammingLanguage::Java
 # ----------------------------
-REQUIRED_OPENJDK_VERSION=8u76b00
+REQUIRED_OPENJDK_VERSION=8u92b14
 REQUIRED_OEPNJDK_SHORT_VERSION=1.8
 REQUIRED_PLAY_VERSION=2.2.3
 export PLAY_HOME=/usr/local/play-$REQUIRED_PLAY_VERSION
@@ -1693,6 +1975,17 @@ function mu-restart () {
     mu index
 }
 if ! type -p mu > /dev/null ; then get-mu ; fi
+# ### sekka ###
+function set-sekka {
+    case "${OSTYPE}" in
+        freebsd*|linux*) docker restart sekka ;;
+    esac
+}
+function get-sekka {
+    case "${OSTYPE}" in
+        freebsd*|linux*) docker run -d --name=sekka kiyoka/sekka ;;
+    esac
+}
 
 
 # 4. IntegratedDevelopmentEnvironment::Emacs::Ctags
@@ -2071,140 +2364,6 @@ function vbm-scaleup () {
     fi
 }
 alias vbm='VBoxManage'
-
-
-# 4. IntegratedDevelopmentEnvironment::SoftwareDeployment::Docker
-# ---------------------------------------------------------------
-# ### setup ###
-function get-docker () {
-    case "${OSTYPE}" in
-        freebsd*|darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) sudo yum update && sudo yum install -y docker ;;
-                Debian) sudo apt-get update; sudo apt-get install -y docker.io ;;
-                Ubuntu)
-                    sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-                    if [ -f /etc/apt/sources.list.d/docker.list ]; then
-                        sudo rm /etc/apt/sources.list.d/docker.list
-                        sudo touch /etc/apt/sources.list.d/docker.list
-                    fi
-                    case "${DIST_VERSION}" in
-                        12.04) sudo sh -c 'echo "deb https://apt.dockerproject.org/repo ubuntu-precise main" >> /etc/apt/sources.list.d/docker.list' ;;
-                        14.04) sudo sh -c 'echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" >> /etc/apt/sources.list.d/docker.list' ;;
-		    esac
-                    sudo apt-get update
-                    sudo apt-get purge lxc-docker*
-                    sudo apt-cache policy docker-engine
-		    sudo apt-get update
-                    sudo apt-get install -y docker-engine ;;
-            esac
-    esac
-}
-if ! type -p docker > /dev/null ; then get-docker ; fi
-function docker-restart () {
-    case "${OSTYPE}" in
-        darwin*)
-            sudo service docker stop
-            sudo service docker start
-            sudo service docker status ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat)
-                    sudo service docker stop
-                    sudo service docker start
-                    sudo service docker status ;;
-                Debian|Ubuntu) ;;
-            esac
-    esac
-}
-function docker-status () {
-    case "${OSTYPE}" in
-        darwin*) sudo service docker status ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) sudo service docker status ;;
-                Debian|Ubuntu) ;;
-            esac
-    esac
-}
-# ### alias ###
-alias dcr="docker-restart"
-alias dcp="ps aux | \grep -G 'docker.*'"
-alias dcs="docker-status"
-alias dck="sudo killall docker"
-alias dc='docker commit $(docker ps -l -q)'
-alias dd='docker rmi -f'
-alias dda='docker rmi -f $(docker images -q)'
-alias ddel='docker rmi -f'
-alias ddela='docker rmi -f $(docker images -q)'
-function dh () { docker history $1 | less -S }
-alias dj='docker run -i -t'
-alias dk='docker rm -f'
-alias dka='docker rm -f $(docker ps -a -q)'
-alias dkd='dka ; dda'
-alias dkill='docker rm -f'
-alias dkilla='docker rm -f $(docker ps -a -q)'
-alias docker='sudo docker'
-alias dl='docker images | less -S'
-alias dls='docker images | less -S'
-alias dp='docker ps -a | less -S'
-alias dps='docker ps -a | less -S'
-function dsshd () { docker run -t -d -p 5000:3000 -P $1 /usr/sbin/sshd -D }
-alias dr='docker tag'
-alias dv='docker images -viz'
-function datach () { docker start $1 ; docker atach $1 }
-function denv () { docker run --rm $1 env }
-function dip () {
-    CI=$(docker ps -l -q)
-    if [ $1 ] ; then
-	docker inspect --format {{.NetworkSettings.IPAddress}} $1
-	docker inspect --format {{.NetworkSettings.Ports}} $1
-    else
-	docker inspect --format {{.NetworkSettings.IPAddress}} $CI
-	docker inspect --format {{.NetworkSettings.Ports}} $CI
-    fi
-}
-function dnsenter () {
-    CI=$(docker ps -l -q)
-    if [ $1 ] ; then
-	PID=$(docker inspect --format {{.State.Pid}} $1)
-        nsenter --target $PID --mount --uts --ipc --net --pid
-    else
-	PID=$(docker inspect --format {{.State.Pid}} $CI)
-        nsenter --target $PID --mount --uts --ipc --net --pid
-    fi
-}
-# ### docker compose / machine ###
-function get-docker-compose () {
-    case "${OSTYPE}" in
-        freebsd*|darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) pip install -U docker-compose ;;
-                Debian) pip install -U docker-compose ;;
-                Ubuntu)
-                    case "${DIST_VERSION}" in
-                        12.04) ;;
-                        14.04) pip install -U docker-compose ;;
-                    esac
-            esac
-    esac
-}
-function get-docker-machine () {
-    case "${OSTYPE}" in
-        freebsd*|darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) ;;
-                Debian|Ubuntu)
-                    wget https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_linux-386 -O ~/.local/bin/docker-machine
-                    chmod +x ~/.local/bin/docker-machine ;;
-            esac
-    esac
-}
-if ! type -p docker-compose > /dev/null; then get-docker-compose ; fi
-if ! type -p docker-machine > /dev/null; then get-docker-machine ; fi
 
 
 # 4. IntegratedDevelopmentEnvironment::SoftwareDeployment::Terraform
