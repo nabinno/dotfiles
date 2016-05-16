@@ -1077,8 +1077,8 @@ function get-omnisharp {
 function set-omnisharp {
     alias omnisharp='mono ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe'
 }
-if [ ! -f ~/.local/bin/OmniSharp.exe ] ; then get-omnisharp ; fi
-if [   -f ~/.local/bin/OmniSharp.exe ] ; then set-omnisharp ; fi
+if [ ! -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then get-omnisharp ; fi
+if [   -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then set-omnisharp ; fi
 function get-nunit {
     wget https://github.com/nunit/nunit/releases/download/${REQUIRED_NUNIT_VERSION}/NUnit-${REQUIRED_NUNIT_VERSION}.zip
     unzip NUnit-${REQUIRED_NUNIT_VERSION}.zip -d ~/.local/NUnit
@@ -2769,10 +2769,10 @@ function get-dotfiles () {
         cp -pr ~/.zshenv .
         cp -pr ~/.zshrc .
         case "${OSTYPE}" in (freebsd*|darwin*|linux*) cp -pr ~/.screenrc . ;; esac
-        [ $is_credential ] || git checkout -- .emacs.d/lisp/init-credential.el
-        [ $is_mu4e ]       || git checkout -- .emacs.d/lisp/init-mu4e.el
-        [ $is_esa ]        || git checkout -- .emacs.d/lisp/init-esa.el
-        [ $is_init_el ]    || git checkout -- .emacs.d/init.el
+        if ! [ $is_credential ] ; then git checkout -- .emacs.d/lisp/init-credential.el ; fi
+        if ! [ $is_mu4e       ] ; then git checkout -- .emacs.d/lisp/init-mu4e.el       ; fi
+        if ! [ $is_esa        ] ; then git checkout -- .emacs.d/lisp/init-esa.el        ; fi
+        if ! [ $is_init_el    ] ; then git checkout -- .emacs.d/init.el                 ; fi
     fi
 }
 alias zg='get-dotfiles'
