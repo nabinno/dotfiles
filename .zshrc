@@ -808,6 +808,7 @@ if ! type -p docker-machine > /dev/null; then get-docker-machine ; fi
 # 2. ProgrammingLanguage::Ruby
 # ----------------------------
 REQUIRED_RUBY_VERSION=2.2.0
+REQUIRED_RUBY_VERSION_2=2.2.2
 # ### version control ###
 function get-rbenv () {
     case "${OSTYPE}" in
@@ -820,6 +821,7 @@ function get-ruby () {
         cygwin) apt-cyg install ruby ;;
         freebsd*|darwin*|linux*)
             rbenv install $REQUIRED_RUBY_VERSION
+            rbenv install $REQUIRED_RUBY_VERSION_2
             rbenv rehash
             rbenv global $REQUIRED_RUBY_VERSION
             get-global-gem-packages ;;
@@ -828,14 +830,23 @@ function get-ruby () {
 function get-global-gem-packages () {
     gem install \
         bundler \
+        rubygems-bundler \
+        rails \
+        # template engine
         compass \
         haml \
         slim \
         html2slim \
-        rails \
-        rubygems-bundler \
-        sidekiq \
+        # application server
         unicorn \
+        sidekiq \
+        # benchmark/profiling
+        benchmark-ips \
+        stackprof \
+        rblineprof \
+        peek-rblineprof \
+        rack-lineprof \
+        # other
         git-trend
 }
 if ! type -p rbenv > /dev/null; then
@@ -1989,7 +2000,7 @@ function set-sekka {
 }
 function get-sekka {
     case "${OSTYPE}" in
-        freebsd*|linux*) docker run -d --name=sekka kiyoka/sekka ;;
+        freebsd*|linux*) docker run -p 12929:12929 -d --name=sekka -t kiyoka/sekka ;;
     esac
 }
 
@@ -2740,6 +2751,7 @@ function get-dotfiles () {
             "c") is_credential=true ;;
             "m") is_mu4e=true ;;
             "e") is_esa=true ;;
+            "r") is_irc=true ;;
             "i") is_init_el=true ;;
             "h") echo ''
                  echo "Usage: get-dotfiles [-mih]" 1>&2
@@ -2772,6 +2784,7 @@ function get-dotfiles () {
         if ! [ $is_credential ] ; then git checkout -- .emacs.d/lisp/init-credential.el ; fi
         if ! [ $is_mu4e       ] ; then git checkout -- .emacs.d/lisp/init-mu4e.el       ; fi
         if ! [ $is_esa        ] ; then git checkout -- .emacs.d/lisp/init-esa.el        ; fi
+        if ! [ $is_irc        ] ; then git checkout -- .emacs.d/lisp/init-irc.el        ; fi
         if ! [ $is_init_el    ] ; then git checkout -- .emacs.d/init.el                 ; fi
     fi
 }
