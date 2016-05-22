@@ -4,7 +4,7 @@
 # 1. BasicSettings::EnvironmentVariable::Local
 # 1. BasicSettings::BaseInstallation
 # 1. BasicSettings::PackageManager::Nix
-# 1. BasicSettings::PackageManager::Chef # TODO
+# 1. BasicSettings::PackageManager::Chef
 # 1. BasicSettings::PackageManager::Autoparts
 # 1. BasicSettings::PackageManager::Homebrew
 # 1. BasicSettings::PackageManager::WindowsManagementFramework
@@ -204,6 +204,8 @@ function get-base () {
                     perl-WWW-Curl \
                     make \
                     libcrypt-devel \
+                    openssl-devel \
+                    liblzma-devel \
                     libcurl-devel ;;
         freebsd*) port install -y ruby ;;
         darwin*)
@@ -427,20 +429,27 @@ function gnu-get () {
 function get-nix {
     case "${OSTYPE}" in
         cygwin*)
-            curl http://nixos.org/releases/nix/nix-1.11.2/nix-1.11.2.tar.bz2 > nix-1.11.2.tar.bz2
-            tar jxf nix-1.11.2.tar.bz2
-            cd nix-1.11.2
+            local REQUIRED_NIX_VERSION=1.11.2
+            local CYGWIN_NAME=nix-on-cygwin
+            export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig:/lib/pkgconfig
+            # ### base installation ###
+            curl http://nixos.org/releases/nix/nix-${REQUIRED_NIX_VERSION}/nix-${REQUIRED_NIX_VERSION}.tar.bz2 > nix-${REQUIRED_NIX_VERSION}.tar.bz2
+            tar jxf nix-${REQUIRED_NIX_VERSION}.tar.bz2
+            cd nix-${REQUIRED_NIX_VERSION}
+            mkdir /nix
             ./configure
             make
             make install
             mkdir ~/.nixpkgs
             echo "{ allowBroken = true; }" > ~/.nixpkgs/config.nix
             echo -e "nameserver 8.8.8.8\nnameserver 8.8.4.4" > /etc/resolv.conf
-            # ### OPTIONAL: needed for things like postgresql, mysql ###
-            CYGWIN_NAME=`basename \`cygpath -w /\` | cut -c 8-`
-            sed -i'' -e 's/\"CYGWIN cygserver\"/\"CYGWIN cygserver ${service_name}\"/' /usr/bin/cygserver-config
-            cygserver-config --yes --name $CYGWIN_NAME
-            cygrunsrv --start $CYGWIN_NAME
+            cd ~
+            rm -fr nix-${REQUIRED_NIX_VERSION}*
+            # # ### OPTIONAL: needed for things like postgresql, mysql ###
+            # CYGWIN_NAME=`basename \`cygpath -w /\` | cut -c 8-`
+            # sed -i'' -e 's/\"CYGWIN cygserver\"/\"CYGWIN cygserver ${service_name}\"/' /usr/bin/cygserver-config
+            # cygserver-config --yes --name $CYGWIN_NAME
+            # cygrunsrv --start $CYGWIN_NAME
             # # ### OPTIONAL: if you need ssh connection to this ###
             # CYGWIN_NAME=`basename \`cygpath -w /\` | cut -c 8-`
             # ssh-host-config --yes --cygwin ntsec --name sshd-$CYGWIN_NAME --port 3000
@@ -477,7 +486,9 @@ function get-nix {
 }
 function set-nix {
     case "${OSTYPE}" in
-        cygwin*) source /usr/local/etc/profile.d/nix.sh ;;
+        cygwin*)
+            export NIXPKGS=~/.local/nixpkgs
+            source /usr/local/etc/profile.d/nix.sh ;;
         darwin*|linux*) source ~/.nix-profile/etc/profile.d/nix.sh ;;
     esac
 }
@@ -511,8 +522,14 @@ function get-nix-packages {
                 uuid ;;
     esac
 }
-if [ ! -f ~/.nix-profile/etc/profile.d/nix.sh ] ; then get-nix ; fi
-if [   -f ~/.nix-profile/etc/profile.d/nix.sh ] ; then set-nix ; fi
+case "${OSTYPE}" in
+    cygwin*)
+        if [ ! -f /usr/local/bin/nix-env ] ; then get-nix ; fi
+        if [   -f /usr/local/bin/nix-env ] ; then set-nix ; fi ;;
+    darwin*|linux*)
+        if [ ! -f ~/.nix-profile/bin/nix-env ] ; then get-nix ; fi
+        if [   -f ~/.nix-profile/bin/nix-env ] ; then set-nix ; fi ;;
+esac
 
 
 # 1. BasicSettings::PackageManager::Chef
@@ -594,7 +611,7 @@ if ! type -p brew > /dev/null ; then get-brew ; fi
 if [ "$OSTYPE" = "cygwin" ] ; then
     function get-apt-cyg () {
         wget https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg -O /usr/local/bin/apt-cyg
-        chmod 755 apt-cyg
+        chmod 755 /usr/local/bin/apt-cyg
         get-global-aptcyg-packages
     }
     function get-global-aptcyg-packages () {
@@ -1088,14 +1105,26 @@ function get-omnisharp {
 function set-omnisharp {
     alias omnisharp='mono ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe'
 }
-if [ ! -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then get-omnisharp ; fi
-if [   -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then set-omnisharp ; fi
+case "${OSTYPE}" in
+    cygwin)
+        # TODO
+        ;;
+    freebsd*|darwin*|linux*)
+        if [ ! -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then get-omnisharp ; fi
+        if [   -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then set-omnisharp ; fi ;;
+esac
 function get-nunit {
     wget https://github.com/nunit/nunit/releases/download/${REQUIRED_NUNIT_VERSION}/NUnit-${REQUIRED_NUNIT_VERSION}.zip
     unzip NUnit-${REQUIRED_NUNIT_VERSION}.zip -d ~/.local/NUnit
     rm -f NUnit-${REQUIRED_NUNIT_VERSION}.zip
 }
-if ! type -p nunit-console > /dev/null ; then get-nunit ; fi
+case "${OSTYPE}" in
+    cygwin)
+        # TODO
+        ;;
+    freebsd*|darwin*|linux*)
+        if ! type -p nunit-console > /dev/null ; then get-nunit ; fi ;;
+esac
 
 
 # 2. ProgrammingLanguage::Java
@@ -1854,7 +1883,7 @@ function memcached-status () {
             case $DIST in
                 Redhat|RedHat) sudo service memcached status ;;
                 Debian|Ubuntu) ps aux | \grep -G 'memcached.*' ;;
-            esac
+            esac ;;
     esac
 }
 alias memcached-monitor='memcached-tool 127.0.0.1:11211 display'
