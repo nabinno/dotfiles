@@ -115,6 +115,28 @@ case "${OSTYPE}" in
             OSSTR="${OS} ${DIST} ${REV}(${PSUEDONAME} ${KERNEL} ${MACH})"
         fi
 esac
+case $OSTYPE in
+    msys)
+        function get-winpath {
+            local winpath=
+            winpath=$(sed -e 's|\\|/|g' <<< $*)
+            winpath=$(sed -e 's|C:|/C|g' <<< $winpath)
+            winpath=$(sed -e 's|Program Files (x86)|Progra~2|g' <<< $winpath)
+            winpath=$(sed -e 's|Program Files|Progra~1|g' <<< $winpath)
+            winpath=$(sed -e 's| |\\ |g' <<< $winpath)
+            echo $winpath
+        } ;;
+    cygwin)
+        function get-winpath {
+            local winpath=
+            winpath=$(sed -e 's|\\|/|g' <<< $*)
+            winpath=$(sed -e 's|C:|/cygdrive/C|g' <<< $winpath)
+            winpath=$(sed -e 's|Program Files (x86)|Progra~2|g' <<< $winpath)
+            winpath=$(sed -e 's|Program Files|Progra~1|g' <<< $winpath)
+            winpath=$(sed -e 's| |\\ |g' <<< $winpath)
+            echo $winpath
+        } ;;
+esac
 
 
 # 1. BasicSettings::EnvironmentVariable
@@ -442,24 +464,7 @@ case $OSTYPE in
             cmd /c @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
             # set ChocolateyPath C:\ProgramData\chocolatey\lib
         }
-        function get-base-choco-packages {
-            choco install \
-                  msys2 \
-                  cygwin \
-                  FoxitReader \
-                  Gpg4win \
-	          InkScape \
-	          IrfanView \
-	          WinSplitRevolution \
-	          googledrive \
-	          7zip \
-	          f.lux \
-	          nodejs \
-	          terminals \
-                  docker \
-	          vagrant
-        }
-        if ! type -p choco > /dev/null ; then get-choco && get-base-choco-packages ; fi ;;
+        if ! type -p choco > /dev/null ; then get-choco ; fi ;;
 esac
 
 # 1. BasicSettings::PackageManager::WindowsManagementFramework::Chocolatey::Pacman
@@ -683,9 +688,10 @@ if type -p anyenv > /dev/null; then eval "$(anyenv init -)" ; fi
 
 # 1. BasicSettings::PackageManager::Docker
 # ----------------------------------------
-# ### setup ###
+### setup ###
 function get-docker () {
     case "${OSTYPE}" in
+        msys|cygwin) choco install boot2docker ;;
         freebsd*|darwin*) ;;
         linux*)
             case "${DIST}" in
@@ -709,7 +715,7 @@ function get-docker () {
             esac
     esac
 }
-if ! type -p docker > /dev/null ; then get-docker ; fi
+case $OSTYPE in (linux) if ! type -p docker > /dev/null ; then get-docker ; fi ; esac
 function docker-restart () {
     case "${OSTYPE}" in
         darwin*)
@@ -736,74 +742,106 @@ function docker-status () {
             esac
     esac
 }
-# ### alias ###
-alias dcr="docker-restart"
-alias dcp="ps aux | \grep -G 'docker.*'"
-alias dcs="docker-status"
-alias dck="sudo killall docker"
-alias dc='docker commit $(docker ps -l -q)'
-alias dd='docker rmi -f'
-alias dda='docker rmi -f $(docker images -q)'
-alias ddel='docker rmi -f'
-alias ddela='docker rmi -f $(docker images -q)'
-function dh () { docker history $1 | less -S }
-alias dj='docker run -i -t'
-alias dk='docker rm -f'
-alias dka='docker rm -f $(docker ps -a -q)'
-alias dkd='dka ; dda'
-alias dkill='docker rm -f'
-alias dkilla='docker rm -f $(docker ps -a -q)'
-alias docker='sudo docker'
-alias dl='docker images | less -S'
-alias dls='docker images | less -S'
-alias dp='docker ps -a | less -S'
-alias dps='docker ps -a | less -S'
-function dsshd () { docker run -t -d -p 5000:3000 -P $1 /usr/sbin/sshd -D }
-alias dr='docker tag'
-alias dv='docker images -viz'
-function datach () { docker start $1 ; docker atach $1 }
-function denv () { docker run --rm $1 env }
-function dip () {
-    CI=$(docker ps -l -q)
-    if [ $1 ] ; then
-	docker inspect --format {{.NetworkSettings.IPAddress}} $1
-	docker inspect --format {{.NetworkSettings.Ports}} $1
-    else
-	docker inspect --format {{.NetworkSettings.IPAddress}} $CI
-	docker inspect --format {{.NetworkSettings.Ports}} $CI
-    fi
-}
-function dnsenter () {
-    CI=$(docker ps -l -q)
-    if [ $1 ] ; then
-	PID=$(docker inspect --format {{.State.Pid}} $1)
-        nsenter --target $PID --mount --uts --ipc --net --pid
-    else
-	PID=$(docker inspect --format {{.State.Pid}} $CI)
-        nsenter --target $PID --mount --uts --ipc --net --pid
-    fi
-}
-# ### docker compose / machine ###
-function get-docker-compose () {
-    case "${OSTYPE}" in
-        freebsd*|darwin*) ;;
-        linux*) nix-install docker-compose ;;
-    esac
-}
-function get-docker-machine () {
-    case "${OSTYPE}" in
-        freebsd*|darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) ;;
-                Debian|Ubuntu)
-                    wget https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_linux-386 -O ~/.local/bin/docker-machine
-                    chmod +x ~/.local/bin/docker-machine ;;
+## ### alias ###
+case $OSTYPE in
+    msys)
+        export DOCKER_PATH=$(get-winpath "C:\Program Files\Docker Toolbox")
+        function boot2docker {
+            local current_pwd=$(pwd)
+            cd $DOCKER_PATH
+            ./start.sh
+            cd $current_pwd
+        }
+        alias docker="MSYS_NO_PATHCONV=1 $DOCKER_PATH/docker.exe"
+        alias docker-compose="$DOCKER_PATH/docker-compose.exe"
+        alias docker-machine="$DOCKER_PATH/docker-machine.exe"
+        alias dcu="docker-machine start"
+        alias dct="docker-machine stop"
+        alias dcr="docker-machine restart"
+        alias dcssh='docker-machine ssh'
+        alias dcscp='docker-machine scp'
+        alias dcp="ps aux | \grep -G 'docker.*'"
+        alias dcs="docker-machine status"
+        alias dd='docker-machine kill -f'
+        alias ddel='docker-machine kill -f'
+        alias dj='docker-machine ssh'
+        alias dk='docker-machine rm -f'
+        alias dkill='docker-machine rm -f'
+        alias dl='docker-machine config ; docker-machine env'
+        alias dls='docker-machine config ; docker-machine env'
+        alias dp='docker-machine ls'
+        alias dps='docker-machine ls'
+        ;;
+    *)
+        alias docker='sudo docker'
+        alias dcr="docker-restart"
+        alias dcp="ps aux | \grep -G 'docker.*'"
+        alias dcs="docker-status"
+        alias dck="sudo killall docker"
+        alias dc='docker commit $(docker ps -l -q)'
+        alias dd='docker rmi -f'
+        alias dda='docker rmi -f $(docker images -q)'
+        alias ddel='docker rmi -f'
+        alias ddela='docker rmi -f $(docker images -q)'
+        function dh () { docker history $1 | less -S }
+        alias dj='docker run -i -t'
+        alias dk='docker rm -f'
+        alias dka='docker rm -f $(docker ps -a -q)'
+        alias dkd='dka ; dda'
+        alias dkill='docker rm -f'
+        alias dkilla='docker rm -f $(docker ps -a -q)'
+        alias dl='docker images | less -S'
+        alias dls='docker images | less -S'
+        alias dp='docker ps -a | less -S'
+        alias dps='docker ps -a | less -S'
+        function dsshd () { docker run -t -d -p 5000:3000 -P $1 /usr/sbin/sshd -D }
+        alias dr='docker tag'
+        alias dv='docker images -viz'
+        function datach () { docker start $1 ; docker atach $1 }
+        function denv () { docker run --rm $1 env }
+        function dip () {
+            CI=$(docker ps -l -q)
+            if [ $1 ] ; then
+	        docker inspect --format {{.NetworkSettings.IPAddress}} $1
+	        docker inspect --format {{.NetworkSettings.Ports}} $1
+            else
+	        docker inspect --format {{.NetworkSettings.IPAddress}} $CI
+	        docker inspect --format {{.NetworkSettings.Ports}} $CI
+            fi
+        }
+        function dnsenter () {
+            CI=$(docker ps -l -q)
+            if [ $1 ] ; then
+	        PID=$(docker inspect --format {{.State.Pid}} $1)
+                nsenter --target $PID --mount --uts --ipc --net --pid
+            else
+	        PID=$(docker inspect --format {{.State.Pid}} $CI)
+                nsenter --target $PID --mount --uts --ipc --net --pid
+            fi
+        }
+        # ### docker compose / machine ###
+        function get-docker-compose () {
+            case "${OSTYPE}" in
+                freebsd*|darwin*) ;;
+                linux*) nix-install docker-compose ;;
             esac
-    esac
-}
-if ! type -p docker-compose > /dev/null; then get-docker-compose ; fi
-if ! type -p docker-machine > /dev/null; then get-docker-machine ; fi
+        }
+        function get-docker-machine () {
+            case "${OSTYPE}" in
+                freebsd*|darwin*) ;;
+                linux*)
+                    case "${DIST}" in
+                        Redhat|RedHat) ;;
+                        Debian|Ubuntu)
+                            wget https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_linux-386 -O ~/.local/bin/docker-machine
+                            chmod +x ~/.local/bin/docker-machine ;;
+                    esac
+            esac
+        }
+        if ! type -p docker-compose > /dev/null; then get-docker-compose ; fi
+        if ! type -p docker-machine > /dev/null; then get-docker-machine ; fi
+        ;;
+esac
 
 
 # 1. BasicSettings::PackageManager::Homebrew
@@ -1183,6 +1221,11 @@ REQUIRED_OEPNJDK_SHORT_VERSION=1.8
 REQUIRED_PLAY_VERSION=2.2.3
 export PLAY_HOME=/usr/local/play-$REQUIRED_PLAY_VERSION
 export PATH="$PLAY_HOME:$PATH"
+case $OSTYPE in
+    msys|cygwin)
+        export JAVA_HOME=$(get-winpath $JAVA_HOME)
+        export PATH=$JAVA_HOME/bin:$PATH ;;
+esac
 # ### version control ###
 function get-jenv () {
     case "${OSTYPE}" in
@@ -1599,6 +1642,10 @@ alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 # ----------------------------------
 export REQUIRED_NODE_VERSION='5.8.0'
 export node='NODE_NO_READLINE=1 node'
+case $OSTYPE in
+    msys|cygwin)
+        export PATH=$(get-winpath "C:\Program Files\nodejs"):$PATH ;;
+esac
 # ### version control ###
 function get-ndenv () {
     case "${OSTYPE}" in
@@ -1607,13 +1654,9 @@ function get-ndenv () {
 }
 if ! type -p ndenv > /dev/null ; then get-ndenv ; fi
 # ### installation ###
-case "$OSTYPE" in
-    cygwin)
-        function node { /cygdrive/c/Progra~1/nodejs/node.exe $* ; }
-        function npm  { /cygdrive/c/Progra~1/nodejs/npm      $* ; } ;;
-esac
 function get-node () {
     case "$OSTYPE" in
+        msys|cygwin) choco install nodejs ;;
         linux*)
             ndenv install v$REQUIRED_NODE_VERSION
             ndenv rehash
@@ -2440,8 +2483,20 @@ alias vl='vagrant box list'
 alias vd='vagrant box remove'
 alias vsh='vagrant ssh'
 alias vshconfig='vagrant ssh-config'
+case $OSTYPE in
+    msys|cygwin)
+        export PATH=$(get-winpath 'C:\HashiCorp\Vagrant\bin'):$PATH
+        export VBOX_MSI_INSTALL_PATH=$(get-winpath $VBOX_MSI_INSTALL_PATH) ;;
+esac
+# ### vagrant ###
+function get-vagrant {
+    case $OSTYPE in
+        msys|cygwin) choco install vagrant ;;
+    esac
+}
+if ! type -p vagrant > /dev/null ; then get-vagrant ; fi
 # ### virtualbox ###
-function vbm-scaleup () {
+function vbm-scaleup {
     while getopts "i:s:" opt; do
         case $opt in
             i) image=$OPTARG ; is_image='true' ;;
