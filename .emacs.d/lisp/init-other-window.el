@@ -32,6 +32,7 @@
 (global-set-key (kbd "M-[ 1 ; 4 c") 'shrink-window-horizontally)
 (global-set-key (kbd "M-[ 1 ; 4 d") 'enlarge-window-horizontally)
 (global-set-key (kbd "M-") 'delete-window)
+(global-set-key (kbd "S-C-M-q") 'delete-window)
 
 
 ;;; Switch window
