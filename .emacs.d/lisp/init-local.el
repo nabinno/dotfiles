@@ -31,7 +31,7 @@
 (put 'narrow-to-page 'disabled t)
 (put 'narrow-to-region 'disabled t)
 (remove-hook 'kill-buffer-query-functions 'server-kill-buffer-query-function)
-;; (scroll-bar-mode 0)
+(scroll-bar-mode 0)
 (setq cache-long-line-scans t)
 (setq delete-by-moving-to-trash t)
 (setq echo-keystrokes 0.0001)
@@ -43,8 +43,9 @@
 (setq make-backup-files nil)
 (setq message-log-max 512)
 (set-default 'truncate-lines t)
-;; (tool-bar-mode 0)
+(tool-bar-mode 0)
 (transient-mark-mode t)
+(set-face-attribute 'default nil :height 100)
 
 ;; display-time-mode
 (display-time-mode t)
