@@ -3,13 +3,16 @@
 # 1. BasicSettings::EnvironmentVariable::Locale
 # 1. BasicSettings::EnvironmentVariable::Local
 # 1. BasicSettings::BaseInstallation
+# 1. BasicSettings::PackageManager::WindowsManagementFramework
+# 1. BasicSettings::PackageManager::WindowsManagementFramework::Chocolatey
+# 1. BasicSettings::PackageManager::WindowsManagementFramework::Chocolatey::Pacman
+# 1. BasicSettings::PackageManager::WindowsManagementFramework::Chocolatey::AptCyg
 # 1. BasicSettings::PackageManager::Nix
 # 1. BasicSettings::PackageManager::Chef
-# 1. BasicSettings::PackageManager::Autoparts
-# 1. BasicSettings::PackageManager::Homebrew
-# 1. BasicSettings::PackageManager::WindowsManagementFramework
 # 1. BasicSettings::PackageManager::Anyenv
 # 1. BasicSettings::PackageManager::Docker
+# 1. BasicSettings::PackageManager::Homebrew
+# 1. BasicSettings::PackageManager::Autoparts
 # 2. ProgrammingLanguage::Ruby
 # 2. ProgrammingLanguage::Elixir
 # 2. ProgrammingLanguage::Haskell
@@ -186,27 +189,8 @@ if [ ! -d ~/.local/bin ] ; then mkdir -p ~/.local/bin ; fi
 REQUIRED_MACPORT_VERSION=2.3.3
 function get-base () {
     case "${OSTYPE}" in
-        cygwin)
-            wget https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg
-            chmod 755 apt-cyg
-            mv -f apt-cyg /usr/bin/
-            apt-cyg install \
-                    cygrunsrv \
-                    openssh \
-                    curl \
-                    gcc-g++ \
-                    gcc-core \
-                    patch \
-                    libbz2-devel \
-                    pkg-config \
-                    libsqlite3-devel \
-                    perl-DBD-SQLite \
-                    perl-WWW-Curl \
-                    make \
-                    libcrypt-devel \
-                    openssl-devel \
-                    liblzma-devel \
-                    libcurl-devel ;;
+        msys) ;;
+        cygwin) ;;
         freebsd*) port install -y ruby ;;
         darwin*)
             curl -O https://distfiles.macports.org/MacPorts/MacPorts-$REQUIRED_MACPORT_VERSION.tar.bz2
@@ -424,6 +408,162 @@ function gnu-get () {
 }
 
 
+# 1. BasicSettings::PackageManager::WindowsManagementFramework
+# ------------------------------------------------------------
+function abstract-powershell {
+    case "$OSTYPE" in
+        msys)
+            local args=$(echo $*)
+            /c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -noprofile -executionpolicy bypass -command "$args" ;;
+        cygwin)
+            local args=$(echo $*)
+            /cygdrive/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -noprofile -executionpolicy bypass -command "$args" ;;
+    esac
+}
+case "$OSTYPE" in
+    msys|cygwin)
+        function get-package         { abstract-powershell $0 $* }
+        function get-packageprovider { abstract-powershell $0 $* }
+        function find-package        { abstract-powershell $0 $* }
+        function install-package     { abstract-powershell $0 $* }
+        function uninstall-package   { abstract-powershell $0 $* }
+        function get-wmf             { find-package && get-packageprovider -name chocolatey }
+        function wmf-add             { get-packageprovider -name $1 }
+        function wmf-install         { install-package $* }
+        function wmf-uninstall       { uninstall-package $* }
+        function wmf-search          { find-package $* }
+        function get-global-wmf-packages {
+            wmf-install FoxitReader
+            wmf-install Gpg4win
+	    wmf-install InkScape
+	    wmf-install IrfanView
+	    wmf-install WinSplitRevolution
+	    wmf-install googledrive
+	    wmf-install 7zip
+	    wmf-install f.lux
+	    wmf-install nodejs
+	    wmf-install terminals
+	    wmf-install vagrant
+        }
+esac
+
+
+# 1. BasicSettings::PackageManager::WindowsManagementFramework::Chocolatey
+# ------------------------------------------------------------------------
+case $OSTYPE in
+    msys|cygwin)
+        function get-choco {
+            cmd /c @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
+            # set ChocolateyPath C:\ProgramData\chocolatey\lib
+        }
+        function get-base-choco-packages {
+            choco install \
+                  msys2 \
+                  cygwin \
+                  FoxitReader \
+                  Gpg4win \
+	          InkScape \
+	          IrfanView \
+	          WinSplitRevolution \
+	          googledrive \
+	          7zip \
+	          f.lux \
+	          nodejs \
+	          terminals \
+                  docker \
+	          vagrant
+        }
+        if ! type -p choco > /dev/null ; then get-choco && get-base-choco-packages ; fi ;;
+esac
+
+# 1. BasicSettings::PackageManager::WindowsManagementFramework::Chocolatey::Pacman
+# --------------------------------------------------------------------------------
+case $OSTYPE in
+    msys)
+        function get-pacman {
+            choco install msys2
+            # pacman -Sy pacman
+            # pacman -Syu
+            # pacman -S zsh
+        }
+        function get-base-pacman-packages {
+            pacman -S conemu git tar make patch
+            pacman -S mingw-w64-x86_64-toolchain
+            # set ConEmuDir c:\tools\msys64\opt\bin
+            # set ConEmuWorkDir %USERPROFILE\OneDrive
+        }
+        if ! type -p pacman > /dev/null ; then get-pacman && get-global-pacman-packages ; fi ;;
+esac
+
+
+# 1. BasicSettings::PackageManager::WindowsManagementFramework::Chocolatey::AptCyg
+# --------------------------------------------------------------------------------
+case $OSTYPE in
+    cygwin)
+        function get-aptcyg {
+            choco install cygwin
+            wget https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg -O /usr/local/bin/apt-cyg
+            chmod 755 /usr/local/bin/apt-cyg
+        }
+        function get-base-aptcyg-packages {
+            apt-cyg install \
+                    base-cygwin \
+                    base-files \
+                    bash \
+                    binutils \
+                    cron \
+                    ctags \
+                    curl \
+                    cygrunsrv \
+                    cygutils \
+                    cygwin \
+                    cygwin-devel \
+                    findutils \
+                    gawk \
+                    gcc-core \
+                    gcc-g++ \
+                    git \
+                    gnuplot \
+                    grep \
+                    hostname \
+                    info \
+                    less \
+                    libbz2-devel \
+                    libcrypt-devel \
+                    libcurl-devel \
+                    liblzma-devel \
+                    libsqlite3-devel \
+                    make \
+                    mintty \
+                    openssh \
+                    openssl-devel \
+                    patch \
+                    perl-DBD-SQLite \
+                    perl-WWW-Curl \
+                    ping \
+                    pkg-config \
+                    renameutils \
+                    rsync \
+                    run \
+                    screen \
+                    sed \
+                    shutdown \
+                    tar \
+                    tree \
+                    unzip \
+                    util-linux \
+                    vim \
+                    wget \
+                    which \
+                    whois \
+                    zip \
+                    zoo \
+                    zsh
+        }
+        if ! apt-cyg > /dev/null ; then get-aptcyg && get-base-aptcyg-packages ; fi ;;
+esac
+
+
 # 1. BasicSettings::PackageManager::Nix
 # -------------------------------------
 function get-nix {
@@ -539,149 +679,6 @@ function get-chef {
     nix-install chefdk-${REQUIRED_CHEF_VERSION}
 }
 if ! type -p chef > /dev/null ; then get-chef ; fi
-
-
-# 1. BasicSettings::PackageManager::Autoparts
-# -------------------------------------------
-function get-parts () {
-    case "${OSTYPE}" in
-        linux*)
-            case "${DIST}" in
-                Debian|Ubuntu)
-                    get-base
-                    ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
-                    eval "$(parts env)"
-                    get-parts-packages ;;
-            esac
-    esac
-}
-function get-parts-packages () {
-    case "${OSTYPE}" in
-        linux*)
-            case "${DIST}" in
-                Debian|Ubuntu)
-                    parts install \
-                          heroku_toolbelt \
-                          phantomjs \
-                          the_silver_searcher \
-                          tree \
-                          uuid ;;
-            esac
-    esac
-}
-if ! type -p parts > /dev/null ; then ; get-parts ; fi
-if type -p parts > /dev/null ; then ; eval "$(parts env)" ; fi
-
-
-# 1. BasicSettings::PackageManager::Homebrew
-# ------------------------------------------
-function get-brew () {
-    case "${OSTYPE}" in
-        darwin*) ;;
-        linux*)
-            ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
-            get-brew-packages
-    esac
-}
-function get-brew-packages () {
-    case "${OSTYPE}" in
-        darwin*)
-            brew install \
-                 jq \
-                 memcached \
-                 the_silver_searcher \
-                 tree ;;
-        linux*)
-                case "${DIST}" in
-                    Redhat|RedHat)
-                        brew install \
-                             jq \
-                             tree ;;
-                    Debian|Ubuntu)
-                        brew install \
-                             jq ;;
-                esac
-    esac
-}
-if ! type -p brew > /dev/null ; then get-brew ; fi
-
-
-# 1. BasicSettings::PackageManager::WindowsManagementFramework
-# ------------------------------------------------------------
-if [ "$OSTYPE" = "cygwin" ] ; then
-    function get-apt-cyg () {
-        wget https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg -O /usr/local/bin/apt-cyg
-        chmod 755 /usr/local/bin/apt-cyg
-        get-global-aptcyg-packages
-    }
-    function get-global-aptcyg-packages () {
-        apt-cyg install \
-                base-cygwin \
-                base-files \
-                bash \
-                binutils \
-                cron \
-                curl \
-                ctags \
-                cygrunsrv \
-                cygutils \
-                cygwin \
-                cygwin-devel \
-                findutils \
-                gawk \
-                gcc-core \
-                git \
-                gnuplot \
-                grep \
-                hostname \
-                info \
-                less \
-                make \
-                mintty \
-                ping \
-                renameutils \
-                rsync \
-                run \
-                screen \
-                sed \
-                shutdown \
-                tar \
-                tree \
-                unzip \
-                util-linux \
-                vim \
-                which \
-                whois \
-                wget \
-                zip \
-                zoo \
-                zsh
-    }
-    if ! apt-cyg > /dev/null ; then get-apt-cyg ; fi
-    # function abstract-powershell () {
-    #     local args=$(echo $*)
-    #     /cygdrive/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe /c $args
-    # }
-    # function get-package ()         { abstract-powershell $0 $* }
-    # function get-packageprovider () { abstract-powershell $0 $* }
-    # function find-package ()        { abstract-powershell $0 $* }
-    # function install-package ()     { abstract-powershell $0 $* }
-    # function uninstall-package ()   { abstract-powershell $0 $* }
-    # function get-wmf ()             { find-package && get-packageprovider -name chocolatey }
-    # function get-global-wmf-packages () {
-    #     install-package FoxitReader
-    #     install-package Gpg4win
-    #     install-package InkScape
-    #     install-package IrfanView
-    #     install-package WinSplitRevolution
-    #     install-package googledrive
-    #     install-package 7zip
-    #     install-package f.lux
-    #     install-package nodejs
-    #     install-package terminals
-    #     install-package vagrant
-    # }
-fi
 
 
 # 1. BasicSettings::PackageManager::Anyenv
@@ -820,6 +817,71 @@ function get-docker-machine () {
 }
 if ! type -p docker-compose > /dev/null; then get-docker-compose ; fi
 if ! type -p docker-machine > /dev/null; then get-docker-machine ; fi
+
+
+# 1. BasicSettings::PackageManager::Homebrew
+# ------------------------------------------
+function get-brew () {
+    case "${OSTYPE}" in
+        darwin*) ;;
+        linux*)
+            ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
+            get-brew-packages
+    esac
+}
+function get-brew-packages () {
+    case "${OSTYPE}" in
+        darwin*)
+            brew install \
+                 jq \
+                 memcached \
+                 the_silver_searcher \
+                 tree ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    brew install \
+                         jq \
+                         tree ;;
+                Debian|Ubuntu)
+                    brew install \
+                         jq ;;
+            esac
+    esac
+}
+if ! type -p brew > /dev/null ; then get-brew ; fi
+
+
+# 1. BasicSettings::PackageManager::Autoparts
+# -------------------------------------------
+function get-parts () {
+    case "${OSTYPE}" in
+        linux*)
+            case "${DIST}" in
+                Debian|Ubuntu)
+                    get-base
+                    ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
+                    eval "$(parts env)"
+                    get-parts-packages ;;
+            esac
+    esac
+}
+function get-parts-packages () {
+    case "${OSTYPE}" in
+        linux*)
+            case "${DIST}" in
+                Debian|Ubuntu)
+                    parts install \
+                          heroku_toolbelt \
+                          phantomjs \
+                          the_silver_searcher \
+                          tree \
+                          uuid ;;
+            esac
+    esac
+}
+if ! type -p parts > /dev/null ; then ; get-parts ; fi
+if type -p parts > /dev/null ; then ; eval "$(parts env)" ; fi
 
 
 # 2. ProgrammingLanguage::Ruby
@@ -1107,8 +1169,8 @@ function set-omnisharp {
 }
 case "${OSTYPE}" in
     cygwin)
-        # TODO
-        ;;
+    # TODO
+    ;;
     freebsd*|darwin*|linux*)
         if [ ! -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then get-omnisharp ; fi
         if [   -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then set-omnisharp ; fi ;;
@@ -1120,8 +1182,8 @@ function get-nunit {
 }
 case "${OSTYPE}" in
     cygwin)
-        # TODO
-        ;;
+    # TODO
+    ;;
     freebsd*|darwin*|linux*)
         if ! type -p nunit-console > /dev/null ; then get-nunit ; fi ;;
 esac
@@ -1392,7 +1454,7 @@ function get-python () {
         cygwin)
             apt-cyg install \
                     python
-                    python-setuptools ;;
+            python-setuptools ;;
         freebsd*|darwin*|linux*)
             pyenv install $REQUIRED_PYTHON_VERSION
             pyenv rehash
@@ -1530,9 +1592,9 @@ function get-plagger () {
 }
 function get-org-asana () {
     yes | cpanm -fi Moose \
-          WWW::Asana \
-          Org::Parser \
-          YAML
+                WWW::Asana \
+                Org::Parser \
+                YAML
 }
 function get-global-cpan-packages () {
     yes | cpanm -fi Carton
@@ -1946,6 +2008,7 @@ export REQUIRED_EMACS_VERSION=24.5
 # ### installation ###
 function get-emacs () {
     case "${OSTYPE}" in
+        msys) pacman -S mingw-w64-x86_64-emacs ;;
         cygwin) apt-cyg install emacs ;;
         freebsd*|darwin*|linux*)
             case "${DIST}" in
@@ -1964,8 +2027,9 @@ function get-emacs () {
             cd $current_pwd; rm -fr emacs-$REQUIRED_EMACS_VERSION* ;;
     esac
 }
-if ! type -p emacs > /dev/null; then
-   get-emacs
+case $OSTYPE in (msys) alias emacs='/mingw64/bin/emacs -nw' ;; esac
+if ! type emacs > /dev/null; then
+    get-emacs
 else
     _CURRENT_EMACS_VERSION=$(emacs --version | head -n 1 | sed 's/GNU Emacs //' | awk '$0 = substr($0, 1, index($0, ".") + 1)')
     if [[ $_REQUIRED_EMACS_VERSION > $_CURRENT_EMACS_VERSION ]]; then get-emacs; fi
@@ -2458,20 +2522,20 @@ case ${UID} in
 	PROMPT2="%B%{${fg[red]}%}%_#%{${reset_color}%}%b "
 	SPROMPT="%B%{${fg[red]}%}%r is correct? [n,y,a,e]:%{${reset_color}%}%b "
 	[ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
-        PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') ${PROMPT}" ;;
+            PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') ${PROMPT}" ;;
     *)
 	PROMPT="%{${fg[red]}%}%/%%%{${reset_color}%} "
 	PROMPT2="%{${fg[red]}%}%_%%%{${reset_color}%} "
 	SPROMPT="%{${fg[red]}%}%r is correct? [n,y,a,e]:%{${reset_color}%} "
 	[ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
-        PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') ${PROMPT}" ;;
+            PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') ${PROMPT}" ;;
 esac
-setopt auto_cd         # auto change directory
-setopt auto_pushd      # auto directory pushd that you can get dirs list by cd -[tab]
-setopt correct         # command correct edition before each completion attempt
-setopt list_packed     # compacked complete list display
-setopt noautoremoveslash    # no remove postfix slash of command line
-setopt nolistbeep      # no beep sound when complete list displayed
+setopt auto_cd           # auto change directory
+setopt auto_pushd        # auto directory pushd that you can get dirs list by cd -[tab]
+setopt correct           # command correct edition before each completion attempt
+setopt list_packed       # compacked complete list display
+setopt noautoremoveslash # no remove postfix slash of command line
+setopt nolistbeep        # no beep sound when complete list displayed
 
 
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Keybind
@@ -2510,6 +2574,7 @@ autoload -Uz zmv
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Terminal
 # --------------------------------------------------------------------
 unset LSCOLORS
+unsetopt PROMPT_SP
 zstyle ':completion:*' use-cache true
 case "${TERM}" in
     xterm|screen.xterm) export TERM=xterm-color ;;
@@ -2584,7 +2649,7 @@ case "${OSTYPE}" in
         alias lf="\ls -p -l -F -G"
         alias ll="\ls -p -F -a -G"
         alias la="\ls -p -l -F -a -G" ;;
-    linux*|cygwin)
+    linux*|cygwin|msys)
         alias ls='ls --color=auto'
         alias la="\ls -p -l -F -a --color=auto"
         alias lf="\ls -p -l -F --hide='.*' --color=auto"
@@ -2616,6 +2681,32 @@ esac
 
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Screen
 # -------------------------------------------------------------
+REQUIRED_SCREEN_VERSION=4.0.3
+function get-screen {
+    case $OSTYPE in
+        msys)
+            pacman -S autoconf ncurses-devel libcrypt-devel
+            cd ~
+            wget http://ftp.gnu.org/gnu/screen/screen-${REQUIRED_SCREEN_VERSION}.tar.gz
+            wget http://ftp.eq.uc.pt/software/pc/prog/cygwin/release/screen/screen-${REQUIRED_SCREEN_VERSION}-1-src.tar.bz2
+            tar xvzf screen-${REQUIRED_SCREEN_VERSION}.tar.gz
+            tar xvjf screen-${REQUIRED_SCREEN_VERSION}-1-src.tar.bz2
+            sed -e 's/__CYGWIN__/__MSYS__/g' screen-${REQUIRED_SCREEN_VERSION}-1.src.patch > screen-${REQUIRED_SCREEN_VERSION}-1.src.patch.msys
+            patch -p1 -d . < screen-${REQUIRED_SCREEN_VERSION}-1.cygwin.patch
+            patch -p1 -d . < screen-${REQUIRED_SCREEN_VERSION}-1.src.patch.msys
+            cd screen-${REQUIRED_SCREEN_VERSION}
+            autoconf
+            CFLAGS="-DNCURSES_STATIC" ./configure --prefix=/usr/local
+            make
+            make install
+            mkdir -p /var/run
+            touch /var/run/utmp
+            touch /etc/ttys
+            cd ~
+            rm -rf screen-${REQUIRED_SCREEN_VERSION}*
+    esac
+}
+if ! type -p screen > /dev/null ; then get-screen ; fi
 # ### srcreen for opening ssh ###
 function ssh_screen () {
     eval server=\${$#}
@@ -2879,7 +2970,7 @@ alias in='netstat -a -n | more'
 alias im='cat /proc/meminfo'
 case "${OSTYPE}" in
     freebsd*|darwin*) alias ip="ps aux" ;;
-    cygwin) alias ip="ps -flW" ;;
+    cygwin|msys) alias ip="ps -flW" ;;
     linux*)
         case "${DIST}" in
             Redhat|RedHat) alias ip="ps aux" ;;
