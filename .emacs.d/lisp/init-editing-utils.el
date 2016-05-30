@@ -359,6 +359,17 @@ With arg N, insert N newlines."
 
 
 
+;; Avy
+(require-package 'avy)
+(global-set-key (kbd "M-[ 1 ; 5 n") 'avy-goto-char)
+(global-set-key (kbd "M-[ 1 ; 5 l") 'avy-goto-char-2)
+(global-set-key (kbd "M-g f") 'avy-goto-line)
+(global-set-key (kbd "M-g w") 'avy-goto-word-1)
+(global-set-key (kbd "M-g e") 'avy-goto-word-0)
+(avy-setup-default)
+
+
+
 ;; ;;; Folding
 ;; ;; (require-package 'fold-dwim)
 ;; ;; (global-set-key (kbd "<f8>")     'fold-dwim-toggle)
