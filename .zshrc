@@ -1538,7 +1538,7 @@ export PERL_CPANM_OPT="--prompt --reinstall -l ~/.local/perl --mirror http://cpa
 # export PORT_DBDIR=$HOME/.local/var/db/pkg
 # export TMPDIR=$HOME/.local/tmp
 export PERL5LIB=$HOME/.local/lib/perl5:$PERL5LIB
-export PERL5LIB=$HOME/perl5/lib/perl5?$PERL5LIB
+export PERL5LIB=$HOME/perl5/lib/perl5:$PERL5LIB
 export PERL_LOCAL_LIB_ROOT="~/perl5${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"
 export PERL_MB_OPT="--install_base \"~/perl5\""
 export PERL_MM_OPT="INSTALL_BASE=~/perl5"
