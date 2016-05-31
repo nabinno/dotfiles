@@ -24,6 +24,16 @@
         ("*WL:Message*" . "Wanderlust")))
 
 ;; keybind
+(global-set-key (kbd "M-)") '(lambda () (interactive) (elscreen-goto 0)))
+(global-set-key (kbd "M-!") '(lambda () (interactive) (elscreen-goto 1)))
+(global-set-key (kbd "M-@") '(lambda () (interactive) (elscreen-goto 2)))
+(global-set-key (kbd "M-#") '(lambda () (interactive) (elscreen-goto 3)))
+(global-set-key (kbd "M-$") '(lambda () (interactive) (elscreen-goto 4)))
+(global-set-key (kbd "M-%") '(lambda () (interactive) (elscreen-goto 5)))
+(global-set-key (kbd "M-^") '(lambda () (interactive) (elscreen-goto 6)))
+(global-set-key (kbd "M-&") '(lambda () (interactive) (elscreen-goto 7)))
+(global-set-key (kbd "M-*") '(lambda () (interactive) (elscreen-goto 8)))
+(global-set-key (kbd "M-(") '(lambda () (interactive) (elscreen-goto 9)))
 (global-set-key (kbd "C-M-)") '(lambda () (interactive) (elscreen-goto 0)))
 (global-set-key (kbd "C-M-!") '(lambda () (interactive) (elscreen-goto 1)))
 (global-set-key (kbd "C-M-@") '(lambda () (interactive) (elscreen-goto 2)))

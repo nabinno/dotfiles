@@ -6,7 +6,7 @@
 (require-package 'sr-speedbar)
 (when (maybe-require-package 'sr-speedbar)
   (require 'speedbar)
-  (global-set-key (kbd "M-2") 'sr-speedbar-toggle))
+  (global-set-key (kbd "M-3") 'sr-speedbar-toggle))
 
 (setq speedbar-hide-button-brackets-flag t
       speedbar-show-unknown-files t
@@ -51,7 +51,7 @@
 ;; (require-package 'neotree)
 ;; (when (maybe-require-package 'neotree)
 ;;   (require 'neotree)
-;;   (global-set-key (kbd "M-2") 'neotree-toggle))
+;;   (global-set-key (kbd "M-3") 'neotree-toggle))
 
 ;; (add-hook 'neotree-mode-hook
 ;;           (lambda ()
