@@ -94,6 +94,7 @@
 (require-package 'undo-tree)
 (global-undo-tree-mode)
 (diminish 'undo-tree-mode)
+(global-set-key (kbd "M-/") 'undo-tree-undo)
 
 
 (require-package 'highlight-symbol)
@@ -161,8 +162,10 @@
 
 (require-package 'multiple-cursors)
 ;; multiple-cursors
+(global-set-key (kbd "M-,")             'mc/mark-previous-like-this)
 (global-set-key (kbd "C-<")             'mc/mark-previous-like-this)
 (global-set-key (kbd "M-[ 1 ; 6 l")     'mc/mark-previous-like-this)
+(global-set-key (kbd "M-.")             'mc/mark-next-like-this)
 (global-set-key (kbd "C->")             'mc/mark-next-like-this)
 (global-set-key (kbd "M-[ 1 ; 6 n")     'mc/mark-next-like-this)
 (global-set-key (kbd "C-+")             'mc/mark-next-like-this)
