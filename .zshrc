@@ -478,7 +478,7 @@ case $OSTYPE in
             # pacman -S zsh
         }
         function get-base-pacman-packages {
-            pacman -S conemu git tar make patch
+            pacman -S conemu git tar unzip make patch
             pacman -S mingw-w64-x86_64-toolchain
             # set ConEmuDir c:\tools\msys64\opt\bin
             # set ConEmuWorkDir %USERPROFILE\OneDrive
@@ -1111,6 +1111,10 @@ REQUIRED_DOTNETFRAMEWORK_VERSION=4.0.30319
 REQUIRED_MONO_VERSION=4.0.4.1
 REQUIRED_NUNIT_VERSION=3.2.1
 export PATH="$HOME/.local/NUnit/bin:$PATH"
+case "${OSTYPE}" in
+    msys)   export PATH="/C/Windows/Microsoft.NET/Framework64/v${REQUIRED_DOTNETFRAMEWORK_VERSION}:$PATH" ;;
+    cygwin) export PATH="/cygdrive/C/Windows/Microsoft.NET/Framework64/v${REQUIRED_DOTNETFRAMEWORK_VERSION}:$PATH" ;;
+esac
 function get-dotnet {
     case "${OSTYPE}" in
         cygwin)
@@ -1153,30 +1157,40 @@ function get-dotnet {
     esac
 }
 function set-dotnet {
+    export DOTNET_HOME=$HOME/dotnet
+    export PATH=$PATH:$DOTNET_HOME
     case "${OSTYPE}" in
-        cygwin)
-            export PATH="/cygdrive/C/Windows/Microsoft.NET/Framework64/v${REQUIRED_DOTNETFRAMEWORK_VERSION}:$PATH"
-            export DOTNET_HOME=$HOME/dotnet
-            export PATH=$PATH:$DOTNET_HOME ;;
-        freebsd*|darwin*) ;;
-        linux*)
-            export DOTNET_HOME=$HOME/dotnet
-            export PATH=$PATH:$DOTNET_HOME ;;
+        msys|cygwin)
+            function csc         { cmd /c "csc.exe $*" }
+            function vbc         { cmd /c "vbc.exe $*" }
+            function jsc         { cmd /c "jsc.exe $*" }
+            function msbuild     { cmd /c "MSBuild.exe $*" }
+            function installutil { cmd /c "InstallUtil.exe $*" }
+            function ngen        { cmd /c "ngen.exe $*" }
     esac
 }
 case "${OSTYPE}" in
-    cygwin) ;;
+    msys|cygwin)
+        if ! type -p csc > /dev/null ; then get-dotnet ; fi
+        if   type -p csc > /dev/null ; then set-dotnet ; fi ;;
     freebsd*|darwin*|linux*)
         if ! type -p \mcs > /dev/null ; then get-dotnet ; fi
         if   type -p \mcs > /dev/null ; then set-dotnet ; fi ;;
 esac
 function get-omnisharp {
     case "${OSTYPE}" in
+        msys)
+            git clone https://github.com/OmniSharp/omnisharp-server.git
+            cd omnisharp-server
+            git submodule update --init --recursive
+            msbuild
+            cd ..
+            mv omnisharp-server ~/.local/ ;;
         cygwin)
             git clone https://github.com/OmniSharp/omnisharp-server.git
             cd omnisharp-server
             git submodule update --init --recursive
-            copy OmniSharp\config-cygwin.json OmniSharp\config.json
+            cp -f OmniSharp/config-cygwin.json OmniSharp/config.json
             msbuild
             cd ..
             mv omnisharp-server ~/.local/ ;;
@@ -1193,10 +1207,7 @@ function set-omnisharp {
     alias omnisharp='mono ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe'
 }
 case "${OSTYPE}" in
-    cygwin)
-    # TODO
-    ;;
-    freebsd*|darwin*|linux*)
+    msys|cygwin|freebsd*|darwin*|linux*)
         if [ ! -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then get-omnisharp ; fi
         if [   -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then set-omnisharp ; fi ;;
 esac
@@ -1205,10 +1216,13 @@ function get-nunit {
     unzip NUnit-${REQUIRED_NUNIT_VERSION}.zip -d ~/.local/NUnit
     rm -f NUnit-${REQUIRED_NUNIT_VERSION}.zip
 }
+function set-nunit {
+    alias nunit3-console=nunit-console
+}
 case "${OSTYPE}" in
-    cygwin)
-    # TODO
-    ;;
+    msys|cygwin)
+        if ! type -p nunit3-console > /dev/null ; then get-nunit ; fi
+        if   type -p nunit3-console > /dev/null ; then set-nunit ; fi ;;
     freebsd*|darwin*|linux*)
         if ! type -p nunit-console > /dev/null ; then get-nunit ; fi ;;
 esac
