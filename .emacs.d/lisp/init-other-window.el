@@ -33,12 +33,14 @@
 (global-set-key (kbd "M-[ 1 ; 4 d") 'enlarge-window-horizontally)
 (global-set-key (kbd "M-") 'delete-window)
 (global-set-key (kbd "S-C-M-q") 'delete-window)
+(global-set-key (kbd "M-q") 'delete-window)
 
 
 ;;; Switch window
 (require-package 'switch-window)
 (setq switch-window-shortcut-style 'qwerty)
 (global-set-key (kbd "M-[ 1 ; 6 i") 'switch-window)
+(global-set-key (kbd "M-i") 'switch-window)
 
 
 ;;; OWDriver
