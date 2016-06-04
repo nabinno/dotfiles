@@ -77,7 +77,7 @@
         (kill-buffer buffer))))
 
 (global-set-key (kbd "M-1") 'multi-eshell-switch)
-(global-set-key (kbd "M-!") 'multi-eshell)
+(global-set-key (kbd "M-2") 'multi-eshell)
 
 
 ;; ;;; Eshell Z

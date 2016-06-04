@@ -20,7 +20,7 @@
 (define-minor-mode origami-wrap-mode
   "Setup origami folding for TAB"
   nil " 折"
-  '(("\C-i" . origami-cycle))
+  '(("\M-e" . origami-cycle))
   (or origami-mode (origami-mode 1)))
 (defun origami-cycle (recursive)
   "Setup org-like origami function with RECURSIVE."

@@ -94,6 +94,7 @@
 (require-package 'undo-tree)
 (global-undo-tree-mode)
 (diminish 'undo-tree-mode)
+(global-set-key (kbd "M-/") 'undo-tree-undo)
 
 
 (require-package 'highlight-symbol)
@@ -161,8 +162,10 @@
 
 (require-package 'multiple-cursors)
 ;; multiple-cursors
+(global-set-key (kbd "M-,")             'mc/mark-previous-like-this)
 (global-set-key (kbd "C-<")             'mc/mark-previous-like-this)
 (global-set-key (kbd "M-[ 1 ; 6 l")     'mc/mark-previous-like-this)
+(global-set-key (kbd "M-.")             'mc/mark-next-like-this)
 (global-set-key (kbd "C->")             'mc/mark-next-like-this)
 (global-set-key (kbd "M-[ 1 ; 6 n")     'mc/mark-next-like-this)
 (global-set-key (kbd "C-+")             'mc/mark-next-like-this)
@@ -194,7 +197,7 @@
 ;; Visual regexp
 ;;----------------------------------------------------------------------------
 (require-package 'visual-regexp)
-(define-key global-map (kbd "C-M-r") 'vr/replace)
+(define-key global-map (kbd "M-r") 'vr/replace)
 (define-key global-map (kbd "C-M-m") 'vr/mc-mark)
 
 ;;----------------------------------------------------------------------------
@@ -356,6 +359,17 @@ With arg N, insert N newlines."
   (require-package 'wgrep-ag)
   (setq-default ag-highlight-search t)
   (global-set-key (kbd "M-?") 'ag-project))
+
+
+
+;; Avy
+(require-package 'avy)
+(global-set-key (kbd "M-[ 1 ; 5 n") 'avy-goto-char)
+(global-set-key (kbd "M-[ 1 ; 5 l") 'avy-goto-char-2)
+(global-set-key (kbd "M-g f") 'avy-goto-line)
+(global-set-key (kbd "M-g w") 'avy-goto-word-1)
+(global-set-key (kbd "M-g e") 'avy-goto-word-0)
+(avy-setup-default)
 
 
 

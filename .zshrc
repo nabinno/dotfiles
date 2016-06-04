@@ -115,6 +115,28 @@ case "${OSTYPE}" in
             OSSTR="${OS} ${DIST} ${REV}(${PSUEDONAME} ${KERNEL} ${MACH})"
         fi
 esac
+case $OSTYPE in
+    msys)
+        function get-winpath {
+            local winpath=
+            winpath=$(sed -e 's|\\|/|g' <<< $*)
+            winpath=$(sed -e 's|C:|/C|g' <<< $winpath)
+            winpath=$(sed -e 's|Program Files (x86)|Progra~2|g' <<< $winpath)
+            winpath=$(sed -e 's|Program Files|Progra~1|g' <<< $winpath)
+            winpath=$(sed -e 's| |\\ |g' <<< $winpath)
+            echo $winpath
+        } ;;
+    cygwin)
+        function get-winpath {
+            local winpath=
+            winpath=$(sed -e 's|\\|/|g' <<< $*)
+            winpath=$(sed -e 's|C:|/cygdrive/C|g' <<< $winpath)
+            winpath=$(sed -e 's|Program Files (x86)|Progra~2|g' <<< $winpath)
+            winpath=$(sed -e 's|Program Files|Progra~1|g' <<< $winpath)
+            winpath=$(sed -e 's| |\\ |g' <<< $winpath)
+            echo $winpath
+        } ;;
+esac
 
 
 # 1. BasicSettings::EnvironmentVariable
@@ -122,9 +144,6 @@ esac
 # export EDITOR=/usr/local/bin/vi
 # export LANG=ja_JP.UTF-8
 # export LANG=ja_JP.eucJP
-alias egrep='egrep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias grep='grep --color=auto'
 export CLICOLOR=1
 export EDITOR='vim -f'
 export LANG=en_US.UTF-8
@@ -133,23 +152,11 @@ export LC_ALL=en_US.UTF-8
 export LC_CTYPE=UTF-8
 export LC_MESSAGES=C
 export MAILPATH=$HOME/MailBox/postmaster/maildir
-export MANPATH=$HOME/.linuxbrew/share/man:$MANPATH
-export INFOPATH=$HOME/.linuxbrew/share/info:$INFOPATH
-export LD_LIBRARY_PATH=$HOME/.linuxbrew/lib:$LD_LIBRARY_PATH
 export PATH=$HOME/bin:$HOME/local/bin:$PATH
 export PATH="/opt/local/bin:$PATH"
 export PATH="/opt/local/sbin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.local/exenv/bin:$PATH"
 export PATH="$HOME/.local/dove/bin:$PATH"
-export PATH="$HOME/.local/NUnit/bin:$PATH"
-export PATH="$HOME/.anyenv/bin:$PATH"
-export PATH="$HOME/.parts/autoparts/bin:$PATH"
-export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
-export PATH="$HOME/.linuxbrew/bin:$PATH"
-export PATH="$HOME/.cask/bin:$PATH"
-export PATH="$HOME/.go.d/bin:$PATH"
-export PATH="$HOME/google-cloud-sdk/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
 
 
@@ -452,28 +459,12 @@ esac
 # ------------------------------------------------------------------------
 case $OSTYPE in
     msys|cygwin)
+        export PATH=/c/ProgramData/Chocolatey/bin:$PATH
         function get-choco {
             cmd /c @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
             # set ChocolateyPath C:\ProgramData\chocolatey\lib
         }
-        function get-base-choco-packages {
-            choco install \
-                  msys2 \
-                  cygwin \
-                  FoxitReader \
-                  Gpg4win \
-	          InkScape \
-	          IrfanView \
-	          WinSplitRevolution \
-	          googledrive \
-	          7zip \
-	          f.lux \
-	          nodejs \
-	          terminals \
-                  docker \
-	          vagrant
-        }
-        if ! type -p choco > /dev/null ; then get-choco && get-base-choco-packages ; fi ;;
+        if ! type -p choco > /dev/null ; then get-choco ; fi ;;
 esac
 
 # 1. BasicSettings::PackageManager::WindowsManagementFramework::Chocolatey::Pacman
@@ -683,6 +674,7 @@ if ! type -p chef > /dev/null ; then get-chef ; fi
 
 # 1. BasicSettings::PackageManager::Anyenv
 # ----------------------------------------
+export PATH="$HOME/.anyenv/bin:$PATH"
 function get-anyenv () {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
@@ -696,9 +688,10 @@ if type -p anyenv > /dev/null; then eval "$(anyenv init -)" ; fi
 
 # 1. BasicSettings::PackageManager::Docker
 # ----------------------------------------
-# ### setup ###
+### setup ###
 function get-docker () {
     case "${OSTYPE}" in
+        msys|cygwin) choco install boot2docker ;;
         freebsd*|darwin*) ;;
         linux*)
             case "${DIST}" in
@@ -722,7 +715,7 @@ function get-docker () {
             esac
     esac
 }
-if ! type -p docker > /dev/null ; then get-docker ; fi
+case $OSTYPE in (linux) if ! type -p docker > /dev/null ; then get-docker ; fi ; esac
 function docker-restart () {
     case "${OSTYPE}" in
         darwin*)
@@ -749,87 +742,121 @@ function docker-status () {
             esac
     esac
 }
-# ### alias ###
-alias dcr="docker-restart"
-alias dcp="ps aux | \grep -G 'docker.*'"
-alias dcs="docker-status"
-alias dck="sudo killall docker"
-alias dc='docker commit $(docker ps -l -q)'
-alias dd='docker rmi -f'
-alias dda='docker rmi -f $(docker images -q)'
-alias ddel='docker rmi -f'
-alias ddela='docker rmi -f $(docker images -q)'
-function dh () { docker history $1 | less -S }
-alias dj='docker run -i -t'
-alias dk='docker rm -f'
-alias dka='docker rm -f $(docker ps -a -q)'
-alias dkd='dka ; dda'
-alias dkill='docker rm -f'
-alias dkilla='docker rm -f $(docker ps -a -q)'
-alias docker='sudo docker'
-alias dl='docker images | less -S'
-alias dls='docker images | less -S'
-alias dp='docker ps -a | less -S'
-alias dps='docker ps -a | less -S'
-function dsshd () { docker run -t -d -p 5000:3000 -P $1 /usr/sbin/sshd -D }
-alias dr='docker tag'
-alias dv='docker images -viz'
-function datach () { docker start $1 ; docker atach $1 }
-function denv () { docker run --rm $1 env }
-function dip () {
-    CI=$(docker ps -l -q)
-    if [ $1 ] ; then
-	docker inspect --format {{.NetworkSettings.IPAddress}} $1
-	docker inspect --format {{.NetworkSettings.Ports}} $1
-    else
-	docker inspect --format {{.NetworkSettings.IPAddress}} $CI
-	docker inspect --format {{.NetworkSettings.Ports}} $CI
-    fi
-}
-function dnsenter () {
-    CI=$(docker ps -l -q)
-    if [ $1 ] ; then
-	PID=$(docker inspect --format {{.State.Pid}} $1)
-        nsenter --target $PID --mount --uts --ipc --net --pid
-    else
-	PID=$(docker inspect --format {{.State.Pid}} $CI)
-        nsenter --target $PID --mount --uts --ipc --net --pid
-    fi
-}
-# ### docker compose / machine ###
-function get-docker-compose () {
-    case "${OSTYPE}" in
-        freebsd*|darwin*) ;;
-        linux*) nix-install docker-compose ;;
-    esac
-}
-function get-docker-machine () {
-    case "${OSTYPE}" in
-        freebsd*|darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) ;;
-                Debian|Ubuntu)
-                    wget https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_linux-386 -O ~/.local/bin/docker-machine
-                    chmod +x ~/.local/bin/docker-machine ;;
+## ### alias ###
+case $OSTYPE in
+    msys)
+        export DOCKER_PATH=$(get-winpath "C:\Program Files\Docker Toolbox")
+        function boot2docker {
+            local current_pwd=$(pwd)
+            cd $DOCKER_PATH
+            ./start.sh
+            cd $current_pwd
+        }
+        alias docker="MSYS_NO_PATHCONV=1 $DOCKER_PATH/docker.exe"
+        alias docker-compose="$DOCKER_PATH/docker-compose.exe"
+        alias docker-machine="$DOCKER_PATH/docker-machine.exe"
+        alias dcu="docker-machine start"
+        alias dct="docker-machine stop"
+        alias dcr="docker-machine restart"
+        alias dcssh='docker-machine ssh'
+        alias dcscp='docker-machine scp'
+        alias dcp="ps aux | \grep -G 'docker.*'"
+        alias dcs="docker-machine status"
+        alias dd='docker-machine kill -f'
+        alias ddel='docker-machine kill -f'
+        alias dj='docker-machine ssh'
+        alias dk='docker-machine rm -f'
+        alias dkill='docker-machine rm -f'
+        alias dl='docker-machine config ; docker-machine env'
+        alias dls='docker-machine config ; docker-machine env'
+        alias dp='docker-machine ls'
+        alias dps='docker-machine ls'
+        ;;
+    *)
+        alias docker='sudo docker'
+        alias dcr="docker-restart"
+        alias dcp="ps aux | \grep -G 'docker.*'"
+        alias dcs="docker-status"
+        alias dck="sudo killall docker"
+        alias dc='docker commit $(docker ps -l -q)'
+        alias dd='docker rmi -f'
+        alias dda='docker rmi -f $(docker images -q)'
+        alias ddel='docker rmi -f'
+        alias ddela='docker rmi -f $(docker images -q)'
+        function dh () { docker history $1 | less -S }
+        alias dj='docker run -i -t'
+        alias dk='docker rm -f'
+        alias dka='docker rm -f $(docker ps -a -q)'
+        alias dkd='dka ; dda'
+        alias dkill='docker rm -f'
+        alias dkilla='docker rm -f $(docker ps -a -q)'
+        alias dl='docker images | less -S'
+        alias dls='docker images | less -S'
+        alias dp='docker ps -a | less -S'
+        alias dps='docker ps -a | less -S'
+        function dsshd () { docker run -t -d -p 5000:3000 -P $1 /usr/sbin/sshd -D }
+        alias dr='docker tag'
+        alias dv='docker images -viz'
+        function datach () { docker start $1 ; docker atach $1 }
+        function denv () { docker run --rm $1 env }
+        function dip () {
+            CI=$(docker ps -l -q)
+            if [ $1 ] ; then
+	        docker inspect --format {{.NetworkSettings.IPAddress}} $1
+	        docker inspect --format {{.NetworkSettings.Ports}} $1
+            else
+	        docker inspect --format {{.NetworkSettings.IPAddress}} $CI
+	        docker inspect --format {{.NetworkSettings.Ports}} $CI
+            fi
+        }
+        function dnsenter () {
+            CI=$(docker ps -l -q)
+            if [ $1 ] ; then
+	        PID=$(docker inspect --format {{.State.Pid}} $1)
+                nsenter --target $PID --mount --uts --ipc --net --pid
+            else
+	        PID=$(docker inspect --format {{.State.Pid}} $CI)
+                nsenter --target $PID --mount --uts --ipc --net --pid
+            fi
+        }
+        # ### docker compose / machine ###
+        function get-docker-compose () {
+            case "${OSTYPE}" in
+                freebsd*|darwin*) ;;
+                linux*) nix-install docker-compose ;;
             esac
-    esac
-}
-if ! type -p docker-compose > /dev/null; then get-docker-compose ; fi
-if ! type -p docker-machine > /dev/null; then get-docker-machine ; fi
+        }
+        function get-docker-machine () {
+            case "${OSTYPE}" in
+                freebsd*|darwin*) ;;
+                linux*)
+                    case "${DIST}" in
+                        Redhat|RedHat) ;;
+                        Debian|Ubuntu)
+                            wget https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_linux-386 -O ~/.local/bin/docker-machine
+                            chmod +x ~/.local/bin/docker-machine ;;
+                    esac
+            esac
+        }
+        if ! type -p docker-compose > /dev/null; then get-docker-compose ; fi
+        if ! type -p docker-machine > /dev/null; then get-docker-machine ; fi
+        ;;
+esac
 
 
 # 1. BasicSettings::PackageManager::Homebrew
 # ------------------------------------------
-function get-brew () {
+export MANPATH=$HOME/.linuxbrew/share/man:$MANPATH
+export INFOPATH=$HOME/.linuxbrew/share/info:$INFOPATH
+export LD_LIBRARY_PATH=$HOME/.linuxbrew/lib:$LD_LIBRARY_PATH
+export PATH="$HOME/.linuxbrew/bin:$PATH"
+function get-brew {
     case "${OSTYPE}" in
         darwin*) ;;
-        linux*)
-            ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
-            get-brew-packages
+        linux*) ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
     esac
 }
-function get-brew-packages () {
+function get-base-brew-packages {
     case "${OSTYPE}" in
         darwin*)
             brew install \
@@ -849,39 +876,34 @@ function get-brew-packages () {
             esac
     esac
 }
-if ! type -p brew > /dev/null ; then get-brew ; fi
+if ! type -p brew > /dev/null ; then get-brew && get-base-brew-packages ; fi
 
 
 # 1. BasicSettings::PackageManager::Autoparts
 # -------------------------------------------
-function get-parts () {
-    case "${OSTYPE}" in
-        linux*)
-            case "${DIST}" in
-                Debian|Ubuntu)
+case "${OSTYPE}" in
+    linux*) case "${DIST}" in
+            Debian|Ubuntu)
+                export PATH="$HOME/.parts/autoparts/bin:$PATH"
+                export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
+                function get-parts () {
                     get-base
                     ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
                     eval "$(parts env)"
-                    get-parts-packages ;;
-            esac
-    esac
-}
-function get-parts-packages () {
-    case "${OSTYPE}" in
-        linux*)
-            case "${DIST}" in
-                Debian|Ubuntu)
+                    get-parts-packages
+                }
+                function get-parts-packages () {
                     parts install \
                           heroku_toolbelt \
                           phantomjs \
                           the_silver_searcher \
                           tree \
-                          uuid ;;
-            esac
-    esac
-}
-if ! type -p parts > /dev/null ; then ; get-parts ; fi
-if type -p parts > /dev/null ; then ; eval "$(parts env)" ; fi
+                          uuid
+                }
+                if ! type -p parts > /dev/null ; then ; get-parts ; fi
+                if type -p parts > /dev/null ; then ; eval "$(parts env)" ; fi
+        esac
+esac
 
 
 # 2. ProgrammingLanguage::Ruby
@@ -948,6 +970,7 @@ fi
 REQUIRED_ERLANG_VERSION=18.2
 REQUIRED_ELIXIR_VERSION=1.2.0
 REQUIRED_PHOENIXFRAMEWORK_VERSION=1.1.1
+export PATH="$HOME/.local/exenv/bin:$PATH"
 # ### version control ###
 function get-kerl () {
     case "${OSTYPE}" in
@@ -1052,6 +1075,7 @@ if ! type -p cabal > /dev/null ; then get-cabal ; fi
 # --------------------------
 export REQUIRED_GO_VERSION=1.4.2
 export GOPATH=~/.go.d
+export PATH="$HOME/.go.d/bin:$PATH"
 # ### version control ###
 function get-goenv () {
     case "${OSTYPE}" in
@@ -1086,6 +1110,7 @@ function get-global-go-packages () {
 REQUIRED_DOTNETFRAMEWORK_VERSION=4.0.30319
 REQUIRED_MONO_VERSION=4.0.4.1
 REQUIRED_NUNIT_VERSION=3.2.1
+export PATH="$HOME/.local/NUnit/bin:$PATH"
 function get-dotnet {
     case "${OSTYPE}" in
         cygwin)
@@ -1196,6 +1221,11 @@ REQUIRED_OEPNJDK_SHORT_VERSION=1.8
 REQUIRED_PLAY_VERSION=2.2.3
 export PLAY_HOME=/usr/local/play-$REQUIRED_PLAY_VERSION
 export PATH="$PLAY_HOME:$PATH"
+case $OSTYPE in
+    msys|cygwin)
+        export JAVA_HOME=$(get-winpath $JAVA_HOME)
+        export PATH=$JAVA_HOME/bin:$PATH ;;
+esac
 # ### version control ###
 function get-jenv () {
     case "${OSTYPE}" in
@@ -1495,22 +1525,23 @@ if ! type -p pip > /dev/null ; then get-pip ; fi
 # 2. ProgrammingLanguage::Perl
 # ----------------------------
 REQUIRED_PERL_VERSION=5.20.3
+export PATH="$HOME/.local/perl-$REQUIRED_PERL_VERSION/bin:$PATH"
+export PATH="$HOME/.cask/bin:$PATH"
+export PATH="$HOME/perl5/bin:$PATH"
 # export INSTALL_AS_USER
 # export LD_LIBRARY_PATH=$HOME/.local/lib
 # export MODULEBUILDRC=$HOME/.local/.modulebuildrc
-# export PERL5LIB=$HOME/.local/lib/perl5:$PERL5LIB
 export PERL_CPANM_OPT="--prompt --reinstall -l ~/.local/perl --mirror http://cpan.cpantesters.org"
 # export PERL_CPANM_OPT="-l ~/.local --mirror ~/.cpan/minicpan/"
 # export PERL_MM_OPT="INSTALL_BASE=$HOME/.local"
 # export PKG_DBDIR=$HOME/.local/var/db/pkg
 # export PORT_DBDIR=$HOME/.local/var/db/pkg
 # export TMPDIR=$HOME/.local/tmp
-export PATH="$HOME/.local/perl-$REQUIRED_PERL_VERSION/bin:$PATH"
-PATH="~/perl5/bin${PATH+:}${PATH}"; export PATH;
-PERL5LIB="~/perl5/lib/perl5${PERL5LIB+:}${PERL5LIB}"; export PERL5LIB;
-PERL_LOCAL_LIB_ROOT="~/perl5${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"; export PERL_LOCAL_LIB_ROOT;
-PERL_MB_OPT="--install_base \"~/perl5\""; export PERL_MB_OPT;
-PERL_MM_OPT="INSTALL_BASE=~/perl5"; export PERL_MM_OPT;
+export PERL5LIB=$HOME/.local/lib/perl5:$PERL5LIB
+export PERL5LIB=$HOME/perl5/lib/perl5:$PERL5LIB
+export PERL_LOCAL_LIB_ROOT="~/perl5${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"
+export PERL_MB_OPT="--install_base \"~/perl5\""
+export PERL_MM_OPT="INSTALL_BASE=~/perl5"
 # ### version control ###
 function get-plenv () {
     case "${OSTYPE}" in
@@ -1611,6 +1642,10 @@ alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 # ----------------------------------
 export REQUIRED_NODE_VERSION='5.8.0'
 export node='NODE_NO_READLINE=1 node'
+case $OSTYPE in
+    msys|cygwin)
+        export PATH=$(get-winpath "C:\Program Files\nodejs"):$PATH ;;
+esac
 # ### version control ###
 function get-ndenv () {
     case "${OSTYPE}" in
@@ -1619,13 +1654,9 @@ function get-ndenv () {
 }
 if ! type -p ndenv > /dev/null ; then get-ndenv ; fi
 # ### installation ###
-case "$OSTYPE" in
-    cygwin)
-        function node { /cygdrive/c/Progra~1/nodejs/node.exe $* ; }
-        function npm  { /cygdrive/c/Progra~1/nodejs/npm      $* ; } ;;
-esac
 function get-node () {
     case "$OSTYPE" in
+        msys|cygwin) choco install nodejs ;;
         linux*)
             ndenv install v$REQUIRED_NODE_VERSION
             ndenv rehash
@@ -2365,24 +2396,15 @@ function github-pull-repositories () {
 function get-puml () {
     case "${OSTYPE}" in
         freebsd*|darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) ;;
-                Debian|Ubuntu)
-                    if type -p npm > /dev/null; then npm install -g node-plantuml; fi ;;
-            esac
+        linux*) if type -p npm > /dev/null; then npm install -g node-plantuml; fi ;;
     esac
 }
 function get-plantuml () {
     case "${OSTYPE}" in
         freebsd*|darwin*) ;;
         linux*)
-            case "${DIST}" in
-                Redhat|RedHat) ;;
-                Debian|Ubuntu)
-                    wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
-                    alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng' ;;
-            esac
+            wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
+            alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng' ;;
     esac
 }
 function get-graphviz () {
@@ -2452,8 +2474,20 @@ alias vl='vagrant box list'
 alias vd='vagrant box remove'
 alias vsh='vagrant ssh'
 alias vshconfig='vagrant ssh-config'
+case $OSTYPE in
+    msys|cygwin)
+        export PATH=$(get-winpath 'C:\HashiCorp\Vagrant\bin'):$PATH
+        export VBOX_MSI_INSTALL_PATH=$(get-winpath $VBOX_MSI_INSTALL_PATH) ;;
+esac
+# ### vagrant ###
+function get-vagrant {
+    case $OSTYPE in
+        msys|cygwin) choco install vagrant ;;
+    esac
+}
+if ! type -p vagrant > /dev/null ; then get-vagrant ; fi
 # ### virtualbox ###
-function vbm-scaleup () {
+function vbm-scaleup {
     while getopts "i:s:" opt; do
         case $opt in
             i) image=$OPTARG ; is_image='true' ;;
@@ -2775,6 +2809,7 @@ function get-heroku () {
 
 # 5. Platform::GoogleCloudPlatform
 # --------------------------------
+export PATH="$HOME/google-cloud-sdk/bin:$PATH"
 function get-gcloud () {
     case "${OSTYPE}" in
         cygwin|darwin*|linux*)
@@ -2955,7 +2990,10 @@ alias d='/bin/rm -fr'
 alias du="du -h"
 alias df="df -h"
 # alias grep='egrep -ano'
+# alias egrep='egrep --color=auto'
 alias egrep='\egrep -H -n'
+alias fgrep='fgrep --color=auto'
+alias grep='grep --color=auto'
 function gresreg () {
     for i in $(\grep -lr $1 *) ; do
 	cp $i $i.tmp;
