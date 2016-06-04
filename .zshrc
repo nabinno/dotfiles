@@ -2396,24 +2396,15 @@ function github-pull-repositories () {
 function get-puml () {
     case "${OSTYPE}" in
         freebsd*|darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) ;;
-                Debian|Ubuntu)
-                    if type -p npm > /dev/null; then npm install -g node-plantuml; fi ;;
-            esac
+        linux*) if type -p npm > /dev/null; then npm install -g node-plantuml; fi ;;
     esac
 }
 function get-plantuml () {
     case "${OSTYPE}" in
         freebsd*|darwin*) ;;
         linux*)
-            case "${DIST}" in
-                Redhat|RedHat) ;;
-                Debian|Ubuntu)
-                    wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
-                    alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng' ;;
-            esac
+            wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
+            alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng' ;;
     esac
 }
 function get-graphviz () {
