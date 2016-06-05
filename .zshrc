@@ -1110,34 +1110,72 @@ function get-global-go-packages () {
 REQUIRED_DOTNETFRAMEWORK_VERSION=4.0.30319
 REQUIRED_MONO_VERSION=4.0.4.1
 REQUIRED_NUNIT_VERSION=3.2.1
+export DOTNET_HOME=$HOME/.local/dotnet
+export PATH=$PATH:$DOTNET_HOME
 export PATH="$HOME/.local/NUnit/bin:$PATH"
 case "${OSTYPE}" in
-    msys)   export PATH="/C/Windows/Microsoft.NET/Framework64/v${REQUIRED_DOTNETFRAMEWORK_VERSION}:$PATH" ;;
-    cygwin) export PATH="/cygdrive/C/Windows/Microsoft.NET/Framework64/v${REQUIRED_DOTNETFRAMEWORK_VERSION}:$PATH" ;;
+    msys)
+        export PATH="/C/Windows/Microsoft.NET/Framework64/v${REQUIRED_DOTNETFRAMEWORK_VERSION}:$PATH"
+        export PATH=/C/Program~2/Mono/bin:$PATH ;;
+    cygwin)
+        export PATH="/cygdrive/C/Windows/Microsoft.NET/Framework64/v${REQUIRED_DOTNETFRAMEWORK_VERSION}:$PATH"
+        export PATH=/cygdrive/C/Program~2/Mono/bin:$PATH ;;
 esac
-function get-dotnet {
+# A. Compiler        - Mono
+# B. Task Runner     - DNVM / Dotnet CLI
+# C. Package Manager - NuGet
+# D. Scaffolding     - Yeoman / Grunt-init
+# E. Complition      - OmniSharp
+# F. Test Runner     - NUnit
+# ### A. Compiler ###
+function get-mono {
     case "${OSTYPE}" in
+        msys|cygwin) choco install mono ;;
+        freebsd*|darwin*) ;;
+        linux*)
+            case $DIST in
+                Redhat*|RedHat*)
+                    sudo yum install -y yum-utils
+                    sudo rpm --import "http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF"
+                    sudo yum-config-manager --add-repo http://download.mono-project.com/repo/centos/
+                    sudo yum install -y \
+                         mono \
+                         mono-complete ;;
+                Debian|Ubuntu*)
+                    case $DIST_VERSION in
+                        14.04)
+                            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+                            echo "deb http://download.mono-project.com/repo/debian wheezy main" | sudo tee /etc/apt/sources.list.d/mono-xamarin.list
+                            sudo apt-get update
+                            sudo apt-get install -y \
+                                 mono \
+                                 mono-complete ;;
+                    esac
+            esac ;;
+    esac
+}
+# ### B. Task Runner ###
+function get-dnvm {
+    curl -sSL https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.sh | DNX_BRANCH=dev sh
+    source ~/.dnx/dnvm/dnvm.sh
+    dnvm upgrade -u
+}
+function get-dotnetcli {
+    case "${OSTYPE}" in
+        msys)
+            wget https://dotnetcli.blob.core.windows.net/dotnet/beta/Binaries/Latest/dotnet-dev-rhel-x64.latest.tar.gz
+            pacman -S libicu libuuid libcurl openssl libunwind
+            mkdir ~/.local/dotnet
+            tar xf dotnet-dev-rhel-x64.latest.tar.gz -C ~/.local/dotnet --verbose
+            rm -fr dotnet-dev-rhel-x64.latest.tar.gz ;;
         cygwin)
-            # ### dotnet ###
             wget https://dotnetcli.blob.core.windows.net/dotnet/beta/Binaries/Latest/dotnet-dev-rhel-x64.latest.tar.gz
             apt-cyg install -y libicu libuuid libcurl openssl libunwind
-            mkdir ~/dotnet
-            tar xf dotnet-dev-rhel-x64.latest.tar.gz -C ~/dotnet --verbose
+            mkdir ~/.local/dotnet
+            tar xf dotnet-dev-rhel-x64.latest.tar.gz -C ~/.local/dotnet --verbose
             rm -fr dotnet-dev-rhel-x64.latest.tar.gz ;;
         freebsd*|darwin*) ;;
         linux*)
-            # ### mono ###
-            nix-install \
-                dotnetbuildhelpers \
-                mono-${REQUIRED_MONO_VERSION} \
-                mono-addins-1.2 \
-                mono-dll-fixer \
-                mono-zeroconf-0.9.0
-            # ### dnvm ###
-            curl -sSL https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.sh | DNX_BRANCH=dev sh
-            source ~/.dnx/dnvm/dnvm.sh
-            dnvm upgrade -u
-            # ### dotnet ###
             case $DIST in
                 Redhat*|RedHat*)
                     wget https://dotnetcli.blob.core.windows.net/dotnet/beta/Binaries/Latest/dotnet-dev-rhel-x64.latest.tar.gz
@@ -1156,9 +1194,10 @@ function get-dotnet {
             esac ;;
     esac
 }
-function set-dotnet {
-    export DOTNET_HOME=$HOME/dotnet
-    export PATH=$PATH:$DOTNET_HOME
+function set-dnvm {
+    source ~/.dnx/dnvm/dnvm.sh
+}
+function set-mono {
     case "${OSTYPE}" in
         msys|cygwin)
             function csc         { cmd /c "csc.exe $*" }
@@ -1169,62 +1208,91 @@ function set-dotnet {
             function ngen        { cmd /c "ngen.exe $*" }
     esac
 }
-case "${OSTYPE}" in
-    msys|cygwin)
-        if ! type -p csc > /dev/null ; then get-dotnet ; fi
-        if   type -p csc > /dev/null ; then set-dotnet ; fi ;;
-    freebsd*|darwin*|linux*)
-        if ! type -p \mcs > /dev/null ; then get-dotnet ; fi
-        if   type -p \mcs > /dev/null ; then set-dotnet ; fi ;;
-esac
-function get-omnisharp {
-    case "${OSTYPE}" in
-        msys)
-            git clone https://github.com/OmniSharp/omnisharp-server.git
-            cd omnisharp-server
-            git submodule update --init --recursive
-            msbuild
-            cd ..
-            mv omnisharp-server ~/.local/ ;;
-        cygwin)
-            git clone https://github.com/OmniSharp/omnisharp-server.git
-            cd omnisharp-server
-            git submodule update --init --recursive
-            cp -f OmniSharp/config-cygwin.json OmniSharp/config.json
-            msbuild
-            cd ..
-            mv omnisharp-server ~/.local/ ;;
-        freebsd*|darwin*|linux*)
-            git clone https://github.com/OmniSharp/omnisharp-server.git
-            cd omnisharp-server
-            git submodule update --init --recursive
-            xbuild
-            cd ..
-            mv omnisharp-server ~/.local/ ;;
+# ### C. Package Manager ###
+function get-nuget {
+    mkdir -fr ~/.local/NuGet
+    wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -O ~/.local/NuGet/nuget.exe
+    wget http://headsigned.com/download/running-nuget-command-line-on-linux/Microsoft.Build.zip
+    unzip Microsoft.Build.zip -d ~/.local/NuGet/
+    rm -f Microsoft.Build.zip
+}
+function set-nuget {
+    case $OSTYPE in
+        msys|cygwin) function nuget { cmd /c "~/.local/NuGet/nuget.exe $*" } ;;
+        linux*) alias nuget='mono ~/.local/NuGet/nuget.exe' ;;
     esac
 }
+# ### D. Scaffolding ###
+function get-generator-dotnet {
+    npm i -g \
+        yo \
+        generator-aspnet \
+        grunt-init
+    git clone https://github.com/nosami/grunt-init-csharpsolution.git ~/.grunt-init/csharpsolution
+}
+case "${OSTYPE}" in
+    msys|cygwin)             if ! type -p csc > /dev/null ; then get-mono ; fi ;;
+    freebsd*|darwin*|linux*) if ! type -p mcs > /dev/null ; then get-mono ; fi ;;
+esac
+if [ ! -f ~/.dnx/dnvm/dnvm.sh ] ; then get-dnvm ;      fi
+if [   -f ~/.dnx/dnvm/dnvm.sh ] ; then set-dnvm ;      fi
+if ! type -p dotnet > /dev/null ; then get-dotnetcli ; fi
+if [ ! -f ~/.local/NuGet/nuget.exe ] ; then get-nuget ; fi
+if [   -f ~/.local/NuGet/nuget.exe ] ; then set-nuget ; fi
+# ### E. Complition ###
+function get-omnisharp {
+    # ### omnisharp-roslyn (beta) ###
+    # git clone https://github.com/OmniSharp/omnisharp-roslyn -b master
+    # cd omnisharp-roslyn
+    # case "${OSTYPE}" in
+    #     msys|cygwin) cmd /c './build.ps1' ;;
+    #     freebsd*|darwin*|linux*) bash ./build.sh ;;
+    # esac
+    # cd ..
+    # rm -fr omnisharp-roslyn
+    # ### omnisharp-server ###
+    git clone https://github.com/OmniSharp/omnisharp-server.git
+    cd omnisharp-server
+    git submodule update --init --recursive
+    case "${OSTYPE}" in (cygwin) cp -f OmniSharp/config-cygwin.json OmniSharp/config.json ;; esac
+    case "${OSTYPE}" in
+        msys|cygwin) msbuild ;;
+        freebsd*|darwin*|linux*) xbuild ;;
+    esac
+    cd ..
+    mv omnisharp-server ~/.local/
+}
 function set-omnisharp {
-    alias omnisharp='mono ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe'
+    case "${OSTYPE}" in
+        msys|cygwin)
+            function omnisharp { cmd /c "~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe $*" } ;;
+        freebsd*|darwin*|linux*)
+            alias omnisharp='mono ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe' ;;
+    esac
 }
 case "${OSTYPE}" in
     msys|cygwin|freebsd*|darwin*|linux*)
         if [ ! -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then get-omnisharp ; fi
         if [   -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then set-omnisharp ; fi ;;
 esac
+# ### F. Test Runner ###
 function get-nunit {
     wget https://github.com/nunit/nunit/releases/download/${REQUIRED_NUNIT_VERSION}/NUnit-${REQUIRED_NUNIT_VERSION}.zip
     unzip NUnit-${REQUIRED_NUNIT_VERSION}.zip -d ~/.local/NUnit
     rm -f NUnit-${REQUIRED_NUNIT_VERSION}.zip
 }
 function set-nunit {
-    alias nunit3-console=nunit-console
+    case "${OSTYPE}" in
+        msys|cygwin)
+            function nunit-console { cmd /c "~/.local/NUnit/bin/nunit3-console.exe $*" } ;;
+        freebsd*|darwin*|linux*)
+            alias nunit-console='mono ~/.local/NUnit/bin/nunit3-console.exe' ;;
+    esac
 }
 case "${OSTYPE}" in
-    msys|cygwin)
-        if ! type -p nunit3-console > /dev/null ; then get-nunit ; fi
-        if   type -p nunit3-console > /dev/null ; then set-nunit ; fi ;;
-    freebsd*|darwin*|linux*)
-        if ! type -p nunit-console > /dev/null ; then get-nunit ; fi ;;
+    msys|cygwin|freebsd*|darwin*|linux*)
+        if [ ! -f ~/.local/NUnit/bin/nunit3-console.exe ] ; then get-nunit ; fi
+        if [   -f ~/.local/NUnit/bin/nunit3-console.exe ] ; then set-nunit ; fi ;;
 esac
 
 
@@ -1998,7 +2066,6 @@ alias memcached-info='memcached-tool 127.0.0.1:11211 stats'
 alias memcached-dump='memcached-tool 127.0.0.1:11211 dump'
 alias mcr="memcached-restart"
 alias mcp="memcached-status"
-alias mcs="memcached-status"
 alias mci="memcached-info"
 alias mcm="memcached-monitor"
 alias mck="memcached-stop"
@@ -2407,6 +2474,11 @@ function github-pull-repositories () {
 
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::PlantUml
 # -----------------------------------------------------------------
+REQUIRED_GRAPHVIZ_VERSION=2.38
+case $OSTYPE in
+    msys)   export PATH=/C/Program~2/Graphviz${REQUIRED_GRAPHVIZ_VERSION}/bin:$PATH ;;
+    cygwin) export PATH=/cygdrive/C/Program~2/Graphviz${REQUIRED_GRAPHVIZ_VERSION}/bin:$PATH ;;
+esac
 function get-puml () {
     case "${OSTYPE}" in
         freebsd*|darwin*) ;;
@@ -2423,6 +2495,7 @@ function get-plantuml () {
 }
 function get-graphviz () {
     case "${OSTYPE}" in
+        msys|cygwin) choco install graphviz ;;
         freebsd*|darwin*) brew install graphviz ;;
         linux*)
             case "${DIST}" in
@@ -2435,7 +2508,7 @@ function get-graphviz () {
 }
 if ! type -p puml > /dev/null ; then get-puml ; fi
 if [ ! -f ~/.local/bin/plantuml.jar ] ; then get-plantuml ; fi
-if [ -f ~/.local/bin/plantuml.jar ] ; then alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng' ; fi
+if [   -f ~/.local/bin/plantuml.jar ] ; then alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng' ; fi
 if ! type -p dot > /dev/null ; then get-graphviz ; fi
 
 
