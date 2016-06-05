@@ -42,11 +42,11 @@
 (setq kill-whole-line t)
 (setq make-backup-files nil)
 (setq message-log-max 512)
-(set-default 'truncate-lines t)
 (setq truncate-partial-width-windows nil)
 (tool-bar-mode 0)
 (transient-mark-mode t)
 (set-face-attribute 'default nil :height 100)
+(set-default 'truncate-lines t)
 
 ;; display-time-mode
 (display-time-mode t)
