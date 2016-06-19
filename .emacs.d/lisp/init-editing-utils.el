@@ -127,6 +127,7 @@
 ;;----------------------------------------------------------------------------
 (require-package 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
+(global-set-key (kbd "M-=") 'er/expand-region)
 (global-set-key (kbd "M-[ 1 ; 5 k") 'er/expand-region)
 
 ;;----------------------------------------------------------------------------
@@ -169,6 +170,7 @@
 (global-set-key (kbd "C->")             'mc/mark-next-like-this)
 (global-set-key (kbd "M-[ 1 ; 6 n")     'mc/mark-next-like-this)
 (global-set-key (kbd "C-+")             'mc/mark-next-like-this)
+(global-set-key (kbd "M-+")             'mc/mark-next-like-this)
 (global-set-key (kbd "M-[ 1 ; 6 k")     'mc/mark-next-like-this)
 (global-set-key (kbd "C-c C-<")         'mc/mark-all-like-this)
 (global-set-key (kbd "C-c M-[ 1 ; 6 l") 'mc/mark-all-like-this)
