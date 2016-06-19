@@ -1607,19 +1607,7 @@ if ! type -p pip > /dev/null ; then get-pip ; fi
 # 2. ProgrammingLanguage::Perl
 # ----------------------------
 REQUIRED_PERL_VERSION=5.20.3
-export PATH="$HOME/.local/perl-${REQUIRED_PERL_VERSION}/bin:$PATH"
 export PATH="$HOME/.cask/bin:$PATH"
-export PERL_CPANM_OPT="--prompt --reinstall -l $HOME/.local/perl-${REQUIRED_PERL_VERSION} --mirror http://cpan.cpantesters.org"
-export PERL_LOCAL_LIB_ROOT="$HOME/.local/perl-${REQUIRED_PERL_VERSION}${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"
-export PERL_MB_OPT="--install_base \"$HOME/.local/perl-${REQUIRED_PERL_VERSION}\""
-export PERL_MM_OPT="INSTALL_BASE=$HOME/.local/perl-${REQUIRED_PERL_VERSION}"
-export PERL5LIB=$HOME/.local/perl-${REQUIRED_PERL_VERSION}/lib/perl5:$PERL5LIB
-export LD_LIBRARY_PATH=$HOME/.local/lib
-export MODULEBUILDRC=$HOME/.local/.modulebuildrc
-export PKG_DBDIR=$HOME/.local/var/db/pkg
-export PORT_DBDIR=$HOME/.local/var/db/pkg
-export TMPDIR=$HOME/.local/tmp
-# export INSTALL_AS_USER
 # ### version control ###
 function get-plenv {
     case "${OSTYPE}" in
