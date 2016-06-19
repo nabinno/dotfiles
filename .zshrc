@@ -478,7 +478,7 @@ case $OSTYPE in
             # pacman -S zsh
         }
         function get-base-pacman-packages {
-            pacman -S conemu git tar make patch
+            pacman -S conemu git tar unzip make patch
             pacman -S mingw-w64-x86_64-toolchain
             # set ConEmuDir c:\tools\msys64\opt\bin
             # set ConEmuWorkDir %USERPROFILE\OneDrive
@@ -1110,30 +1110,72 @@ function get-global-go-packages () {
 REQUIRED_DOTNETFRAMEWORK_VERSION=4.0.30319
 REQUIRED_MONO_VERSION=4.0.4.1
 REQUIRED_NUNIT_VERSION=3.2.1
+export DOTNET_HOME=$HOME/.local/dotnet
+export PATH=$PATH:$DOTNET_HOME
 export PATH="$HOME/.local/NUnit/bin:$PATH"
-function get-dotnet {
+case "${OSTYPE}" in
+    msys)
+        export PATH="/C/Windows/Microsoft.NET/Framework64/v${REQUIRED_DOTNETFRAMEWORK_VERSION}:$PATH"
+        export PATH=/C/Program~2/Mono/bin:$PATH ;;
+    cygwin)
+        export PATH="/cygdrive/C/Windows/Microsoft.NET/Framework64/v${REQUIRED_DOTNETFRAMEWORK_VERSION}:$PATH"
+        export PATH=/cygdrive/C/Program~2/Mono/bin:$PATH ;;
+esac
+# A. Compiler        - Mono
+# B. Task Runner     - DNVM / Dotnet CLI
+# C. Package Manager - NuGet
+# D. Scaffolding     - Yeoman / Grunt-init
+# E. Complition      - OmniSharp
+# F. Test Runner     - NUnit
+# ### A. Compiler ###
+function get-mono {
     case "${OSTYPE}" in
+        msys|cygwin) choco install mono ;;
+        freebsd*|darwin*) ;;
+        linux*)
+            case $DIST in
+                Redhat*|RedHat*)
+                    sudo yum install -y yum-utils
+                    sudo rpm --import "http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF"
+                    sudo yum-config-manager --add-repo http://download.mono-project.com/repo/centos/
+                    sudo yum install -y \
+                         mono \
+                         mono-complete ;;
+                Debian|Ubuntu*)
+                    case $DIST_VERSION in
+                        14.04)
+                            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+                            echo "deb http://download.mono-project.com/repo/debian wheezy main" | sudo tee /etc/apt/sources.list.d/mono-xamarin.list
+                            sudo apt-get update
+                            sudo apt-get install -y \
+                                 mono \
+                                 mono-complete ;;
+                    esac
+            esac ;;
+    esac
+}
+# ### B. Task Runner ###
+function get-dnvm {
+    curl -sSL https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.sh | DNX_BRANCH=dev sh
+    source ~/.dnx/dnvm/dnvm.sh
+    dnvm upgrade -u
+}
+function get-dotnetcli {
+    case "${OSTYPE}" in
+        msys)
+            wget https://dotnetcli.blob.core.windows.net/dotnet/beta/Binaries/Latest/dotnet-dev-rhel-x64.latest.tar.gz
+            pacman -S libicu libuuid libcurl openssl libunwind
+            mkdir ~/.local/dotnet
+            tar xf dotnet-dev-rhel-x64.latest.tar.gz -C ~/.local/dotnet --verbose
+            rm -fr dotnet-dev-rhel-x64.latest.tar.gz ;;
         cygwin)
-            # ### dotnet ###
             wget https://dotnetcli.blob.core.windows.net/dotnet/beta/Binaries/Latest/dotnet-dev-rhel-x64.latest.tar.gz
             apt-cyg install -y libicu libuuid libcurl openssl libunwind
-            mkdir ~/dotnet
-            tar xf dotnet-dev-rhel-x64.latest.tar.gz -C ~/dotnet --verbose
+            mkdir ~/.local/dotnet
+            tar xf dotnet-dev-rhel-x64.latest.tar.gz -C ~/.local/dotnet --verbose
             rm -fr dotnet-dev-rhel-x64.latest.tar.gz ;;
         freebsd*|darwin*) ;;
         linux*)
-            # ### mono ###
-            nix-install \
-                dotnetbuildhelpers \
-                mono-${REQUIRED_MONO_VERSION} \
-                mono-addins-1.2 \
-                mono-dll-fixer \
-                mono-zeroconf-0.9.0
-            # ### dnvm ###
-            curl -sSL https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.sh | DNX_BRANCH=dev sh
-            source ~/.dnx/dnvm/dnvm.sh
-            dnvm upgrade -u
-            # ### dotnet ###
             case $DIST in
                 Redhat*|RedHat*)
                     wget https://dotnetcli.blob.core.windows.net/dotnet/beta/Binaries/Latest/dotnet-dev-rhel-x64.latest.tar.gz
@@ -1152,65 +1194,105 @@ function get-dotnet {
             esac ;;
     esac
 }
-function set-dotnet {
+function set-dnvm {
+    source ~/.dnx/dnvm/dnvm.sh
+}
+function set-mono {
     case "${OSTYPE}" in
-        cygwin)
-            export PATH="/cygdrive/C/Windows/Microsoft.NET/Framework64/v${REQUIRED_DOTNETFRAMEWORK_VERSION}:$PATH"
-            export DOTNET_HOME=$HOME/dotnet
-            export PATH=$PATH:$DOTNET_HOME ;;
-        freebsd*|darwin*) ;;
-        linux*)
-            export DOTNET_HOME=$HOME/dotnet
-            export PATH=$PATH:$DOTNET_HOME ;;
+        msys|cygwin)
+            function csc         { cmd /c "csc.exe $*" }
+            function vbc         { cmd /c "vbc.exe $*" }
+            function jsc         { cmd /c "jsc.exe $*" }
+            function msbuild     { cmd /c "MSBuild.exe $*" }
+            function installutil { cmd /c "InstallUtil.exe $*" }
+            function ngen        { cmd /c "ngen.exe $*" }
     esac
 }
-case "${OSTYPE}" in
-    cygwin) ;;
-    freebsd*|darwin*|linux*)
-        if ! type -p \mcs > /dev/null ; then get-dotnet ; fi
-        if   type -p \mcs > /dev/null ; then set-dotnet ; fi ;;
-esac
-function get-omnisharp {
-    case "${OSTYPE}" in
-        cygwin)
-            git clone https://github.com/OmniSharp/omnisharp-server.git
-            cd omnisharp-server
-            git submodule update --init --recursive
-            copy OmniSharp\config-cygwin.json OmniSharp\config.json
-            msbuild
-            cd ..
-            mv omnisharp-server ~/.local/ ;;
-        freebsd*|darwin*|linux*)
-            git clone https://github.com/OmniSharp/omnisharp-server.git
-            cd omnisharp-server
-            git submodule update --init --recursive
-            xbuild
-            cd ..
-            mv omnisharp-server ~/.local/ ;;
+# ### C. Package Manager ###
+function get-nuget {
+    mkdir -fr ~/.local/NuGet
+    wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -O ~/.local/NuGet/nuget.exe
+    wget http://headsigned.com/download/running-nuget-command-line-on-linux/Microsoft.Build.zip
+    unzip Microsoft.Build.zip -d ~/.local/NuGet/
+    rm -f Microsoft.Build.zip
+}
+function set-nuget {
+    case $OSTYPE in
+        msys|cygwin) function nuget { cmd /c "~/.local/NuGet/nuget.exe $*" } ;;
+        linux*) alias nuget='mono ~/.local/NuGet/nuget.exe' ;;
     esac
+}
+# ### D. Scaffolding ###
+function get-generator-dotnet {
+    npm i -g \
+        yo \
+        generator-aspnet \
+        grunt-init
+    git clone https://github.com/nosami/grunt-init-csharpsolution.git ~/.grunt-init/csharpsolution
+}
+case "${OSTYPE}" in
+    msys|cygwin)             if ! type -p csc > /dev/null ; then get-mono ; fi ;;
+    freebsd*|darwin*|linux*) if ! type -p mcs > /dev/null ; then get-mono ; fi ;;
+esac
+if [ ! -f ~/.dnx/dnvm/dnvm.sh ] ; then get-dnvm ;      fi
+if [   -f ~/.dnx/dnvm/dnvm.sh ] ; then set-dnvm ;      fi
+if ! type -p dotnet > /dev/null ; then get-dotnetcli ; fi
+if [ ! -f ~/.local/NuGet/nuget.exe ] ; then get-nuget ; fi
+if [   -f ~/.local/NuGet/nuget.exe ] ; then set-nuget ; fi
+# ### E. Complition ###
+function get-omnisharp {
+    # ### omnisharp-roslyn (beta) ###
+    # git clone https://github.com/OmniSharp/omnisharp-roslyn -b master
+    # cd omnisharp-roslyn
+    # case "${OSTYPE}" in
+    #     msys|cygwin) cmd /c './build.ps1' ;;
+    #     freebsd*|darwin*|linux*) bash ./build.sh ;;
+    # esac
+    # cd ..
+    # rm -fr omnisharp-roslyn
+    # ### omnisharp-server ###
+    git clone https://github.com/OmniSharp/omnisharp-server.git
+    cd omnisharp-server
+    git submodule update --init --recursive
+    case "${OSTYPE}" in (cygwin) cp -f OmniSharp/config-cygwin.json OmniSharp/config.json ;; esac
+    case "${OSTYPE}" in
+        msys|cygwin) msbuild ;;
+        freebsd*|darwin*|linux*) xbuild ;;
+    esac
+    cd ..
+    mv omnisharp-server ~/.local/
 }
 function set-omnisharp {
-    alias omnisharp='mono ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe'
+    case "${OSTYPE}" in
+        msys|cygwin)
+            function omnisharp { cmd /c "~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe $*" } ;;
+        freebsd*|darwin*|linux*)
+            alias omnisharp='mono ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe' ;;
+    esac
 }
 case "${OSTYPE}" in
-    cygwin)
-    # TODO
-    ;;
-    freebsd*|darwin*|linux*)
+    msys|cygwin|freebsd*|darwin*|linux*)
         if [ ! -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then get-omnisharp ; fi
         if [   -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then set-omnisharp ; fi ;;
 esac
+# ### F. Test Runner ###
 function get-nunit {
     wget https://github.com/nunit/nunit/releases/download/${REQUIRED_NUNIT_VERSION}/NUnit-${REQUIRED_NUNIT_VERSION}.zip
     unzip NUnit-${REQUIRED_NUNIT_VERSION}.zip -d ~/.local/NUnit
     rm -f NUnit-${REQUIRED_NUNIT_VERSION}.zip
 }
+function set-nunit {
+    case "${OSTYPE}" in
+        msys|cygwin)
+            function nunit-console { cmd /c "~/.local/NUnit/bin/nunit3-console.exe $*" } ;;
+        freebsd*|darwin*|linux*)
+            alias nunit-console='mono ~/.local/NUnit/bin/nunit3-console.exe' ;;
+    esac
+}
 case "${OSTYPE}" in
-    cygwin)
-    # TODO
-    ;;
-    freebsd*|darwin*|linux*)
-        if ! type -p nunit-console > /dev/null ; then get-nunit ; fi ;;
+    msys|cygwin|freebsd*|darwin*|linux*)
+        if [ ! -f ~/.local/NUnit/bin/nunit3-console.exe ] ; then get-nunit ; fi
+        if [   -f ~/.local/NUnit/bin/nunit3-console.exe ] ; then set-nunit ; fi ;;
 esac
 
 
@@ -1525,32 +1607,28 @@ if ! type -p pip > /dev/null ; then get-pip ; fi
 # 2. ProgrammingLanguage::Perl
 # ----------------------------
 REQUIRED_PERL_VERSION=5.20.3
-export PATH="$HOME/.local/perl-$REQUIRED_PERL_VERSION/bin:$PATH"
+export PATH="$HOME/.local/perl-${REQUIRED_PERL_VERSION}/bin:$PATH"
 export PATH="$HOME/.cask/bin:$PATH"
-export PATH="$HOME/perl5/bin:$PATH"
+export PERL_CPANM_OPT="--prompt --reinstall -l $HOME/.local/perl-${REQUIRED_PERL_VERSION} --mirror http://cpan.cpantesters.org"
+export PERL_LOCAL_LIB_ROOT="$HOME/.local/perl-${REQUIRED_PERL_VERSION}${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"
+export PERL_MB_OPT="--install_base \"$HOME/.local/perl-${REQUIRED_PERL_VERSION}\""
+export PERL_MM_OPT="INSTALL_BASE=$HOME/.local/perl-${REQUIRED_PERL_VERSION}"
+export PERL5LIB=$HOME/.local/perl-${REQUIRED_PERL_VERSION}/lib/perl5:$PERL5LIB
+export LD_LIBRARY_PATH=$HOME/.local/lib
+export MODULEBUILDRC=$HOME/.local/.modulebuildrc
+export PKG_DBDIR=$HOME/.local/var/db/pkg
+export PORT_DBDIR=$HOME/.local/var/db/pkg
+export TMPDIR=$HOME/.local/tmp
 # export INSTALL_AS_USER
-# export LD_LIBRARY_PATH=$HOME/.local/lib
-# export MODULEBUILDRC=$HOME/.local/.modulebuildrc
-export PERL_CPANM_OPT="--prompt --reinstall -l ~/.local/perl --mirror http://cpan.cpantesters.org"
-# export PERL_CPANM_OPT="-l ~/.local --mirror ~/.cpan/minicpan/"
-# export PERL_MM_OPT="INSTALL_BASE=$HOME/.local"
-# export PKG_DBDIR=$HOME/.local/var/db/pkg
-# export PORT_DBDIR=$HOME/.local/var/db/pkg
-# export TMPDIR=$HOME/.local/tmp
-export PERL5LIB=$HOME/.local/lib/perl5:$PERL5LIB
-export PERL5LIB=$HOME/perl5/lib/perl5:$PERL5LIB
-export PERL_LOCAL_LIB_ROOT="~/perl5${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"
-export PERL_MB_OPT="--install_base \"~/perl5\""
-export PERL_MM_OPT="INSTALL_BASE=~/perl5"
 # ### version control ###
-function get-plenv () {
+function get-plenv {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) anyenv install plenv && exec -l zsh ;;
     esac
 }
 if ! type -p plenv > /dev/null ; then get-plenv ; fi
 # ### installation ###
-function get-perl () {
+function get-perl {
     case "${OSTYPE}" in
         cygwin) apt-cyg install perl ;;
         freebsd*|darwin*)
@@ -1574,7 +1652,7 @@ function get-perl () {
 if ! type -p perl > /dev/null ; then get-perl ; fi
 # eval $(perl -I$HOME/.local/lib/perl5 -Mlocal::lib=$HOME/.local)
 # ### plagger ###
-function get-plagger () {
+function get-plagger {
     case "${OSTYPE}" in
         cygwin) ;;
         freebsd*|darwin*)
@@ -1621,13 +1699,14 @@ function get-plagger () {
             esac
     esac
 }
-function get-org-asana () {
+# ### org-asana ###
+function get-org-asana {
     yes | cpanm -fi Moose \
                 WWW::Asana \
                 Org::Parser \
                 YAML
 }
-function get-global-cpan-packages () {
+function get-global-cpan-packages {
     yes | cpanm -fi Carton
 }
 # ### cpan ###
@@ -1711,52 +1790,22 @@ if ! type -p thrift > /dev/null ; then get-thrift ; fi
 
 # 3. Daemon::Database::Postgresql
 # -------------------------------
-REQUIRED_POSTGRESQL_VERSION=9.4.6
+REQUIRED_POSTGRESQL_VERSION=9.5.3
+# REQUIRED_POSTGRESQL_VERSION=9.4.6
 PSQL_PAGER='less -S'
 # ### installation ###
 function get-postgresql () {
     case "${OSTYPE}" in
-        darwin*)
-            nix-install postgresql-$REQUIRED_POSTGRESQL_VERSION
-            set-postgresql ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat|Debian)
-                    nix-install postgresql-$REQUIRED_POSTGRESQL_VERSION
-                    set-postgresql ;;
-                Ubuntu) parts install postgresql ;;
-            esac
+        darwin*|linux*) docker run --name postgres-$REQUIRED_POSTGRESQL_VERSION -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres:$REQUIRED_POSTGRESQL_VERSION ;;
     esac
 }
 function set-postgresql {
     case "${OSTYPE}" in
-        darwin*)
-            if [ ! -d ~/.nix-profile/var/lib/postgres/data ]; then
-                local own=$(whoami)
-                sudo mkdir -p ~/.nix-profile/var/lib/postgres/data
-                sudo chown -R ${own}:${own} /nix
-                export PGDATA=~/.nix-profile/var/lib/postgres/data
-                initdb –-encoding=UTF8 —-no-locale
-            else
-                export PGDATA=~/.nix-profile/var/lib/postgres/data
-            fi ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat|Debian)
-                    if [ ! -d ~/.nix-profile/var/lib/postgres/data ]; then
-                        local own=$(whoami)
-                        sudo mkdir -p ~/.nix-profile/var/lib/postgres/data
-                        sudo chown -R ${own}:${own} /nix
-                        export PGDATA=~/.nix-profile/var/lib/postgres/data
-                        initdb –-encoding=UTF8 —-no-locale
-                    else
-                        export PGDATA=~/.nix-profile/var/lib/postgres/data
-                    fi ;;
-            esac
+        darwin*|linux*) docker restart postgres-$REQUIRED_POSTGRESQL_VERSION ;;
     esac
 }
-if ! type -p psql > /dev/null ; then get-postgresql ; fi
-if   type -p psql > /dev/null ; then set-postgresql ; fi
+# if ! type -p psql > /dev/null ; then get-postgresql ; fi
+# if   type -p psql > /dev/null ; then set-postgresql ; fi
 function pg-restart () {
     case "${OSTYPE}" in
         darwin*)
@@ -1798,7 +1847,7 @@ alias pgk="sudo killall postgresql"
 # --------------------------
 REQUIRED_MYSQL_VERSION=5.5.45
 # ### installation ###
-function get-mysql () {
+function get-mysql {
     case "${OSTYPE}" in
         darwin*) nix-install mysql-$REQUIRED_MYSQL_VERSION && set-mysql ;;
         linux*)
@@ -1819,12 +1868,26 @@ function get-mysql () {
     esac
 }
 if ! type -p mysql > /dev/null ; then get-mysql ; fi
-function set-mysql () {
+function set-mysql {
     echo "innodb_file_format = Barracuda" | sudo tee -a /etc/mysql/my.cnf
     echo "innodb_file_per_table = 1"      | sudo tee -a /etc/mysql/my.cnf
     echo "innodb_large_prefix"            | sudo tee -a /etc/mysql/my.cnf
 }
-function my-restart () {
+# ### innotop ###
+function get-innotop {
+    yes | cpanm -fi DBI \
+                DBD::mysql \
+                ExtUtils::MakeMaker \
+                Time::HiRes \
+                TermReadKey
+    git clone https://github.com/innotop/innotop
+    cd innotop
+    perl Makefile.PL
+    make install
+    cd ..
+    rm -fr innotop
+}
+function my-restart {
     case "${OSTYPE}" in
         darwin*)
             sudo service mysql stop
@@ -1849,7 +1912,7 @@ function my-restart () {
             esac
     esac
 }
-function my-status () {
+function my-status {
     case "${OSTYPE}" in
         darwin*) sudo service mysql status ;;
         linux*)
@@ -1984,7 +2047,6 @@ alias memcached-info='memcached-tool 127.0.0.1:11211 stats'
 alias memcached-dump='memcached-tool 127.0.0.1:11211 dump'
 alias mcr="memcached-restart"
 alias mcp="memcached-status"
-alias mcs="memcached-status"
 alias mci="memcached-info"
 alias mcm="memcached-monitor"
 alias mck="memcached-stop"
@@ -2393,6 +2455,11 @@ function github-pull-repositories () {
 
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::PlantUml
 # -----------------------------------------------------------------
+REQUIRED_GRAPHVIZ_VERSION=2.38
+case $OSTYPE in
+    msys)   export PATH=/C/Program~2/Graphviz${REQUIRED_GRAPHVIZ_VERSION}/bin:$PATH ;;
+    cygwin) export PATH=/cygdrive/C/Program~2/Graphviz${REQUIRED_GRAPHVIZ_VERSION}/bin:$PATH ;;
+esac
 function get-puml () {
     case "${OSTYPE}" in
         freebsd*|darwin*) ;;
@@ -2409,6 +2476,7 @@ function get-plantuml () {
 }
 function get-graphviz () {
     case "${OSTYPE}" in
+        msys|cygwin) choco install graphviz ;;
         freebsd*|darwin*) brew install graphviz ;;
         linux*)
             case "${DIST}" in
@@ -2421,7 +2489,7 @@ function get-graphviz () {
 }
 if ! type -p puml > /dev/null ; then get-puml ; fi
 if [ ! -f ~/.local/bin/plantuml.jar ] ; then get-plantuml ; fi
-if [ -f ~/.local/bin/plantuml.jar ] ; then alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng' ; fi
+if [   -f ~/.local/bin/plantuml.jar ] ; then alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng' ; fi
 if ! type -p dot > /dev/null ; then get-graphviz ; fi
 
 
