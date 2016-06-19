@@ -1607,32 +1607,28 @@ if ! type -p pip > /dev/null ; then get-pip ; fi
 # 2. ProgrammingLanguage::Perl
 # ----------------------------
 REQUIRED_PERL_VERSION=5.20.3
-export PATH="$HOME/.local/perl-$REQUIRED_PERL_VERSION/bin:$PATH"
+export PATH="$HOME/.local/perl-${REQUIRED_PERL_VERSION}/bin:$PATH"
 export PATH="$HOME/.cask/bin:$PATH"
-export PATH="$HOME/perl5/bin:$PATH"
+export PERL_CPANM_OPT="--prompt --reinstall -l $HOME/.local/perl-${REQUIRED_PERL_VERSION} --mirror http://cpan.cpantesters.org"
+export PERL_LOCAL_LIB_ROOT="$HOME/.local/perl-${REQUIRED_PERL_VERSION}${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"
+export PERL_MB_OPT="--install_base \"$HOME/.local/perl-${REQUIRED_PERL_VERSION}\""
+export PERL_MM_OPT="INSTALL_BASE=$HOME/.local/perl-${REQUIRED_PERL_VERSION}"
+export PERL5LIB=$HOME/.local/perl-${REQUIRED_PERL_VERSION}/lib/perl5:$PERL5LIB
+export LD_LIBRARY_PATH=$HOME/.local/lib
+export MODULEBUILDRC=$HOME/.local/.modulebuildrc
+export PKG_DBDIR=$HOME/.local/var/db/pkg
+export PORT_DBDIR=$HOME/.local/var/db/pkg
+export TMPDIR=$HOME/.local/tmp
 # export INSTALL_AS_USER
-# export LD_LIBRARY_PATH=$HOME/.local/lib
-# export MODULEBUILDRC=$HOME/.local/.modulebuildrc
-export PERL_CPANM_OPT="--prompt --reinstall -l ~/.local/perl --mirror http://cpan.cpantesters.org"
-# export PERL_CPANM_OPT="-l ~/.local --mirror ~/.cpan/minicpan/"
-# export PERL_MM_OPT="INSTALL_BASE=$HOME/.local"
-# export PKG_DBDIR=$HOME/.local/var/db/pkg
-# export PORT_DBDIR=$HOME/.local/var/db/pkg
-# export TMPDIR=$HOME/.local/tmp
-export PERL5LIB=$HOME/.local/lib/perl5:$PERL5LIB
-export PERL5LIB=$HOME/perl5/lib/perl5:$PERL5LIB
-export PERL_LOCAL_LIB_ROOT="~/perl5${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"
-export PERL_MB_OPT="--install_base \"~/perl5\""
-export PERL_MM_OPT="INSTALL_BASE=~/perl5"
 # ### version control ###
-function get-plenv () {
+function get-plenv {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) anyenv install plenv && exec -l zsh ;;
     esac
 }
 if ! type -p plenv > /dev/null ; then get-plenv ; fi
 # ### installation ###
-function get-perl () {
+function get-perl {
     case "${OSTYPE}" in
         cygwin) apt-cyg install perl ;;
         freebsd*|darwin*)
@@ -1656,7 +1652,7 @@ function get-perl () {
 if ! type -p perl > /dev/null ; then get-perl ; fi
 # eval $(perl -I$HOME/.local/lib/perl5 -Mlocal::lib=$HOME/.local)
 # ### plagger ###
-function get-plagger () {
+function get-plagger {
     case "${OSTYPE}" in
         cygwin) ;;
         freebsd*|darwin*)
@@ -1703,13 +1699,14 @@ function get-plagger () {
             esac
     esac
 }
-function get-org-asana () {
+# ### org-asana ###
+function get-org-asana {
     yes | cpanm -fi Moose \
                 WWW::Asana \
                 Org::Parser \
                 YAML
 }
-function get-global-cpan-packages () {
+function get-global-cpan-packages {
     yes | cpanm -fi Carton
 }
 # ### cpan ###
@@ -1793,52 +1790,22 @@ if ! type -p thrift > /dev/null ; then get-thrift ; fi
 
 # 3. Daemon::Database::Postgresql
 # -------------------------------
-REQUIRED_POSTGRESQL_VERSION=9.4.6
+REQUIRED_POSTGRESQL_VERSION=9.5.3
+# REQUIRED_POSTGRESQL_VERSION=9.4.6
 PSQL_PAGER='less -S'
 # ### installation ###
 function get-postgresql () {
     case "${OSTYPE}" in
-        darwin*)
-            nix-install postgresql-$REQUIRED_POSTGRESQL_VERSION
-            set-postgresql ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat|Debian)
-                    nix-install postgresql-$REQUIRED_POSTGRESQL_VERSION
-                    set-postgresql ;;
-                Ubuntu) parts install postgresql ;;
-            esac
+        darwin*|linux*) docker run --name postgres-$REQUIRED_POSTGRESQL_VERSION -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres:$REQUIRED_POSTGRESQL_VERSION ;;
     esac
 }
 function set-postgresql {
     case "${OSTYPE}" in
-        darwin*)
-            if [ ! -d ~/.nix-profile/var/lib/postgres/data ]; then
-                local own=$(whoami)
-                sudo mkdir -p ~/.nix-profile/var/lib/postgres/data
-                sudo chown -R ${own}:${own} /nix
-                export PGDATA=~/.nix-profile/var/lib/postgres/data
-                initdb –-encoding=UTF8 —-no-locale
-            else
-                export PGDATA=~/.nix-profile/var/lib/postgres/data
-            fi ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat|Debian)
-                    if [ ! -d ~/.nix-profile/var/lib/postgres/data ]; then
-                        local own=$(whoami)
-                        sudo mkdir -p ~/.nix-profile/var/lib/postgres/data
-                        sudo chown -R ${own}:${own} /nix
-                        export PGDATA=~/.nix-profile/var/lib/postgres/data
-                        initdb –-encoding=UTF8 —-no-locale
-                    else
-                        export PGDATA=~/.nix-profile/var/lib/postgres/data
-                    fi ;;
-            esac
+        darwin*|linux*) docker restart postgres-$REQUIRED_POSTGRESQL_VERSION ;;
     esac
 }
-if ! type -p psql > /dev/null ; then get-postgresql ; fi
-if   type -p psql > /dev/null ; then set-postgresql ; fi
+# if ! type -p psql > /dev/null ; then get-postgresql ; fi
+# if   type -p psql > /dev/null ; then set-postgresql ; fi
 function pg-restart () {
     case "${OSTYPE}" in
         darwin*)
@@ -1880,7 +1847,7 @@ alias pgk="sudo killall postgresql"
 # --------------------------
 REQUIRED_MYSQL_VERSION=5.5.45
 # ### installation ###
-function get-mysql () {
+function get-mysql {
     case "${OSTYPE}" in
         darwin*) nix-install mysql-$REQUIRED_MYSQL_VERSION && set-mysql ;;
         linux*)
@@ -1901,12 +1868,26 @@ function get-mysql () {
     esac
 }
 if ! type -p mysql > /dev/null ; then get-mysql ; fi
-function set-mysql () {
+function set-mysql {
     echo "innodb_file_format = Barracuda" | sudo tee -a /etc/mysql/my.cnf
     echo "innodb_file_per_table = 1"      | sudo tee -a /etc/mysql/my.cnf
     echo "innodb_large_prefix"            | sudo tee -a /etc/mysql/my.cnf
 }
-function my-restart () {
+# ### innotop ###
+function get-innotop {
+    yes | cpanm -fi DBI \
+                DBD::mysql \
+                ExtUtils::MakeMaker \
+                Time::HiRes \
+                TermReadKey
+    git clone https://github.com/innotop/innotop
+    cd innotop
+    perl Makefile.PL
+    make install
+    cd ..
+    rm -fr innotop
+}
+function my-restart {
     case "${OSTYPE}" in
         darwin*)
             sudo service mysql stop
@@ -1931,7 +1912,7 @@ function my-restart () {
             esac
     esac
 }
-function my-status () {
+function my-status {
     case "${OSTYPE}" in
         darwin*) sudo service mysql status ;;
         linux*)
