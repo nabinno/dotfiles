@@ -70,7 +70,7 @@ case "${OSTYPE}" in
         OS=`uname -s`
         REV=`uname -r`
         MACH=`uname -m`
-        function GetVersionFromFile () {
+        function GetVersionFromFile {
             VERSION=`cat $1 | tr "\n" ' ' | sed s/.*VERSION.*=\ // `
         }
         if [ "${OS}" = "SunOS" ] ; then
@@ -162,7 +162,7 @@ export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(par
 
 # 1. BasicSettings::Locale
 # ------------------------
-function get-ntp () {
+function get-ntp {
     case "${OSTYPE}" in
         linux*)
             case "${DIST}" in
@@ -171,7 +171,7 @@ function get-ntp () {
             esac
     esac
 }
-function set-locale () {
+function set-locale {
     case "${OSTYPE}" in
         linux*)
             case "${DIST}" in
@@ -194,7 +194,7 @@ if [ ! -d ~/.local/bin ] ; then mkdir -p ~/.local/bin ; fi
 # 1. BasicSettings::BaseInstallation
 # ----------------------------------
 REQUIRED_MACPORT_VERSION=2.3.3
-function get-base () {
+function get-base {
     case "${OSTYPE}" in
         msys) ;;
         cygwin) ;;
@@ -326,7 +326,7 @@ function get-base () {
             esac
     esac
 }
-function get-wget () {
+function get-wget {
     case $OSTYPE in
         darwin*) brew install wget ;;
         freebsd*) port install wget ;;
@@ -337,7 +337,7 @@ function get-wget () {
             esac
     esac
 }
-function get-rlwrap () {
+function get-rlwrap {
     if ! type -p wget > /dev/null ; then get-wget ; fi
     case "${OSTYPE}" in
         freebsd*|darwin*) ;;
@@ -354,7 +354,7 @@ function get-rlwrap () {
             cd $current_pwd
     esac
 }
-function get-autoconf () {
+function get-autoconf {
     if ! type -p wget > /dev/null ; then get-wget ; fi
     case "${OSTYPE}" in
         freebsd*) ;;
@@ -368,7 +368,7 @@ function get-autoconf () {
             esac
     esac
 }
-function get-boost () {
+function get-boost {
     if ! type -p wget > /dev/null ; then get-wget ; fi
     case "${OSTYPE}" in
         freebsd*) ;;
@@ -394,7 +394,7 @@ function get-boost () {
             esac
     esac
 }
-function gnu-get () {
+function gnu-get {
     typeset -A softwares
     array=("${(@s:-:)1}")
     version=$array[2]
@@ -675,7 +675,7 @@ if ! type -p chef > /dev/null ; then get-chef ; fi
 # 1. BasicSettings::PackageManager::Anyenv
 # ----------------------------------------
 export PATH="$HOME/.anyenv/bin:$PATH"
-function get-anyenv () {
+function get-anyenv {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             git clone https://github.com/riywo/anyenv ~/.anyenv
@@ -689,7 +689,7 @@ if type -p anyenv > /dev/null; then eval "$(anyenv init -)" ; fi
 # 1. BasicSettings::PackageManager::Docker
 # ----------------------------------------
 ### setup ###
-function get-docker () {
+function get-docker {
     case "${OSTYPE}" in
         msys|cygwin) choco install boot2docker ;;
         freebsd*|darwin*) ;;
@@ -716,7 +716,7 @@ function get-docker () {
     esac
 }
 case $OSTYPE in (linux) if ! type -p docker > /dev/null ; then get-docker ; fi ; esac
-function docker-restart () {
+function docker-restart {
     case "${OSTYPE}" in
         darwin*)
             sudo service docker stop
@@ -732,7 +732,7 @@ function docker-restart () {
             esac
     esac
 }
-function docker-status () {
+function docker-status {
     case "${OSTYPE}" in
         darwin*) sudo service docker status ;;
         linux*)
@@ -783,7 +783,7 @@ case $OSTYPE in
         alias dda='docker rmi -f $(docker images -q)'
         alias ddel='docker rmi -f'
         alias ddela='docker rmi -f $(docker images -q)'
-        function dh () { docker history $1 | less -S }
+        function dh { docker history $1 | less -S }
         alias dj='docker run -i -t'
         alias dk='docker rm -f'
         alias dka='docker rm -f $(docker ps -a -q)'
@@ -794,12 +794,12 @@ case $OSTYPE in
         alias dls='docker images | less -S'
         alias dp='docker ps -a | less -S'
         alias dps='docker ps -a | less -S'
-        function dsshd () { docker run -t -d -p 5000:3000 -P $1 /usr/sbin/sshd -D }
+        function dsshd { docker run -t -d -p 5000:3000 -P $1 /usr/sbin/sshd -D }
         alias dr='docker tag'
         alias dv='docker images -viz'
-        function datach () { docker start $1 ; docker atach $1 }
-        function denv () { docker run --rm $1 env }
-        function dip () {
+        function datach { docker start $1 ; docker atach $1 }
+        function denv { docker run --rm $1 env }
+        function dip {
             CI=$(docker ps -l -q)
             if [ $1 ] ; then
 	        docker inspect --format {{.NetworkSettings.IPAddress}} $1
@@ -809,7 +809,7 @@ case $OSTYPE in
 	        docker inspect --format {{.NetworkSettings.Ports}} $CI
             fi
         }
-        function dnsenter () {
+        function dnsenter {
             CI=$(docker ps -l -q)
             if [ $1 ] ; then
 	        PID=$(docker inspect --format {{.State.Pid}} $1)
@@ -820,13 +820,13 @@ case $OSTYPE in
             fi
         }
         # ### docker compose / machine ###
-        function get-docker-compose () {
+        function get-docker-compose {
             case "${OSTYPE}" in
                 freebsd*|darwin*) ;;
                 linux*) nix-install docker-compose ;;
             esac
         }
-        function get-docker-machine () {
+        function get-docker-machine {
             case "${OSTYPE}" in
                 freebsd*|darwin*) ;;
                 linux*)
@@ -886,13 +886,13 @@ case "${OSTYPE}" in
             Debian|Ubuntu)
                 export PATH="$HOME/.parts/autoparts/bin:$PATH"
                 export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
-                function get-parts () {
+                function get-parts {
                     get-base
                     ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
                     eval "$(parts env)"
                     get-parts-packages
                 }
-                function get-parts-packages () {
+                function get-parts-packages {
                     parts install \
                           heroku_toolbelt \
                           phantomjs \
@@ -911,13 +911,13 @@ esac
 REQUIRED_RUBY_VERSION=2.2.0
 REQUIRED_RUBY_VERSION_2=2.2.2
 # ### version control ###
-function get-rbenv () {
+function get-rbenv {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) anyenv install rbenv && exec -l zsh ;;
     esac
 }
 # ### installation ###
-function get-ruby () {
+function get-ruby {
     case "${OSTYPE}" in
         cygwin) apt-cyg install ruby ;;
         freebsd*|darwin*|linux*)
@@ -928,7 +928,7 @@ function get-ruby () {
             get-global-gem-packages ;;
     esac
 }
-function get-global-gem-packages () {
+function get-global-gem-packages {
     gem install \
         bundler \
         rubygems-bundler \
@@ -972,7 +972,7 @@ REQUIRED_ELIXIR_VERSION=1.2.0
 REQUIRED_PHOENIXFRAMEWORK_VERSION=1.1.1
 export PATH="$HOME/.local/exenv/bin:$PATH"
 # ### version control ###
-function get-kerl () {
+function get-kerl {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             curl https://raw.githubusercontent.com/yrashk/kerl/master/kerl -o ~/.local/bin/kerl
@@ -980,7 +980,7 @@ function get-kerl () {
     esac
 }
 if ! type -p kerl > /dev/null ; then get-kerl ; fi
-function get-exenv () {
+function get-exenv {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             rm -fr ~/.local/exenv
@@ -994,7 +994,7 @@ function get-exenv () {
 if ! type -p exenv > /dev/null ; then get-exenv ; fi
 if type -p exenv > /dev/null ; then eval "$(exenv init -)" ; fi
 # ### installation ###
-function get-erlang () {
+function get-erlang {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             mkdir -p ~/.local/otp
@@ -1005,7 +1005,7 @@ function get-erlang () {
 }
 if [ ! -f ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ] ; then get-erlang ; fi
 if [ -f ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ] ; then source ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ; fi
-function get-elixir () {
+function get-elixir {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             exenv install $REQUIRED_ELIXIR_VERSION
@@ -1015,11 +1015,11 @@ function get-elixir () {
     esac
 }
 if ! type -p iex > /dev/null ; then get-elixir ; fi
-function get-mix-packages () {
+function get-mix-packages {
     mix local.hex
     mix archive.install https://github.com/phoenixframework/phoenix/releases/download/v$REQUIRED_PHOENIXFRAMEWORK_VERSION/phoenix_new-$REQUIRED_PHOENIXFRAMEWORK_VERSION.ez
 }
-function get-ex_top () {
+function get-ex_top {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             cd ~
@@ -1077,27 +1077,27 @@ export REQUIRED_GO_VERSION=1.4.2
 export GOPATH=~/.go.d
 export PATH="$HOME/.go.d/bin:$PATH"
 # ### version control ###
-function get-goenv () {
+function get-goenv {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) anyenv install goenv && exec -l zsh ;;
     esac
 }
 if ! type -p goenv > /dev/null ; then get-goenv ; fi
-function get-go () {
+function get-go {
     case "${OSTYPE}" in
         freebsd*|darwin*) ;;
         linux*) goenv install $REQUIRED_GO_VERSION ;;
     esac
 }
 if ! type -p go > /dev/null ; then get-go ; fi
-function set-go () {
+function set-go {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             goenv global $REQUIRED_GO_VERSION > /dev/null ;;
     esac
 }
 if type -p go > /dev/null ; then set-go ; fi
-function get-global-go-packages () {
+function get-global-go-packages {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             go get github.com/peco/peco/cmd/peco
@@ -1309,14 +1309,14 @@ case $OSTYPE in
         export PATH=$JAVA_HOME/bin:$PATH ;;
 esac
 # ### version control ###
-function get-jenv () {
+function get-jenv {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) anyenv install jenv && exec -l zsh ;;
     esac
 }
 if ! type -p jenv > /dev/null ; then get-jenv ; fi
 # ### installation ###
-function get-java () {
+function get-java {
     case "${OSTYPE}" in
         freebsd*|darwin*)
             nix-install openjdk-$REQUIRED_OPENJDK_VERSION
@@ -1343,7 +1343,7 @@ function get-java () {
             esac
     esac
 }
-function set-javahome () {
+function set-javahome {
     case "${OSTYPE}" in
         freebsd*|darwin*)
             export JAVA_HOME=~/.nix-profile/lib/openjdk
@@ -1365,7 +1365,7 @@ function set-javahome () {
             esac
     esac
 }
-function get-play () {
+function get-play {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             wget http://downloads.typesafe.com/play/$REQUIRED_PLAY_VERSION/play-$REQUIRED_PLAY_VERSION.zip
@@ -1374,7 +1374,7 @@ function get-play () {
             rm -fr play-$REQUIRED_PLAY_VERSION.zip ;;
     esac
 }
-function get-sbt () {
+function get-sbt {
     case "${OSTYPE}" in
         freebsd*|darwin*) sudo port install sbt ;;
         linux*)
@@ -1399,20 +1399,20 @@ if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ] ; then get-play && get-sbt ; fi
 # ---------------------------
 # ### version control ###
 REQUIRED_PHP_VERSION=5.6.20
-function get-phpenv () {
+function get-phpenv {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) anyenv install phpenv && exec -l zsh ;;
     esac
 }
 if ! type -p phpenv > /dev/null ; then get-phpenv ; fi
 # ### installation ###
-function get-php () {
+function get-php {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) nix-install php-$REQUIRED_PHP_VERSION ;;
     esac
 }
 if ! type -p php > /dev/null; then get-php; fi
-function get-fastcgi () {
+function get-fastcgi {
     case "${OSTYPE}" in
         linux*)
             case "${DIST}" in
@@ -1520,7 +1520,7 @@ exit $RET_VAL'
 if [ ! -f /etc/init.d/php-fastcgi ] && [ ! -f /etc/init.d/php-fpm ] && [ ! -f /etc/init.d/php5-fpm ] && ! type -p php-fpm > /dev/null ; then
     get-fastcgi
 fi
-function php-fastcgid () {
+function php-fastcgid {
     case "${OSTYPE}" in
         darwin*) ;;
         linux*)
@@ -1534,7 +1534,7 @@ function php-fastcgid () {
             esac
     esac
 }
-function fastcgi-restart () {
+function fastcgi-restart {
     sudo killall php-fpm php-fastcgi php-fastcgid $1; wait
     case "${OSTYPE}" in
         darwin*) ;;
@@ -1554,14 +1554,14 @@ alias fk="php-fastcgid stop"
 REQUIRED_PYTHON_VERSION=2.7.11
 export PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
 # ### version control ###
-function get-pyenv () {
+function get-pyenv {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) anyenv install pyenv && exec -l zsh ;;
     esac
 }
 if ! type -p pyenv > /dev/null ; then get-pyenv ; fi
 # ### installation ###
-function get-python () {
+function get-python {
     case "${OSTYPE}" in
         cygwin)
             apt-cyg install \
@@ -1574,7 +1574,7 @@ function get-python () {
     esac
 }
 if ! type -p python > /dev/null; then get-python ; fi
-function get-pip () {
+function get-pip {
     case "${OSTYPE}" in
         cygwin)
             if type -p easy_install-2.7 > /dev/null ; then
@@ -1589,7 +1589,7 @@ if ! type -p python > /dev/null; then get-python ; fi
             get-global-pip-packages ;;
     esac
 }
-function get-global-pip-packages () {
+function get-global-pip-packages {
     case "$OSTYPE" in
         freebsd*|darwin*|linux*)
             pip install -U \
@@ -1698,9 +1698,9 @@ function get-global-cpan-packages {
     yes | cpanm -fi Carton
 }
 # ### cpan ###
-function cpan-module-list () { perl -e "print \"@INC\"" | find -name "*.pm" -print }
-function cpan-module-version () { perl -M$1 -le "print \$$1::VERSION" }
-function cpan-uninstall () { perl -MConfig -MExtUtils::Install -e '($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1' }
+function cpan-module-list { perl -e "print \"@INC\"" | find -name "*.pm" -print }
+function cpan-module-version { perl -M$1 -le "print \$$1::VERSION" }
+function cpan-uninstall { perl -MConfig -MExtUtils::Install -e '($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1' }
 alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 # alias cpan-uninstall='perl -MConfig -MExtUtils::Install -e '"'"'($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1'"'"
 
@@ -1714,14 +1714,14 @@ case $OSTYPE in
         export PATH=$(get-winpath "C:\Program Files\nodejs"):$PATH ;;
 esac
 # ### version control ###
-function get-ndenv () {
+function get-ndenv {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) anyenv install ndenv && exec -l zsh ;;
     esac
 }
 if ! type -p ndenv > /dev/null ; then get-ndenv ; fi
 # ### installation ###
-function get-node () {
+function get-node {
     case "$OSTYPE" in
         msys|cygwin) choco install nodejs ;;
         linux*)
@@ -1731,12 +1731,12 @@ function get-node () {
             get-global-npm-packages ;;
     esac
 }
-function set-node () {
+function set-node {
     case "$OSTYPE" in
         linux*) ndenv global v$REQUIRED_NODE_VERSION
     esac
 }
-function get-global-npm-packages () {
+function get-global-npm-packages {
     npm install -g \
         bower \
         grunt-cli \
@@ -1749,11 +1749,12 @@ function get-global-npm-packages () {
         phantomjs \
         requirejs \
         yamljs \
-        tern
+        tern \
+        brunch
 }
 if ! type -p npm > /dev/null ; then get-node ; fi
 if type -p npm > /dev/null ; then set-node ; fi
-function rebuild-sass () {
+function rebuild-sass {
     npm uninstall --save-dev gulp-sass
     npm install --save-dev gulp-sass@2
     npm rebuild node-sass
@@ -1762,12 +1763,12 @@ function rebuild-sass () {
 
 # 2. ProgrammingLanguage::RemoteProcedureCall
 # -------------------------------------------
-function get-protobuf () {
+function get-protobuf {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) nix-install protobuf-2.6.1 ;;
     esac
 }
-function get-thrift () {
+function get-thrift {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) nix-install thrift-0.9.3 ;;
     esac
@@ -1782,7 +1783,7 @@ REQUIRED_POSTGRESQL_VERSION=9.5.3
 # REQUIRED_POSTGRESQL_VERSION=9.4.6
 PSQL_PAGER='less -S'
 # ### installation ###
-function get-postgresql () {
+function get-postgresql {
     case "${OSTYPE}" in
         darwin*|linux*) docker run --name postgres-$REQUIRED_POSTGRESQL_VERSION -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres:$REQUIRED_POSTGRESQL_VERSION ;;
     esac
@@ -1794,7 +1795,7 @@ function set-postgresql {
 }
 # if ! type -p psql > /dev/null ; then get-postgresql ; fi
 # if   type -p psql > /dev/null ; then set-postgresql ; fi
-function pg-restart () {
+function pg-restart {
     case "${OSTYPE}" in
         darwin*)
             sudo service postgresql stop
@@ -1813,7 +1814,7 @@ function pg-restart () {
             esac
     esac
 }
-function pg-status () {
+function pg-status {
     case "${OSTYPE}" in
         darwin*) sudo service postgresql status ;;
         linux*)
@@ -1925,7 +1926,7 @@ alias mk="sudo killall mysqld"
 # --------------------------
 REQUIRED_REDIS_VERSION=3.0.2
 # ### installation ###
-function get-redis () {
+function get-redis {
     case "${OSTYPE}" in
         darwin*)
             nix-install redis-$REQUIRED_REDIS_VERSION
@@ -1946,7 +1947,7 @@ function get-redis () {
     esac
 }
 if ! type -p redis-cli > /dev/null ; then get-redis ; fi
-function redis-restart () {
+function redis-restart {
     case "${OSTYPE}" in
         darwin*) ;;
         linux*)
@@ -1955,13 +1956,13 @@ function redis-restart () {
             ps aux | \grep -G 'redis.*' ;;
     esac
 }
-function redis-stop () {
+function redis-stop {
     case "${OSTYPE}" in
         darwin*) ;;
         linux*) sudo pkill redis-server ;;
     esac
 }
-function redis-status () {
+function redis-status {
     case "${OSTYPE}" in
         darwin*) ;;
         linux*) ps aux | \grep -G 'redis.*' ;;
@@ -1982,19 +1983,19 @@ alias rdk="redis-stop"
 # 3. Daemon::Database::Memcached
 # ------------------------------
 REQUIRED_MEMCACHED_VERSION=1.4.20
-function get-memcached () {
+function get-memcached {
     case "${OSTYPE}" in
         darwin*) ;;
         linux*) nix-install memcached-$REQUIRED_MEMCACHED_VERSION ;;
     esac
 }
 if ! type -p memcached > /dev/null ; then get-memcached ; fi
-function get-memcached-tool() {
+function get-memcached-tool {
     wget https://raw.githubusercontent.com/memcached/memcached/master/scripts/memcached-tool -O ~/.local/bin/memcached-tool
     chmod +x ~/.local/bin/memcached-tool
 }
 if ! type -p memcached-tool > /dev/null ; then get-memcached-tool ; fi
-function memcached-restart () {
+function memcached-restart {
     case "${OSTYPE}" in
         darwin*) ;;
         linux*)
@@ -2010,7 +2011,7 @@ function memcached-restart () {
             esac
     esac
 }
-function memcached-stop () {
+function memcached-stop {
     case "${OSTYPE}" in
         darwin*) ;;
         linux*)
@@ -2020,7 +2021,7 @@ function memcached-stop () {
             esac
     esac
 }
-function memcached-status () {
+function memcached-status {
     case "${OSTYPE}" in
         darwin*) ;;
         linux*)
@@ -2030,9 +2031,13 @@ function memcached-status () {
             esac ;;
     esac
 }
+function get-memcache-top {
+    wget http://memcache-top.googlecode.com/files/memcache-top-v0.6 -O ~/.local/bin/memcache-top
+}
 alias memcached-monitor='memcached-tool 127.0.0.1:11211 display'
 alias memcached-info='memcached-tool 127.0.0.1:11211 stats'
 alias memcached-dump='memcached-tool 127.0.0.1:11211 dump'
+alias memcache-top='perl memcached-top'
 alias mcr="memcached-restart"
 alias mcp="memcached-status"
 alias mci="memcached-info"
@@ -2043,12 +2048,12 @@ alias mck="memcached-stop"
 # 3. Daemon::HttpServer::Nginx
 # ----------------------------
 REQUIRED_NGINX_VERSION=1.9.9
-function get-nginx () {
+function get-nginx {
     case "${OSTYPE}" in
         darwin*|linux*) nix-install nginx-$REQUIRED_NGINX_VERSION ;;
     esac
 }
-function set-nginx () {
+function set-nginx {
     useradd -s /bin/false nginx
     sudo sed -i "s|^\(#user  nobody;\)|#\1\nuser  nginx;|g"                                                      ~/.nix-profile/conf/nginx.conf
     sudo sed -i "s|^\(worker_processes  1;\)|#\1\nworker_processes  auto;|g"                                     ~/.nix-profile/conf/nginx.conf
@@ -2061,7 +2066,7 @@ function set-nginx () {
     sudo mkdir -rf /etc/nginx/conf.d
     sudo ln -s /etc/nginx/sites-available/* /etc/nginx/sites-enabled
 }
-function nginx-restart () {
+function nginx-restart {
     case "${OSTYPE}" in
         darwin*|linux*)
             sudo nginx -s stop
@@ -2069,7 +2074,7 @@ function nginx-restart () {
             sudo nginx -s status ;;
     esac
 }
-function nginx-status () {
+function nginx-status {
     case "${OSTYPE}" in
         darwin*|linux*)
             sudo nginx -t
@@ -2087,7 +2092,7 @@ alias nk="sudo killall nginx"
 # ------------------------------------------
 export REQUIRED_EMACS_VERSION=24.5
 # ### installation ###
-function get-emacs () {
+function get-emacs {
     case "${OSTYPE}" in
         msys) pacman -S mingw-w64-x86_64-emacs ;;
         cygwin) apt-cyg install emacs ;;
@@ -2116,7 +2121,7 @@ else
     if [[ $_REQUIRED_EMACS_VERSION > $_CURRENT_EMACS_VERSION ]]; then get-emacs; fi
 fi
 # ### aspell ###
-function get-aspell () {
+function get-aspell {
     case "${OSTYPE}" in
         darwin*) brew install --with-lang-ena aspell ;;
         freebsd*) ;;
@@ -2128,7 +2133,7 @@ function get-aspell () {
 }
 if ! type -p aspell > /dev/null ; then get-aspell ; fi
 # ### mu4e ###
-function get-mu () {
+function get-mu {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             case "${DIST}" in
@@ -2155,7 +2160,7 @@ function get-mu () {
             esac
     esac
 }
-function mu-restart () {
+function mu-restart {
     mv ~/Maildir ~/Maildir.org$(date +%y%m%d)
     mkdir -p ~/Maildir
     rm -fr ~/.mu
@@ -2182,7 +2187,7 @@ function get-sekka {
 # 4. IntegratedDevelopmentEnvironment::Emacs::Ctags
 # -------------------------------------------------
 REQUIRED_CTAGS_VERSION=5.8
-function get-ctags () {
+function get-ctags {
     case "${OSTYPE}" in
         freebsd*linux*)
             local current_pwd=`pwd`
@@ -2215,7 +2220,7 @@ alias pandocslide="pandoc -t slidy -s"
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::Filesystem
 # -------------------------------------------------------------------
 # ### inotify ###
-function get-inotify () {
+function get-inotify {
     case "${OSTYPE}" in
         freebsd*|darwin*) ;;
         linux*)
@@ -2227,10 +2232,10 @@ function get-inotify () {
 }
 if ! type -p inotifywait > /dev/null ; then get-inotify ; fi
 # ### storage minimization ###
-function delete-log () {
+function delete-log {
     sudo find /home /var /usr -mtime +1 -a \( -name "*.pag" -o -name "*.dir" -o -name "*.log" \) -exec sudo rm {} \;
 }
-function sync-filesystem () {
+function sync-filesystem {
     delete-log
     crontab -r
     echo '0 0 * * * sudo find /home /var /usr -mtime +1 -a \( -name "*.pag" -o -name "*.dir" -o -name "*.log" \) -exec sudo rm {} \;' | crontab
@@ -2241,7 +2246,7 @@ function sync-filesystem () {
 # ------------------------------------------------------------
 REQUIRED_GIT_VERSION=1.9.4
 # ### installation ###
-function get-git () {
+function get-git {
     case "${OSTYPE}" in
         freebsd*|darwin*) get-git-flow ;;
         linux*)
@@ -2273,7 +2278,7 @@ function get-git () {
             git config --global push.default simple
     esac
 }
-function get-git-flow () {
+function get-git-flow {
     case "${OSTYPE}" in
         freebsd*|darwin*) port install git-flow ;;
         linux*)
@@ -2291,7 +2296,7 @@ else
     if [[ $_REQUIRED_GIT_VERSION_NUM > $_CURRENT_GIT_VERSION ]]; then get-git; fi
 fi
 # ### hub ###
-function get-hub () {
+function get-hub {
     case "${OSTYPE}" in
         freebsd*) ;;
         darwin*) brew install hub ;;
@@ -2310,7 +2315,7 @@ function get-hub () {
 if ! type -p hub > /dev/null ; then get-hub ; fi
 if type -p hub > /dev/null ; then eval "$(hub alias -s)" ; fi
 # ### gibo ###
-function get-gibo () {
+function get-gibo {
     case "${OSTYPE}" in
         freebsd*) ;;
         darwin*|linux*)
@@ -2319,7 +2324,7 @@ function get-gibo () {
 }
 if ! type -p gibo > /dev/null ; then get-gibo ; fi
 # ### bfg ###
-function get-bfg () {
+function get-bfg {
     REQUIRED_BFG_VERSION=1.12.12
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
@@ -2352,8 +2357,8 @@ alias gdf='git diff HEAD^'
 alias gdfc='git diff --cached'
 alias gexport='git "!sh -c \"git checkout-index -a -f --prefix=$1/\" -"'
 alias ghist='git log --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --'
-function ghclone () { git clone git@github.com:${1}.git }
-function git-log () { \git log ${1} --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit -- }
+function ghclone { git clone git@github.com:${1}.git }
+function git-log { \git log ${1} --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit -- }
 alias gl='git-log'
 alias glast='git diff HEAD~1..HEAD'
 alias glf='git log --decorate=full --graph --pretty=full'
@@ -2369,7 +2374,7 @@ alias gst='git status -sb'
 alias gswitch='git checkout'
 alias gvlog='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen - %cD (%cr) %C(bold blue)<%an>%Creset%n" --abbrev-commit --date=relative -p ; echo ""'
 alias gwho='git shortlog -s --'
-function git-trend () {
+function git-trend {
     g trend -n 10
     g trend -l ruby -n 5
     g trend -l elixir -n 5
@@ -2379,9 +2384,9 @@ function git-trend () {
 }
 function parse-git-dirty { git diff --no-ext-diff --quiet --exit-code &> /dev/null || echo "*" }
 function parse-git-branch { git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty))/" }
-function github-pull-repositories () {
+function github-pull-repositories {
     # # Setup Example:
-    # function setup-git-pull-repositories () {
+    # function setup-git-pull-repositories {
     #     case $1 in
     #         foo) echo 'npm install';;
     #         bar) echo 'npm install && bower install';;
@@ -2448,13 +2453,13 @@ case $OSTYPE in
     msys)   export PATH=/C/Program~2/Graphviz${REQUIRED_GRAPHVIZ_VERSION}/bin:$PATH ;;
     cygwin) export PATH=/cygdrive/C/Program~2/Graphviz${REQUIRED_GRAPHVIZ_VERSION}/bin:$PATH ;;
 esac
-function get-puml () {
+function get-puml {
     case "${OSTYPE}" in
         freebsd*|darwin*) ;;
         linux*) if type -p npm > /dev/null; then npm install -g node-plantuml; fi ;;
     esac
 }
-function get-plantuml () {
+function get-plantuml {
     case "${OSTYPE}" in
         freebsd*|darwin*) ;;
         linux*)
@@ -2462,7 +2467,7 @@ function get-plantuml () {
             alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng' ;;
     esac
 }
-function get-graphviz () {
+function get-graphviz {
     case "${OSTYPE}" in
         msys|cygwin) choco install graphviz ;;
         freebsd*|darwin*) brew install graphviz ;;
@@ -2483,7 +2488,7 @@ if ! type -p dot > /dev/null ; then get-graphviz ; fi
 
 # 4. IntegratedDevelopmentEnvironment::SoftwareDebugging::Benchmark
 # -----------------------------------------------------------------
-function get-ab () {
+function get-ab {
     case "${OSTYPE}" in
         freebsd*|darwin*) ;;
         linux*)
@@ -2494,7 +2499,7 @@ function get-ab () {
     esac
 }
 if ! type -p ab > /dev/null ; then get-ab ; fi
-function get-wrk () {
+function get-wrk {
     case "${OSTYPE}" in
         freebsd*) ;;
         darwin*) brew install wrk ;;
@@ -2569,7 +2574,7 @@ alias vbm='VBoxManage'
 # 4. IntegratedDevelopmentEnvironment::SoftwareDeployment::Terraform
 # ------------------------------------------------------------------
 REQUIRED_TERRAFORM_VERSION=0.6.6
-function get-terraform () {
+function get-terraform {
     local current_pwd=`pwd`
     cd ~/.local/bin
     rm -fr terraform*
@@ -2590,7 +2595,7 @@ function get-terraform () {
     cd $current_pwd
 }
 if ! type -p terraform > /dev/null; then get-terraform; fi
-function terraform-remote-config () {
+function terraform-remote-config {
     terraform remote config -backend=S3 -backend-config="bucket=tfstate.d" -backend-config="key=$1.tfstate"
     terraform remote push
 }
@@ -2687,7 +2692,7 @@ esac
 # ### set terminal title including current directory ###
 case "${TERM}" in
     kterm*|xterm*)
-	precmd () {
+	precmd {
 	    echo -ne "\033]0;${USER}@${HOST%%.*}:${PWD}\007"
 	}
 	export LSCOLORS=gxfxcxdxbxegedabagacad
@@ -2744,7 +2749,7 @@ case "${OSTYPE}" in
         alias la="\ls -p -l -F -a --color=auto"
         alias lf="\ls -p -l -F --hide='.*' --color=auto"
         alias ll="\ls -p -F -a --color=auto"
-        function lt () {
+        function lt {
             \ls -R $1 | \grep ":$" | \sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
         }
 esac
@@ -2798,7 +2803,7 @@ function get-screen {
 }
 if ! type -p screen > /dev/null ; then get-screen ; fi
 # ### srcreen for opening ssh ###
-function ssh_screen () {
+function ssh_screen {
     eval server=\${$#}
     screen -t $server ssh "$@"
 }
@@ -2807,8 +2812,8 @@ if [ x$TERM = xscreen ] ; then alias ssh=ssh_screen ; fi
 if [ "$TERM" = "screen" ]; then
     export LSCOLORS=gxfxcxdxbxegedabagacad
     export LS_COLORS='di=36;40:ln=35;40:so=32;40:pi=33;40:ex=31;40:bd=34;46:cd=34;43:su=0;41:sg=0;46:tw=0;42:ow=0;43:'
-    # chpwd () { echo -n "_`dirs`\\" | ll }
-    chpwd () { echo -n "_`dirs`\\" }
+    # chpwd { echo -n "_`dirs`\\" | ll }
+    chpwd { echo -n "_`dirs`\\" }
     preexec() {
     # see [zsh-workers:13180]
     # http://www.zsh.org/mla/workers/2000/msg03993.html
@@ -2836,7 +2841,7 @@ fi
 
 # 4. IntegratedDevelopmentEnvironment::Chat::Slack
 # ------------------------------------------------
-function get-slackchat () {
+function get-slackchat {
     case "${OSTYPE}" in
         darwin*|linux*)
             wget https://github.com/vektorlab/slackcat/releases/download/v0.7/slackcat-0.7-linux-amd64 -O ~/.local/bin/slackchat
@@ -2848,7 +2853,7 @@ function get-slackchat () {
 
 # 5. Platform::Heroku
 # -------------------
-function get-heroku () {
+function get-heroku {
     case "${OSTYPE}" in
         freebsd*|darwin*) nix-install heroku-3.42.20 ;;
         linux*)
@@ -2866,14 +2871,14 @@ function get-heroku () {
 # 5. Platform::GoogleCloudPlatform
 # --------------------------------
 export PATH="$HOME/google-cloud-sdk/bin:$PATH"
-function get-gcloud () {
+function get-gcloud {
     case "${OSTYPE}" in
         cygwin|darwin*|linux*)
             curl https://sdk.cloud.google.com | bash
             exec -l $SHELL ;;
     esac
 }
-function set-gcloud () {
+function set-gcloud {
     case "${OSTYPE}" in
         cygwin|darwin*|linux*)
             source ~/google-cloud-sdk/completion.zsh.inc
@@ -2914,7 +2919,7 @@ if type -p gcloud > /dev/null ; then set-gcloud ; fi
 # # 9. Create a secure tunnel ###
 # ssh -f -nNT -L 8080:127.0.0.1:8080 core@<master-public-ip>
 #
-function get-kubectl () {
+function get-kubectl {
     case $OSTYPE in
         darwin*)
             wget https://storage.googleapis.com/kubernetes-release/release/v1.0.1/bin/darwin/amd64/kubectl -O ~/.local/bin/kubectl
@@ -2929,7 +2934,7 @@ if ! type kubectl > /dev/null ; then get-kubectl ; fi
 
 # 5. Platform::AmazonWebServices
 # ------------------------------
-function get-aws () {
+function get-aws {
     if ! type -p pip > /dev/null ; then get-pip ; fi
     case "${OSTYPE}" in
         freebsd*) ;;
@@ -2938,7 +2943,7 @@ function get-aws () {
             fix-compdef-problem
     esac
 }
-function fix-compdef-problem () {
+function fix-compdef-problem {
     touch ~/.zshenv
     echo 'autoload -Uz compinit
 compinit' >> ~/.zshenv
@@ -2949,14 +2954,14 @@ if ! type -p aws > /dev/null ; then get-aws ; fi
 # 9. Other::Customized
 # --------------------
 # ### dove ###
-function cd-dove () {
+function cd-dove {
     dove_path=`which dove`
     dove_dir=`dirname $dove_path`
     cd $dove_dir/../$1
 }
 alias zd=cd-dove
 # ### dotfiles ###
-function get-dotfiles () {
+function get-dotfiles {
     while getopts ":c:m:ih" opt ; do
         case $opt in
             "c") is_credential=true ;;
@@ -3000,7 +3005,7 @@ function get-dotfiles () {
     fi
 }
 alias zg='get-dotfiles'
-function put-dotfiles () {
+function put-dotfiles {
     # pre proc
     local current_pwd=`pwd`
     cd ~/
@@ -3036,8 +3041,8 @@ function put-dotfiles () {
 }
 alias zp=put-dotfiles
 # ### other ###
-function bkup () { cp -ipr $1 $1.org$(date +%y%m%d) }
-function bkup-targz () { tar zcvf $2$(date +%y%m%d)_$1_$(date +%H).tar.gz $3$1 }
+function bkup { cp -ipr $1 $1.org$(date +%y%m%d) }
+function bkup-targz { tar zcvf $2$(date +%y%m%d)_$1_$(date +%H).tar.gz $3$1 }
 alias b='bkup'
 alias bU='bkup-targz'
 alias bin='~/bin'
@@ -3050,7 +3055,7 @@ alias df="df -h"
 alias egrep='\egrep -H -n'
 alias fgrep='fgrep --color=auto'
 alias grep='grep --color=auto'
-function gresreg () {
+function gresreg {
     for i in $(\grep -lr $1 *) ; do
 	cp $i $i.tmp;
 	sed -e "s/$1/$2/g" $i.tmp > $i;
@@ -3074,10 +3079,10 @@ esac
 alias it="date -R"
 alias j='cd'
 alias k='/bin/mkdir -p'
-function kl () { kill -f $1 }
-function chpwd(){ }
-#function chpwd(){ ll }
-function lower () {
+function kl { kill -f $1 }
+function chpwd { }
+#function chpwd { ll }
+function lower {
     for i in "$@" ; do
         \mv -f $i $(echo $i | tr "[:upper:]" "[:lower:]")
     done
@@ -3087,7 +3092,7 @@ alias m='/bin/mv'
 alias mk="make config install distclean"
 alias MK="make deinstall"
 alias pwd='pwd -P'
-function upper () {
+function upper {
     for i in * ; do
         \mv -f $i $(echo $i | tr "[:lower:]" "[:upper:]")
     done
@@ -3096,26 +3101,26 @@ alias up="upper"
 alias r='/bin/mv'
 alias re='e ~/.zshrc'
 alias reb='cp -ip ~/.zshrc ~/.zshrc.org$(date +%y%m%d)'
-function rename () {
+function rename {
     for i in *$1* ; do
         \mv -f $i `echo $i | sed -e s,$1,$2,g`
     done
 }
 alias rn="rename"
-function rename-recursively () {
+function rename-recursively {
     find . -print | while read file ; do
         \mv -f $file ${file//$1/$2}
     done
 }
 alias rnr="rename-recursively"
-function rr () { exec -l zsh }
-function rename () {
+function rr { exec -l zsh }
+function rename {
     for i in *$1* ; do
         \mv -f $i    # (echo $i | sed -e s,$1,$2,g)
     done
 }
 alias rn="rename"
-function rename-recursively () {
+function rename-recursively {
     find . -print | while read file ; do
         \mv -f $file ${file//$1/$2}
     done
@@ -3128,7 +3133,7 @@ alias u='tar zxvf'
 alias U='tar zcvf $1.tar.gz $1'
 alias uz='unzip'
 alias v="cat"
-function t () { \mv (.*~|.*.org*|*.org*|*.tar.gz|*.stackdump|*.tar.gz|*.asx|*.0|*.msi|*.wav|*.doc|*.pdf|$1) .old/ }
+function t { \mv (.*~|.*.org*|*.org*|*.tar.gz|*.stackdump|*.tar.gz|*.asx|*.0|*.msi|*.wav|*.doc|*.pdf|$1) .old/ }
 # ### other source file ###
 if [ -f ~/.zshrc.mine ]; then source ~/.zshrc.mine; fi
 
