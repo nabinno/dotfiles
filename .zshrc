@@ -1574,7 +1574,7 @@ function get-python {
     esac
 }
 if ! type -p python > /dev/null; then get-python ; fi
-function get-pip {
+function get-pip {
     case "${OSTYPE}" in
         cygwin)
             if type -p easy_install-2.7 > /dev/null ; then
@@ -2692,7 +2692,7 @@ esac
 # ### set terminal title including current directory ###
 case "${TERM}" in
     kterm*|xterm*)
-	precmd {
+	function precmd {
 	    echo -ne "\033]0;${USER}@${HOST%%.*}:${PWD}\007"
 	}
 	export LSCOLORS=gxfxcxdxbxegedabagacad
@@ -2812,11 +2812,11 @@ if [ x$TERM = xscreen ] ; then alias ssh=ssh_screen ; fi
 if [ "$TERM" = "screen" ]; then
     export LSCOLORS=gxfxcxdxbxegedabagacad
     export LS_COLORS='di=36;40:ln=35;40:so=32;40:pi=33;40:ex=31;40:bd=34;46:cd=34;43:su=0;41:sg=0;46:tw=0;42:ow=0;43:'
-    # chpwd { echo -n "_`dirs`\\" | ll }
-    chpwd { echo -n "_`dirs`\\" }
-    preexec() {
-    # see [zsh-workers:13180]
-    # http://www.zsh.org/mla/workers/2000/msg03993.html
+    # function chpwd { echo -n "_`dirs`\\" | ll }
+    function chpwd { echo -n "_`dirs`\\" }
+    function preexec {
+        # see [zsh-workers:13180]
+        # http://www.zsh.org/mla/workers/2000/msg03993.html
 	emulate -L zsh
 	local -a cmd ; cmd=(${(z)2})
 	case $cmd[1] in
