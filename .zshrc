@@ -152,11 +152,11 @@ export LC_ALL=en_US.UTF-8
 export LC_CTYPE=UTF-8
 export LC_MESSAGES=C
 export MAILPATH=$HOME/MailBox/postmaster/maildir
+export PATH=/usr/sbin:/sbin:$PATH
 export PATH=$HOME/bin:$HOME/local/bin:$PATH
 export PATH="/opt/local/bin:$PATH"
 export PATH="/opt/local/sbin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.local/dove/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
 
 
@@ -253,6 +253,7 @@ function get-base {
                          git \
                          git-core \
                          gnupg \
+                         htop \
                          imagemagick \
                          libarchive12 \
                          libarchive-dev \
@@ -597,9 +598,6 @@ function get-nix {
                     sudo chown -R ${CURRENT_USER} /nix ;;
                 Ubuntu)
                     case $DIST_VERSION in
-                        14.04)
-                            cd ~ && curl https://nixos.org/nix/install | sh
-                            sudo chown -R ${CURRENT_USER} /nix ;;
                         12.04)
                             cd ~ && curl https://nixos.org/nix/install | sh
                             nix-channel --add https://nixos.org/channels/nixpkgs-unstable
@@ -620,7 +618,12 @@ function set-nix {
         cygwin*)
             export NIXPKGS=~/.local/nixpkgs
             source /usr/local/etc/profile.d/nix.sh ;;
-        darwin*|linux*) source ~/.nix-profile/etc/profile.d/nix.sh ;;
+        darwin*) source ~/.nix-profile/etc/profile.d/nix.sh ;;
+        linux*)
+            case $DIST in
+                Redhat|RedHat|Debian) source ~/.nix-profile/etc/profile.d/nix.sh ;;
+                Ubuntu) case $DIST_VERSION in (12.04) source ~/.nix-profile/etc/profile.d/nix.sh ;; esac
+            esac
     esac
 }
 function nix-install {
@@ -629,10 +632,7 @@ function nix-install {
         linux*)
             case $DIST in
                 Redhat|RedHat|Debian) nix-env --install $1 ;;
-                Ubuntu)
-                    case $DIST_VERSION in
-                        14.04) nix-env --install $1 ;;
-                    esac
+                Ubuntu) case $DIST_VERSION in (12.04) nix-env --install $1 ;; esac
             esac
     esac
 }
@@ -665,11 +665,19 @@ esac
 
 # 1. BasicSettings::PackageManager::Chef
 # --------------------------------------
-REQUIRED_CHEF_VERSION=0.11.2
+REQUIRED_CHEF_VERSION=0.17.9
 function get-chef {
-    nix-install chefdk-${REQUIRED_CHEF_VERSION}
+    case $OSTYPE in
+        freebsd*|darwin*|linux*) curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -P chefdk -v $REQUIRED_CHEF_VERSION
+    esac
+}
+function set-chef {
+    case $OSTYPE in
+        freebsd*|darwin*|linux*) eval "$(chef shell-init $SHELL)"
+    esac
 }
 if ! type -p chef > /dev/null ; then get-chef ; fi
+if   type -p chef > /dev/null ; then set-chef ; fi
 
 
 # 1. BasicSettings::PackageManager::Anyenv
@@ -695,7 +703,10 @@ function get-docker {
         freebsd*|darwin*) ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat) sudo yum update && sudo yum install -y docker ;;
+                Redhat|RedHat)
+                    sudo yum update && sudo yum install -y docker
+                    sudo sed -i "s/^DOCKER_STORAGE_OPTIONS=/DOCKER_STORAGE_OPTIONS='--storage-opt dm.no_warn_on_loop_devices=true'/g" /etc/sysconfig/docker-storage
+                    ;;
                 Debian) sudo apt-get update; sudo apt-get install -y docker.io ;;
                 Ubuntu)
                     sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
@@ -740,6 +751,28 @@ function docker-status {
                 Redhat|RedHat) sudo service docker status ;;
                 Debian|Ubuntu) ;;
             esac
+    esac
+}
+function get-docker-images {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            get-sekka
+            get-postgresql
+            get-mysql
+            get-redis
+            get-memcached
+            get-nginx
+    esac
+}
+function set-docker-images {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            sekka-restart
+            postgresql-restart
+            mysql-restart
+            redis-restart
+            memcached-restart
+            nginx-restart
     esac
 }
 ## ### alias ###
@@ -790,10 +823,10 @@ case $OSTYPE in
         alias dkd='dka ; dda'
         alias dkill='docker rm -f'
         alias dkilla='docker rm -f $(docker ps -a -q)'
-        alias dl='docker images | less -S'
-        alias dls='docker images | less -S'
-        alias dp='docker ps -a | less -S'
-        alias dps='docker ps -a | less -S'
+        alias dl='docker images'  # | less -S
+        alias dls='docker images' # | less -S
+        alias dp='docker ps -a'   # | less -S
+        alias dps='docker ps -a'  # | less -S
         function dsshd { docker run -t -d -p 5000:3000 -P $1 /usr/sbin/sshd -D }
         alias dr='docker tag'
         alias dv='docker images -viz'
@@ -821,9 +854,13 @@ case $OSTYPE in
         }
         # ### docker compose / machine ###
         function get-docker-compose {
-            case "${OSTYPE}" in
-                freebsd*|darwin*) ;;
-                linux*) nix-install docker-compose ;;
+            case $OSTYPE in
+                freebsd*|darwin*) nix-install docker-compose ;;
+                linux*)
+                    case $DIST in
+                        Redhat|RedHat|Debian) nix-install docker-compose ;;
+                        Ubuntu) case $DIST_VERSION in (12.04) nix-install docker-compose ;; esac
+                    esac
             esac
         }
         function get-docker-machine {
@@ -840,6 +877,13 @@ case $OSTYPE in
         }
         if ! type -p docker-compose > /dev/null; then get-docker-compose ; fi
         if ! type -p docker-machine > /dev/null; then get-docker-machine ; fi
+        # ### other ###
+        case $DIST in
+            Ubuntu)
+                case $DIST_VERSION in
+                    14.04) alias docker='DOCKER_HOST=tcp://:2375 docker'
+                esac
+        esac
         ;;
 esac
 
@@ -967,9 +1011,9 @@ fi
 
 # 2. ProgrammingLanguage::Elixir
 # ------------------------------
-REQUIRED_ERLANG_VERSION=18.2
+REQUIRED_ERLANG_VERSION=18.3
 REQUIRED_ELIXIR_VERSION=1.2.0
-REQUIRED_PHOENIXFRAMEWORK_VERSION=1.1.1
+REQUIRED_PHOENIXFRAMEWORK_VERSION=1.2.0
 export PATH="$HOME/.local/exenv/bin:$PATH"
 # ### version control ###
 function get-kerl {
@@ -977,22 +1021,16 @@ function get-kerl {
         freebsd*|darwin*|linux*)
             curl https://raw.githubusercontent.com/yrashk/kerl/master/kerl -o ~/.local/bin/kerl
             chmod a+x ~/.local/bin/kerl
+            echo 'KERL_CONFIGURE_OPTIONS="--disable-hipe --enable-smp-support --enable-threads --enable-kernel-poll"' > ~/.kerlrc
     esac
 }
 if ! type -p kerl > /dev/null ; then get-kerl ; fi
 function get-exenv {
     case "${OSTYPE}" in
-        freebsd*|darwin*|linux*)
-            rm -fr ~/.local/exenv
-            git clone https://github.com/mururu/exenv.git ~/.local/exenv
-            git clone https://github.com/mururu/elixir-build.git
-            cp -f elixir-build/bin/*  ~/.local/exenv/bin/
-            rm -fr elixir-build
-            eval "$(exenv init -)" ;;
+        freebsd*|darwin*|linux*) anyenv install exenv && exec -l zsh
     esac
 }
 if ! type -p exenv > /dev/null ; then get-exenv ; fi
-if type -p exenv > /dev/null ; then eval "$(exenv init -)" ; fi
 # ### installation ###
 function get-erlang {
     case "${OSTYPE}" in
@@ -1014,11 +1052,11 @@ function get-elixir {
             get-mix-packages ;;
     esac
 }
-if ! type -p iex > /dev/null ; then get-elixir ; fi
 function get-mix-packages {
     mix local.hex
-    mix archive.install https://github.com/phoenixframework/phoenix/releases/download/v$REQUIRED_PHOENIXFRAMEWORK_VERSION/phoenix_new-$REQUIRED_PHOENIXFRAMEWORK_VERSION.ez
+    mix archive.install https://github.com/phoenixframework/archives/raw/master/phoenix_new-$REQUIRED_PHOENIXFRAMEWORK_VERSION.ez
 }
+if ! type -p iex > /dev/null ; then get-elixir ; fi
 function get-ex_top {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
@@ -1043,7 +1081,7 @@ function get-ghc {
                 Redhat*|RedHat*|Debian) nix-install ghc-${REQUIRED_GHC_VERSION} ;;
                 Ubuntu*)
                     case $DIST_VERSION in
-                        14.04)  nix-install ghc-${REQUIRED_GHC_VERSION} ;;
+                        14.04)  ;;
                     esac
             esac
     esac
@@ -1060,9 +1098,7 @@ function get-cabal {
                     cabal update ;;
                 Ubuntu*)
                     case $DIST_VERSION in
-                        14.04)
-                            nix-install cabal-install-${REQUIRED_CABAL_VERSION}
-                            cabal update ;;
+                        14.04) ;;
                     esac
             esac
     esac
@@ -1169,6 +1205,7 @@ function get-dotnetcli {
             tar xf dotnet-dev-rhel-x64.latest.tar.gz -C ~/.local/dotnet --verbose
             rm -fr dotnet-dev-rhel-x64.latest.tar.gz ;;
         cygwin)
+            # ### dotnet ###
             wget https://dotnetcli.blob.core.windows.net/dotnet/beta/Binaries/Latest/dotnet-dev-rhel-x64.latest.tar.gz
             apt-cyg install -y libicu libuuid libcurl openssl libunwind
             mkdir ~/.local/dotnet
@@ -1178,6 +1215,18 @@ function get-dotnetcli {
         linux*)
             case $DIST in
                 Redhat*|RedHat*)
+                    # ### mono ###
+                    nix-install \
+                        dotnetbuildhelpers \
+                        mono-${REQUIRED_MONO_VERSION} \
+                        mono-addins-1.2 \
+                        mono-dll-fixer \
+                        mono-zeroconf-0.9.0
+                    # ### dnvm ###
+                    curl -sSL https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.sh | DNX_BRANCH=dev sh
+                    source ~/.dnx/dnvm/dnvm.sh
+                    dnvm upgrade -u
+                    # ### dotnet ###
                     wget https://dotnetcli.blob.core.windows.net/dotnet/beta/Binaries/Latest/dotnet-dev-rhel-x64.latest.tar.gz
                     sudo yum install -y libicu libuuid libcurl openssl libunwind
                     mkdir ~/dotnet
@@ -1186,6 +1235,11 @@ function get-dotnetcli {
                 Debian|Ubuntu*)
                     case $DIST_VERSION in
                         14.04)
+                            # ### dnvm ###
+                            curl -sSL https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.sh | DNX_BRANCH=dev sh
+                            source ~/.dnx/dnvm/dnvm.sh
+                            dnvm upgrade -u
+                            # ### dotnet ###
                             sudo sh -c 'echo "deb [arch=amd64] http://apt-mo.trafficmanager.net/repos/dotnet/ trusty main" > /etc/apt/sources.list.d/dotnetdev.list'
                             sudo apt-key adv --keyserver apt-mo.trafficmanager.net --recv-keys 417A0893
                             sudo apt-get update
@@ -1232,7 +1286,12 @@ function get-generator-dotnet {
 }
 case "${OSTYPE}" in
     msys|cygwin)             if ! type -p csc > /dev/null ; then get-mono ; fi ;;
-    freebsd*|darwin*|linux*) if ! type -p mcs > /dev/null ; then get-mono ; fi ;;
+    freebsd*|darwin*) ;;
+    linux*)
+        case $DIST_VERSION in
+            14.04) ;;
+            *) if ! type -p mcs > /dev/null ; then get-mono ; fi ;;
+        esac
 esac
 if [ ! -f ~/.dnx/dnvm/dnvm.sh ] ; then get-dnvm ;      fi
 if [   -f ~/.dnx/dnvm/dnvm.sh ] ; then set-dnvm ;      fi
@@ -1271,9 +1330,16 @@ function set-omnisharp {
     esac
 }
 case "${OSTYPE}" in
-    msys|cygwin|freebsd*|darwin*|linux*)
+    msys|cygwin|freebsd*|darwin*)
         if [ ! -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then get-omnisharp ; fi
         if [   -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then set-omnisharp ; fi ;;
+    linux*)
+        case $DIST_VERSION in
+            14.04) ;;
+            *)
+                if [ ! -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then get-omnisharp ; fi
+                if [   -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then set-omnisharp ; fi ;;
+        esac
 esac
 # ### F. Test Runner ###
 function get-nunit {
@@ -1299,7 +1365,11 @@ esac
 # 2. ProgrammingLanguage::Java
 # ----------------------------
 REQUIRED_OPENJDK_VERSION=8u92b14
-REQUIRED_OEPNJDK_SHORT_VERSION=1.8
+REQUIRED_OEPNJDK_SHORT_VERSION=8
+case $DIST_VERSION in
+    14.04) REQUIRED_OEPNJDK_SHORT_VERSION=system ;;
+    *) REQUIRED_OEPNJDK_SHORT_VERSION=8 ;;
+esac
 REQUIRED_PLAY_VERSION=2.2.3
 export PLAY_HOME=/usr/local/play-$REQUIRED_PLAY_VERSION
 export PATH="$PLAY_HOME:$PATH"
@@ -1337,7 +1407,7 @@ function get-java {
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                         14.04)
                             nix-install openjdk-$REQUIRED_OPENJDK_VERSION
-                            jenv add ~/.nix-profile/lib/openjdk
+                            jenv add /usr/lib/jvm/java
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                     esac
             esac
@@ -1359,7 +1429,7 @@ function set-javahome {
                             export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                         14.04)
-                            export JAVA_HOME=~/.nix-profile/lib/openjdk
+                            export JAVA_HOME=/usr/lib/jvm/java/
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                     esac
             esac
@@ -1408,7 +1478,12 @@ if ! type -p phpenv > /dev/null ; then get-phpenv ; fi
 # ### installation ###
 function get-php {
     case "${OSTYPE}" in
-        freebsd*|darwin*|linux*) nix-install php-$REQUIRED_PHP_VERSION ;;
+        freebsd*|darwin*) php-$REQUIRED_PHP_VERSION ;;
+        linux*)
+            case $DIST_VERSION in
+                14.04) sudo apt-get install php-$REQUIRED_PHP_VERSION ;;
+                *) nix-install php-$REQUIRED_PHP_VERSION ;;
+            esac
     esac
 }
 if ! type -p php > /dev/null; then get-php; fi
@@ -1517,9 +1592,7 @@ exit $RET_VAL'
             esac
     esac
 }
-if [ ! -f /etc/init.d/php-fastcgi ] && [ ! -f /etc/init.d/php-fpm ] && [ ! -f /etc/init.d/php5-fpm ] && ! type -p php-fpm > /dev/null ; then
-    get-fastcgi
-fi
+if ! type -p spawn-fcgi > /dev/null ; then get-fastcgi; fi
 function php-fastcgid {
     case "${OSTYPE}" in
         darwin*) ;;
@@ -1749,8 +1822,7 @@ function get-global-npm-packages {
         phantomjs \
         requirejs \
         yamljs \
-        tern \
-        brunch
+        tern
 }
 if ! type -p npm > /dev/null ; then get-node ; fi
 if type -p npm > /dev/null ; then set-node ; fi
@@ -1765,12 +1837,22 @@ function rebuild-sass {
 # -------------------------------------------
 function get-protobuf {
     case "${OSTYPE}" in
-        freebsd*|darwin*|linux*) nix-install protobuf-2.6.1 ;;
+        freebsd*|darwin*) nix-install protobuf-2.6.1 ;;
+        linux*)
+            case $DIST_VERSION in
+                14.04) ;;
+                *) nix-install protobuf-2.6.1 ;;
+            esac
     esac
 }
 function get-thrift {
     case "${OSTYPE}" in
-        freebsd*|darwin*|linux*) nix-install thrift-0.9.3 ;;
+        freebsd*|darwin*) nix-install thrift-0.9.3 ;;
+        linux*)
+            case $DIST_VERSION in
+                14.04) ;;
+                *) nix-install thrift-0.9.3 ;;
+            esac
     esac
 }
 if ! type -p protoc > /dev/null ; then get-protobuf ; fi
@@ -1780,87 +1862,152 @@ if ! type -p thrift > /dev/null ; then get-thrift ; fi
 # 3. Daemon::Database::Postgresql
 # -------------------------------
 REQUIRED_POSTGRESQL_VERSION=9.5.3
-# REQUIRED_POSTGRESQL_VERSION=9.4.6
 PSQL_PAGER='less -S'
 # ### installation ###
 function get-postgresql {
     case "${OSTYPE}" in
-        darwin*|linux*) docker run --name postgres-$REQUIRED_POSTGRESQL_VERSION -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres:$REQUIRED_POSTGRESQL_VERSION ;;
+        darwin*|linux*)
+            docker run \
+                   --name postgres-$REQUIRED_POSTGRESQL_VERSION \
+                   -p 5432:5432 \
+                   -e POSTGRES_PASSWORD=password \
+                   -d \
+                   postgres:$REQUIRED_POSTGRESQL_VERSION ;;
     esac
 }
-function set-postgresql {
+function postgresql-restart {
     case "${OSTYPE}" in
         darwin*|linux*) docker restart postgres-$REQUIRED_POSTGRESQL_VERSION ;;
     esac
 }
-# if ! type -p psql > /dev/null ; then get-postgresql ; fi
-# if   type -p psql > /dev/null ; then set-postgresql ; fi
-function pg-restart {
+function postgresql-stop {
     case "${OSTYPE}" in
-        darwin*)
-            sudo service postgresql stop
-            sudo service postgresql start
-            sudo service postgresql status ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat)
-                    sudo service postgresql stop
-                    sudo service postgresql start
-                    sudo service postgresql status ;;
-                Debian) ;;
-                Ubuntu)
-                    parts restart postgresql
-                    parts status postgresql ;;
-            esac
+        darwin*|linux*) docker stop postgres-$REQUIRED_POSTGRESQL_VERSION ;;
     esac
 }
-function pg-status {
-    case "${OSTYPE}" in
-        darwin*) sudo service postgresql status ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) sudo service postgresql status ;;
-                Debian) ;;
-                Ubuntu) parts status postgresql ;;
-            esac
-    esac
-}
-alias pgr="pg-restart"
-alias pgp="ps aux | \grep -G 'postgresql.*'"
-alias pgs="pg-status"
-alias pgk="sudo killall postgresql"
-# alias psql='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus psql'
+alias pgr="postgresql-restart"
+alias pgp="dp"
+alias pgs="dp"
+alias pgk="postgresql-stop"
 
 
 # 3. Daemon::Database::Mysql
 # --------------------------
-REQUIRED_MYSQL_VERSION=5.5.45
+REQUIRED_MYSQL_VERSION_1=5.6
+REQUIRED_MYSQL_VERSION_2=5.7
+REQUIRED_MYSQL_PORT_1=3306
+REQUIRED_MYSQL_PORT_2=3307
+REQUIRED_MYSQL_PASSWORD_1=password
+REQUIRED_MYSQL_PASSWORD_2=password
 # ### installation ###
+function set-mycnf {
+    mkdir ~/.mysql
+    local my_cnf='
+[mysqld]
+
+# -----------------------------------------------------
+# Base
+# -----------------------------------------------------
+character-set-server = utf8mb4
+skip-character-set-client-handshake
+skip-external-locking
+sql_mode             = NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+
+# -----------------------------------------------------
+# Network
+# -----------------------------------------------------
+max_connections     = 31
+max_connect_errors  = 1000000
+wait_timeout        = 600
+interactive_timeout = 600
+connect_timeout     = 10
+max_allowed_packet  = 1GB
+
+# -----------------------------------------------------
+# Logging
+# -----------------------------------------------------
+log_output                    = FILE
+log_error                     = /var/log/mysql/error.log
+general_log_file              = /var/log/mysql/general_query.log
+log-slow-admin-statements     = 1
+log-queries-not-using-indexes = 1
+slow_query_log                = 1
+long_query_time               = 1
+slow_query_log_file           = /var/log/mysql/slow_query.log
+
+# # -----------------------------------------------------
+# # Cache & Memory
+# # -----------------------------------------------------
+# thread_cache_size   = 31
+# table_open_cache    = 400
+# max_heap_table_size = 33554432
+# max_heap_table_size = 33554432
+
+# # -----------------------------------------------------
+# # InnoDB
+# # -----------------------------------------------------
+# innodb_file_format              = Barracuda
+# innodb_file_per_table           = 1
+# innodb_large_prefix
+# innodb_buffer_pool_size         = 1GB
+# innodb_additional_mem_pool_size = 20MB
+# innodb_log_buffer_size          = 64MB
+
+[mysqld_safe]
+log-error = /var/log/mysqld.log
+pid-file  = /var/run/mysqld/mysqld.pid
+socket    = /var/run/mysqld/mysqld.sock
+nice      = 0
+
+[client]
+default-character-set = utf8mb4
+
+[mysqldump]
+quick
+quote-names
+max_allowed_packet = 32M
+default-character-set = utf8mb4
+
+[mysql]
+default-character-set = utf8mb4
+prompt = "\u@\h\_[\d]\_\R:\m:\\s>\_"
+pager = "less -n -i -F -X -E"
+'
+    echo $my_cnf | tee --append ~/.mysql/my.cnf
+}
+if [ ! -f ~/.mysql/my.cnf ]; then set-mycnf; fi
 function get-mysql {
-    case "${OSTYPE}" in
-        darwin*) nix-install mysql-$REQUIRED_MYSQL_VERSION && set-mysql ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat|Debian) nix-install mysql-$REQUIRED_MYSQL_VERSION && set-mysql ;;
-                Ubuntu)
-                    case $DIST_VERSION in
-                        12.04)
-                            sudo apt-get -y remove mysql-server
-                            sudo apt-get -y autoremove
-                            sudo apt-get -y install software-properties-common
-                            sudo add-apt-repository -y ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
-                            sudo apt-get update
-                            sudo apt-get -y install mysql-server ;;
-                        14.04) nix-install mysql-$REQUIRED_MYSQL_VERSION && set-mysql ;;
-                    esac
-            esac
+    case $OSTYPE in
+        darwin*|linux*)
+            docker run \
+                   --name mysql-$REQUIRED_MYSQL_VERSION_1 \
+                   -v $HOME/.mysql:/etc/mysql/conf.d \
+                   -p $REQUIRED_MYSQL_PORT_1:3306 \
+                   -e MYSQL_ROOT_PASSWORD=$REQUIRED_MYSQL_PASSWORD_1 \
+                   -d \
+                   mysql:$REQUIRED_MYSQL_VERSION_1
+            docker run \
+                   --name mysql-$REQUIRED_MYSQL_VERSION_2 \
+                   -v $HOME/.mysql:/etc/mysql/conf.d \
+                   -p $REQUIRED_MYSQL_PORT_2:3306 \
+                   -e MYSQL_ROOT_PASSWORD=$REQUIRED_MYSQL_PASSWORD_2 \
+                   -d \
+                   mysql:$REQUIRED_MYSQL_VERSION_2
     esac
 }
-if ! type -p mysql > /dev/null ; then get-mysql ; fi
-function set-mysql {
-    echo "innodb_file_format = Barracuda" | sudo tee -a /etc/mysql/my.cnf
-    echo "innodb_file_per_table = 1"      | sudo tee -a /etc/mysql/my.cnf
-    echo "innodb_large_prefix"            | sudo tee -a /etc/mysql/my.cnf
+function mysql-restart {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            docker restart mysql-$REQUIRED_MYSQL_VERSION_1
+            docker restart mysql-$REQUIRED_MYSQL_VERSION_2
+    esac
+}
+function mysql-stop {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            docker stop mysql-$REQUIRED_MYSQL_VERSION_1
+            docker stop mysql-$REQUIRED_MYSQL_VERSION_2
+    esac
 }
 # ### innotop ###
 function get-innotop {
@@ -1876,120 +2023,75 @@ function get-innotop {
     cd ..
     rm -fr innotop
 }
-function my-restart {
-    case "${OSTYPE}" in
-        darwin*)
-            sudo service mysql stop
-            sudo service mysql start
-            sudo service mysql status ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat|Debian)
-                    sudo service mysql stop
-                    sudo service mysql start
-                    sudo service mysql status ;;
-                Ubuntu)
-                    case $DIST_VERSION in
-                        12.04)
-                            sudo /etc/init.d/mysql restart
-                            sudo /etc/init.d/mysql status ;;
-                        14.04)
-                            sudo service mysql stop
-                            sudo service mysql start
-                            sudo service mysql status ;;
-                    esac
-            esac
-    esac
-}
-function my-status {
-    case "${OSTYPE}" in
-        darwin*) sudo service mysql status ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat|Debian) sudo service mysql status ;;
-                Ubuntu)
-                    case $DIST_VERSION in
-                        12.04) sudo /etc/init.d/mysql status ;;
-                        14.04) sudo service mysql status ;;
-                    esac
-            esac
-    esac
-}
-alias mr="my-restart"
-alias mp="ps aux | \grep -G 'mysql.*'"
-alias ms="my-status"
-alias mk="sudo killall mysqld"
-# alias mysql="rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus mysql -uroot --pager='less -S'"
+alias mr="mysql-restart"
+alias mp="dp"
+alias ms="dp"
+alias mk="mysql-stop"
 
 
 # 3. Daemon::Database::Redis
 # --------------------------
-REQUIRED_REDIS_VERSION=3.0.2
+REQUIRED_REDIS_VERSION=2.8
+REQUIRED_REDIS_PORT=6379
 # ### installation ###
 function get-redis {
     case "${OSTYPE}" in
-        darwin*)
-            nix-install redis-$REQUIRED_REDIS_VERSION
-            nohup redis-server >/dev/null 2>&1 </dev/null & ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat|Debian)
-                    nix-install redis-$REQUIRED_REDIS_VERSION
-                    nohup redis-server >/dev/null 2>&1 </dev/null & ;;
-                Ubuntu)
-                    case $DIST_VERSION in
-                        12.04) parts install redis ;;
-                        14.04)
-                            nix-install redis-$REQUIRED_REDIS_VERSION
-                            nohup redis-server >/dev/null 2>&1 </dev/null & ;;
-                    esac
-            esac
+        darwin*|linux*)
+            docker run \
+                   --name redis-$REQUIRED_REDIS_VERSION \
+                   -p $REQUIRED_REDIS_PORT:6379 \
+                   -d \
+                   redis:$REQUIRED_REDIS_VERSION
     esac
 }
-if ! type -p redis-cli > /dev/null ; then get-redis ; fi
 function redis-restart {
     case "${OSTYPE}" in
-        darwin*) ;;
-        linux*)
-            sudo pkill redis-server
-            nohup redis-server >/dev/null 2>&1 </dev/null &
-            ps aux | \grep -G 'redis.*' ;;
+        darwin*|linux*) docker restart redis-$REQUIRED_REDIS_VERSION ;;
     esac
 }
 function redis-stop {
     case "${OSTYPE}" in
-        darwin*) ;;
-        linux*) sudo pkill redis-server ;;
+        darwin*|linux*) docker stop redis-$REQUIRED_REDIS_VERSION ;;
     esac
 }
-function redis-status {
+function redis-cli {
     case "${OSTYPE}" in
-        darwin*) ;;
-        linux*) ps aux | \grep -G 'redis.*' ;;
+        darwin*|linux*)
+            docker run \
+                   -it \
+                   --link redis-${REQUIRED_REDIS_VERSION}:redis \
+                   --rm \
+                   redis \
+                   redis-cli -h redis -p $REQUIRED_REDIS_PORT $1
     esac
 }
-# alias redis-cli='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus redis-cli'
 alias redis-cli-monitor='redis-cli monitor'
 alias redis-cli-info='redis-cli info'
 alias redis-cli-dump='redis-cli bgsave'
+alias redis-cli-top='redis-cli --stat'
 alias rdr="redis-restart"
-alias rdp="redis-status"
-alias rds="redis-status"
+alias rdp="dp"
+alias rds="dp"
 alias rdi="redis-cli-info"
 alias rdm="redis-cli-monitor"
+alias rdt="redis-cli-top"
 alias rdk="redis-stop"
 
 
 # 3. Daemon::Database::Memcached
 # ------------------------------
-REQUIRED_MEMCACHED_VERSION=1.4.20
+REQUIRED_MEMCACHED_VERSION=1.4
+REQUIRED_MEMCACHED_PORT=11211
 function get-memcached {
     case "${OSTYPE}" in
-        darwin*) ;;
-        linux*) nix-install memcached-$REQUIRED_MEMCACHED_VERSION ;;
+        darwin*|linux*)
+            docker run \
+                   --name memcached-$REQUIRED_MEMCACHED_VERSION \
+                   -p $REQUIRED_MEMCACHED_PORT:11211 \
+                   -d \
+                   memcached:$REQUIRED_MEMCACHED_VERSION
     esac
 }
-if ! type -p memcached > /dev/null ; then get-memcached ; fi
 function get-memcached-tool {
     wget https://raw.githubusercontent.com/memcached/memcached/master/scripts/memcached-tool -O ~/.local/bin/memcached-tool
     chmod +x ~/.local/bin/memcached-tool
@@ -1997,49 +2099,30 @@ function get-memcached-tool {
 if ! type -p memcached-tool > /dev/null ; then get-memcached-tool ; fi
 function memcached-restart {
     case "${OSTYPE}" in
-        darwin*) ;;
-        linux*)
-            case $DIST in
-                Redhat|RedHat)
-                    sudo service memcached stop
-                    sudo service memcached start
-                    sudo service memcached status ;;
-                Debian|Ubuntu)
-                    sudo pkill memcached
-                    nohup memcached >/dev/null 2>&1 </dev/null &
-                    ps aux | \grep -G 'memcached.*' ;;
-            esac
+        darwin*|linux*) docker restart memcached-$REQUIRED_MEMCACHED_VERSION ;;
     esac
 }
 function memcached-stop {
     case "${OSTYPE}" in
-        darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) sudo service memcached stop ;;
-                Debian|Ubuntu) sudo /usr/bin/pkill memcached ;;
-            esac
+        darwin*|linux*) docker stop memcached-$REQUIRED_MEMCACHED_VERSION ;;
     esac
 }
-function memcached-status {
+function memcached-tool {
     case "${OSTYPE}" in
-        darwin*) ;;
-        linux*)
-            case $DIST in
-                Redhat|RedHat) sudo service memcached status ;;
-                Debian|Ubuntu) ps aux | \grep -G 'memcached.*' ;;
-            esac ;;
+        darwin*|linux*)
+            docker run \
+                   -it \
+                   --link memcached-${REQUIRED_MEMCACHED_VERSION}:memcached \
+                   --rm \
+                   memcached \
+                   memcached-tool 127.0.0.1:$REQUIRED_MEMCACHED_PORT $1
     esac
-}
-function get-memcache-top {
-    wget http://memcache-top.googlecode.com/files/memcache-top-v0.6 -O ~/.local/bin/memcache-top
 }
 alias memcached-monitor='memcached-tool 127.0.0.1:11211 display'
 alias memcached-info='memcached-tool 127.0.0.1:11211 stats'
 alias memcached-dump='memcached-tool 127.0.0.1:11211 dump'
-alias memcache-top='perl memcached-top'
 alias mcr="memcached-restart"
-alias mcp="memcached-status"
+alias mcp="dp"
 alias mci="memcached-info"
 alias mcm="memcached-monitor"
 alias mck="memcached-stop"
@@ -2047,45 +2130,36 @@ alias mck="memcached-stop"
 
 # 3. Daemon::HttpServer::Nginx
 # ----------------------------
-REQUIRED_NGINX_VERSION=1.9.9
+REQUIRED_NGINX_VERSION=1.10
+REQUIRED_NGINX_HTTP_PORT=80
+REQUIRED_NGINX_HTTPS_PORT=443
 function get-nginx {
     case "${OSTYPE}" in
-        darwin*|linux*) nix-install nginx-$REQUIRED_NGINX_VERSION ;;
+        darwin*|linux*)
+            docker run \
+                   --name nginx-$REQUIRED_NGINX_VERSION \
+                   -p $REQUIRED_NGINX_HTTP_PORT:80 \
+                   -p $REQUIRED_NGINX_HTTPS_PORT:443 \
+                   -d \
+                   nginx:$REQUIRED_NGINX_VERSION
+            docker cp nginx-$REQUIRED_NGINX_VERSION:/etc/nginx/nginx.conf $HOME/.nginx/nginx.conf
+            docker cp nginx-$REQUIRED_NGINX_VERSION:/etc/nginx/conf.d $HOME/.nginx/conf.d
     esac
-}
-function set-nginx {
-    useradd -s /bin/false nginx
-    sudo sed -i "s|^\(#user  nobody;\)|#\1\nuser  nginx;|g"                                                      ~/.nix-profile/conf/nginx.conf
-    sudo sed -i "s|^\(worker_processes  1;\)|#\1\nworker_processes  auto;|g"                                     ~/.nix-profile/conf/nginx.conf
-    sudo sed -i "s|^#\(log_format  main  '$remote_addr - $remote_user [$time_local] \"$request\" '\)|\1|g"       ~/.nix-profile/conf/nginx.conf
-    sudo sed -i "s|^#\(                  '$status $body_bytes_sent \"$http_referer\" '\)|\1|g"                   ~/.nix-profile/conf/nginx.conf
-    sudo sed -i "s|^#\(                  '\"$http_user_agent\" \"$http_x_forwarded_for\"';\)|\1|g"               ~/.nix-profile/conf/nginx.conf
-    sudo sed -i "s|^\(#gzip  on;\)|\1\ninclude/etc/nginx/conf.d/\*.conf;\ninclude/etc/nginx/sites-enabled/\*;|g" ~/.nix-profile/conf/nginx.conf
-    sudo mkdir -rf /etc/nginx/sites-enabled
-    sudo mkdir -rf /etc/nginx/sites-available
-    sudo mkdir -rf /etc/nginx/conf.d
-    sudo ln -s /etc/nginx/sites-available/* /etc/nginx/sites-enabled
 }
 function nginx-restart {
     case "${OSTYPE}" in
-        darwin*|linux*)
-            sudo nginx -s stop
-            sudo nginx
-            sudo nginx -s status ;;
+        darwin*|linux*) docker restart nginx-$REQUIRED_NGINX_VERSION
     esac
 }
-function nginx-status {
+function nginx-stop {
     case "${OSTYPE}" in
-        darwin*|linux*)
-            sudo nginx -t
-            sudo nginx -s status ;;
+        darwin*|linux*) docker stop nginx-$REQUIRED_NGINX_VERSION
     esac
 }
-if ! type -p nginx > /dev/null; then get-nginx; fi
 alias nr="nginx-restart"
-alias np="ps aux | \grep -G 'nginx.*'"
-alias ns="nginx-status"
-alias nk="sudo killall nginx"
+alias np="dp"
+alias ns="dp"
+alias nk="nginx-stop"
 
 
 # 4. IntegratedDevelopmentEnvironment::Emacs
@@ -2098,19 +2172,21 @@ function get-emacs {
         cygwin) apt-cyg install emacs ;;
         freebsd*|darwin*|linux*)
             case "${DIST}" in
-                Redhat|RedHat) sudo yum install -y ncurses-devel ;;
+                Redhat|RedHat)
+                    sudo yum install -y ncurses-devel
+                    local current_pwd=`pwd`
+                    wget https://ftp.gnu.org/gnu/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
+                    tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
+                    cd emacs-$REQUIRED_EMACS_VERSION
+                    ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no
+                    make
+                    yes | sudo make install;  wait
+                    cd $current_pwd; rm -fr emacs-$REQUIRED_EMACS_VERSION* ;;
                 Debian|Ubuntu)
-                    sudo apt-get install -y build-essential libncurses-dev
-                    sudo apt-get build-dep emacs ;;
+                    sudo add-apt-repository ppa:ubuntu-elisp/ppa
+                    sudo apt-get update
+                    sudo apt-get install emacs-snapshot ;;
             esac
-            local current_pwd=`pwd`
-            wget https://ftp.gnu.org/gnu/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
-            tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
-            cd emacs-$REQUIRED_EMACS_VERSION
-            ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no
-            make
-            yes | sudo make install;  wait
-            cd $current_pwd; rm -fr emacs-$REQUIRED_EMACS_VERSION* ;;
     esac
 }
 case $OSTYPE in (msys) alias emacs='/mingw64/bin/emacs -nw' ;; esac
@@ -2170,16 +2246,21 @@ function mu-restart {
     mu index --rebuild
     mu index
 }
-if ! type -p mu > /dev/null ; then get-mu ; fi
+### if ! type -p mu > /dev/null ; then get-mu ; fi
 # ### sekka ###
-function set-sekka {
-    case "${OSTYPE}" in
-        freebsd*|linux*) docker restart sekka ;;
-    esac
-}
 function get-sekka {
     case "${OSTYPE}" in
-        freebsd*|linux*) docker run -p 12929:12929 -d --name=sekka -t kiyoka/sekka ;;
+        freebsd*|linux*)
+            docker run \
+                   --name=sekka \
+                   -p 12929:12929 \
+                   -d -t \
+                   kiyoka/sekka ;;
+    esac
+}
+function sekka-restart {
+    case "${OSTYPE}" in
+        freebsd*|linux*) docker restart sekka ;;
     esac
 }
 
@@ -2209,7 +2290,12 @@ alias ctags=~/.local/bin/ctags
 REQUIRED_PANDOC_VERSION=1.17.0.3
 function get-pandoc {
     case $OSTYPE in
-        freebsd*|darwin*|linux*) nix-install pandoc-${REQUIRED_PANDOC_VERSION} ;;
+        freebsd*|darwin*) nix-install pandoc-${REQUIRED_PANDOC_VERSION} ;;
+        linux*)
+            case $DIST_VERSION in
+                14.04) ;;
+                *) nix-install pandoc-${REQUIRED_PANDOC_VERSION} ;;
+            esac
     esac
 }
 if ! type -p pandoc > /dev/null ; then get-pandoc ; fi
@@ -2482,7 +2568,7 @@ function get-graphviz {
 }
 if ! type -p puml > /dev/null ; then get-puml ; fi
 if [ ! -f ~/.local/bin/plantuml.jar ] ; then get-plantuml ; fi
-if [   -f ~/.local/bin/plantuml.jar ] ; then alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng' ; fi
+if [ -f ~/.local/bin/plantuml.jar ] ; then alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng' ; fi
 if ! type -p dot > /dev/null ; then get-graphviz ; fi
 
 
@@ -2544,6 +2630,14 @@ esac
 function get-vagrant {
     case $OSTYPE in
         msys|cygwin) choco install vagrant ;;
+        linux*)
+            case $DIST in
+                Debian|Ubuntu)
+                    sudo bash -c 'echo deb http://vagrant-deb.linestarve.com/ any main > /etc/apt/sources.list.d/wolfgang42-vagrant.list'
+                    sudo apt-key adv --keyserver pgp.mit.edu --recv-key AD319E0F7CFFA38B4D9F6E55CE3F3DE92099F7A4
+                    sudo apt-get update
+                    sudo apt-get install vagrant
+            esac
     esac
 }
 if ! type -p vagrant > /dev/null ; then get-vagrant ; fi
@@ -2851,6 +2945,38 @@ function get-slackchat {
 }
 
 
+# 4. IntegratedDevelopmentEnvironment::CentOS
+# -------------------------------------------
+function get-centos {
+    case "${OSTYPE}" in
+        darwin*|linux*) docker run \
+                               --name centos \
+                               -p 22:22 \
+                               -p 3000:3000 \
+                               -p 3001:3001 \
+                               -p 4000:4000 \
+                               -p 8080:8080 \
+                               -p 9000:9000 \
+                               -p 9001:9001 \
+                               -p 9002:9002 \
+                               -p 9003:9003 \
+                               -p 9004:9004 \
+                               -p 9005:9005 \
+                               -p 9006:9006 \
+                               -p 9007:9007 \
+                               -p 9008:9008 \
+                               -p 9009:9009 \
+                               -d \
+                               centos:centos7 ;;
+    esac
+}
+function set-centos {
+    case "${OSTYPE}" in
+        darwin*|linux*) docker restart centos ;;
+    esac
+}
+
+
 # 5. Platform::Heroku
 # -------------------
 function get-heroku {
@@ -2954,6 +3080,11 @@ if ! type -p aws > /dev/null ; then get-aws ; fi
 # 9. Other::Customized
 # --------------------
 # ### dove ###
+export PATH="$HOME/.local/dove/bin:$PATH"
+function get-dove {
+    git clone git@github.com:nabinno/dove.git ~/.local/dove
+}
+if [ ! -d ~/.local/dove ]; then get-dove; fi
 function cd-dove {
     dove_path=`which dove`
     dove_dir=`dirname $dove_path`
@@ -2996,6 +3127,9 @@ function get-dotfiles {
         cp -pr ~/.aspell.conf .
         cp -pr ~/.zshenv .
         cp -pr ~/.zshrc .
+        cp -pr ~/.mysql .
+        cp -pr ~/.nginx .
+        rm -rf ~/.nginx/conf.d
         case "${OSTYPE}" in (freebsd*|darwin*|linux*) cp -pr ~/.screenrc . ;; esac
         if ! [ $is_credential ] ; then git checkout -- .emacs.d/lisp/init-credential.el ; fi
         if ! [ $is_mu4e       ] ; then git checkout -- .emacs.d/lisp/init-mu4e.el       ; fi
@@ -3029,6 +3163,8 @@ function put-dotfiles {
     cp -pr .aspell.conf ~/;                          wait
     cp -pr .zshenv ~/;                               wait
     cp -pr .zshrc ~/;                                wait
+    cp -pr .mysql ~/;                                wait
+    cp -pr .nginx ~/;                                wait
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) cp -pr .screenrc ~/; wait ;;
     esac
@@ -3136,4 +3272,6 @@ alias v="cat"
 function t { \mv (.*~|.*.org*|*.org*|*.tar.gz|*.stackdump|*.tar.gz|*.asx|*.0|*.msi|*.wav|*.doc|*.pdf|$1) .old/ }
 # ### other source file ###
 if [ -f ~/.zshrc.mine ]; then source ~/.zshrc.mine; fi
+
+
 
