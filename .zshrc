@@ -2904,7 +2904,7 @@ function get-slackchat {
 
 # 4. IntegratedDevelopmentEnvironment::Ubuntu
 # -------------------------------------------
-REQUIRED_UBUNTU_VERSION=12
+REQUIRED_UBUNTU_VERSION=16
 function get-ubuntu {
     case "${OSTYPE}" in
         darwin*|linux*)
