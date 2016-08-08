@@ -1,4 +1,4 @@
-FROM quay.io/nabinno/dove-ubuntu12
+FROM quay.io/nabinno/dove-ubuntu16
 USER action
 
 WORKDIR /home/action
