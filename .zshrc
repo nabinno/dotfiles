@@ -663,21 +663,54 @@ case "${OSTYPE}" in
 esac
 
 
-# 1. BasicSettings::PackageManager::Chef
-# --------------------------------------
-REQUIRED_CHEF_VERSION=0.17.9
-function get-chef {
-    case $OSTYPE in
-        freebsd*|darwin*|linux*) curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -P chefdk -v $REQUIRED_CHEF_VERSION
-    esac
-}
-function set-chef {
-    case $OSTYPE in
-        freebsd*|darwin*|linux*) eval "$(chef shell-init $SHELL)"
-    esac
-}
-if ! type -p chef > /dev/null ; then get-chef ; fi
-if   type -p chef > /dev/null ; then set-chef ; fi
+# # 1. BasicSettings::PackageManager::Chef
+# # --------------------------------------
+# REQUIRED_CHEF_VERSION=0.17.9
+# function get-chef {
+#     case $OSTYPE in
+#         freebsd*|darwin*|linux*)
+#             curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -P chefdk -v $REQUIRED_CHEF_VERSION
+#     esac
+# }
+# function set-chef {
+#     case $OSTYPE in
+#         freebsd*|darwin*|linux*)
+#             function _chef() {
+#                 local -a _1st_arguments
+#                 _1st_arguments=(
+#                     'exec:Runs the command in context of the embedded ruby'
+#                     'env:Prints environment variables used by ChefDK'
+#                     'gem:Runs the `gem` command in context of the embedded ruby'
+#                     'generate:Generate a new app, cookbook, or component'
+#                     'shell-init:Initialize your shell to use ChefDK as your primary ruby'
+#                     'install:Install cookbooks from a Policyfile and generate a locked cookbook set'
+#                     'update:Updates a Policyfile.lock.json with latest run_list and cookbooks'
+#                     'push:Push a local policy lock to a policy group on the server'
+#                     'push-archive:Push a policy archive to a policy group on the server'
+#                     'show-policy:Show policyfile objects on your Chef Server'
+#                     'diff:Generate an itemized diff of two Policyfile lock documents'
+#                     'provision:Provision VMs and clusters via cookbook'
+#                     'export:Export a policy lock as a Chef Zero code repo'
+#                     'clean-policy-revisions:Delete unused policy revisions on the server'
+#                     'clean-policy-cookbooks:Delete unused policyfile cookbooks on the server'
+#                     'delete-policy-group:Delete a policy group on the server'
+#                     'delete-policy:Delete all revisions of a policy on the server'
+#                     'undelete:Undo a delete command'
+#                     'verify:Test the embedded ChefDK applications'
+#                 )
+#                 _arguments \
+#                     '(-v --version)'{-v,--version}'[version information]' \
+#                     '*:: :->subcmds' && return 0
+#                 if (( CURRENT == 1 )); then
+#                     _describe -t commands "chef subcommand" _1st_arguments
+#                     return
+#                 fi
+#             }
+#             compdef _chef chef
+#     esac
+# }
+# if ! type -p chef > /dev/null ; then get-chef ; fi
+# if   type -p chef > /dev/null ; then set-chef ; fi
 
 
 # 1. BasicSettings::PackageManager::Anyenv
@@ -1900,82 +1933,6 @@ REQUIRED_MYSQL_PORT_2=3307
 REQUIRED_MYSQL_PASSWORD_1=password
 REQUIRED_MYSQL_PASSWORD_2=password
 # ### installation ###
-function set-mycnf {
-    mkdir ~/.mysql
-    local my_cnf='
-[mysqld]
-
-# -----------------------------------------------------
-# Base
-# -----------------------------------------------------
-character-set-server = utf8mb4
-skip-character-set-client-handshake
-skip-external-locking
-sql_mode             = NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
-
-# -----------------------------------------------------
-# Network
-# -----------------------------------------------------
-max_connections     = 31
-max_connect_errors  = 1000000
-wait_timeout        = 600
-interactive_timeout = 600
-connect_timeout     = 10
-max_allowed_packet  = 1GB
-
-# -----------------------------------------------------
-# Logging
-# -----------------------------------------------------
-log_output                    = FILE
-log_error                     = /var/log/mysql/error.log
-general_log_file              = /var/log/mysql/general_query.log
-log-slow-admin-statements     = 1
-log-queries-not-using-indexes = 1
-slow_query_log                = 1
-long_query_time               = 1
-slow_query_log_file           = /var/log/mysql/slow_query.log
-
-# # -----------------------------------------------------
-# # Cache & Memory
-# # -----------------------------------------------------
-# thread_cache_size   = 31
-# table_open_cache    = 400
-# max_heap_table_size = 33554432
-# max_heap_table_size = 33554432
-
-# # -----------------------------------------------------
-# # InnoDB
-# # -----------------------------------------------------
-# innodb_file_format              = Barracuda
-# innodb_file_per_table           = 1
-# innodb_large_prefix
-# innodb_buffer_pool_size         = 1GB
-# innodb_additional_mem_pool_size = 20MB
-# innodb_log_buffer_size          = 64MB
-
-[mysqld_safe]
-log-error = /var/log/mysqld.log
-pid-file  = /var/run/mysqld/mysqld.pid
-socket    = /var/run/mysqld/mysqld.sock
-nice      = 0
-
-[client]
-default-character-set = utf8mb4
-
-[mysqldump]
-quick
-quote-names
-max_allowed_packet = 32M
-default-character-set = utf8mb4
-
-[mysql]
-default-character-set = utf8mb4
-prompt = "\u@\h\_[\d]\_\R:\m:\\s>\_"
-pager = "less -n -i -F -X -E"
-'
-    echo $my_cnf | tee --append ~/.mysql/my.cnf
-}
-if [ ! -f ~/.mysql/my.cnf ]; then set-mycnf; fi
 function get-mysql {
     case $OSTYPE in
         darwin*|linux*)
@@ -2790,7 +2747,7 @@ case "${TERM}" in
 	    echo -ne "\033]0;${USER}@${HOST%%.*}:${PWD}\007"
 	}
 	export LSCOLORS=gxfxcxdxbxegedabagacad
-	export LS_COLORS='di=36;40:ln=35;40:so=32;40:pi=33;40:ex=31;40:bd=34;46:cd=34;43:su=0;41:sg=0;46:tw=0;42:ow=0;43:'
+	export LS_COLORS='di=36;40:ln=35;40:so=32;40:pi=33;40:ex=31;40:bd=34;46:cd=34;43:su=0;41:sg=0;46:tw=0;42:ow=0;36:'
 	zstyle ':completion:*' list-colors 'di=36' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34' ;;
 esac
 
@@ -2945,34 +2902,25 @@ function get-slackchat {
 }
 
 
-# 4. IntegratedDevelopmentEnvironment::CentOS
+# 4. IntegratedDevelopmentEnvironment::Ubuntu
 # -------------------------------------------
-function get-centos {
+REQUIRED_UBUNTU_VERSION=12
+function get-ubuntu {
     case "${OSTYPE}" in
-        darwin*|linux*) docker run \
-                               --name centos \
-                               -p 22:22 \
-                               -p 3000:3000 \
-                               -p 3001:3001 \
-                               -p 4000:4000 \
-                               -p 8080:8080 \
-                               -p 9000:9000 \
-                               -p 9001:9001 \
-                               -p 9002:9002 \
-                               -p 9003:9003 \
-                               -p 9004:9004 \
-                               -p 9005:9005 \
-                               -p 9006:9006 \
-                               -p 9007:9007 \
-                               -p 9008:9008 \
-                               -p 9009:9009 \
-                               -d \
-                               centos:centos7 ;;
+        darwin*|linux*)
+            docker run \
+                   --name ubuntu-$REQUIRED_UBUNTU_VERSION \
+                   -p 2222:22 \
+                   -p 3000-3009:3000-3009 \
+                   -p 9000-9009:9000-9009 \
+                   -td \
+                   quay.io/nabinno/dove-ubuntu-dotfiles \
+                   /usr/sbin/sshd -D
     esac
 }
-function set-centos {
+function ubuntu-restart {
     case "${OSTYPE}" in
-        darwin*|linux*) docker restart centos ;;
+        darwin*|linux*) docker restart ubuntu-$REQUIRED_UBUNTU_VERSION ;;
     esac
 }
 
