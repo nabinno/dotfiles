@@ -55,13 +55,13 @@ function docker-run-proxy1 {
 function docker-run-app1 {
     docker run --name app1 -h app1 \
            -u action \
-           -v /srv \
            --network fronttier \
            --network backtier \
+           -p 2222:22 \
            -p 3000-3009:3000-3009 \
            -p 9000-9009:9000-9009 \
-           -d quay.io/nabinno/dove-ubuntu-dotfiles
-    docker exec app1 sudo chown action:action /srv
+           -d quay.io/nabinno/app \
+           sudo /usr/sbin/sshd -D
 }
 
 # network
