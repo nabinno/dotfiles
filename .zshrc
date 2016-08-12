@@ -610,6 +610,9 @@ function get-nix {
                             sudo echo "build-users-group = nixbld" >> /etc/nix/nix.conf
                             sudo chown -R ${CURRENT_USER} /nix
                             source ~/.nix-profile/etc/profile.d/nix.sh ;;
+                        16.04)
+                            cd ~ && curl https://nixos.org/nix/install | sh
+                            sudo chown -R ${CURRENT_USER} /nix ;;
                     esac
             esac
     esac
@@ -623,7 +626,11 @@ function set-nix {
         linux*)
             case $DIST in
                 Redhat|RedHat|Debian) source ~/.nix-profile/etc/profile.d/nix.sh ;;
-                Ubuntu) case $DIST_VERSION in (12.04) source ~/.nix-profile/etc/profile.d/nix.sh ;; esac
+                Ubuntu)
+                    case $DIST_VERSION in
+                        12.04) source ~/.nix-profile/etc/profile.d/nix.sh ;;
+                        16.04) source ~/.nix-profile/etc/profile.d/nix.sh ;;
+                    esac
             esac
     esac
 }
@@ -2896,7 +2903,8 @@ function get-dotfiles {
         cp -pr ~/.zshenv .
         cp -pr ~/.zshrc .
         cp -pr ~/.docker .
-        rm -rf ~/.docker/etc/nginx/conf.d/*
+        rm -rf ~/.local/dotfiles/.docker/config.json
+        rm -rf ~/.local/dotfiles/.docker/etc/nginx/conf.d/*
         case "${OSTYPE}" in (freebsd*|darwin*|linux*) cp -pr ~/.screenrc . ;; esac
         if ! [ $is_credential ] ; then git checkout -- .emacs.d/lisp/init-credential.el ; fi
         if ! [ $is_mu4e       ] ; then git checkout -- .emacs.d/lisp/init-mu4e.el       ; fi
