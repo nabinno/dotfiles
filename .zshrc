@@ -626,11 +626,7 @@ function set-nix {
         linux*)
             case $DIST in
                 Redhat|RedHat|Debian) source ~/.nix-profile/etc/profile.d/nix.sh ;;
-                Ubuntu)
-                    case $DIST_VERSION in
-                        12.04) source ~/.nix-profile/etc/profile.d/nix.sh ;;
-                        16.04) source ~/.nix-profile/etc/profile.d/nix.sh ;;
-                    esac
+                Ubuntu) case $DIST_VERSION in (12.04|16.04) source ~/.nix-profile/etc/profile.d/nix.sh ;; esac
             esac
     esac
 }
@@ -640,7 +636,7 @@ function nix-install {
         linux*)
             case $DIST in
                 Redhat|RedHat|Debian) nix-env --install $1 ;;
-                Ubuntu) case $DIST_VERSION in (12.04) nix-env --install $1 ;; esac
+                Ubuntu) case $DIST_VERSION in (12.04|16.04) nix-env --install $1 ;; esac
             esac
     esac
 }
@@ -1363,7 +1359,7 @@ case "${OSTYPE}" in
         if [   -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then set-omnisharp ; fi ;;
     linux*)
         case $DIST_VERSION in
-            14.04) ;;
+            14.04|16.04) ;;
             *)
                 if [ ! -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then get-omnisharp ; fi
                 if [   -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then set-omnisharp ; fi ;;
@@ -1393,9 +1389,9 @@ esac
 # 2. ProgrammingLanguage::Java
 # ----------------------------
 REQUIRED_OPENJDK_VERSION=8u92b14
-REQUIRED_OEPNJDK_SHORT_VERSION=8
 case $DIST_VERSION in
     14.04) REQUIRED_OEPNJDK_SHORT_VERSION=system ;;
+    16.04) REQUIRED_OEPNJDK_SHORT_VERSION=1.8 ;;
     *) REQUIRED_OEPNJDK_SHORT_VERSION=8 ;;
 esac
 REQUIRED_PLAY_VERSION=2.2.3
@@ -1417,13 +1413,13 @@ if ! type -p jenv > /dev/null ; then get-jenv ; fi
 function get-java {
     case "${OSTYPE}" in
         freebsd*|darwin*)
-            nix-install openjdk-$REQUIRED_OPENJDK_VERSION
+            nix-install openjdk
             jenv add ~/.nix-profile/lib/openjdk
             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
         linux*)
             case "${DIST}" in
                 Redhat|RedHat|Debian)
-                    nix-install openjdk-$REQUIRED_OPENJDK_VERSION
+                    nix-install openjdk
                     jenv add ~/.nix-profile/lib/openjdk
                     jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                 Ubuntu)
@@ -1433,9 +1429,9 @@ function get-java {
                             sudo apt-get update && sudo apt-get install -y openjdk-8-jdk
                             jenv add /usr/lib/jvm/java-1.8.0-openjdk-amd64/
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
-                        14.04)
-                            nix-install openjdk-$REQUIRED_OPENJDK_VERSION
-                            jenv add /usr/lib/jvm/java
+                        16.04)
+                            nix-install openjdk
+                            jenv add ~/.nix-profile/lib/openjdk
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                     esac
             esac
@@ -1458,6 +1454,9 @@ function set-javahome {
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                         14.04)
                             export JAVA_HOME=/usr/lib/jvm/java/
+                            jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
+                        16.04)
+                            export JAVA_HOME=~/.nix-profile/lib/openjdk
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                     esac
             esac
@@ -1506,11 +1505,11 @@ if ! type -p phpenv > /dev/null ; then get-phpenv ; fi
 # ### installation ###
 function get-php {
     case "${OSTYPE}" in
-        freebsd*|darwin*) php-$REQUIRED_PHP_VERSION ;;
+        freebsd*|darwin*) nix-install php ;;
         linux*)
             case $DIST_VERSION in
                 14.04) sudo apt-get install php-$REQUIRED_PHP_VERSION ;;
-                *) nix-install php-$REQUIRED_PHP_VERSION ;;
+                *) nix-install php ;;
             esac
     esac
 }
@@ -1799,9 +1798,9 @@ function get-global-cpan-packages {
     yes | cpanm -fi Carton
 }
 # ### cpan ###
-function cpan-module-list { perl -e "print \"@INC\"" | find -name "*.pm" -print }
+function cpan-module-list    { perl -e "print \"@INC\"" | find -name "*.pm" -print }
 function cpan-module-version { perl -M$1 -le "print \$$1::VERSION" }
-function cpan-uninstall { perl -MConfig -MExtUtils::Install -e '($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1' }
+function cpan-uninstall      { perl -MConfig -MExtUtils::Install -e '($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1' }
 alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 # alias cpan-uninstall='perl -MConfig -MExtUtils::Install -e '"'"'($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1'"'"
 
@@ -2051,14 +2050,13 @@ alias ctags=~/.local/bin/ctags
 
 # 4. IntegratedDevelopmentEnvironment::Emacs::Pandoc
 # --------------------------------------------------
-REQUIRED_PANDOC_VERSION=1.17.0.3
 function get-pandoc {
     case $OSTYPE in
-        freebsd*|darwin*) nix-install pandoc-${REQUIRED_PANDOC_VERSION} ;;
+        freebsd*|darwin*) nix-install pandoc ;;
         linux*)
             case $DIST_VERSION in
                 14.04) ;;
-                *) nix-install pandoc-${REQUIRED_PANDOC_VERSION} ;;
+                *) nix-install pandoc ;;
             esac
     esac
 }
@@ -2987,6 +2985,7 @@ case "${OSTYPE}" in
         esac
 esac
 alias it="date -R"
+alias j='cd'
 alias k='/bin/mkdir -p'
 function kl { kill -f $1 }
 function chpwd { }
@@ -3045,6 +3044,3 @@ alias v="cat"
 function t { \mv (.*~|.*.org*|*.org*|*.tar.gz|*.stackdump|*.tar.gz|*.asx|*.0|*.msi|*.wav|*.doc|*.pdf|$1) .old/ }
 # ### other source file ###
 if [ -f ~/.zshrc.mine ]; then source ~/.zshrc.mine; fi
-
-
-
