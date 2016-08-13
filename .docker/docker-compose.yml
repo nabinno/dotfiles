@@ -1,0 +1,82 @@
+version: '2'
+
+services:
+  app1:
+    image: quay.io/nabinno/dove-ubuntu-dotfiles
+    volumes:
+      - /srv:/srv
+    user: action
+    hostname: app1
+    networks:
+      - fronttier
+      - backtier
+    ports:
+      - "3000-3009:3000-3009"
+      - "9000-9009:9000-9009"
+  proxy1:
+    image: nginx:1.10
+    volumes:
+      - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./etc/nginx/conf.d:/etc/nginx/conf.d
+    hostname: proxy1
+    networks:
+      - fronttier
+    ports:
+      - "80:80"
+      - "443:443"
+  db1:
+    image: postgres:9.5.3
+    hostname: db1
+    networks:
+      - backtier
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: password
+  db2:
+    image: mysql:5.6
+    volumes:
+      - ./etc/mysql/conf.d/my.cnf:/etc/mysql/conf.d/my.cnf
+    hostname: db2
+    networks:
+      - backtier
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+  db3:
+    image: mysql:5.7
+    volumes:
+      - ./etc/mysql/conf.d/my.cnf:/etc/mysql/conf.d/my.cnf
+    hostname: db3
+    networks:
+      - backtier
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+  cache1:
+    image: redis:2.8
+    hostname: cache1
+    networks:
+      - backtier
+    ports:
+      - "6379:6379"
+  cache2:
+    image: memcached:1.4
+    hostname: cache2
+    networks:
+      - backtier
+    ports:
+      - 11211:11211
+  other1:
+    image: kiyoka/sekka
+    hostname: other1
+    networks:
+      - backtier
+    ports:
+      - "12929:12929"
+
+networks:
+  backtier:
+  fronttier:

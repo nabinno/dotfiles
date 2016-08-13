@@ -40,6 +40,7 @@
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Keybind
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Terminal
+# 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Z
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Alias
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Screen
 # 4. IntegratedDevelopmentEnvironment::Chat::Slack
@@ -609,6 +610,9 @@ function get-nix {
                             sudo echo "build-users-group = nixbld" >> /etc/nix/nix.conf
                             sudo chown -R ${CURRENT_USER} /nix
                             source ~/.nix-profile/etc/profile.d/nix.sh ;;
+                        16.04)
+                            cd ~ && curl https://nixos.org/nix/install | sh
+                            sudo chown -R ${CURRENT_USER} /nix ;;
                     esac
             esac
     esac
@@ -622,7 +626,7 @@ function set-nix {
         linux*)
             case $DIST in
                 Redhat|RedHat|Debian) source ~/.nix-profile/etc/profile.d/nix.sh ;;
-                Ubuntu) case $DIST_VERSION in (12.04) source ~/.nix-profile/etc/profile.d/nix.sh ;; esac
+                Ubuntu) case $DIST_VERSION in (12.04|16.04) source ~/.nix-profile/etc/profile.d/nix.sh ;; esac
             esac
     esac
 }
@@ -632,7 +636,7 @@ function nix-install {
         linux*)
             case $DIST in
                 Redhat|RedHat|Debian) nix-env --install $1 ;;
-                Ubuntu) case $DIST_VERSION in (12.04) nix-env --install $1 ;; esac
+                Ubuntu) case $DIST_VERSION in (12.04|16.04) nix-env --install $1 ;; esac
             esac
     esac
 }
@@ -729,6 +733,7 @@ if type -p anyenv > /dev/null; then eval "$(anyenv init -)" ; fi
 
 # 1. BasicSettings::PackageManager::Docker
 # ----------------------------------------
+DOCKER_HOST=tcp://:2375
 ### setup ###
 function get-docker {
     case "${OSTYPE}" in
@@ -786,29 +791,91 @@ function docker-status {
             esac
     esac
 }
-function get-docker-images {
-    case "${OSTYPE}" in
-        darwin*|linux*)
-            get-sekka
-            get-postgresql
-            get-mysql
-            get-redis
-            get-memcached
-            get-nginx
-    esac
-}
-function set-docker-images {
-    case "${OSTYPE}" in
-        darwin*|linux*)
-            sekka-restart
-            postgresql-restart
-            mysql-restart
-            redis-restart
-            memcached-restart
-            nginx-restart
-    esac
-}
 ## ### alias ###
+alias docker='sudo docker'
+case $DIST_VERSION in (14.04) alias docker="DOCKER_HOST=${DOCKER_HOST} docker";; esac
+case $DIST_VERSION in (14.04) alias docker-compose="DOCKER_HOST=${DOCKER_HOST} docker-compose";; esac
+alias dcr="docker-restart"
+alias dcp="ps aux | \grep -G 'docker.*'"
+alias dcs="docker-status"
+alias dck="sudo killall docker"
+alias dc='docker commit $(docker ps -l -q)'
+function dcc { (cd ~/.docker && docker-compose $1) }
+alias dd='docker rmi -f'
+alias dda='docker rmi -f $(docker images -q)'
+alias ddel='docker rmi -f'
+alias ddela='docker rmi -f $(docker images -q)'
+alias de='docker exec -it '
+function dce { docker exec -it "docker_$1_1" $2 }
+function dh  { docker history $1 | less -S }
+alias di='docker info'
+alias dinspect='docker inspect'
+alias dj='docker exec -it'
+alias dk='docker rm -f'
+alias dka='docker rm -f $(docker ps -a -q)'
+alias dkd='dka ; dda'
+alias dkill='docker rm -f'
+alias dkilla='docker rm -f $(docker ps -a -q)'
+alias dl='docker images'  # | less -S
+alias dls='docker images' # | less -S
+alias dn='docker network'
+alias dp='docker ps -a'   # | less -S
+alias dps='docker ps -a'  # | less -S
+function dsshd { docker run -t -d -p 5000:3000 -P $1 /usr/sbin/sshd -D }
+alias dr='docker restart'
+alias dt='docker tag'
+alias dtop='docker top'
+alias dv='docker version'
+function datach { docker start $1 ; docker atach $1 }
+function denv   { docker exec $1 env }
+function dip {
+    CI=$(docker ps -l -q)
+    if [ $1 ] ; then
+	docker inspect --format {{.NetworkSettings.IPAddress}} $1
+	docker inspect --format {{.NetworkSettings.Ports}} $1
+    else
+	docker inspect --format {{.NetworkSettings.IPAddress}} $CI
+	docker inspect --format {{.NetworkSettings.Ports}} $CI
+    fi
+}
+function dnsenter {
+    CI=$(docker ps -l -q)
+    if [ $1 ] ; then
+	PID=$(docker inspect --format {{.State.Pid}} $1)
+        nsenter --target $PID --mount --uts --ipc --net --pid
+    else
+	PID=$(docker inspect --format {{.State.Pid}} $CI)
+        nsenter --target $PID --mount --uts --ipc --net --pid
+    fi
+}
+# ### docker compose / machine ###
+function get-docker-compose {
+    case $OSTYPE in
+        freebsd*|darwin*) nix-install docker-compose ;;
+        linux*)
+            case $DIST in
+                Redhat|RedHat|Debian) nix-install docker-compose ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        12.04) nix-install docker-compose ;;
+                    esac
+            esac
+    esac
+}
+function get-docker-machine {
+    case "${OSTYPE}" in
+        freebsd*|darwin*) ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) ;;
+                Debian|Ubuntu)
+                    wget https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_linux-386 -O ~/.local/bin/docker-machine
+                    chmod +x ~/.local/bin/docker-machine ;;
+            esac
+    esac
+}
+if ! type -p docker-compose > /dev/null; then get-docker-compose ; fi
+if ! type -p docker-machine > /dev/null; then get-docker-machine ; fi
 case $OSTYPE in
     msys)
         export DOCKER_PATH=$(get-winpath "C:\Program Files\Docker Toolbox")
@@ -821,103 +888,27 @@ case $OSTYPE in
         alias docker="MSYS_NO_PATHCONV=1 $DOCKER_PATH/docker.exe"
         alias docker-compose="$DOCKER_PATH/docker-compose.exe"
         alias docker-machine="$DOCKER_PATH/docker-machine.exe"
-        alias dcu="docker-machine start"
-        alias dct="docker-machine stop"
-        alias dcr="docker-machine restart"
-        alias dcssh='docker-machine ssh'
-        alias dcscp='docker-machine scp'
+        alias dcmu="docker-machine start"
+        alias dcmt="docker-machine stop"
+        alias dcmr="docker-machine restart"
+        alias dcmssh='docker-machine ssh'
+        alias dcmscp='docker-machine scp'
         alias dcp="ps aux | \grep -G 'docker.*'"
-        alias dcs="docker-machine status"
-        alias dd='docker-machine kill -f'
-        alias ddel='docker-machine kill -f'
-        alias dj='docker-machine ssh'
-        alias dk='docker-machine rm -f'
-        alias dkill='docker-machine rm -f'
-        alias dl='docker-machine config ; docker-machine env'
-        alias dls='docker-machine config ; docker-machine env'
-        alias dp='docker-machine ls'
-        alias dps='docker-machine ls'
+        alias dcms="docker-machine status"
+        alias dcmd='docker-machine kill -f'
+        alias dcmdel='docker-machine kill -f'
+        alias dcmj='docker-machine ssh'
+        alias dcmk='docker-machine rm -f'
+        alias dcmkill='docker-machine rm -f'
+        alias dcml='docker-machine config ; docker-machine env'
+        alias dcmls='docker-machine config ; docker-machine env'
+        alias dcmp='docker-machine ls'
+        alias dcmps='docker-machine ls'
         ;;
-    *)
-        alias docker='sudo docker'
-        alias dcr="docker-restart"
-        alias dcp="ps aux | \grep -G 'docker.*'"
-        alias dcs="docker-status"
-        alias dck="sudo killall docker"
-        alias dc='docker commit $(docker ps -l -q)'
-        alias dd='docker rmi -f'
-        alias dda='docker rmi -f $(docker images -q)'
-        alias ddel='docker rmi -f'
-        alias ddela='docker rmi -f $(docker images -q)'
-        function dh { docker history $1 | less -S }
-        alias dj='docker run -i -t'
-        alias dk='docker rm -f'
-        alias dka='docker rm -f $(docker ps -a -q)'
-        alias dkd='dka ; dda'
-        alias dkill='docker rm -f'
-        alias dkilla='docker rm -f $(docker ps -a -q)'
-        alias dl='docker images'  # | less -S
-        alias dls='docker images' # | less -S
-        alias dp='docker ps -a'   # | less -S
-        alias dps='docker ps -a'  # | less -S
-        function dsshd { docker run -t -d -p 5000:3000 -P $1 /usr/sbin/sshd -D }
-        alias dr='docker tag'
-        alias dv='docker images -viz'
-        function datach { docker start $1 ; docker atach $1 }
-        function denv { docker run --rm $1 env }
-        function dip {
-            CI=$(docker ps -l -q)
-            if [ $1 ] ; then
-	        docker inspect --format {{.NetworkSettings.IPAddress}} $1
-	        docker inspect --format {{.NetworkSettings.Ports}} $1
-            else
-	        docker inspect --format {{.NetworkSettings.IPAddress}} $CI
-	        docker inspect --format {{.NetworkSettings.Ports}} $CI
-            fi
-        }
-        function dnsenter {
-            CI=$(docker ps -l -q)
-            if [ $1 ] ; then
-	        PID=$(docker inspect --format {{.State.Pid}} $1)
-                nsenter --target $PID --mount --uts --ipc --net --pid
-            else
-	        PID=$(docker inspect --format {{.State.Pid}} $CI)
-                nsenter --target $PID --mount --uts --ipc --net --pid
-            fi
-        }
-        # ### docker compose / machine ###
-        function get-docker-compose {
-            case $OSTYPE in
-                freebsd*|darwin*) nix-install docker-compose ;;
-                linux*)
-                    case $DIST in
-                        Redhat|RedHat|Debian) nix-install docker-compose ;;
-                        Ubuntu) case $DIST_VERSION in (12.04) nix-install docker-compose ;; esac
-                    esac
-            esac
-        }
-        function get-docker-machine {
-            case "${OSTYPE}" in
-                freebsd*|darwin*) ;;
-                linux*)
-                    case "${DIST}" in
-                        Redhat|RedHat) ;;
-                        Debian|Ubuntu)
-                            wget https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_linux-386 -O ~/.local/bin/docker-machine
-                            chmod +x ~/.local/bin/docker-machine ;;
-                    esac
-            esac
-        }
-        if ! type -p docker-compose > /dev/null; then get-docker-compose ; fi
-        if ! type -p docker-machine > /dev/null; then get-docker-machine ; fi
-        # ### other ###
-        case $DIST in
-            Ubuntu)
-                case $DIST_VERSION in
-                    14.04) alias docker='DOCKER_HOST=tcp://:2375 docker'
-                esac
-        esac
-        ;;
+esac
+case "${OSTYPE}" in
+    msys|cygwin|freebsd*|darwin*|linux*)
+        if [ -f ~/.docker/docker-compose.zsh ]; then source ~/.docker/docker-compose.zsh; fi
 esac
 
 
@@ -1368,7 +1359,7 @@ case "${OSTYPE}" in
         if [   -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then set-omnisharp ; fi ;;
     linux*)
         case $DIST_VERSION in
-            14.04) ;;
+            14.04|16.04) ;;
             *)
                 if [ ! -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then get-omnisharp ; fi
                 if [   -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then set-omnisharp ; fi ;;
@@ -1398,9 +1389,9 @@ esac
 # 2. ProgrammingLanguage::Java
 # ----------------------------
 REQUIRED_OPENJDK_VERSION=8u92b14
-REQUIRED_OEPNJDK_SHORT_VERSION=8
 case $DIST_VERSION in
     14.04) REQUIRED_OEPNJDK_SHORT_VERSION=system ;;
+    16.04) REQUIRED_OEPNJDK_SHORT_VERSION=1.8 ;;
     *) REQUIRED_OEPNJDK_SHORT_VERSION=8 ;;
 esac
 REQUIRED_PLAY_VERSION=2.2.3
@@ -1422,13 +1413,13 @@ if ! type -p jenv > /dev/null ; then get-jenv ; fi
 function get-java {
     case "${OSTYPE}" in
         freebsd*|darwin*)
-            nix-install openjdk-$REQUIRED_OPENJDK_VERSION
+            nix-install openjdk
             jenv add ~/.nix-profile/lib/openjdk
             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
         linux*)
             case "${DIST}" in
                 Redhat|RedHat|Debian)
-                    nix-install openjdk-$REQUIRED_OPENJDK_VERSION
+                    nix-install openjdk
                     jenv add ~/.nix-profile/lib/openjdk
                     jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                 Ubuntu)
@@ -1438,9 +1429,9 @@ function get-java {
                             sudo apt-get update && sudo apt-get install -y openjdk-8-jdk
                             jenv add /usr/lib/jvm/java-1.8.0-openjdk-amd64/
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
-                        14.04)
-                            nix-install openjdk-$REQUIRED_OPENJDK_VERSION
-                            jenv add /usr/lib/jvm/java
+                        16.04)
+                            nix-install openjdk
+                            jenv add ~/.nix-profile/lib/openjdk
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                     esac
             esac
@@ -1463,6 +1454,9 @@ function set-javahome {
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                         14.04)
                             export JAVA_HOME=/usr/lib/jvm/java/
+                            jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
+                        16.04)
+                            export JAVA_HOME=~/.nix-profile/lib/openjdk
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                     esac
             esac
@@ -1511,11 +1505,11 @@ if ! type -p phpenv > /dev/null ; then get-phpenv ; fi
 # ### installation ###
 function get-php {
     case "${OSTYPE}" in
-        freebsd*|darwin*) php-$REQUIRED_PHP_VERSION ;;
+        freebsd*|darwin*) nix-install php ;;
         linux*)
             case $DIST_VERSION in
                 14.04) sudo apt-get install php-$REQUIRED_PHP_VERSION ;;
-                *) nix-install php-$REQUIRED_PHP_VERSION ;;
+                *) nix-install php ;;
             esac
     esac
 }
@@ -1804,9 +1798,9 @@ function get-global-cpan-packages {
     yes | cpanm -fi Carton
 }
 # ### cpan ###
-function cpan-module-list { perl -e "print \"@INC\"" | find -name "*.pm" -print }
+function cpan-module-list    { perl -e "print \"@INC\"" | find -name "*.pm" -print }
 function cpan-module-version { perl -M$1 -le "print \$$1::VERSION" }
-function cpan-uninstall { perl -MConfig -MExtUtils::Install -e '($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1' }
+function cpan-uninstall      { perl -MConfig -MExtUtils::Install -e '($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1' }
 alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 # alias cpan-uninstall='perl -MConfig -MExtUtils::Install -e '"'"'($FULLEXT=shift)=~s{-}{/}g;uninstall "$Config{sitearchexp}/auto/$FULLEXT/.packlist",1'"'"
 
@@ -1895,78 +1889,14 @@ if ! type -p thrift > /dev/null ; then get-thrift ; fi
 # 3. Daemon::Database::Postgresql
 # -------------------------------
 REQUIRED_POSTGRESQL_VERSION=9.5.3
-PSQL_PAGER='less -S'
 # ### installation ###
-function get-postgresql {
-    case "${OSTYPE}" in
-        darwin*|linux*)
-            docker run \
-                   --name postgres-$REQUIRED_POSTGRESQL_VERSION \
-                   -p 5432:5432 \
-                   -e POSTGRES_PASSWORD=password \
-                   -d \
-                   postgres:$REQUIRED_POSTGRESQL_VERSION ;;
-    esac
-}
-function postgresql-restart {
-    case "${OSTYPE}" in
-        darwin*|linux*) docker restart postgres-$REQUIRED_POSTGRESQL_VERSION ;;
-    esac
-}
-function postgresql-stop {
-    case "${OSTYPE}" in
-        darwin*|linux*) docker stop postgres-$REQUIRED_POSTGRESQL_VERSION ;;
-    esac
-}
-alias pgr="postgresql-restart"
-alias pgp="dp"
-alias pgs="dp"
-alias pgk="postgresql-stop"
+
 
 
 # 3. Daemon::Database::Mysql
 # --------------------------
-REQUIRED_MYSQL_VERSION_1=5.6
-REQUIRED_MYSQL_VERSION_2=5.7
-REQUIRED_MYSQL_PORT_1=3306
-REQUIRED_MYSQL_PORT_2=3307
-REQUIRED_MYSQL_PASSWORD_1=password
-REQUIRED_MYSQL_PASSWORD_2=password
+REQUIRED_MYSQL_VERSION=5.6
 # ### installation ###
-function get-mysql {
-    case $OSTYPE in
-        darwin*|linux*)
-            docker run \
-                   --name mysql-$REQUIRED_MYSQL_VERSION_1 \
-                   -v $HOME/.mysql:/etc/mysql/conf.d \
-                   -p $REQUIRED_MYSQL_PORT_1:3306 \
-                   -e MYSQL_ROOT_PASSWORD=$REQUIRED_MYSQL_PASSWORD_1 \
-                   -d \
-                   mysql:$REQUIRED_MYSQL_VERSION_1
-            docker run \
-                   --name mysql-$REQUIRED_MYSQL_VERSION_2 \
-                   -v $HOME/.mysql:/etc/mysql/conf.d \
-                   -p $REQUIRED_MYSQL_PORT_2:3306 \
-                   -e MYSQL_ROOT_PASSWORD=$REQUIRED_MYSQL_PASSWORD_2 \
-                   -d \
-                   mysql:$REQUIRED_MYSQL_VERSION_2
-    esac
-}
-function mysql-restart {
-    case "${OSTYPE}" in
-        darwin*|linux*)
-            docker restart mysql-$REQUIRED_MYSQL_VERSION_1
-            docker restart mysql-$REQUIRED_MYSQL_VERSION_2
-    esac
-}
-function mysql-stop {
-    case "${OSTYPE}" in
-        darwin*|linux*)
-            docker stop mysql-$REQUIRED_MYSQL_VERSION_1
-            docker stop mysql-$REQUIRED_MYSQL_VERSION_2
-    esac
-}
-# ### innotop ###
 function get-innotop {
     yes | cpanm -fi DBI \
                 DBD::mysql \
@@ -1980,143 +1910,35 @@ function get-innotop {
     cd ..
     rm -fr innotop
 }
-alias mr="mysql-restart"
-alias mp="dp"
-alias ms="dp"
-alias mk="mysql-stop"
 
 
 # 3. Daemon::Database::Redis
 # --------------------------
 REQUIRED_REDIS_VERSION=2.8
-REQUIRED_REDIS_PORT=6379
 # ### installation ###
-function get-redis {
-    case "${OSTYPE}" in
-        darwin*|linux*)
-            docker run \
-                   --name redis-$REQUIRED_REDIS_VERSION \
-                   -p $REQUIRED_REDIS_PORT:6379 \
-                   -d \
-                   redis:$REQUIRED_REDIS_VERSION
-    esac
-}
-function redis-restart {
-    case "${OSTYPE}" in
-        darwin*|linux*) docker restart redis-$REQUIRED_REDIS_VERSION ;;
-    esac
-}
-function redis-stop {
-    case "${OSTYPE}" in
-        darwin*|linux*) docker stop redis-$REQUIRED_REDIS_VERSION ;;
-    esac
-}
-function redis-cli {
-    case "${OSTYPE}" in
-        darwin*|linux*)
-            docker run \
-                   -it \
-                   --link redis-${REQUIRED_REDIS_VERSION}:redis \
-                   --rm \
-                   redis \
-                   redis-cli -h redis -p $REQUIRED_REDIS_PORT $1
-    esac
-}
-alias redis-cli-monitor='redis-cli monitor'
-alias redis-cli-info='redis-cli info'
-alias redis-cli-dump='redis-cli bgsave'
-alias redis-cli-top='redis-cli --stat'
-alias rdr="redis-restart"
-alias rdp="dp"
-alias rds="dp"
-alias rdi="redis-cli-info"
-alias rdm="redis-cli-monitor"
-alias rdt="redis-cli-top"
-alias rdk="redis-stop"
 
 
 # 3. Daemon::Database::Memcached
 # ------------------------------
 REQUIRED_MEMCACHED_VERSION=1.4
-REQUIRED_MEMCACHED_PORT=11211
-function get-memcached {
-    case "${OSTYPE}" in
-        darwin*|linux*)
-            docker run \
-                   --name memcached-$REQUIRED_MEMCACHED_VERSION \
-                   -p $REQUIRED_MEMCACHED_PORT:11211 \
-                   -d \
-                   memcached:$REQUIRED_MEMCACHED_VERSION
-    esac
-}
+# ### installation ###
 function get-memcached-tool {
     wget https://raw.githubusercontent.com/memcached/memcached/master/scripts/memcached-tool -O ~/.local/bin/memcached-tool
     chmod +x ~/.local/bin/memcached-tool
 }
 if ! type -p memcached-tool > /dev/null ; then get-memcached-tool ; fi
-function memcached-restart {
-    case "${OSTYPE}" in
-        darwin*|linux*) docker restart memcached-$REQUIRED_MEMCACHED_VERSION ;;
-    esac
-}
-function memcached-stop {
-    case "${OSTYPE}" in
-        darwin*|linux*) docker stop memcached-$REQUIRED_MEMCACHED_VERSION ;;
-    esac
-}
-function memcached-tool {
-    case "${OSTYPE}" in
-        darwin*|linux*)
-            docker run \
-                   -it \
-                   --link memcached-${REQUIRED_MEMCACHED_VERSION}:memcached \
-                   --rm \
-                   memcached \
-                   memcached-tool 127.0.0.1:$REQUIRED_MEMCACHED_PORT $1
-    esac
-}
 alias memcached-monitor='memcached-tool 127.0.0.1:11211 display'
 alias memcached-info='memcached-tool 127.0.0.1:11211 stats'
 alias memcached-dump='memcached-tool 127.0.0.1:11211 dump'
-alias mcr="memcached-restart"
-alias mcp="dp"
 alias mci="memcached-info"
 alias mcm="memcached-monitor"
-alias mck="memcached-stop"
+alias mck="memcached-remove"
 
 
 # 3. Daemon::HttpServer::Nginx
 # ----------------------------
 REQUIRED_NGINX_VERSION=1.10
-REQUIRED_NGINX_HTTP_PORT=80
-REQUIRED_NGINX_HTTPS_PORT=443
-function get-nginx {
-    case "${OSTYPE}" in
-        darwin*|linux*)
-            docker run \
-                   --name nginx-$REQUIRED_NGINX_VERSION \
-                   -p $REQUIRED_NGINX_HTTP_PORT:80 \
-                   -p $REQUIRED_NGINX_HTTPS_PORT:443 \
-                   -d \
-                   nginx:$REQUIRED_NGINX_VERSION
-            docker cp nginx-$REQUIRED_NGINX_VERSION:/etc/nginx/nginx.conf $HOME/.nginx/nginx.conf
-            docker cp nginx-$REQUIRED_NGINX_VERSION:/etc/nginx/conf.d $HOME/.nginx/conf.d
-    esac
-}
-function nginx-restart {
-    case "${OSTYPE}" in
-        darwin*|linux*) docker restart nginx-$REQUIRED_NGINX_VERSION
-    esac
-}
-function nginx-stop {
-    case "${OSTYPE}" in
-        darwin*|linux*) docker stop nginx-$REQUIRED_NGINX_VERSION
-    esac
-}
-alias nr="nginx-restart"
-alias np="dp"
-alias ns="dp"
-alias nk="nginx-stop"
+# ### installation ###
 
 
 # 4. IntegratedDevelopmentEnvironment::Emacs
@@ -2204,22 +2026,6 @@ function mu-restart {
     mu index
 }
 ### if ! type -p mu > /dev/null ; then get-mu ; fi
-# ### sekka ###
-function get-sekka {
-    case "${OSTYPE}" in
-        freebsd*|linux*)
-            docker run \
-                   --name=sekka \
-                   -p 12929:12929 \
-                   -d -t \
-                   kiyoka/sekka ;;
-    esac
-}
-function sekka-restart {
-    case "${OSTYPE}" in
-        freebsd*|linux*) docker restart sekka ;;
-    esac
-}
 
 
 # 4. IntegratedDevelopmentEnvironment::Emacs::Ctags
@@ -2244,14 +2050,13 @@ alias ctags=~/.local/bin/ctags
 
 # 4. IntegratedDevelopmentEnvironment::Emacs::Pandoc
 # --------------------------------------------------
-REQUIRED_PANDOC_VERSION=1.17.0.3
 function get-pandoc {
     case $OSTYPE in
-        freebsd*|darwin*) nix-install pandoc-${REQUIRED_PANDOC_VERSION} ;;
+        freebsd*|darwin*) nix-install pandoc ;;
         linux*)
             case $DIST_VERSION in
                 14.04) ;;
-                *) nix-install pandoc-${REQUIRED_PANDOC_VERSION} ;;
+                *) nix-install pandoc ;;
             esac
     esac
 }
@@ -2752,6 +2557,49 @@ case "${TERM}" in
 esac
 
 
+# 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Z
+# -------------------------------------------------------------
+ZDOTDIR=~/.local
+function get-z {
+    git clone https://github.com/rupa/z $ZDOTDIR/z
+    source $ZDOTDIR/.local/z/z.sh
+}
+function set-z {
+    autoload -Uz is-at-least
+    # Treat hook functions as array
+    typeset -ga chpwd_functions
+    typeset -ga precmd_functions
+    typeset -ga preexec_functions
+    # Simulate hook functions for older versions
+    if ! is-at-least 4.2.7; then
+        function chpwd   { local f; for f in $chpwd_functions;   do $f; done }
+        function precmd  { local f; for f in $precmd_functions;  do $f; done }
+        function preexec { local f; for f in $preexec_functions; do $f; done }
+    fi
+    function load-if-exists() { test -e "$1" && source "$1" }
+    # z - jump around {{{2
+    # https://github.com/rupa/z
+    _Z_CMD=z
+    _Z_DATA=$ZDOTDIR/.z
+    if is-at-least 4.3.9; then
+        load-if-exists $ZDOTDIR/z/z.sh
+    else
+        _Z_NO_PROMPT_COMMAND=1
+        load-if-exists $ZDOTDIR/z/z.sh && {
+            function precmd_z() {
+                _z --add "$(pwd -P)"
+            }
+            precmd_functions+=precmd_z
+        }
+    fi
+    test $? || unset _Z_CMD _Z_DATA _Z_NO_PROMPT_COMMAND
+    #}}}
+}
+if [ ! -f $ZDOTDIR/z/z.sh ]; then get-z; fi
+if [   -f $ZDOTDIR/z/z.sh ]; then set-z; fi
+alias j=cd
+
+
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Alias
 # -----------------------------------------------------------------
 zmodload -i zsh/mathfunc
@@ -2898,29 +2746,6 @@ function get-slackchat {
             wget https://github.com/vektorlab/slackcat/releases/download/v0.7/slackcat-0.7-linux-amd64 -O ~/.local/bin/slackchat
             chmod +x ~/.local/bin/slackchat
         ;;
-    esac
-}
-
-
-# 4. IntegratedDevelopmentEnvironment::Ubuntu
-# -------------------------------------------
-REQUIRED_UBUNTU_VERSION=16
-function get-ubuntu {
-    case "${OSTYPE}" in
-        darwin*|linux*)
-            docker run \
-                   --name ubuntu-$REQUIRED_UBUNTU_VERSION \
-                   -p 2222:22 \
-                   -p 3000-3009:3000-3009 \
-                   -p 9000-9009:9000-9009 \
-                   -td \
-                   quay.io/nabinno/dove-ubuntu-dotfiles \
-                   /usr/sbin/sshd -D
-    esac
-}
-function ubuntu-restart {
-    case "${OSTYPE}" in
-        darwin*|linux*) docker restart ubuntu-$REQUIRED_UBUNTU_VERSION ;;
     esac
 }
 
@@ -3075,9 +2900,9 @@ function get-dotfiles {
         cp -pr ~/.aspell.conf .
         cp -pr ~/.zshenv .
         cp -pr ~/.zshrc .
-        cp -pr ~/.mysql .
-        cp -pr ~/.nginx .
-        rm -rf ~/.nginx/conf.d
+        cp -pr ~/.docker .
+        rm -rf ~/.local/dotfiles/.docker/config.json
+        rm -rf ~/.local/dotfiles/.docker/etc/nginx/conf.d/*
         case "${OSTYPE}" in (freebsd*|darwin*|linux*) cp -pr ~/.screenrc . ;; esac
         if ! [ $is_credential ] ; then git checkout -- .emacs.d/lisp/init-credential.el ; fi
         if ! [ $is_mu4e       ] ; then git checkout -- .emacs.d/lisp/init-mu4e.el       ; fi
@@ -3111,8 +2936,7 @@ function put-dotfiles {
     cp -pr .aspell.conf ~/;                          wait
     cp -pr .zshenv ~/;                               wait
     cp -pr .zshrc ~/;                                wait
-    cp -pr .mysql ~/;                                wait
-    cp -pr .nginx ~/;                                wait
+    cp -pr .docker ~/;                               wait
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) cp -pr .screenrc ~/; wait ;;
     esac
@@ -3220,6 +3044,3 @@ alias v="cat"
 function t { \mv (.*~|.*.org*|*.org*|*.tar.gz|*.stackdump|*.tar.gz|*.asx|*.0|*.msi|*.wav|*.doc|*.pdf|$1) .old/ }
 # ### other source file ###
 if [ -f ~/.zshrc.mine ]; then source ~/.zshrc.mine; fi
-
-
-
