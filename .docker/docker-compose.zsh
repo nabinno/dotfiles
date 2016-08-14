@@ -23,9 +23,9 @@ function docker-run-db3 {
            -p 3307:3306 \
            -e MYSQL_ROOT_PASSWORD=password \
            -d mysql:5.7
-    docker cp ~/.docker/etc/mysql/conf.d/my.cnf db3:/etc/mysql/conf.d/my.cnf
-    docker exec db3 chown 644 /etc/mysql/conf.d/*
-    docker exec db3 /etc/init.d/mysql restart
+    docker cp ~/.docker/etc/mysql/conf.d/my.5.7.cnf db3:/etc/mysql/my.cnf
+    docker exec db3 chmod 644 /etc/mysql/my.cnf
+    docker restart db3
 }
 function docker-run-db2 {
     docker run --name db2 -h db2 \
@@ -33,9 +33,9 @@ function docker-run-db2 {
            -p 3306:3306 \
            -e MYSQL_ROOT_PASSWORD=password \
            -d mysql:5.6
-    docker cp ~/.docker/etc/mysql/conf.d/my.cnf db2:/etc/mysql/conf.d/my.cnf
-    docker exec db2 chown 644 /etc/mysql/conf.d/*
-    docker exec db2 /etc/init.d/mysql restart
+    docker cp ~/.docker/etc/mysql/conf.d/my.5.6.cnf db2:/etc/mysql/conf.d/my.cnf
+    docker exec db2 chmod 644 /etc/mysql/conf.d/my.cnf
+    docker restart db2
 }
 function docker-run-db1 {
     docker run --name db1 -h db1 \
@@ -62,7 +62,7 @@ function docker-run-app1 {
            -p 2222:22 \
            -p 3000-3009:3000-3009 \
            -p 9000-9009:9000-9009 \
-           -d quay.io/nabinno/app \
+           -d quay.io/nabinno/temp \
            sudo /usr/sbin/sshd -D
 }
 
