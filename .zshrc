@@ -225,6 +225,7 @@ function get-base {
                         ruby \
                         git \
                         libicu \
+                        htop \
                         curl ;;
                 Debian|Ubuntu)
                     sudo apt-get update -y
@@ -1001,21 +1002,17 @@ function get-global-gem-packages {
         bundler \
         rubygems-bundler \
         rails \
-        # template engine
         compass \
         haml \
         slim \
         html2slim \
-        # application server
         unicorn \
         sidekiq \
-        # benchmark/profiling
         benchmark-ips \
         stackprof \
         rblineprof \
         peek-rblineprof \
         rack-lineprof \
-        # other
         git-trend
 }
 if ! type -p rbenv > /dev/null; then
@@ -1095,14 +1092,14 @@ if ! type -p ex_top > /dev/null ; then get-ex_top ; fi
 
 # 2. ProgrammingLanguage::Haskell
 # -------------------------------
-export REQUIRED_GHC_VERSION=7.10.3
-export REQUIRED_CABAL_VERSION=1.22.9.0
+# export REQUIRED_GHC_VERSION=7.10.3
+# export REQUIRED_CABAL_VERSION=1.22.9.0
 function get-ghc {
     case $OSTYPE in
-        freebsd*|darwin*) nix-install ghc-${REQUIRED_GHC_VERSION} ;;
+        freebsd*|darwin*) nix-install ghc ;;
         linux*)
             case $DIST in
-                Redhat*|RedHat*|Debian) nix-install ghc-${REQUIRED_GHC_VERSION} ;;
+                Redhat*|RedHat*|Debian) nix-install ghc ;;
                 Ubuntu*)
                     case $DIST_VERSION in
                         14.04)  ;;
@@ -1113,12 +1110,12 @@ function get-ghc {
 function get-cabal {
     case $OSTYPE in
         freebsd*|darwin*)
-            nix-install cabal-install-${REQUIRED_CABAL_VERSION}
+            nix-install cabal-install
             cabal update ;;
         linux*)
             case $DIST in
                 Redhat*|RedHat*|Debian)
-                    nix-install cabal-install-${REQUIRED_CABAL_VERSION}
+                    nix-install cabal-install
                     cabal update ;;
                 Ubuntu*)
                     case $DIST_VERSION in
@@ -1319,7 +1316,7 @@ case "${OSTYPE}" in
 esac
 if [ ! -f ~/.dnx/dnvm/dnvm.sh ] ; then get-dnvm ;      fi
 if [   -f ~/.dnx/dnvm/dnvm.sh ] ; then set-dnvm ;      fi
-if ! type -p dotnet > /dev/null ; then get-dotnetcli ; fi
+# if ! type -p dotnet > /dev/null ; then get-dotnetcli ; fi
 if [ ! -f ~/.local/NuGet/nuget.exe ] ; then get-nuget ; fi
 if [   -f ~/.local/NuGet/nuget.exe ] ; then set-nuget ; fi
 # ### E. Complition ###
@@ -1360,7 +1357,7 @@ case "${OSTYPE}" in
     linux*)
         case $DIST_VERSION in
             14.04|16.04) ;;
-            *)
+            12.04)
                 if [ ! -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then get-omnisharp ; fi
                 if [   -f ~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe ] ; then set-omnisharp ; fi ;;
         esac
@@ -1389,10 +1386,14 @@ esac
 # 2. ProgrammingLanguage::Java
 # ----------------------------
 REQUIRED_OPENJDK_VERSION=8u92b14
-case $DIST_VERSION in
-    14.04) REQUIRED_OEPNJDK_SHORT_VERSION=system ;;
-    16.04) REQUIRED_OEPNJDK_SHORT_VERSION=1.8 ;;
-    *) REQUIRED_OEPNJDK_SHORT_VERSION=8 ;;
+case $DIST in
+    Redhat|RedHat) REQUIRED_OEPNJDK_SHORT_VERSION=1.8 ;;
+    Ubuntu)
+        case $DIST_VERSION in
+            12.04) REQUIRED_OEPNJDK_SHORT_VERSION=8 ;;
+            14.04) REQUIRED_OEPNJDK_SHORT_VERSION=system ;;
+            16.04) REQUIRED_OEPNJDK_SHORT_VERSION=1.8 ;;
+        esac
 esac
 REQUIRED_PLAY_VERSION=2.2.3
 export PLAY_HOME=/usr/local/play-$REQUIRED_PLAY_VERSION
@@ -1520,7 +1521,7 @@ function get-fastcgi {
             case "${DIST}" in
                 Redhat|RedHat)
                     sudo yum install -y php-fpm
-                    chkconfig php-fpm on ;;
+                    sudo chkconfig php-fpm on ;;
                 Ubuntu)
                     case "${DIST_VERSION}" in
                         12.04)
@@ -1619,7 +1620,10 @@ exit $RET_VAL'
             esac
     esac
 }
-if ! type -p spawn-fcgi > /dev/null ; then get-fastcgi; fi
+case $DIST in
+    Redhat|RedHat) if ! type -p php-fpm > /dev/null ; then get-fastcgi; fi ;;
+    Ubuntu)        if ! type -p spawn-fcgi > /dev/null ; then get-fastcgi; fi ;;
+esac
 function php-fastcgid {
     case "${OSTYPE}" in
         darwin*) ;;
