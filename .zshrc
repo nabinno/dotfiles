@@ -221,11 +221,20 @@ function get-base {
                 Redhat|RedHat)
                     sudo yum update -y
                     yum install -y \
-                        screen \
-                        ruby \
+                        gcc \
+                        gdbm-devel \
                         git \
-                        libicu \
                         htop \
+                        libffi-devel \
+                        libicu \
+                        libyaml-devel \
+                        mysql-devel \
+                        ncurses-devel \
+                        openssl-devel \
+                        readline-devel \
+                        ruby \
+                        screen \
+                        zlib-devel \
                         curl ;;
                 Debian|Ubuntu)
                     sudo apt-get update -y
@@ -744,7 +753,8 @@ function get-docker {
             case "${DIST}" in
                 Redhat|RedHat)
                     sudo yum update && sudo yum install -y docker
-                    sudo sed -i "s/^DOCKER_STORAGE_OPTIONS=/DOCKER_STORAGE_OPTIONS='--storage-opt dm.no_warn_on_loop_devices=true'/g" /etc/sysconfig/docker-storage
+                    # for docker v.1.9--
+                    # sudo sed -i "s/^DOCKER_STORAGE_OPTIONS=/DOCKER_STORAGE_OPTIONS='--storage-opt dm.no_warn_on_loop_devices=true'/g" /etc/sysconfig/docker-storage
                     ;;
                 Debian) sudo apt-get update; sudo apt-get install -y docker.io ;;
                 Ubuntu)
@@ -1081,13 +1091,13 @@ if ! type -p iex > /dev/null ; then get-elixir ; fi
 function get-ex_top {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
-            cd ~
-            git clone https://github.com/utkarshkukreti/ex_top
+            cd ~      && git clone https://github.com/utkarshkukreti/ex_top
             cd ex_top && mix escript.build && cp -fr ./ex_top ~/.local/bin/
-            cd ~ && rm -fr ex_top ;;
+            cd ~      && rm -fr ex_top
+            ;;
     esac
 }
-if ! type -p ex_top > /dev/null ; then get-ex_top ; fi
+if ! type -p ex_top > /dev/null; then get-ex_top; fi
 
 
 # 2. ProgrammingLanguage::Haskell
@@ -1422,7 +1432,9 @@ function get-java {
                 Redhat|RedHat|Debian)
                     nix-install openjdk
                     jenv add ~/.nix-profile/lib/openjdk
-                    jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
+                    jenv global $REQUIRED_OEPNJDK_SHORT_VERSION
+                    sudo yum install java-${REQUIRED_OEPNJDK_SHORT_VERSION}-openjdk-devel
+                    ;;
                 Ubuntu)
                     case $DIST_VERSION in
                         12.04)
@@ -1898,12 +1910,16 @@ PSQL_PAGER='less -S'
 # ### installation ###
 function get-postgresql {
     case "${OSTYPE}" in
-        darwin*|linux*) docker run --name postgres-$REQUIRED_POSTGRESQL_VERSION -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres:$REQUIRED_POSTGRESQL_VERSION ;;
+        darwin*|linux*) docker run \
+                               --name db1 \
+                               -p 5432:5432 \
+                               -e POSTGRES_PASSWORD=password \
+                               -d postgres:$REQUIRED_POSTGRESQL_VERSION ;;
     esac
 }
 function set-postgresql {
     case "${OSTYPE}" in
-        darwin*|linux*) docker restart postgres-$REQUIRED_POSTGRESQL_VERSION ;;
+        darwin*|linux*) docker restart db1 ;;
     esac
 }
 # if ! type -p psql > /dev/null ; then get-postgresql ; fi
@@ -1951,10 +1967,15 @@ REQUIRED_MYSQL_VERSION=5.6
 # ### installation ###
 function get-mysql {
     case "${OSTYPE}" in
-        darwin*) nix-install mysql-$REQUIRED_MYSQL_VERSION && set-mysql ;;
+        darwin*) nix-install mysql && set-mysql ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat|Debian) nix-install mysql-$REQUIRED_MYSQL_VERSION && set-mysql ;;
+                Redhat|RedHat|Debian)
+                    # nix-install mysql && set-mysql
+                    sudo yum install -y mariadb-server
+                    sudo systemctl enable mariadb.service
+                    /usr/bin/mysql_secure_installation
+                    ;;
                 Ubuntu)
                     case $DIST_VERSION in
                         12.04)
@@ -1964,16 +1985,28 @@ function get-mysql {
                             sudo add-apt-repository -y ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
                             sudo apt-get update
                             sudo apt-get -y install mysql-server ;;
-                        14.04) nix-install mysql-$REQUIRED_MYSQL_VERSION && set-mysql ;;
+                        16.04) nix-install mysql-$REQUIRED_MYSQL_VERSION && set-mysql ;;
                     esac
             esac
     esac
 }
 if ! type -p mysql > /dev/null ; then get-mysql ; fi
 function set-mysql {
-    echo "innodb_file_format = Barracuda" | sudo tee -a /etc/mysql/my.cnf
-    echo "innodb_file_per_table = 1"      | sudo tee -a /etc/mysql/my.cnf
-    echo "innodb_large_prefix"            | sudo tee -a /etc/mysql/my.cnf
+    case "${OSTYPE}" in
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    echo "innodb_file_format = Barracuda" | sudo tee -a /etc/my.cnf
+                    echo "innodb_file_per_table = 1"      | sudo tee -a /etc/my.cnf
+                    echo "innodb_large_prefix"            | sudo tee -a /etc/my.cnf
+                    ;;
+                Ubuntu)
+                    echo "innodb_file_format = Barracuda" | sudo tee -a /etc/mysql/my.cnf
+                    echo "innodb_file_per_table = 1"      | sudo tee -a /etc/mysql/my.cnf
+                    echo "innodb_large_prefix"            | sudo tee -a /etc/mysql/my.cnf
+                    ;;
+            esac
+    esac
 }
 # ### innotop ###
 function get-innotop {
@@ -1998,15 +2031,15 @@ function my-restart {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat|Debian)
-                    sudo service mysql stop
-                    sudo service mysql start
-                    sudo service mysql status ;;
+                    sudo systemctl mariadb stop
+                    sudo systemctl mariadb start
+                    sudo systemctl mariadb status ;;
                 Ubuntu)
                     case $DIST_VERSION in
                         12.04)
                             sudo /etc/init.d/mysql restart
                             sudo /etc/init.d/mysql status ;;
-                        14.04)
+                        16.04)
                             sudo service mysql stop
                             sudo service mysql start
                             sudo service mysql status ;;
@@ -2037,23 +2070,22 @@ alias mk="sudo killall mysqld"
 
 # 3. Daemon::Database::Redis
 # --------------------------
-REQUIRED_REDIS_VERSION=3.0.2
 # ### installation ###
 function get-redis {
     case "${OSTYPE}" in
         darwin*)
-            nix-install redis-$REQUIRED_REDIS_VERSION
+            nix-install redis
             nohup redis-server >/dev/null 2>&1 </dev/null & ;;
         linux*)
             case "${DIST}" in
                 Redhat|RedHat|Debian)
-                    nix-install redis-$REQUIRED_REDIS_VERSION
+                    nix-install redis
                     nohup redis-server >/dev/null 2>&1 </dev/null & ;;
                 Ubuntu)
                     case $DIST_VERSION in
                         12.04) parts install redis ;;
-                        14.04)
-                            nix-install redis-$REQUIRED_REDIS_VERSION
+                        16.04)
+                            nix-install redis
                             nohup redis-server >/dev/null 2>&1 </dev/null & ;;
                     esac
             esac
@@ -2095,11 +2127,14 @@ alias rdk="redis-stop"
 
 # 3. Daemon::Database::Memcached
 # ------------------------------
-REQUIRED_MEMCACHED_VERSION=1.4.20
 function get-memcached {
     case "${OSTYPE}" in
         darwin*) ;;
-        linux*) nix-install memcached-$REQUIRED_MEMCACHED_VERSION ;;
+        linux*)
+            case $DIST_VERSION in
+                14.04) ;;
+                *) nix-install memcached ;;
+            esac
     esac
 }
 if ! type -p memcached > /dev/null ; then get-memcached ; fi
@@ -2160,10 +2195,13 @@ alias mck="memcached-stop"
 
 # 3. Daemon::HttpServer::Nginx
 # ----------------------------
-REQUIRED_NGINX_VERSION=1.9.9
 function get-nginx {
     case "${OSTYPE}" in
-        darwin*|linux*) nix-install nginx-$REQUIRED_NGINX_VERSION ;;
+        darwin*|linux*)
+            case $DIST_VERSION in
+                14.04) ;;
+                *) nix-install nginx ;;
+            esac
     esac
 }
 function set-nginx {
