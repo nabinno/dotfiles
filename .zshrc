@@ -1893,14 +1893,89 @@ if ! type -p thrift > /dev/null ; then get-thrift ; fi
 # 3. Daemon::Database::Postgresql
 # -------------------------------
 REQUIRED_POSTGRESQL_VERSION=9.5.3
+# REQUIRED_POSTGRESQL_VERSION=9.4.6
+PSQL_PAGER='less -S'
 # ### installation ###
-
+function get-postgresql {
+    case "${OSTYPE}" in
+        darwin*|linux*) docker run --name postgres-$REQUIRED_POSTGRESQL_VERSION -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres:$REQUIRED_POSTGRESQL_VERSION ;;
+    esac
+}
+function set-postgresql {
+    case "${OSTYPE}" in
+        darwin*|linux*) docker restart postgres-$REQUIRED_POSTGRESQL_VERSION ;;
+    esac
+}
+# if ! type -p psql > /dev/null ; then get-postgresql ; fi
+# if   type -p psql > /dev/null ; then set-postgresql ; fi
+function pg-restart {
+    case "${OSTYPE}" in
+        darwin*)
+            sudo service postgresql stop
+            sudo service postgresql start
+            sudo service postgresql status ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo service postgresql stop
+                    sudo service postgresql start
+                    sudo service postgresql status ;;
+                Debian) ;;
+                Ubuntu)
+                    parts restart postgresql
+                    parts status postgresql ;;
+            esac
+    esac
+}
+function pg-status {
+    case "${OSTYPE}" in
+        darwin*) sudo service postgresql status ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) sudo service postgresql status ;;
+                Debian) ;;
+                Ubuntu) parts status postgresql ;;
+            esac
+    esac
+}
+alias pgr="pg-restart"
+alias pgp="ps aux | \grep -G 'postgresql.*'"
+alias pgs="pg-status"
+alias pgk="sudo killall postgresql"
+# alias psql='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus psql'
 
 
 # 3. Daemon::Database::Mysql
 # --------------------------
 REQUIRED_MYSQL_VERSION=5.6
 # ### installation ###
+function get-mysql {
+    case "${OSTYPE}" in
+        darwin*) nix-install mysql-$REQUIRED_MYSQL_VERSION && set-mysql ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian) nix-install mysql-$REQUIRED_MYSQL_VERSION && set-mysql ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        12.04)
+                            sudo apt-get -y remove mysql-server
+                            sudo apt-get -y autoremove
+                            sudo apt-get -y install software-properties-common
+                            sudo add-apt-repository -y ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
+                            sudo apt-get update
+                            sudo apt-get -y install mysql-server ;;
+                        14.04) nix-install mysql-$REQUIRED_MYSQL_VERSION && set-mysql ;;
+                    esac
+            esac
+    esac
+}
+if ! type -p mysql > /dev/null ; then get-mysql ; fi
+function set-mysql {
+    echo "innodb_file_format = Barracuda" | sudo tee -a /etc/mysql/my.cnf
+    echo "innodb_file_per_table = 1"      | sudo tee -a /etc/mysql/my.cnf
+    echo "innodb_large_prefix"            | sudo tee -a /etc/mysql/my.cnf
+}
+# ### innotop ###
 function get-innotop {
     yes | cpanm -fi DBI \
                 DBD::mysql \
@@ -1914,35 +1989,216 @@ function get-innotop {
     cd ..
     rm -fr innotop
 }
+function my-restart {
+    case "${OSTYPE}" in
+        darwin*)
+            sudo service mysql stop
+            sudo service mysql start
+            sudo service mysql status ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian)
+                    sudo service mysql stop
+                    sudo service mysql start
+                    sudo service mysql status ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        12.04)
+                            sudo /etc/init.d/mysql restart
+                            sudo /etc/init.d/mysql status ;;
+                        14.04)
+                            sudo service mysql stop
+                            sudo service mysql start
+                            sudo service mysql status ;;
+                    esac
+            esac
+    esac
+}
+function my-status {
+    case "${OSTYPE}" in
+        darwin*) sudo service mysql status ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian) sudo service mysql status ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        12.04) sudo /etc/init.d/mysql status ;;
+                        14.04) sudo service mysql status ;;
+                    esac
+            esac
+    esac
+}
+alias mr="my-restart"
+alias mp="ps aux | \grep -G 'mysql.*'"
+alias ms="my-status"
+alias mk="sudo killall mysqld"
+# alias mysql="rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus mysql -uroot --pager='less -S'"
 
 
 # 3. Daemon::Database::Redis
 # --------------------------
-REQUIRED_REDIS_VERSION=2.8
+REQUIRED_REDIS_VERSION=3.0.2
 # ### installation ###
+function get-redis {
+    case "${OSTYPE}" in
+        darwin*)
+            nix-install redis-$REQUIRED_REDIS_VERSION
+            nohup redis-server >/dev/null 2>&1 </dev/null & ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian)
+                    nix-install redis-$REQUIRED_REDIS_VERSION
+                    nohup redis-server >/dev/null 2>&1 </dev/null & ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        12.04) parts install redis ;;
+                        14.04)
+                            nix-install redis-$REQUIRED_REDIS_VERSION
+                            nohup redis-server >/dev/null 2>&1 </dev/null & ;;
+                    esac
+            esac
+    esac
+}
+if ! type -p redis-cli > /dev/null ; then get-redis ; fi
+function redis-restart {
+    case "${OSTYPE}" in
+        darwin*) ;;
+        linux*)
+            sudo pkill redis-server
+            nohup redis-server >/dev/null 2>&1 </dev/null &
+            ps aux | \grep -G 'redis.*' ;;
+    esac
+}
+function redis-stop {
+    case "${OSTYPE}" in
+        darwin*) ;;
+        linux*) sudo pkill redis-server ;;
+    esac
+}
+function redis-status {
+    case "${OSTYPE}" in
+        darwin*) ;;
+        linux*) ps aux | \grep -G 'redis.*' ;;
+    esac
+}
+# alias redis-cli='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus redis-cli'
+alias redis-cli-monitor='redis-cli monitor'
+alias redis-cli-info='redis-cli info'
+alias redis-cli-dump='redis-cli bgsave'
+alias rdr="redis-restart"
+alias rdp="redis-status"
+alias rds="redis-status"
+alias rdi="redis-cli-info"
+alias rdm="redis-cli-monitor"
+alias rdk="redis-stop"
 
 
 # 3. Daemon::Database::Memcached
 # ------------------------------
-REQUIRED_MEMCACHED_VERSION=1.4
-# ### installation ###
+REQUIRED_MEMCACHED_VERSION=1.4.20
+function get-memcached {
+    case "${OSTYPE}" in
+        darwin*) ;;
+        linux*) nix-install memcached-$REQUIRED_MEMCACHED_VERSION ;;
+    esac
+}
+if ! type -p memcached > /dev/null ; then get-memcached ; fi
 function get-memcached-tool {
     wget https://raw.githubusercontent.com/memcached/memcached/master/scripts/memcached-tool -O ~/.local/bin/memcached-tool
     chmod +x ~/.local/bin/memcached-tool
 }
 if ! type -p memcached-tool > /dev/null ; then get-memcached-tool ; fi
+function memcached-restart {
+    case "${OSTYPE}" in
+        darwin*) ;;
+        linux*)
+            case $DIST in
+                Redhat|RedHat)
+                    sudo service memcached stop
+                    sudo service memcached start
+                    sudo service memcached status ;;
+                Debian|Ubuntu)
+                    sudo pkill memcached
+                    nohup memcached >/dev/null 2>&1 </dev/null &
+                    ps aux | \grep -G 'memcached.*' ;;
+            esac
+    esac
+}
+function memcached-stop {
+    case "${OSTYPE}" in
+        darwin*) ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) sudo service memcached stop ;;
+                Debian|Ubuntu) sudo /usr/bin/pkill memcached ;;
+            esac
+    esac
+}
+function memcached-status {
+    case "${OSTYPE}" in
+        darwin*) ;;
+        linux*)
+            case $DIST in
+                Redhat|RedHat) sudo service memcached status ;;
+                Debian|Ubuntu) ps aux | \grep -G 'memcached.*' ;;
+            esac ;;
+    esac
+}
+function get-memcache-top {
+    wget http://memcache-top.googlecode.com/files/memcache-top-v0.6 -O ~/.local/bin/memcache-top
+}
 alias memcached-monitor='memcached-tool 127.0.0.1:11211 display'
 alias memcached-info='memcached-tool 127.0.0.1:11211 stats'
 alias memcached-dump='memcached-tool 127.0.0.1:11211 dump'
+alias memcache-top='perl memcached-top'
+alias mcr="memcached-restart"
+alias mcp="memcached-status"
 alias mci="memcached-info"
 alias mcm="memcached-monitor"
-alias mck="memcached-remove"
+alias mck="memcached-stop"
 
 
 # 3. Daemon::HttpServer::Nginx
 # ----------------------------
-REQUIRED_NGINX_VERSION=1.10
-# ### installation ###
+REQUIRED_NGINX_VERSION=1.9.9
+function get-nginx {
+    case "${OSTYPE}" in
+        darwin*|linux*) nix-install nginx-$REQUIRED_NGINX_VERSION ;;
+    esac
+}
+function set-nginx {
+    useradd -s /bin/false nginx
+    sudo sed -i "s|^\(#user  nobody;\)|#\1\nuser  nginx;|g"                                                      ~/.nix-profile/conf/nginx.conf
+    sudo sed -i "s|^\(worker_processes  1;\)|#\1\nworker_processes  auto;|g"                                     ~/.nix-profile/conf/nginx.conf
+    sudo sed -i "s|^#\(log_format  main  '$remote_addr - $remote_user [$time_local] \"$request\" '\)|\1|g"       ~/.nix-profile/conf/nginx.conf
+    sudo sed -i "s|^#\(                  '$status $body_bytes_sent \"$http_referer\" '\)|\1|g"                   ~/.nix-profile/conf/nginx.conf
+    sudo sed -i "s|^#\(                  '\"$http_user_agent\" \"$http_x_forwarded_for\"';\)|\1|g"               ~/.nix-profile/conf/nginx.conf
+    sudo sed -i "s|^\(#gzip  on;\)|\1\ninclude/etc/nginx/conf.d/\*.conf;\ninclude/etc/nginx/sites-enabled/\*;|g" ~/.nix-profile/conf/nginx.conf
+    sudo mkdir -rf /etc/nginx/sites-enabled
+    sudo mkdir -rf /etc/nginx/sites-available
+    sudo mkdir -rf /etc/nginx/conf.d
+    sudo ln -s /etc/nginx/sites-available/* /etc/nginx/sites-enabled
+}
+function nginx-restart {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            sudo nginx -s stop
+            sudo nginx
+            sudo nginx -s status ;;
+    esac
+}
+function nginx-status {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            sudo nginx -t
+            sudo nginx -s status ;;
+    esac
+}
+if ! type -p nginx > /dev/null; then get-nginx; fi
+alias nr="nginx-restart"
+alias np="ps aux | \grep -G 'nginx.*'"
+alias ns="nginx-status"
+alias nk="sudo killall nginx"
 
 
 # 4. IntegratedDevelopmentEnvironment::Emacs
@@ -2029,7 +2285,18 @@ function mu-restart {
     mu index --rebuild
     mu index
 }
-### if ! type -p mu > /dev/null ; then get-mu ; fi
+if ! type -p mu > /dev/null ; then get-mu ; fi
+# ### sekka ###
+function set-sekka {
+    case "${OSTYPE}" in
+        freebsd*|linux*) docker restart sekka ;;
+    esac
+}
+function get-sekka {
+    case "${OSTYPE}" in
+        freebsd*|linux*) docker run -p 12929:12929 -d --name=sekka -t kiyoka/sekka ;;
+    esac
+}
 
 
 # 4. IntegratedDevelopmentEnvironment::Emacs::Ctags
