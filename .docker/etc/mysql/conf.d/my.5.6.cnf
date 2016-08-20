@@ -3,11 +3,11 @@
 # -----------------------------------------------------
 # Base
 # -----------------------------------------------------
-user = mysql
-socket = /var/run/mysqld/mysql.sock
-pid-file = /var/run/mysqld/mysqld.pid
-datadir = /var/lib/mysql
-tmpdir = /tmp
+user                 = mysql
+socket               = /var/run/mysqld/mysqld.sock
+pid-file             = /var/run/mysqld/mysqld.pid
+datadir              = /var/lib/mysql
+tmpdir               = /tmp
 character-set-server = utf8mb4
 skip-character-set-client-handshake
 skip-external-locking
@@ -16,48 +16,48 @@ sql_mode = NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
 # -----------------------------------------------------
 # Network
 # -----------------------------------------------------
-port = 3306
+port                = 3306
 skip-name-resolve
-max_connections = 31
-max_connect_errors = 1000000
-wait_timeout = 600
+max_connections     = 31
+max_connect_errors  = 1000000
+wait_timeout        = 600
 interactive_timeout = 600
-connect_timeout = 10
-max_allowed_packet = 1GB
+connect_timeout     = 10
+max_allowed_packet  = 1GB
 
 # -----------------------------------------------------
 # Logging
 # -----------------------------------------------------
-log_output = FILE
-log_error = /var/log/mysql/error.log
-general_log_file = /var/log/mysql/general_query.log
-log-slow-admin-statements = 1
+log_output                    = FILE
+log_error                     = /var/log/mysql/error.log
+general_log_file              = /var/log/mysql/general_query.log
+log-slow-admin-statements     = 1
 log-queries-not-using-indexes = 1
-slow_query_log = 1
-long_query_time = 1
-slow_query_log_file = /var/log/mysql/slow_query.log
+slow_query_log                = 1
+long_query_time               = 1
+slow_query_log_file           = /var/log/mysql/slow_query.log
 
 # -----------------------------------------------------
 # Cache & Memory
 # -----------------------------------------------------
-thread_cache_size = 31
-table_open_cache = 400
+thread_cache_size   = 31
+table_open_cache    = 400
 max_heap_table_size = 33554432
 max_heap_table_size = 33554432
 
 # -----------------------------------------------------
 # InnoDB
 # -----------------------------------------------------
-innodb_file_format = Barracuda
-innodb_file_per_table = 1
-innodb_large_prefix = 1
-innodb_buffer_pool_size = 1GB
+innodb_file_format              = Barracuda
+innodb_file_per_table           = 1
+innodb_large_prefix             = 1
+innodb_buffer_pool_size         = 1GB
 innodb_additional_mem_pool_size = 20MB
-innodb_log_buffer_size = 64MB
+innodb_log_buffer_size          = 64MB
 
 [mysqld_safe]
 log-error = /var/log/mysqld.log
-pid-file = /var/run/mysqld/mysqld.pid
+pid-file  = /var/run/mysqld/mysqld.pid
 
 [client]
 default-character-set = utf8mb4
