@@ -54,6 +54,8 @@
 (global-set-key (kbd "M-[ 1 ; 8 w") '(lambda () (interactive) (elscreen-goto 7)))
 (global-set-key (kbd "M-[ 1 ; 8 x") '(lambda () (interactive) (elscreen-goto 8)))
 (global-set-key (kbd "M-[ 1 ; 8 y") 'elscreen-jump-9)
+(global-set-key (kbd "ESC <f2>") 'elscreen-create)
+(global-set-key (kbd "M-[ 1 ; 3 Q") 'elscreen-create)
 
 (elscreen-start)
 
