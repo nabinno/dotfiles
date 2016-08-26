@@ -68,14 +68,14 @@
 (define-key global-map "\C-xz" 'org-capture-code-reading)
 
 
-;;; Org babel
-;; plantuml
-(setq org-plantuml-jar-path "~/.local/bin/plantuml.jar")
-(defun org-mode-init ()
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   (add-to-list 'org-babel-load-languages '(plantuml . t))))
-(add-hook 'org-mode-hook 'org-mode-init)
+;; ;;; Org babel
+;; ;; plantuml
+;; (setq org-plantuml-jar-path "~/.local/bin/plantuml.jar")
+;; (defun org-mode-init ()
+;;   (org-babel-do-load-languages
+;;    'org-babel-load-languages
+;;    (add-to-list 'org-babel-load-languages '(plantuml . t))))
+;; (add-hook 'org-mode-hook 'org-mode-init)
 
 
 ;;; OX
@@ -149,25 +149,25 @@
   (when *is-a-mac*
     (define-key org-mode-map (kbd "C-c g") 'org-mac-grab-link)))
 
-(after-load 'org
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((R . t)
-     (ditaa . t)
-     (dot . t)
-     (emacs-lisp . t)
-     (gnuplot . t)
-     (haskell . nil)
-     (latex . t)
-     (ledger . t)
-     (ocaml . nil)
-     (octave . t)
-     (python . t)
-     (ruby . t)
-     (screen . nil)
-     (sh . t)
-     (sql . nil)
-     (sqlite . t))))
+;; (after-load 'org
+;;   (org-babel-do-load-languages
+;;    'org-babel-load-languages
+;;    '((R . t)
+;;      (ditaa . t)
+;;      (dot . t)
+;;      (emacs-lisp . t)
+;;      (gnuplot . t)
+;;      (haskell . nil)
+;;      (latex . t)
+;;      (ledger . t)
+;;      (ocaml . nil)
+;;      (octave . t)
+;;      (python . t)
+;;      (ruby . t)
+;;      (screen . nil)
+;;      (sh . t)
+;;      (sql . nil)
+;;      (sqlite . t))))
 
 
 ;;; org-trello

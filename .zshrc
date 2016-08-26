@@ -743,7 +743,7 @@ if type -p anyenv > /dev/null; then eval "$(anyenv init -)" ; fi
 
 # 1. BasicSettings::PackageManager::Docker
 # ----------------------------------------
-DOCKER_HOST=tcp://:2375
+case $DIST_VERSION in (14.04) DOCKER_HOST=tcp://:2375 ;; esac
 ### setup ###
 function get-docker {
     case "${OSTYPE}" in
@@ -752,11 +752,17 @@ function get-docker {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
-                    sudo yum update && sudo yum install -y docker
-                    # for docker v.1.9--
-                    # sudo sed -i "s/^DOCKER_STORAGE_OPTIONS=/DOCKER_STORAGE_OPTIONS='--storage-opt dm.no_warn_on_loop_devices=true'/g" /etc/sysconfig/docker-storage
+                    sudo yum update
+                    curl -fsSL https://get.docker.com/ | sh
+                    local current_user_name=$(whoami)
+                    sudo usermod -aG docker ${current_user_name}
                     ;;
-                Debian) sudo apt-get update; sudo apt-get install -y docker.io ;;
+                Debian)
+                    sudo apt-get update
+                    sudo apt-get install -y docker.io
+                    local current_user_name=$(whoami)
+                    sudo usermod -aG docker ${current_user_name}
+                    ;;
                 Ubuntu)
                     sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
                     if [ -f /etc/apt/sources.list.d/docker.list ]; then
@@ -771,7 +777,10 @@ function get-docker {
                     sudo apt-get purge lxc-docker*
                     sudo apt-cache policy docker-engine
 		    sudo apt-get update
-                    sudo apt-get install -y docker-engine ;;
+                    sudo apt-get install -y docker-engine
+                    local current_user_name=$(whoami)
+                    sudo usermod -aG docker ${current_user_name}
+                    ;;
             esac
     esac
 }
@@ -803,9 +812,9 @@ function docker-status {
     esac
 }
 ## ### alias ###
-alias docker='sudo docker'
+alias docker='docker'
 case $DIST_VERSION in (14.04) alias docker="DOCKER_HOST=${DOCKER_HOST} docker";; esac
-case $DIST_VERSION in (14.04) alias docker-compose="DOCKER_HOST=${DOCKER_HOST} docker-compose";; esac
+case $DIST_VERSION in (14.04) alias docker-compose="docker-compose -H ${DOCKER_HOST}";; esac
 alias dcr="docker-restart"
 alias dcp="ps aux | \grep -G 'docker.*'"
 alias dcs="docker-status"
