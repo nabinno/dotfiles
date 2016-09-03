@@ -22,7 +22,7 @@
                             backward-char forward-char))
     (ding)))
 (setq ring-bell-function 'my-bell-function)
-
+(setq warning-minimum-level :emergency)
 (fset 'yes-or-no-p 'y-or-n-p)
 (global-font-lock-mode t)
 ;; (iswitchb-mode t)
