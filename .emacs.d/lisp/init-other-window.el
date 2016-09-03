@@ -33,7 +33,9 @@
 (global-set-key (kbd "M-[ 1 ; 4 d") 'enlarge-window-horizontally)
 (global-set-key (kbd "M-") 'delete-window)
 (global-set-key (kbd "S-C-M-q") 'delete-window)
-(global-set-key (kbd "M-q") 'delete-window)
+(global-set-key (kbd "S-M-q") 'delete-window)
+(global-set-key (kbd "M-<f3>") 'delete-window)
+(global-set-key (kbd "ESC <f3>") 'delete-window)
 
 
 ;;; Switch window
