@@ -1844,7 +1844,7 @@ function get-ndenv {
         freebsd*|darwin*|linux*) anyenv install ndenv && exec -l zsh ;;
     esac
 }
-if ! type -p ndenv > /dev/null ; then get-ndenv ; fi
+if ! type -p ndenv > /dev/null; then get-ndenv; fi
 # ### installation ###
 function get-node {
     case "$OSTYPE" in
@@ -1883,6 +1883,20 @@ function rebuild-sass {
     npm install --save-dev gulp-sass@2
     npm rebuild node-sass
 }
+function get-watchman {
+    case $OSTYPE in
+        linux*)
+            git clone https://github.com/facebook/watchman.git
+            cd watchman
+            sh ./autogen.sh
+            ./configure
+            make
+            sudo make install
+            cd ..
+            sudo rm -fr watchman ;;
+    esac
+}
+if ! type -p watchman > /dev/null; then get-watchman; fi
 
 
 # 2. ProgrammingLanguage::RemoteProcedureCall
@@ -2040,9 +2054,9 @@ function my-restart {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat|Debian)
-                    sudo systemctl mariadb stop
-                    sudo systemctl mariadb start
-                    sudo systemctl mariadb status ;;
+                    sudo service mariadb stop
+                    sudo service mariadb start
+                    sudo service mariadb status ;;
                 Ubuntu)
                     case $DIST_VERSION in
                         12.04)
@@ -2056,12 +2070,26 @@ function my-restart {
             esac
     esac
 }
+function my-stop {
+    case "${OSTYPE}" in
+        darwin*) sudo service mysql stop ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian) sudo service mariadb stop ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        12.04) sudo /etc/init.d/mysql stop ;;
+                        16.04) sudo service mysql stop ;;
+                    esac
+            esac
+    esac
+}
 function my-status {
     case "${OSTYPE}" in
         darwin*) sudo service mysql status ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat|Debian) sudo service mysql status ;;
+                Redhat|RedHat|Debian) sudo service mariadb status ;;
                 Ubuntu)
                     case $DIST_VERSION in
                         12.04) sudo /etc/init.d/mysql status ;;
@@ -2073,7 +2101,7 @@ function my-status {
 alias mr="my-restart"
 alias mp="ps aux | \grep -G 'mysql.*'"
 alias ms="my-status"
-alias mk="sudo killall mysqld"
+alias mt="my-stop"
 # alias mysql="rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus mysql -uroot --pager='less -S'"
 
 
@@ -2156,36 +2184,21 @@ function memcached-restart {
     case "${OSTYPE}" in
         darwin*) ;;
         linux*)
-            case $DIST in
-                Redhat|RedHat)
-                    sudo service memcached stop
-                    sudo service memcached start
-                    sudo service memcached status ;;
-                Debian|Ubuntu)
-                    sudo pkill memcached
-                    nohup memcached >/dev/null 2>&1 </dev/null &
-                    ps aux | \grep -G 'memcached.*' ;;
-            esac
+            sudo pkill memcached
+            nohup memcached >/dev/null 2>&1 </dev/null &
+            ps aux | \grep -G 'memcached.*' ;;
     esac
 }
 function memcached-stop {
     case "${OSTYPE}" in
         darwin*) ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) sudo service memcached stop ;;
-                Debian|Ubuntu) sudo /usr/bin/pkill memcached ;;
-            esac
+        linux*) sudo /usr/bin/pkill memcached ;;
     esac
 }
 function memcached-status {
     case "${OSTYPE}" in
         darwin*) ;;
-        linux*)
-            case $DIST in
-                Redhat|RedHat) sudo service memcached status ;;
-                Debian|Ubuntu) ps aux | \grep -G 'memcached.*' ;;
-            esac ;;
+        linux*) ps aux | \grep -G 'memcached.*' ;;
     esac
 }
 function get-memcache-top {
