@@ -92,33 +92,53 @@
 
 
 ;;; TypeScript
-(require-package 'tide)
 (require-package 'typescript-mode)
+(setq typescript-indent-level 2)
 
-;; ;; Flycheck specifics
-;; (when (> emacs-major-version 23)
-;;   (require-package 'flycheck-typescript-tslint)
-;;   (after-load 'flycheck
-;;     (add-hook 'typescript-mode-hook #'flycheck-typescript-tslint-setup)
+;; Tide (npm i -g typescript)
+(require-package 'tide)
+(setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil))
+(add-hook 'typescript-mode-hook #'tide-setup)
+(with-eval-after-load 'tide
+  (define-key tide-mode-map (kbd "M-o M-,") 'tide-jump-to-definition)
+  (define-key tide-mode-map (kbd "M-o M-.") 'tide-jump-back)
+  (define-key tide-mode-map (kbd "C-c C-d") 'tide-restart-server)
+  (define-key tide-mode-map (kbd "M-,")   'mc/mark-previous-like-this)
+  (define-key tide-mode-map (kbd "M-.")   'mc/mark-next-like-this))
 
-;;     (defun sanityinc/flycheck-typescript-reconfigure ()
-;;       "Reconfigure flycheck typescript settings, e.g. after changing cabal file."
-;;       (interactive)
-;;       (unless (eq major-mode 'typescript-mode)
-;;         (error "Expected to be in typescript-mode"))
-;;       (flycheck-typescript-clear-config-cache)
-;;       (flycheck-typescript-configure)
-;;       (flycheck-mode -1)
-;;       (flycheck-mode))
+;; ;; Tss (npm i -g typescript-tools)
+;; (require-package 'tss)
+;; (setq tss-popup-help-key "C-:")
+;; (setq tss-jump-to-definition-key "C->")
+;; (setq tss-implement-definition-key "C-c i")
+;; (add-hook 'typescript-mode-hook #'tss-setup-current-buffer)
+;; ;; (add-hook 'kill-buffer-hook 'tss--delete-process t)
 
-;;     (defadvice typescript-mode-stylish-buffer (around skip-if-flycheck-errors activate)
-;;       "Don't run stylish-buffer if the buffer appears to have a syntax error.
-;; This isn't a hard guarantee, since flycheck might sometimes not run until the file has
-;; been saved."
-;;       (unless (flycheck-has-current-errors-p 'error)
-;;         ad-do-it))
-
-;;     (require 'flycheck-typescript-tslint)))
+;; Flycheck specifics
+(when (> emacs-major-version 23)
+  (unless (require 'flycheck-typescript-tslint nil 'noerror)
+    (el-get-bundle Simplify/flycheck-typescript-tslint))
+  (after-load 'flycheck
+    (add-hook 'typescript-mode-hook #'flycheck-typescript-tslint-setup)
+    (defun sanityinc/flycheck-typescript-reconfigure ()
+      "Reconfigure flycheck typescript settings, e.g. after changing cabal file."
+      (interactive)
+      (unless (eq major-mode 'typescript-mode)
+        (error "Expected to be in typescript-mode"))
+      ;; (setq flycheck-check-syntax-automatically '(save mode-enabled))
+      (eldoc-mode +1)
+      (company-mode +1)
+      (flycheck-typescript-clear-config-cache)
+      (flycheck-typescript-configure)
+      (flycheck-mode -1)
+      (flycheck-mode))
+    (defadvice typescript-mode-stylish-buffer (around skip-if-flycheck-errors activate)
+      "Don't run stylish-buffer if the buffer appears to have a syntax error.
+This isn't a hard guarantee, since flycheck might sometimes not run until the file has
+been saved."
+      (unless (flycheck-has-current-errors-p 'error)
+        ad-do-it))
+    (require 'flycheck-typescript-tslint)))
 
 
 ;;; Run and interact with an inferior JS via js-comint.el
@@ -156,7 +176,8 @@
 (add-hook 'js-mode-hook
           #'(lambda ()
               (define-key js-mode-map (kbd "C-c i") 'js-doc-insert-function-doc)
-              (define-key js-mode-map (kbd "@") 'js-doc-insert-tag)))
+              ;; (define-key js-mode-map (kbd "@") 'js-doc-insert-tag)
+              ))
 
 
 
