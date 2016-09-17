@@ -1321,7 +1321,10 @@ function get-generator-dotnet {
     npm i -g \
         yo \
         generator-aspnet \
-        grunt-init
+        grunt-init \
+        typescript \
+        typescript-tools \
+        typings
     git clone https://github.com/nosami/grunt-init-csharpsolution.git ~/.grunt-init/csharpsolution
 }
 case "${OSTYPE}" in
