@@ -154,6 +154,7 @@ export LC_CTYPE=UTF-8
 export LC_MESSAGES=C
 export MAILPATH=$HOME/MailBox/postmaster/maildir
 export PATH=/usr/sbin:/sbin:$PATH
+export PATH=/usr/local/bin:$PATH
 export PATH=$HOME/bin:$HOME/local/bin:$PATH
 export PATH="/opt/local/bin:$PATH"
 export PATH="/opt/local/sbin:$PATH"
@@ -1177,6 +1178,7 @@ function get-global-go-packages {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             go get github.com/peco/peco/cmd/peco
+            go get github.com/mattn/qq/cmd/qq
     esac
 }
 
@@ -2242,6 +2244,11 @@ function set-nginx {
     sudo mkdir -rf /etc/nginx/conf.d
     sudo ln -s /etc/nginx/sites-available/* /etc/nginx/sites-enabled
 }
+function nginx-stop {
+    case "${OSTYPE}" in
+        darwin*|linux*) sudo nginx -s stop ;;
+    esac
+}
 function nginx-restart {
     case "${OSTYPE}" in
         darwin*|linux*)
@@ -2258,10 +2265,11 @@ function nginx-status {
     esac
 }
 if ! type -p nginx > /dev/null; then get-nginx; fi
+alias nk="nginx-stop"
+alias nt="nginx-stop"
 alias nr="nginx-restart"
 alias np="ps aux | \grep -G 'nginx.*'"
 alias ns="nginx-status"
-alias nk="sudo killall nginx"
 
 
 # 4. IntegratedDevelopmentEnvironment::Emacs
