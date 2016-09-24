@@ -1151,8 +1151,9 @@ if ! type -p cabal > /dev/null ; then get-cabal ; fi
 # 2. ProgrammingLanguage::Go
 # --------------------------
 export REQUIRED_GO_VERSION=1.4.2
+export GOROOT=~/.anyenv/envs/goenv/versions/${REQUIRED_GO_VERSION}
 export GOPATH=~/.go.d
-export PATH="$HOME/.go.d/bin:$PATH"
+export PATH="$GOPATH/bin:$GOROOT/bin:$PATH"
 # ### version control ###
 function get-goenv {
     case "${OSTYPE}" in
@@ -2486,19 +2487,19 @@ else
     if [[ $_REQUIRED_GIT_VERSION_NUM > $_CURRENT_GIT_VERSION ]]; then get-git; fi
 fi
 # ### hub ###
+export REQUIRED_HUB_VERSION=2.2.8
 function get-hub {
     case "${OSTYPE}" in
         freebsd*) ;;
         darwin*) brew install hub ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat) sudo yum install -y hub ;;
-                Debian) ;;
-                Ubuntu)
-                    case "$DIST_VERSION" in
-                        12.04) parts install hub ;;
-                        14.04) ;;
-                    esac
+                Redhat|RedHat)
+                    wget https://github.com/github/hub/releases/download/v${REQUIRED_HUB_VERSION}/hub-linux-amd64-${REQUIRED_HUB_VERSION}.tgz
+                    tar zxvf hub-linux-amd64-${REQUIRED_HUB_VERSION}.tgz
+                    mv hub-linux-amd64-${REQUIRED_HUB_VERSION}/bin/hub ~/.local/bin/
+                    rm -fr hub-linux-amd64-${REQUIRED_HUB_VERSION}
+                    ;;
             esac
     esac
 }
