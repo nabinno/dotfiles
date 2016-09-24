@@ -2498,7 +2498,7 @@ function get-hub {
                     wget https://github.com/github/hub/releases/download/v${REQUIRED_HUB_VERSION}/hub-linux-amd64-${REQUIRED_HUB_VERSION}.tgz
                     tar zxvf hub-linux-amd64-${REQUIRED_HUB_VERSION}.tgz
                     mv hub-linux-amd64-${REQUIRED_HUB_VERSION}/bin/hub ~/.local/bin/
-                    rm -fr hub-linux-amd64-${REQUIRED_HUB_VERSION}
+                    rm -fr hub-linux-amd64-${REQUIRED_HUB_VERSION}*
                     ;;
             esac
     esac
