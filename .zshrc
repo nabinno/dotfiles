@@ -44,6 +44,7 @@
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Alias
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Screen
 # 4. IntegratedDevelopmentEnvironment::Chat::Slack
+# 4. IntegratedDevelopmentEnvironment::FileSystem::Samba
 # 5. Platform::Heroku
 # 5. Platform::GoogleCloudPlatform
 # 5. Platform::AmazonWebServices
@@ -3091,6 +3092,75 @@ function get-slackchat {
         ;;
     esac
 }
+
+
+# 4. IntegratedDevelopmentEnvironment::FileSystem::Samba
+# ------------------------------------------------------
+function get-samba {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian)
+                    sudo yum remove samba*
+                    sudo yum install samba* -y
+                    set-samba ;;
+            esac
+    esac
+}
+function set-samba {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian)
+                    sudo mkdir -p /samba/anonymous_share
+                    sudo chmod -R 0777 /samba/anonymous_share
+                    sudo sed -i "s/^\(\[global\]\)/\1\n\tunix charset = UTF-8\n\tdos charset = CP932\n\tmap to guest = Bad User\n/g" /etc/samba/smb.conf
+                    sudo sed -i "s/workgroup = MYGROUP/workgroup = WORKGROUP/g" /etc/samba/smb.conf
+                    sudo sed -i "s/^\thosts allow = 127.*/\thosts allow = 127. 192.168./g" /etc/samba/smb.conf
+                    sudo sed -i "s/^;\(\tmax protocol = SMB2\)/\1/g" /etc/samba/smb.conf
+                    sudo sed -i "s/^;\tsecurity = Security/\tsecurity = user/g" /etc/samba/smb.conf
+                    local smb_conf='
+[Anonymous share]
+	path = /samba/anonymous_share
+	writable = yes
+	browsable = yes
+	guest ok = yes
+	guest only = yes
+	create mode = 0777
+	directory mode = 0777'
+                    echo $smb_conf | sudo tee --append /etc/samba/smb.conf
+                    sudo systemctl start smb
+                    sudo systemctl start nmb
+                    sudo systemctl enable smb
+                    sudo systemctl enable nmb
+                    ;;
+            esac
+    esac
+}
+if ! type -p smbd > /dev/null; then get-samba; fi
+function samba-restart {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian)
+                    sudo systemctl restart smb
+                    sudo systemctl restart nmb
+            esac
+    esac
+}
+function samba-stop {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian)
+                    sudo systemctl stop smb
+                    sudo systemctl stop nmb
+            esac
+    esac
+}
+alias sbr=samba-restart
+alias sbt=samba-stop
+alias sbs=testparm
 
 
 # 5. Platform::Heroku
