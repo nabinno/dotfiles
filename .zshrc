@@ -31,9 +31,11 @@
 # 4. IntegratedDevelopmentEnvironment::Emacs
 # 4. IntegratedDevelopmentEnvironment::Emacs::Ctags
 # 4. IntegratedDevelopmentEnvironment::Emacs::Pandoc
-# 4. IntegratedDevelopmentEnvironment::ResourceManagement::Filesystem
+# 4. IntegratedDevelopmentEnvironment::ResourceManagement::Filesystem::Inotify
+# 4. IntegratedDevelopmentEnvironment::ResourceManagement::FileSystem::Samba
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::Git
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::PlantUml
+# 4. IntegratedDevelopmentEnvironment::ResourceManagement::ImageMagick
 # 4. IntegratedDevelopmentEnvironment::SoftwareDebugging::Benchmark
 # 4. IntegratedDevelopmentEnvironment::OsLevelVirtualization::Vagrant
 # 4. IntegratedDevelopmentEnvironment::SoftwareDeployment::Terraform
@@ -44,7 +46,6 @@
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Alias
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Screen
 # 4. IntegratedDevelopmentEnvironment::Chat::Slack
-# 4. IntegratedDevelopmentEnvironment::FileSystem::Samba
 # 5. Platform::Heroku
 # 5. Platform::GoogleCloudPlatform
 # 5. Platform::AmazonWebServices
@@ -171,6 +172,16 @@ function get-ntp {
             case "${DIST}" in
                 Redhat|RedHat) sudo yum install -y ntp ;;
                 Debian|Ubuntu) sudo apt-get install -y ntp ;;
+            esac
+    esac
+}
+function set-ntp {
+    case "${OSTYPE}" in
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo chkconfig ntpd on
+                    sudo service ntpd start ;;
             esac
     esac
 }
@@ -1934,26 +1945,34 @@ if ! type -p thrift > /dev/null ; then get-thrift ; fi
 
 # 3. Daemon::Database::Postgresql
 # -------------------------------
-REQUIRED_POSTGRESQL_VERSION=9.5.3
-# REQUIRED_POSTGRESQL_VERSION=9.4.6
+REQUIRED_POSTGRESQL_VERSION=9.2.15
 PSQL_PAGER='less -S'
 # ### installation ###
 function get-postgresql {
     case "${OSTYPE}" in
-        darwin*|linux*) docker run \
-                               --name db1 \
-                               -p 5432:5432 \
-                               -e POSTGRES_PASSWORD=password \
-                               -d postgres:$REQUIRED_POSTGRESQL_VERSION ;;
+        darwin*|linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo yum install postgresql-server postgresql-devel postgresql-contrib
+                    set-postgresql
+                    ;;
+            esac
     esac
 }
 function set-postgresql {
     case "${OSTYPE}" in
-        darwin*|linux*) docker restart db1 ;;
+        darwin*|linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo postgresql-setup initdb
+                    sudo sed -i "s|^\(host   allow            allow            127.0.0.1/32           \)ident|\1md5|g" /var/lib/pgsql/data/pg_hba.conf
+                    sudo sed -i "s|^\(host   allow            allow            ::1/128                \)ident|\1md5|g" /var/lib/pgsql/data/pg_hba.conf
+                    sudo chkconfig postgresql on
+                    ;;
+            esac
     esac
 }
-# if ! type -p psql > /dev/null ; then get-postgresql ; fi
-# if   type -p psql > /dev/null ; then set-postgresql ; fi
+if ! type -p psql > /dev/null ; then get-postgresql ; fi
 function pg-restart {
     case "${OSTYPE}" in
         darwin*)
@@ -1965,11 +1984,21 @@ function pg-restart {
                 Redhat|RedHat)
                     sudo service postgresql stop
                     sudo service postgresql start
-                    sudo service postgresql status ;;
-                Debian) ;;
-                Ubuntu)
+                    sudo service postgresql status
+                    ;;
+                Debian|Ubuntu)
                     parts restart postgresql
                     parts status postgresql ;;
+            esac
+    esac
+}
+function pg-stop {
+    case "${OSTYPE}" in
+        darwin*) sudo service postgresql stop ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat) sudo service postgresql stop ;;
+                Debian|Ubuntu) parts stop postgresql ;;
             esac
     esac
 }
@@ -1979,15 +2008,15 @@ function pg-status {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat) sudo service postgresql status ;;
-                Debian) ;;
-                Ubuntu) parts status postgresql ;;
+                Debian|Ubuntu) parts status postgresql ;;
             esac
     esac
 }
 alias pgr="pg-restart"
-alias pgp="ps aux | \grep -G 'postgresql.*'"
+alias pgp="ps aux | grep [p]ostgres"
 alias pgs="pg-status"
-alias pgk="sudo killall postgresql"
+alias pgt="pg-stop"
+alias pgk="pg-stop"
 # alias psql='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus psql'
 
 
@@ -2256,21 +2285,21 @@ function nginx-restart {
         darwin*|linux*)
             sudo nginx -s stop
             sudo nginx
-            sudo nginx -s status ;;
+            nginx-status ;;
     esac
 }
 function nginx-status {
     case "${OSTYPE}" in
         darwin*|linux*)
             sudo nginx -t
-            sudo nginx -s status ;;
+            ps aux | grep [n]ginx ;;
     esac
 }
 if ! type -p nginx > /dev/null; then get-nginx; fi
 alias nk="nginx-stop"
 alias nt="nginx-stop"
 alias nr="nginx-restart"
-alias np="ps aux | \grep -G 'nginx.*'"
+alias np="ps aux | grep [n]ginx"
 alias ns="nginx-status"
 
 
@@ -2409,8 +2438,8 @@ alias pandocpdf="pandoc -V documentclass=ltjarticle --latex-engine=lualatex -t p
 alias pandocslide="pandoc -t slidy -s"
 
 
-# 4. IntegratedDevelopmentEnvironment::ResourceManagement::Filesystem
-# -------------------------------------------------------------------
+# 4. IntegratedDevelopmentEnvironment::ResourceManagement::Filesystem::Inotify
+# ----------------------------------------------------------------------------
 # ### inotify ###
 function get-inotify {
     case "${OSTYPE}" in
@@ -2432,6 +2461,75 @@ function sync-filesystem {
     crontab -r
     echo '0 0 * * * sudo find /home /var /usr -mtime +1 -a \( -name "*.pag" -o -name "*.dir" -o -name "*.log" \) -exec sudo rm {} \;' | crontab
 }
+
+
+# 4. IntegratedDevelopmentEnvironment::ResourceManagement::Filesystem::Samba
+# --------------------------------------------------------------------------
+function get-samba {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian)
+                    sudo yum remove samba*
+                    sudo yum install samba* -y
+                    set-samba ;;
+            esac
+    esac
+}
+function set-samba {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian)
+                    sudo mkdir -p /samba/anonymous_share
+                    sudo chmod -R 0777 /samba/anonymous_share
+                    sudo sed -i "s|^\(\[global\]\)|\1\n\tunix charset = UTF-8\n\tdos charset = CP932\n\tmap to guest = Bad User\n|g" /etc/samba/smb.conf
+                    sudo sed -i "s|workgroup = MYGROUP|workgroup = WORKGROUP|g" /etc/samba/smb.conf
+                    sudo sed -i "s|^\thosts allow = 127.*/\thosts allow = 127. 192.168.|g" /etc/samba/smb.conf
+                    sudo sed -i "s|^;\(\tmax protocol = SMB2\)|\1|g" /etc/samba/smb.conf
+                    sudo sed -i "s|^;\tsecurity = Security|\tsecurity = user|g" /etc/samba/smb.conf
+                    local smb_conf='
+[Anonymous share]
+	path = /samba/anonymous_share
+	writable = yes
+	browsable = yes
+	guest ok = yes
+	guest only = yes
+	create mode = 0777
+	directory mode = 0777'
+                    echo $smb_conf | sudo tee --append /etc/samba/smb.conf
+                    sudo systemctl start smb
+                    sudo systemctl start nmb
+                    sudo systemctl enable smb
+                    sudo systemctl enable nmb
+                    ;;
+            esac
+    esac
+}
+if ! type -p smbd > /dev/null; then get-samba; fi
+function samba-restart {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian)
+                    sudo systemctl restart smb
+                    sudo systemctl restart nmb
+            esac
+    esac
+}
+function samba-stop {
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian)
+                    sudo systemctl stop smb
+                    sudo systemctl stop nmb
+            esac
+    esac
+}
+alias sbr=samba-restart
+alias sbt=samba-stop
+alias sbs=testparm
 
 
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::Git
@@ -2676,6 +2774,16 @@ if ! type -p puml > /dev/null ; then get-puml ; fi
 if [ ! -f ~/.local/bin/plantuml.jar ] ; then get-plantuml ; fi
 if [ -f ~/.local/bin/plantuml.jar ] ; then alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng' ; fi
 if ! type -p dot > /dev/null ; then get-graphviz ; fi
+
+
+# 4. IntegratedDevelopmentEnvironment::ResourceManagement::ImageMagick
+# --------------------------------------------------------------------
+REQUIRED_IMAGEMAGICK_VERSION=6.9.5-2
+function get-imagemagick {
+    case ${OSTYPE} in
+        freebsd*|darwin*|linux*) nix-install imagemagick-${REQUIRED_IMAGEMAGICK_VERSION} ;;
+    esac
+}
 
 
 # 4. IntegratedDevelopmentEnvironment::SoftwareDebugging::Benchmark
@@ -3094,83 +3202,14 @@ function get-slackchat {
 }
 
 
-# 4. IntegratedDevelopmentEnvironment::FileSystem::Samba
-# ------------------------------------------------------
-function get-samba {
-    case "${OSTYPE}" in
-        darwin*|linux*)
-            case "${DIST}" in
-                Redhat|RedHat|Debian)
-                    sudo yum remove samba*
-                    sudo yum install samba* -y
-                    set-samba ;;
-            esac
-    esac
-}
-function set-samba {
-    case "${OSTYPE}" in
-        darwin*|linux*)
-            case "${DIST}" in
-                Redhat|RedHat|Debian)
-                    sudo mkdir -p /samba/anonymous_share
-                    sudo chmod -R 0777 /samba/anonymous_share
-                    sudo sed -i "s/^\(\[global\]\)/\1\n\tunix charset = UTF-8\n\tdos charset = CP932\n\tmap to guest = Bad User\n/g" /etc/samba/smb.conf
-                    sudo sed -i "s/workgroup = MYGROUP/workgroup = WORKGROUP/g" /etc/samba/smb.conf
-                    sudo sed -i "s/^\thosts allow = 127.*/\thosts allow = 127. 192.168./g" /etc/samba/smb.conf
-                    sudo sed -i "s/^;\(\tmax protocol = SMB2\)/\1/g" /etc/samba/smb.conf
-                    sudo sed -i "s/^;\tsecurity = Security/\tsecurity = user/g" /etc/samba/smb.conf
-                    local smb_conf='
-[Anonymous share]
-	path = /samba/anonymous_share
-	writable = yes
-	browsable = yes
-	guest ok = yes
-	guest only = yes
-	create mode = 0777
-	directory mode = 0777'
-                    echo $smb_conf | sudo tee --append /etc/samba/smb.conf
-                    sudo systemctl start smb
-                    sudo systemctl start nmb
-                    sudo systemctl enable smb
-                    sudo systemctl enable nmb
-                    ;;
-            esac
-    esac
-}
-if ! type -p smbd > /dev/null; then get-samba; fi
-function samba-restart {
-    case "${OSTYPE}" in
-        darwin*|linux*)
-            case "${DIST}" in
-                Redhat|RedHat|Debian)
-                    sudo systemctl restart smb
-                    sudo systemctl restart nmb
-            esac
-    esac
-}
-function samba-stop {
-    case "${OSTYPE}" in
-        darwin*|linux*)
-            case "${DIST}" in
-                Redhat|RedHat|Debian)
-                    sudo systemctl stop smb
-                    sudo systemctl stop nmb
-            esac
-    esac
-}
-alias sbr=samba-restart
-alias sbt=samba-stop
-alias sbs=testparm
-
-
 # 5. Platform::Heroku
 # -------------------
 function get-heroku {
     case "${OSTYPE}" in
-        freebsd*|darwin*) nix-install heroku-3.42.20 ;;
+        freebsd*|darwin*) nix-install heroku-3.43.2 ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat|Debian) nix-install heroku-3.42.20 ;;
+                Redhat|RedHat|Debian) nix-install heroku-3.43.2 ;;
                 Ubuntu)
                     parts install \
                           heroku_toolbelt \
