@@ -1,3 +1,4 @@
+# == INDEX
 # 1. BasicSettings::OsDetect
 # 1. BasicSettings::EnvironmentVariable
 # 1. BasicSettings::EnvironmentVariable::Locale
@@ -38,6 +39,7 @@
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::ImageMagick
 # 4. IntegratedDevelopmentEnvironment::SoftwareDebugging::Benchmark
 # 4. IntegratedDevelopmentEnvironment::OsLevelVirtualization::Vagrant
+# 4. IntegratedDevelopmentEnvironment::SoftwareDeployment::Ansible
 # 4. IntegratedDevelopmentEnvironment::SoftwareDeployment::Terraform
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Keybind
@@ -48,6 +50,12 @@
 # 4. IntegratedDevelopmentEnvironment::Chat::Slack
 # 5. Platform::Heroku
 # 5. Platform::GoogleCloudPlatform
+# 5. Platform::GoogleCloudPlatform::GoogleContainerEngine
+# 5. Platform::GoogleCloudPlatform::GoogleContainerEngine::Postgresql
+# 5. Platform::GoogleCloudPlatform::GoogleContainerEngine::Redis
+# 5. Platform::GoogleCloudPlatform::GoogleContainerEngine::Memcahed
+# 5. Platform::GoogleCloudPlatform::GoogleCloudPubsub
+# 5. Platform::GoogleCloudPlatform::GoogleCloudBigquery
 # 5. Platform::AmazonWebServices
 # 9. Other::Customized
 
@@ -234,6 +242,7 @@ function get-base {
                 Redhat|RedHat)
                     sudo yum update -y
                     yum install -y \
+                        bind-utils \
                         gcc \
                         gdbm-devel \
                         git \
@@ -1695,7 +1704,8 @@ alias fk="php-fastcgid stop"
 # 2. ProgrammingLanguage::Python
 # ------------------------------
 REQUIRED_PYTHON_VERSION=2.7.11
-export PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
+PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
+PYTHONPATH="$HOME/.local/python:$PYTHONPATH"
 # ### version control ###
 function get-pyenv {
     case "${OSTYPE}" in
@@ -2534,7 +2544,7 @@ alias sbs=testparm
 
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::Git
 # ------------------------------------------------------------
-REQUIRED_GIT_VERSION=1.9.4
+REQUIRED_GIT_VERSION=2.10.2
 # ### installation ###
 function get-git {
     case "${OSTYPE}" in
@@ -2542,16 +2552,16 @@ function get-git {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
-                    sudo yum install -y \
-                         perl-ExtUtils-MakeMaker \
-                         libcurl-devel
-                    wget https://www.kernel.org/pub/software/scm/git/git-${REQUIRED_GIT_VERSION}.tar.gz
+                    sudo yum groupinstall "Development Tools"
+                    sudo yum install gettext-devel openssl-devel perl-CPAN perl-devel zlib-devel
+                    wget https://www.kernel.org/pub/software/scm/git/git-${REQUIRED_GIT_VERSION}.tar.gz -O ./git-${REQUIRED_GIT_VERSION}.tar.gz; wait
                     tar zxvf git-${REQUIRED_GIT_VERSION}.tar.gz
-                    cd git-${REQUIRED_GIT_VERSION}
-                    ./configure --prefix=/usr/local --with-curl --with-expat
-                    make prefix=/usr/local all
-                    sudo make prefix=/usr/local install
-                    cd ..
+                    (
+                        cd git-${REQUIRED_GIT_VERSION}
+                        ./configure --prefix=/usr/local --with-curl --with-expat
+                        make prefix=/usr/local all
+                        sudo make prefix=/usr/local install
+                    )
                     rm -fr git-${REQUIRED_GIT_VERSION} git-${REQUIRED_GIT_VERSION}.tar.gz
                     get-git-flow ;;
                 Debian) ;;
@@ -2877,6 +2887,30 @@ function vbm-scaleup {
     fi
 }
 alias vbm='VBoxManage'
+
+
+# 4. IntegratedDevelopmentEnvironment::SoftwareDeployment::Ansible
+# ----------------------------------------------------------------
+export ANSIBLE_HOST_KEY_CHECKING=false
+export PATH=~/.ans/bin:$PATH
+export ANS_PROJECTS_PATH=~/toki
+function get-ansible {
+    pip install \
+        ansible \
+        apache-libcloud
+    mkdir -p ~/.gcp
+}
+if ! type -p ansible-playbook > /dev/null; then get-ansible; fi
+# ### ans (ansible wrapper) ###
+function get-ans {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            git clone https://github.com/nabinno/ansible-stack ~/.ans
+            eval "$(ans init -)" ;;
+    esac
+}
+if ! type -p ans > /dev/null; then get-ans; fi
+if type -p ans > /dev/null; then eval "$(ans init -)" ; fi
 
 
 # 4. IntegratedDevelopmentEnvironment::SoftwareDeployment::Terraform
@@ -3221,7 +3255,20 @@ function get-heroku {
 
 # 5. Platform::GoogleCloudPlatform
 # --------------------------------
-export PATH="$HOME/google-cloud-sdk/bin:$PATH"
+# #
+# # CHEATSHEET
+# #
+# # 1. Initialize
+# gcloud init
+#
+# # 2. Login
+# gcloud auth login
+#
+# # 3. Setup project_id
+# gcloud config set project $project_id
+#
+GCLOUD_PROJECT_ID='utagaki-v1'
+PATH="$HOME/google-cloud-sdk/bin:$PATH"
 function get-gcloud {
     case "${OSTYPE}" in
         cygwin|darwin*|linux*)
@@ -3234,8 +3281,12 @@ function set-gcloud {
         cygwin|darwin*|linux*)
             source ~/google-cloud-sdk/completion.zsh.inc
             source ~/google-cloud-sdk/path.zsh.inc
-            source ~/google-cloud-sdk/completion.zsh.inc ;;
+            source ~/google-cloud-sdk/completion.zsh.inc
+            gcloud config set project $GCLOUD_PROJECT_ID ;;
     esac
+}
+function gcloud-init {
+    gcloud init
 }
 if ! type -p gcloud > /dev/null ; then get-gcloud ; fi
 if type -p gcloud > /dev/null ; then set-gcloud ; fi
@@ -3267,7 +3318,7 @@ if type -p gcloud > /dev/null ; then set-gcloud ; fi
 # kubectl cluster-info
 # gcloud compute instance-groups managed resize [gke-cluster-instance-group] --size [num]
 #
-# # 9. Create a secure tunnel ###
+# # 9. Create a secure tunnel
 # ssh -f -nNT -L 8080:127.0.0.1:8080 core@<master-public-ip>
 #
 function get-kubectl {
@@ -3281,6 +3332,58 @@ function get-kubectl {
     esac
 }
 if ! type kubectl > /dev/null ; then get-kubectl ; fi
+
+
+# 5. Platform::GoogleCloudPlatform::GoogleContainerEngine::Postgresql
+# -------------------------------------------------------------------
+
+
+# 5. Platform::GoogleCloudPlatform::GoogleContainerEngine::Redis
+# --------------------------------------------------------------
+
+
+# 5. Platform::GoogleCloudPlatform::GoogleContainerEngine::Memcahed
+# -----------------------------------------------------------------
+
+
+# 5. Platform::GoogleCloudPlatform::GoogleCloudPubsub
+# ---------------------------------------------------
+function gcloud-pubsub-init {
+    eval $(gcloud beta emulators pubsub env-init)
+}
+function gcloud-pubsub-status {
+    echo $PUBSUB_EMULATOR_HOST
+    ps aux | grep [p]ubsub
+}
+function gcloud-pubsub-start {
+    nohup gcloud beta emulators pubsub start > ~/.config/gcloud/logs/gcloud-pubsub.log 2>&1 &
+    gcloud-pubsub-init
+    gcloud-pubsub-status
+}
+function gcloud-pubsub-stop {
+    for i in $(ps aux | grep [p]ubsub | awk '{print $2}'); do
+        if [ $i -gt 0 ]; then
+            sudo kill -9 $i
+        fi
+    done
+}
+function gcloud-pubsub-restart {
+    gcloud-pubsub-stop
+    gcloud-pubsub-start
+}
+function gcloud-pubsub-log {
+    tailf ~/.config/gcloud/logs/gcloud-pubsub.log
+}
+alias gcpt=gcloud-pubsub-stop
+alias gcpk=gcloud-pubsub-stop
+alias gcpr=gcloud-pubsub-restart
+alias gcpl=gcloud-pubsub-log
+alias gcps=gcloud-pubsub-status
+alias gcpp=gcloud-pubsub-status
+
+
+# 5. Platform::GoogleCloudPlatform::GoogleCloudBigquery
+# -----------------------------------------------------
 
 
 # 5. Platform::AmazonWebServices
