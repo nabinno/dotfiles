@@ -5,7 +5,7 @@
 
 (dolist (mode '(caml clojure crontab css emacs-lisp haskell-interactive haskell
                      haskell inferior-haskell javascript js js2 lisp nxml perl
-                     php python ruby scheme tcl yaml))
+                     php python scheme tcl))
   (add-hook (intern (format "%s-mode-hook" mode))
             '(lambda ()
                (origami-mode)
