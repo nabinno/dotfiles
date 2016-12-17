@@ -1,4 +1,6 @@
-# dotfiles --- devenv provisioner
+# Nab's dotfiles
+This is a repository with my configuration files, those that in *nix normally are these files under the $HOME directory that are hidden and preceded by a dotfiles.
+
 ## Provision scripts
 - Zsh
 - Emacs lisp
@@ -22,6 +24,9 @@ emacs
 ```
 
 ---
+
+## LISENCE
+MIT
 
 ## EPILOGUE
 >     A whale!
