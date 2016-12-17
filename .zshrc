@@ -1860,12 +1860,9 @@ alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 
 # 2. ProgrammingLanguage::Javascript
 # ----------------------------------
-export REQUIRED_NODE_VERSION='5.8.0'
+export REQUIRED_NODE_VERSION='6.9.1'
 export node='NODE_NO_READLINE=1 node'
-case $OSTYPE in
-    msys|cygwin)
-        export PATH=$(get-winpath "C:\Program Files\nodejs"):$PATH ;;
-esac
+case $OSTYPE in (msys|cygwin) export PATH=$(get-winpath "C:\Program Files\nodejs"):$PATH ;; esac
 # ### version control ###
 function get-ndenv {
     case "${OSTYPE}" in
@@ -1881,7 +1878,8 @@ function get-node {
             ndenv install v$REQUIRED_NODE_VERSION
             ndenv rehash
             ndenv global v$REQUIRED_NODE_VERSION
-            get-global-npm-packages ;;
+            ;;
+            # get-global-npm-packages ;;
     esac
 }
 function set-node {
@@ -1925,6 +1923,11 @@ function get-watchman {
     esac
 }
 if ! type -p watchman > /dev/null; then get-watchman; fi
+function get-yoeman {
+    npm i -g \
+        generator-standard-readme \
+        yo
+}
 
 
 # 2. ProgrammingLanguage::RemoteProcedureCall
@@ -3444,7 +3447,7 @@ function get-dotfiles {
         fi
         cd ~/.local/dotfiles
         git checkout -- .
-        git checkout develop
+        git checkout master
         git pull
         rm -rf                         .emacs.d/lisp/*;    wait
         cp -pr ~/.emacs.d/lisp/*       .emacs.d/lisp/;     wait
@@ -3477,7 +3480,7 @@ function put-dotfiles {
     fi
     cd ~/.local/dotfiles; wait
     git checkout -- .
-    git checkout develop
+    git checkout master
     git pull
     rm -rf .emacs.d/lisp/init-mu4e.el
     rm -rf .emacs.d/lisp/init-esa.el
