@@ -1,22 +1,24 @@
-# base
-function docker-run-other1 {
-    docker run --name other1 -h other1 \
-           --network backtier \
-           -p 12929:12929 \
-           -d kiyoka/sekka
-}
-function docker-run-cache2 {
-    docker run --name cache2 -h cache2 \
-           --network backtier \
-           -p 11211:11211 \
-           -d memcached:1.4
-}
-function docker-run-cache1 {
-    docker run --name cache1 -h cache1 \
-           --network backtier \
-           -p 6379:6379 \
-           -d redis:2.8
-}
+#
+# Base
+#
+# function docker-run-other1 {
+#     docker run --name other1 -h other1 \
+#            --network backtier \
+#            -p 12929:12929 \
+#            -d kiyoka/sekka
+# }
+# function docker-run-cache2 {
+#     docker run --name cache2 -h cache2 \
+#            --network backtier \
+#            -p 11211:11211 \
+#            -d memcached:1.4
+# }
+# function docker-run-cache1 {
+#     docker run --name cache1 -h cache1 \
+#            --network backtier \
+#            -p 6379:6379 \
+#            -d redis:2.8
+# }
 function docker-run-db3 {
     docker run --name db3 -h db3 \
            --network backtier \
@@ -44,32 +46,36 @@ function docker-run-db1 {
            -e POSTGRES_PASSWORD=password \
            -d postgres:9.5.3
 }
-function docker-run-app1 {
-    docker run --name app1 -h app1 \
-           -u action \
-           --network fronttier \
-           --network backtier \
-           -p 80:80 \
-           -p 2222:22 \
-           -p 3000-3009:3000-3009 \
-           -p 9000-9009:9000-9009 \
-           -d quay.io/nabinno/temp \
-           sudo /usr/sbin/sshd -D
-    docker cp ~/.docker/etc/nginx/nginx.conf app1:/etc/nginx/nginx.conf
-    docker cp ~/.docker/etc/nginx/conf.d app1:/etc/nginx/
-    docker cp ~/.docker/etc/hosts app1:/tmp/hosts
-    docker exec app1 sh -c 'sudo chmod 644 /etc/nginx/nginx.conf'
-    docker exec app1 sh -c 'sudo chmod 644 /etc/nginx/conf.d/*.conf'
-    docker exec app1 sh -c 'sudo rm /etc/nginx/conf.d/default.conf /etc/nginx/sites-available/* /etc/nginx/sites-enabled/*'
-    docker exec app1 sh -c 'cat /tmp/hosts | sudo tee -a /etc/hosts'
-    docker exec app1 sh -c 'sudo nginx'
-}
+# function docker-run-app1 {
+#     docker run --name app1 -h app1 \
+#            -u action \
+#            --network fronttier \
+#            --network backtier \
+#            -p 80:80 \
+#            -p 2222:22 \
+#            -p 3000-3009:3000-3009 \
+#            -p 9000-9009:9000-9009 \
+#            -d quay.io/nabinno/temp \
+#            sudo /usr/sbin/sshd -D
+#     docker cp ~/.docker/etc/nginx/nginx.conf app1:/etc/nginx/nginx.conf
+#     docker cp ~/.docker/etc/nginx/conf.d app1:/etc/nginx/
+#     docker cp ~/.docker/etc/hosts app1:/tmp/hosts
+#     docker exec app1 sh -c 'sudo chmod 644 /etc/nginx/nginx.conf'
+#     docker exec app1 sh -c 'sudo chmod 644 /etc/nginx/conf.d/*.conf'
+#     docker exec app1 sh -c 'sudo rm /etc/nginx/conf.d/default.conf /etc/nginx/sites-available/* /etc/nginx/sites-enabled/*'
+#     docker exec app1 sh -c 'cat /tmp/hosts | sudo tee -a /etc/hosts'
+#     docker exec app1 sh -c 'sudo nginx'
+# }
 
-# network
+#
+# Network
+#
 function docker-network-create-backtier  { docker network create backtier }
 function docker-network-create-fronttier { docker network create fronttier }
 
-# compose
+#
+# Compose
+#
 function dcc {
     case $1 in
         up)
