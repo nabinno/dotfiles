@@ -39,8 +39,9 @@
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::ImageMagick
 # 4. IntegratedDevelopmentEnvironment::SoftwareDebugging::Benchmark
 # 4. IntegratedDevelopmentEnvironment::OsLevelVirtualization::Vagrant
-# 4. IntegratedDevelopmentEnvironment::SoftwareDeployment::Ansible
-# 4. IntegratedDevelopmentEnvironment::SoftwareDeployment::Terraform
+# 4. IntegratedDevelopmentEnvironment::WorkflowEngine::Wercker
+# 4. IntegratedDevelopmentEnvironment::WorkflowEngine::Ansible
+# 4. IntegratedDevelopmentEnvironment::WorkflowEngine::Terraform
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Keybind
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Terminal
@@ -1201,6 +1202,7 @@ function get-global-go-packages {
         freebsd*|darwin*|linux*)
             go get github.com/peco/peco/cmd/peco
             go get github.com/mattn/qq/cmd/qq
+            go get github.com/shenwei356/csvtk/csvtk
     esac
 }
 
@@ -1748,13 +1750,38 @@ function get-global-pip-packages {
             pip install -U \
                 docker-compose \
                 ipython \
-                pandas \
                 pulp \
-                simpy \
-                boto ;;
+                boto
+            # pydata
+            pip install -U \
+                numpy \
+                scipy \
+                pandas \
+                matplotlib \
+                scikit-image
+            # machine_learning
+            pip install -U \
+                chainer \
+                tensorflow \
+                Theano \
+                keras \
+                scikit-learn ;;
     esac
 }
 if ! type -p pip > /dev/null ; then get-pip ; fi
+function get-keras-rl {
+    (
+        pip install -U h5py
+        cd ~
+        git clone https://github.com/matthiasplappert/keras-rl
+        cd keras-rl
+        python setup.py install
+    )
+}
+function get-gym {
+    sudo apt-get install -y python-numpy python-dev cmake zlib1g-dev libjpeg-dev xvfb libav-tools xorg-dev python-opengl libboost-all-dev libsdl2-dev swig
+    pip install -U gym
+}
 
 
 # 2. ProgrammingLanguage::Perl
@@ -2892,8 +2919,18 @@ function vbm-scaleup {
 alias vbm='VBoxManage'
 
 
-# 4. IntegratedDevelopmentEnvironment::SoftwareDeployment::Ansible
-# ----------------------------------------------------------------
+# 4. IntegratedDevelopmentEnvironment::WorkflowEngine::Wercker
+# ------------------------------------------------------------
+export WERCKER_ENVIRONMENT_FILE=./.env
+function get-wercker {
+    curl -L https://s3.amazonaws.com/downloads.wercker.com/cli/stable/linux_amd64/wercker -o ~/.local/bin/wercker
+    chmod u+x ~/.local/bin/wercker
+}
+if ! type -p wercker > /dev/null; then get-wercker; fi
+
+
+# 4. IntegratedDevelopmentEnvironment::WorkflowEngine::Ansible
+# ------------------------------------------------------------
 export ANSIBLE_HOST_KEY_CHECKING=false
 export PATH=~/.ans/bin:$PATH
 export ANS_PROJECTS_PATH=~/toki
@@ -2916,8 +2953,8 @@ if ! type -p ans > /dev/null; then get-ans; fi
 if type -p ans > /dev/null; then eval "$(ans init -)" ; fi
 
 
-# 4. IntegratedDevelopmentEnvironment::SoftwareDeployment::Terraform
-# ------------------------------------------------------------------
+# 4. IntegratedDevelopmentEnvironment::WorkflowEngine::Terraform
+# --------------------------------------------------------------
 REQUIRED_TERRAFORM_VERSION=0.6.6
 function get-terraform {
     local current_pwd=`pwd`
@@ -3270,7 +3307,7 @@ function get-heroku {
 # # 3. Setup project_id
 # gcloud config set project $project_id
 #
-GCLOUD_PROJECT_ID='utagaki-v1'
+GCLOUD_PROJECT_ID='utagaki-v2'
 PATH="$HOME/google-cloud-sdk/bin:$PATH"
 function get-gcloud {
     case "${OSTYPE}" in
