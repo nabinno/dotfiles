@@ -1,3 +1,7 @@
+;;; init-view --- Configure view mode
+;;; Commentary:
+;;; Code:
+
 (setq view-read-only t)
 (global-set-key (kbd "") 'view-mode)
 
@@ -13,18 +17,16 @@
     ("u" . scroll-down)
     ("b" . scroll-up)
     (" " . scroll-up)
-    ("g" . beginning-of-buffer)
+    ;; ("g" . beginning-of-buffer)
     ("p" . beginning-of-buffer)
-    ("e" . end-of-buffer)
+    ;; ("e" . end-of-buffer)
     ("n" . end-of-buffer)
-    ("J" . forward-list)
-    ("K" . backward-list)
+    ;; ("J" . forward-list)
+    ;; ("K" . backward-list)
     ("y" . origami-cycle-universally)
     ("o" . View-quit)
     ("i" . View-quit)
-    ("" . View-quit)
-    ;; ("j" . (lambda () (interactive) (scroll-up 4)))
-    ;; ("k" . (lambda () (interactive) (scroll-down 4)))
+    ;; ("" . View-quit)
     ))
 (defun define-many-keys (keymap key-table &optional includes)
   (let (key cmd)
@@ -35,6 +37,7 @@
         (define-key keymap key cmd))))
   keymap)
 (defun view-mode-hook0 ()
+  "Wrap view-mode-hook."
   (define-many-keys view-mode-map pager-keybind)
   ;; (hl-line-mode 1)
   (define-key view-mode-map " " 'scroll-up))
@@ -59,3 +62,4 @@
 
 
 (provide 'init-view)
+;;; init-view.el ends here
