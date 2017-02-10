@@ -48,6 +48,7 @@
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Z
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Alias
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Screen
+# 4. IntegratedDevelopmentEnvironment::ComputerTerminal::PowerShell
 # 4. IntegratedDevelopmentEnvironment::Chat::Slack
 # 5. Platform::Heroku
 # 5. Platform::GoogleCloudPlatform
@@ -1019,8 +1020,9 @@ esac
 
 # 2. ProgrammingLanguage::Ruby
 # ----------------------------
-REQUIRED_RUBY_VERSION=2.2.0
-REQUIRED_RUBY_VERSION_2=2.2.2
+REQUIRED_RUBY_VERSION=2.3.1
+REQUIRED_RUBY_VERSION_2=2.2.0
+REQUIRED_RUBY_VERSION_3=2.2.2
 # ### version control ###
 function get-rbenv {
     case "${OSTYPE}" in
@@ -1034,6 +1036,7 @@ function get-ruby {
         freebsd*|darwin*|linux*)
             rbenv install $REQUIRED_RUBY_VERSION
             rbenv install $REQUIRED_RUBY_VERSION_2
+            rbenv install $REQUIRED_RUBY_VERSION_3
             rbenv rehash
             rbenv global $REQUIRED_RUBY_VERSION
             get-global-gem-packages ;;
@@ -1919,6 +1922,7 @@ function get-global-npm-packages {
         bower \
         grunt-cli \
         gulp \
+        hexo-cli
         html2jade \
         http-server \
         less \
@@ -2792,9 +2796,7 @@ function get-puml {
 function get-plantuml {
     case "${OSTYPE}" in
         freebsd*|darwin*) ;;
-        linux*)
-            wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar
-            alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng' ;;
+        linux*) wget http://jaist.dl.sourceforge.net/project/plantuml/plantuml.8027.jar -O ~/.local/bin/plantuml.jar ;;
     esac
 }
 function get-graphviz {
@@ -3263,6 +3265,28 @@ if [ "$TERM" = "screen" ]; then
     chpwd
 fi
 
+
+# 4. IntegratedDevelopmentEnvironment::ComputerTerminal::PowerShell
+# -----------------------------------------------------------------
+function get-powershell {
+    case "${OSTYPE}" in
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo yum install https://github.com/PowerShell/PowerShell/releases/download/v6.0.0-alpha.15/powershell-6.0.0_alpha.15-1.el7.centos.x86_64.rpm ;;
+                Ubuntu)
+                    case "${DIST_VERSION=}" in
+                        14.04)
+                            sudo dpkg -i powershell_6.0.0-alpha.15-1ubuntu1.14.04.1_amd64.deb
+                            sudo apt-get install -f ;;
+                        16.04)
+                            sudo dpkg -i powershell_6.0.0-alpha.15-1ubuntu1.16.04.1_amd64.deb
+                            sudo apt-get install -f ;;
+                    esac ;;
+            esac ;;
+    esac
+}
+if ! type -p powershell > /dev/null; then get-powershell; fi
 
 # 4. IntegratedDevelopmentEnvironment::Chat::Slack
 # ------------------------------------------------
