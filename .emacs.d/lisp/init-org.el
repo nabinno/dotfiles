@@ -174,11 +174,46 @@
 (require-package 'org-trello)
 
 
-;;; org-page
+;;; Blog engine
+;; org-page
 (require-package 'org-page)
+(require 'org-page)
+(setq op/repository-directory "~/nabinno.github.io")
+(setq op/site-domain "https://nabinno.github.io/")
+
+;; blog-admin
 (require-package 'blog-admin)
-(setq blog-admin-backend-path "~/nabinno.github.io")
-(setq blog-admin-backend-type 'org-page)
+(require 'blog-admin)
+;; (setq blog-admin-backend-type 'org-page)
+(setq blog-admin-backend-path "~/nabinno.github.io/org")
+(setq blog-admin-backend-new-post-in-drafts t)
+(setq blog-admin-backend-new-post-with-same-name-dir t)
+(setq blog-admin-backend-org-page-drafts nil)
+(setq blog-admin-backend-org-page-config-file "~/nabinno.github.io/config.el")
+
+;; ox-publish
+(require 'ox-publish)
+(setq org-publish-project-alist
+      '(("org-ghp-posts"
+         ;; path to your org files.
+         :base-directory "~/nabinno.github.io/org/"
+         :base-extension "org"
+         ;; path to your jekyll files.
+         :publishing-directory "~/nabinno.github.io/jekyll/"
+         :recursive t
+         :publishing-function org-md-publish-to-md
+         :headline-levels 4
+         :markdown-extension "md"
+         ;; only export section between <body> </body>
+         :body-only t)
+        ("org-ghp-assets"
+         :base-directory "~/nabinno.github.io/org/"
+         :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf\\|php"
+         :publishing-directory "~/nabinno.github.io/"
+         :recursive t
+         :publishing-function org-publish-attachment)
+        ("org-ghp"
+         :components ("org-ghp-posts" "org-ghp-assets"))))
 
 
 ;;; org-tree-slide
@@ -243,7 +278,6 @@
                     ;; ("" . org-shiftcontrolright)
                     ;; ("" . org-shiftcontroldown)
                     ))))
-
 
 
 
