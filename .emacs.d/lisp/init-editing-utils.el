@@ -210,6 +210,7 @@
 (global-page-break-lines-mode)
 (diminish 'page-break-lines-mode)
 (add-hook 'prog-mode-hook 'page-break-lines-mode)
+(setq page-break-lines-char ?-)
 
 ;;----------------------------------------------------------------------------
 ;; Fill column indicator
