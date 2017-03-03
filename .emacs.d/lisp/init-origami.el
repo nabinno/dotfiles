@@ -4,7 +4,7 @@
 (require-package 'origami)
 
 (dolist (mode '(caml clojure crontab css emacs-lisp haskell-interactive haskell
-                     haskell inferior-haskell javascript js js2 lisp nxml perl
+                     haskell inferior-haskell lisp nxml perl
                      php python scheme tcl))
   (add-hook (intern (format "%s-mode-hook" mode))
             '(lambda ()
