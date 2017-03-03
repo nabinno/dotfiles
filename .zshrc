@@ -1754,7 +1754,8 @@ function get-global-pip-packages {
                 docker-compose \
                 ipython \
                 pulp \
-                boto
+                boto \
+                pipenv
             # pydata
             pip install -U \
                 numpy \
@@ -1896,7 +1897,10 @@ case $OSTYPE in (msys|cygwin) export PATH=$(get-winpath "C:\Program Files\nodejs
 # ### version control ###
 function get-ndenv {
     case "${OSTYPE}" in
-        freebsd*|darwin*|linux*) anyenv install ndenv && exec -l zsh ;;
+        freebsd*|darwin*|linux*)
+            anyenv install ndenv
+            git clone https://github.com/pine/ndenv-yarn-install.git "$(ndenv root)/plugins/ndenv-yarn-install"
+            exec -l zsh ;;
     esac
 }
 if ! type -p ndenv > /dev/null; then get-ndenv; fi
