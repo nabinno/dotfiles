@@ -1077,10 +1077,11 @@ fi
 
 # 2. ProgrammingLanguage::Elixir
 # ------------------------------
-REQUIRED_ERLANG_VERSION=18.3
-REQUIRED_ELIXIR_VERSION=1.2.0
-REQUIRED_PHOENIXFRAMEWORK_VERSION=1.2.0
+REQUIRED_ERLANG_VERSION=19.0
+REQUIRED_ELIXIR_VERSION=1.4.2
+REQUIRED_PHOENIXFRAMEWORK_VERSION=1.2.1
 export PATH="$HOME/.local/exenv/bin:$PATH"
+export PATH="$HOME/.mix:$PATH"
 # ### version control ###
 function get-kerl {
     case "${OSTYPE}" in
