@@ -58,10 +58,10 @@
     (add-hook 'magit-mode-hook (lambda () (local-unset-key [(meta h)])))))
 
 
-;;; Git blame
-(require-package 'git-blame)
-(autoload 'git-blame-mode "git-blame"
-  "Minor mode for incremental blame for Git." t)
+;; ;;; Git blame
+;; (require-package 'git-blame)
+;; (autoload 'git-blame-mode "git-blame"
+;;   "Minor mode for incremental blame for Git." t)
 
 
 ;;; Git flow
