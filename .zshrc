@@ -242,8 +242,11 @@ function get-base {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
+                    wget http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
+                    sudo rpm -ihv epel-release-7-9.noarch.rpm
+                    rm -f epel-release-7-9.noarch.rpm
                     sudo yum update -y
-                    yum install -y \
+                    sudo yum install -y \
                         bind-utils \
                         gcc \
                         gdbm-devel \
@@ -682,13 +685,12 @@ function nix-update        { nix-env --upgrade $1 }
 function get-nix-packages {
     case "${OSTYPE}" in
         darwin*|linux*)
-            nix-install \
-                heroku_toolbelt \
-                phantomjs \
-                the_silver_searcher \
-                tree \
-                perf \
-                uuid ;;
+            nix-install phantomjs
+            nix-install the_silver_searcher
+            nix-install tree
+            nix-install perf
+            nix-install uuid
+            nix-install jq ;;
     esac
 }
 case "${OSTYPE}" in
@@ -979,9 +981,7 @@ function get-base-brew-packages {
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
-                    brew install \
-                         jq \
-                         tree ;;
+                    brew install homebrew/dupes/gperf ;;
                 Debian|Ubuntu)
                     brew install \
                          jq ;;
@@ -1020,9 +1020,9 @@ esac
 
 # 2. ProgrammingLanguage::Ruby
 # ----------------------------
-REQUIRED_RUBY_VERSION=2.3.1
-REQUIRED_RUBY_VERSION_2=2.2.0
-REQUIRED_RUBY_VERSION_3=2.2.2
+REQUIRED_RUBY_VERSION=2.4.0
+REQUIRED_RUBY_VERSION_2=2.3.3
+REQUIRED_RUBY_VERSION_3=2.2.6
 # ### version control ###
 function get-rbenv {
     case "${OSTYPE}" in
@@ -1077,7 +1077,7 @@ fi
 
 # 2. ProgrammingLanguage::Elixir
 # ------------------------------
-REQUIRED_ERLANG_VERSION=19.0
+REQUIRED_ERLANG_VERSION=19.3
 REQUIRED_ELIXIR_VERSION=1.4.2
 REQUIRED_PHOENIXFRAMEWORK_VERSION=1.2.1
 export PATH="$HOME/.local/exenv/bin:$PATH"
@@ -1228,7 +1228,7 @@ case "${OSTYPE}" in
         export PATH=/cygdrive/C/Program~2/Mono/bin:$PATH ;;
 esac
 # A. Compiler        - Mono
-# B. Task Runner     - DNVM / Dotnet CLI
+# B. Task Runner     - Dotnet CLI
 # C. Package Manager - NuGet
 # D. Scaffolding     - Yeoman / Grunt-init
 # E. Complition      - OmniSharp
@@ -1261,11 +1261,6 @@ function get-mono {
     esac
 }
 # ### B. Task Runner ###
-function get-dnvm {
-    curl -sSL https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.sh | DNX_BRANCH=dev sh
-    source ~/.dnx/dnvm/dnvm.sh
-    dnvm upgrade -u
-}
 function get-dotnetcli {
     case "${OSTYPE}" in
         msys)
@@ -1292,10 +1287,6 @@ function get-dotnetcli {
                         mono-addins-1.2 \
                         mono-dll-fixer \
                         mono-zeroconf-0.9.0
-                    # ### dnvm ###
-                    curl -sSL https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.sh | DNX_BRANCH=dev sh
-                    source ~/.dnx/dnvm/dnvm.sh
-                    dnvm upgrade -u
                     # ### dotnet ###
                     wget https://dotnetcli.blob.core.windows.net/dotnet/beta/Binaries/Latest/dotnet-dev-rhel-x64.latest.tar.gz
                     sudo yum install -y libicu libuuid libcurl openssl libunwind
@@ -1305,10 +1296,6 @@ function get-dotnetcli {
                 Debian|Ubuntu*)
                     case $DIST_VERSION in
                         14.04)
-                            # ### dnvm ###
-                            curl -sSL https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.sh | DNX_BRANCH=dev sh
-                            source ~/.dnx/dnvm/dnvm.sh
-                            dnvm upgrade -u
                             # ### dotnet ###
                             sudo sh -c 'echo "deb [arch=amd64] http://apt-mo.trafficmanager.net/repos/dotnet/ trusty main" > /etc/apt/sources.list.d/dotnetdev.list'
                             sudo apt-key adv --keyserver apt-mo.trafficmanager.net --recv-keys 417A0893
@@ -1317,9 +1304,6 @@ function get-dotnetcli {
                     esac
             esac ;;
     esac
-}
-function set-dnvm {
-    source ~/.dnx/dnvm/dnvm.sh
 }
 function set-mono {
     case "${OSTYPE}" in
@@ -1366,8 +1350,6 @@ case "${OSTYPE}" in
             *) if ! type -p mcs > /dev/null ; then get-mono ; fi ;;
         esac
 esac
-if [ ! -f ~/.dnx/dnvm/dnvm.sh ] ; then get-dnvm ;      fi
-if [   -f ~/.dnx/dnvm/dnvm.sh ] ; then set-dnvm ;      fi
 # if ! type -p dotnet > /dev/null ; then get-dotnetcli ; fi
 if [ ! -f ~/.local/NuGet/nuget.exe ] ; then get-nuget ; fi
 if [   -f ~/.local/NuGet/nuget.exe ] ; then set-nuget ; fi
@@ -2490,14 +2472,18 @@ alias pandocslide="pandoc -t slidy -s"
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::Filesystem::Inotify
 # ----------------------------------------------------------------------------
 # ### inotify ###
+REQUIRED_INOTIFY_VERSION=3.14
 function get-inotify {
     case "${OSTYPE}" in
         freebsd*|darwin*) ;;
         linux*)
-            case "${DIST}" in
-                Redhat|RedHat) sudo yum install -y inotify-tools ;;
-                Debian|Ubuntu) sudo apt-get install -y inotify-tools ;;
-            esac
+            local current_pwd=$(pwd)
+            curl -O http://jensd.be/download/inotify-tools-${REQUIRED_INOTIFY_VERSION}.tar.gz
+            tar -xvzf inotify-tools-${REQUIRED_INOTIFY_VERSION}.tar.gz
+            cd inotify-tools-${REQUIRED_INOTIFY_VERSION}
+            ./configure && make && (yes | sudo make install)
+            cd $current_pwd
+            rm -fr inotify-tools-${REQUIRED_INOTIFY_VERSION}*
     esac
 }
 if ! type -p inotifywait > /dev/null ; then get-inotify ; fi
@@ -2519,8 +2505,7 @@ function get-samba {
         darwin*|linux*)
             case "${DIST}" in
                 Redhat|RedHat|Debian)
-                    sudo yum remove samba*
-                    sudo yum install samba* -y
+                    sudo yum install samba -y
                     set-samba ;;
             esac
     esac
@@ -2534,7 +2519,7 @@ function set-samba {
                     sudo chmod -R 0777 /samba/anonymous_share
                     sudo sed -i "s|^\(\[global\]\)|\1\n\tunix charset = UTF-8\n\tdos charset = CP932\n\tmap to guest = Bad User\n|g" /etc/samba/smb.conf
                     sudo sed -i "s|workgroup = MYGROUP|workgroup = WORKGROUP|g" /etc/samba/smb.conf
-                    sudo sed -i "s|^\thosts allow = 127.*/\thosts allow = 127. 192.168.|g" /etc/samba/smb.conf
+                    sudo sed -i "s|^\thosts allow = 127.*|\thosts allow = 127. 192.168.|g" /etc/samba/smb.conf
                     sudo sed -i "s|^;\(\tmax protocol = SMB2\)|\1|g" /etc/samba/smb.conf
                     sudo sed -i "s|^;\tsecurity = Security|\tsecurity = user|g" /etc/samba/smb.conf
                     local smb_conf='
@@ -2583,7 +2568,7 @@ alias sbs=testparm
 
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::Git
 # ------------------------------------------------------------
-REQUIRED_GIT_VERSION=2.10.2
+REQUIRED_GIT_VERSION=2.12.0
 # ### installation ###
 function get-git {
     case "${OSTYPE}" in
@@ -2825,7 +2810,7 @@ if ! type -p dot > /dev/null ; then get-graphviz ; fi
 
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::ImageMagick
 # --------------------------------------------------------------------
-REQUIRED_IMAGEMAGICK_VERSION=6.9.5-2
+REQUIRED_IMAGEMAGICK_VERSION=6.9.7-6
 function get-imagemagick {
     case ${OSTYPE} in
         freebsd*|darwin*|linux*) nix-install imagemagick-${REQUIRED_IMAGEMAGICK_VERSION} ;;
@@ -2952,7 +2937,7 @@ if ! type -p ansible-playbook > /dev/null; then get-ansible; fi
 function get-ans {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
-            git clone https://github.com/nabinno/ansible-stack ~/.ans
+            git clone https://github.com/nabinno/ans ~/.ans
             eval "$(ans init -)" ;;
     esac
 }
@@ -3307,12 +3292,15 @@ function get-slackchat {
 
 # 5. Platform::Heroku
 # -------------------
+alias heroku="~/.local/share/heroku/cli/bin/heroku"
 function get-heroku {
     case "${OSTYPE}" in
-        freebsd*|darwin*) nix-install heroku-3.43.2 ;;
+        freebsd*|darwin*) nix-install heroku-3.43.16 ;;
         linux*)
             case "${DIST}" in
-                Redhat|RedHat|Debian) nix-install heroku-3.43.2 ;;
+                Redhat|RedHat|Debian)
+                    wget -qO- https://toolbelt.heroku.com/install.sh | sudo sh
+                    /usr/local/heroku/bin/heroku ;;
                 Ubuntu)
                     parts install \
                           heroku_toolbelt \
