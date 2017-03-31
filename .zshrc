@@ -1766,9 +1766,16 @@ function get-keras-rl {
     )
 }
 function get-gym {
-    sudo apt-get install -y python-numpy python-dev cmake zlib1g-dev libjpeg-dev xvfb libav-tools xorg-dev python-opengl libboost-all-dev libsdl2-dev swig
-    pip install -U gym
+    case $OSTYPE in
+        linux*)
+            case $DIST in
+                Debian|Ubuntu)
+                    sudo apt-get install -y python-numpy python-dev cmake zlib1g-dev libjpeg-dev xvfb libav-tools xorg-dev python-opengl libboost-all-dev libsdl2-dev swig
+                    pip install -U gym ;;
+            esac
+    esac
 }
+# if ! type -p gym > /dev/null ; then get-gym ; fi
 
 
 # 2. ProgrammingLanguage::Perl
@@ -2505,7 +2512,8 @@ function get-samba {
         darwin*|linux*)
             case "${DIST}" in
                 Redhat|RedHat|Debian)
-                    sudo yum install samba -y
+                    sudo yum remove samba*
+                    sudo yum install samba* -y
                     set-samba ;;
             esac
     esac
@@ -2519,7 +2527,7 @@ function set-samba {
                     sudo chmod -R 0777 /samba/anonymous_share
                     sudo sed -i "s|^\(\[global\]\)|\1\n\tunix charset = UTF-8\n\tdos charset = CP932\n\tmap to guest = Bad User\n|g" /etc/samba/smb.conf
                     sudo sed -i "s|workgroup = MYGROUP|workgroup = WORKGROUP|g" /etc/samba/smb.conf
-                    sudo sed -i "s|^\thosts allow = 127.*|\thosts allow = 127. 192.168.|g" /etc/samba/smb.conf
+                    sudo sed -i "s|^\thosts allow = 127.*/\thosts allow = 127. 192.168.|g" /etc/samba/smb.conf
                     sudo sed -i "s|^;\(\tmax protocol = SMB2\)|\1|g" /etc/samba/smb.conf
                     sudo sed -i "s|^;\tsecurity = Security|\tsecurity = user|g" /etc/samba/smb.conf
                     local smb_conf='
@@ -3115,7 +3123,30 @@ function set-z {
 }
 if [ ! -f $ZDOTDIR/z/z.sh ]; then get-z; fi
 if [   -f $ZDOTDIR/z/z.sh ]; then set-z; fi
-alias j=cd
+function get-autojump {
+    case $OSTYPE in
+        linux*)
+            case $DIST in
+                Redhat|RedHat)
+                    git clone git://github.com/joelthelion/autojump.git
+                    cd ./autojump
+                    ./install.py
+                    cd -
+                    rm -fr ./autojump
+                    sudo cp ~/.autojump/site-functions/_j /usr/share/zsh/site-functions/ ;;
+            esac
+    esac
+}
+function set-autojump {
+    case $OSTYPE in
+        linux*)
+            case $DIST in
+                Redhat|RedHat) source /home/vagrant/.autojump/etc/profile.d/autojump.sh ;;
+            esac
+    esac
+}
+# [[ ! -s /home/vagrant/.autojump/etc/profile.d/autojump.sh ]] && get-autojump
+# [[   -s /home/vagrant/.autojump/etc/profile.d/autojump.sh ]] && set-autojump
 
 
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Alias
@@ -3292,7 +3323,6 @@ function get-slackchat {
 
 # 5. Platform::Heroku
 # -------------------
-alias heroku="~/.local/share/heroku/cli/bin/heroku"
 function get-heroku {
     case "${OSTYPE}" in
         freebsd*|darwin*) nix-install heroku-3.43.16 ;;
