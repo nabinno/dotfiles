@@ -1916,7 +1916,7 @@ function get-global-npm-packages {
         bower \
         grunt-cli \
         gulp \
-        hexo-cli
+        hexo-cli \
         html2jade \
         http-server \
         less \
@@ -2294,24 +2294,45 @@ alias mck="memcached-stop"
 function get-nginx {
     case "${OSTYPE}" in
         darwin*|linux*)
-            case $DIST_VERSION in
-                14.04) ;;
-                *) nix-install nginx ;;
+            case $DIST in
+                Redhat|RedHat)
+                    sudo yum install epel-release
+                    sudo yum install nginx ;;
+                Ubuntu|Debian)
+                    case $DIST_VERSION in
+                        14.04) ;;
+                        *) nix-install nginx ;;
+                    esac
             esac
     esac
 }
 function set-nginx {
-    useradd -s /bin/false nginx
-    sudo sed -i "s|^\(#user  nobody;\)|#\1\nuser  nginx;|g"                                                      ~/.nix-profile/conf/nginx.conf
-    sudo sed -i "s|^\(worker_processes  1;\)|#\1\nworker_processes  auto;|g"                                     ~/.nix-profile/conf/nginx.conf
-    sudo sed -i "s|^#\(log_format  main  '$remote_addr - $remote_user [$time_local] \"$request\" '\)|\1|g"       ~/.nix-profile/conf/nginx.conf
-    sudo sed -i "s|^#\(                  '$status $body_bytes_sent \"$http_referer\" '\)|\1|g"                   ~/.nix-profile/conf/nginx.conf
-    sudo sed -i "s|^#\(                  '\"$http_user_agent\" \"$http_x_forwarded_for\"';\)|\1|g"               ~/.nix-profile/conf/nginx.conf
-    sudo sed -i "s|^\(#gzip  on;\)|\1\ninclude/etc/nginx/conf.d/\*.conf;\ninclude/etc/nginx/sites-enabled/\*;|g" ~/.nix-profile/conf/nginx.conf
-    sudo mkdir -rf /etc/nginx/sites-enabled
-    sudo mkdir -rf /etc/nginx/sites-available
-    sudo mkdir -rf /etc/nginx/conf.d
-    sudo ln -s /etc/nginx/sites-available/* /etc/nginx/sites-enabled
+    case "${OSTYPE}" in
+        darwin*|linux*)
+            case $DIST in
+                Redhat|RedHat)
+                    sudo useradd -s /bin/false nginx
+                    sudo mkdir /etc/nginx/sites-enabled
+                    sudo mkdir /etc/nginx/sites-available
+                    sudo mkdir /etc/nginx/conf.d ;;
+                Ubuntu|Debian)
+                    case $DIST_VERSION in
+                        14.04) ;;
+                        *)
+                            sudo useradd -s /bin/false nginx
+                            sudo sed -i "s|^\(#user  nobody;\)|#\1\nuser  nginx;|g"                                                      ~/.nix-profile/conf/nginx.conf
+                            sudo sed -i "s|^\(worker_processes  1;\)|#\1\nworker_processes  auto;|g"                                     ~/.nix-profile/conf/nginx.conf
+                            sudo sed -i "s|^#\(log_format  main  '$remote_addr - $remote_user [$time_local] \"$request\" '\)|\1|g"       ~/.nix-profile/conf/nginx.conf
+                            sudo sed -i "s|^#\(                  '$status $body_bytes_sent \"$http_referer\" '\)|\1|g"                   ~/.nix-profile/conf/nginx.conf
+                            sudo sed -i "s|^#\(                  '\"$http_user_agent\" \"$http_x_forwarded_for\"';\)|\1|g"               ~/.nix-profile/conf/nginx.conf
+                            sudo sed -i "s|^\(#gzip  on;\)|\1\ninclude/etc/nginx/conf.d/\*.conf;\ninclude/etc/nginx/sites-enabled/\*;|g" ~/.nix-profile/conf/nginx.conf
+                            sudo mkdir /etc/nginx
+                            sudo mkdir /etc/nginx/sites-enabled
+                            sudo mkdir /etc/nginx/sites-available
+                            sudo mkdir /etc/nginx/conf.d ;;
+                    esac
+            esac
+    esac
 }
 function nginx-stop {
     case "${OSTYPE}" in
@@ -2330,14 +2351,14 @@ function nginx-status {
     case "${OSTYPE}" in
         darwin*|linux*)
             sudo nginx -t
-            ps aux | grep [n]ginx ;;
+            ps aux | grep '[n]ginx' ;;
     esac
 }
 if ! type -p nginx > /dev/null; then get-nginx; fi
 alias nk="nginx-stop"
 alias nt="nginx-stop"
 alias nr="nginx-restart"
-alias np="ps aux | grep [n]ginx"
+alias np="ps aux | grep '[n]ginx'"
 alias ns="nginx-status"
 
 
@@ -3686,3 +3707,9 @@ alias v="cat"
 function t { \mv (.*~|.*.org*|*.org*|*.tar.gz|*.stackdump|*.tar.gz|*.asx|*.0|*.msi|*.wav|*.doc|*.pdf|$1) .old/ }
 # ### other source file ###
 if [ -f ~/.zshrc.mine ]; then source ~/.zshrc.mine; fi
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/vagrant/google-cloud-sdk/path.zsh.inc' ]; then source '/home/vagrant/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/vagrant/google-cloud-sdk/completion.zsh.inc' ]; then source '/home/vagrant/google-cloud-sdk/completion.zsh.inc'; fi
