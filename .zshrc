@@ -779,7 +779,11 @@ function get-docker {
             case "${DIST}" in
                 Redhat|RedHat)
                     sudo yum update
-                    curl -fsSL https://get.docker.com/ | sh
+                    sudo yum install -y yum-util
+                    sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+                    sudo yum-config-manager --disable docker-ce-edge
+                    sudo yum makecache fast
+                    sudo yum install -y docker-ce
                     local current_user_name=$(whoami)
                     sudo usermod -aG docker ${current_user_name}
                     ;;
@@ -811,6 +815,22 @@ function get-docker {
     esac
 }
 case $OSTYPE in (linux) if ! type -p docker > /dev/null ; then get-docker ; fi ; esac
+function remove-docker {
+    case "${OSTYPE}" in
+        msys|cygwin) choco install boot2docker ;;
+        freebsd*|darwin*) ;;
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo yum remove -y \
+                         docker \
+                         docker-common \
+                         container-selinux \
+                         docker-selinux \
+                         docker-engine ;;
+            esac
+    esac
+}
 function docker-restart {
     case "${OSTYPE}" in
         darwin*)
