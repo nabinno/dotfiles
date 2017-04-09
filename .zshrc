@@ -815,10 +815,22 @@ function get-docker {
     esac
 }
 case $OSTYPE in (linux) if ! type -p docker > /dev/null ; then get-docker ; fi ; esac
+function set-docker-as-app-group {
+    case "${OSTYPE}" in
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo groupadd -g 9999 app
+                    sudo useradd -g 9999 -u 9999 app
+                    echo app | sudo passwd app --stdin
+                    sudo usermod -aG docker app
+                    echo "app ALL=(ALL) NOPASSWD: ALL" | sudo tee -a /etc/sudoers
+                    ;;
+            esac
+    esac
+}
 function remove-docker {
     case "${OSTYPE}" in
-        msys|cygwin) choco install boot2docker ;;
-        freebsd*|darwin*) ;;
         linux*)
             case "${DIST}" in
                 Redhat|RedHat)
@@ -1097,7 +1109,7 @@ fi
 
 # 2. ProgrammingLanguage::Elixir
 # ------------------------------
-REQUIRED_ERLANG_VERSION=19.3
+REQUIRED_ERLANG_VERSION=19.2
 REQUIRED_ELIXIR_VERSION=1.4.2
 REQUIRED_PHOENIXFRAMEWORK_VERSION=1.2.1
 export PATH="$HOME/.local/exenv/bin:$PATH"
@@ -2553,8 +2565,8 @@ function get-samba {
         darwin*|linux*)
             case "${DIST}" in
                 Redhat|RedHat|Debian)
-                    sudo yum remove samba*
-                    sudo yum install samba* -y
+                    sudo yum remove samba
+                    sudo yum install samba -y
                     set-samba ;;
             esac
     esac
@@ -2589,7 +2601,7 @@ function set-samba {
             esac
     esac
 }
-if ! type -p smbd > /dev/null; then get-samba; fi
+# if ! type -p smbd > /dev/null; then get-samba; fi
 function samba-restart {
     case "${OSTYPE}" in
         darwin*|linux*)
