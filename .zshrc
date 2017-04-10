@@ -1109,7 +1109,7 @@ fi
 
 # 2. ProgrammingLanguage::Elixir
 # ------------------------------
-REQUIRED_ERLANG_VERSION=19.2
+REQUIRED_ERLANG_VERSION=19.3
 REQUIRED_ELIXIR_VERSION=1.4.2
 REQUIRED_PHOENIXFRAMEWORK_VERSION=1.2.1
 export PATH="$HOME/.local/exenv/bin:$PATH"
@@ -1494,8 +1494,17 @@ function get-java {
                 Ubuntu)
                     case $DIST_VERSION in
                         12.04)
-                            sudo add-apt-repositoryppa:openjdk-r/ppa
-                            sudo apt-get update && sudo apt-get install -y openjdk-8-jdk
+                            sudo apt-add-repository ppa:openjdk-r/ppa
+                            sudo apt-get update
+                            sudo apt-get install -y openjdk-8-jdk
+                            jenv add /usr/lib/jvm/java-1.8.0-openjdk-amd64/
+                            jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
+                        14.04)
+                            sudo apt-get install apt-transport-https
+                            sudo add-apt-repository ppa:jochenkemnade/openjdk-8
+                            sudo apt-add-repository ppa:openjdk-r/ppa
+                            sudo apt-get update
+                            sudo apt-get install -y openjdk-8-jdk
                             jenv add /usr/lib/jvm/java-1.8.0-openjdk-amd64/
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                         16.04)
@@ -1979,7 +1988,7 @@ function get-watchman {
             sudo rm -fr watchman ;;
     esac
 }
-if ! type -p watchman > /dev/null; then get-watchman; fi
+# if ! type -p watchman > /dev/null; then get-watchman; fi
 function get-yoeman {
     npm i -g \
         generator-standard-readme \
@@ -2478,7 +2487,7 @@ function mu-restart {
     mu index --rebuild
     mu index
 }
-if ! type -p mu > /dev/null ; then get-mu ; fi
+# if ! type -p mu > /dev/null ; then get-mu ; fi
 # ### sekka ###
 function set-sekka {
     case "${OSTYPE}" in
@@ -2629,7 +2638,7 @@ alias sbs=testparm
 
 # 4. IntegratedDevelopmentEnvironment::ResourceManagement::Git
 # ------------------------------------------------------------
-REQUIRED_GIT_VERSION=2.12.0
+REQUIRED_GIT_VERSION=2.11.0
 # ### installation ###
 function get-git {
     case "${OSTYPE}" in
@@ -3351,7 +3360,9 @@ function get-powershell {
                 Ubuntu)
                     case "${DIST_VERSION=}" in
                         14.04)
+                            wget https://github.com/PowerShell/PowerShell/releases/download/v6.0.0-alpha.15/powershell_6.0.0-alpha.15-1ubuntu1.14.04.1_amd64.deb
                             sudo dpkg -i powershell_6.0.0-alpha.15-1ubuntu1.14.04.1_amd64.deb
+                            rm -fr powershell_6.0.0-alpha.15-1ubuntu1.14.04.1_amd64.deb
                             sudo apt-get install -f ;;
                         16.04)
                             sudo dpkg -i powershell_6.0.0-alpha.15-1ubuntu1.16.04.1_amd64.deb
@@ -3745,3 +3756,4 @@ if [ -f '/home/vagrant/google-cloud-sdk/path.zsh.inc' ]; then source '/home/vagr
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/vagrant/google-cloud-sdk/completion.zsh.inc' ]; then source '/home/vagrant/google-cloud-sdk/completion.zsh.inc'; fi
+
