@@ -1,5 +1,6 @@
 # == INDEX
 # 1. BasicSettings::OsDetect
+# 1. BasicSettings::OsUpdate
 # 1. BasicSettings::EnvironmentVariable
 # 1. BasicSettings::EnvironmentVariable::Locale
 # 1. BasicSettings::EnvironmentVariable::Local
@@ -150,6 +151,23 @@ case $OSTYPE in
             echo $winpath
         } ;;
 esac
+
+
+# 1. BasicSettings::OsUpdate
+# --------------------------
+function update-ubuntu-from-12.04-to-14.04 {
+    case $OSTYPE in
+        linux*)
+            case "${DIST}" in
+                Ubuntu)
+                    sudo apt-get update
+                    sudo apt-get upgrade
+                    sudo apt-get dist-upgrade
+                    sudo apt-get install update-manager-core
+                    sudo do-release-upgrade ;;
+            esac
+    esac
+}
 
 
 # 1. BasicSettings::EnvironmentVariable
@@ -769,7 +787,7 @@ if type -p anyenv > /dev/null; then eval "$(anyenv init -)" ; fi
 
 # 1. BasicSettings::PackageManager::Docker
 # ----------------------------------------
-case $DIST_VERSION in (14.04) DOCKER_HOST=tcp://:2375 ;; esac
+# case $DIST_VERSION in (14.04) DOCKER_HOST=tcp://:2375 ;; esac
 ### setup ###
 function get-docker {
     case "${OSTYPE}" in
@@ -845,34 +863,21 @@ function remove-docker {
 }
 function docker-restart {
     case "${OSTYPE}" in
-        darwin*)
+        darwin*|linux*)
             sudo service docker stop
             sudo service docker start
             sudo service docker status ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat)
-                    sudo service docker stop
-                    sudo service docker start
-                    sudo service docker status ;;
-                Debian|Ubuntu) ;;
-            esac
     esac
 }
 function docker-status {
     case "${OSTYPE}" in
-        darwin*) sudo service docker status ;;
-        linux*)
-            case "${DIST}" in
-                Redhat|RedHat) sudo service docker status ;;
-                Debian|Ubuntu) ;;
-            esac
+        darwin*|linux*) sudo service docker status ;;
     esac
 }
 ## ### alias ###
-alias docker='docker'
-case $DIST_VERSION in (14.04) alias docker="DOCKER_HOST=${DOCKER_HOST} docker";; esac
-case $DIST_VERSION in (14.04) alias docker-compose="docker-compose -H ${DOCKER_HOST}";; esac
+# alias docker='docker'
+# case $DIST_VERSION in (14.04) alias docker="DOCKER_HOST=${DOCKER_HOST} docker";; esac
+# case $DIST_VERSION in (14.04) alias docker-compose="docker-compose -H ${DOCKER_HOST}";; esac
 alias dcr="docker-restart"
 alias dcp="ps aux | \grep -G 'docker.*'"
 alias dcs="docker-status"
@@ -929,15 +934,7 @@ function dnsenter {
 # ### docker compose / machine ###
 function get-docker-compose {
     case $OSTYPE in
-        freebsd*|darwin*) nix-install docker-compose ;;
-        linux*)
-            case $DIST in
-                Redhat|RedHat|Debian) nix-install docker-compose ;;
-                Ubuntu)
-                    case $DIST_VERSION in
-                        12.04) nix-install docker-compose ;;
-                    esac
-            esac
+        freebsd*|darwin*|linux*) pip install docker-compose ;;
     esac
 }
 function get-docker-machine {
