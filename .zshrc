@@ -2421,9 +2421,19 @@ function get-emacs {
                     yes | sudo make install;  wait
                     cd $current_pwd; rm -fr emacs-$REQUIRED_EMACS_VERSION* ;;
                 Debian|Ubuntu)
-                    sudo add-apt-repository ppa:ubuntu-elisp/ppa
-                    sudo apt-get update
-                    sudo apt-get install emacs-snapshot ;;
+                    sudo apt-get install build-essential
+                    sudo apt-get build-dep emacs24
+                    sudo apt-get install lincurses5-dev
+                    wget https://ftp.gnu.org/gnu/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
+                    tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
+                    cd emacs-$REQUIRED_EMACS_VERSION
+                    ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no
+                    make
+                    yes | sudo make install;  wait
+                    cd $current_pwd; rm -fr emacs-$REQUIRED_EMACS_VERSION* ;;
+                    # sudo add-apt-repository ppa:ubuntu-elisp/ppa
+                    # sudo apt-get update
+                    # sudo apt-get install emacs-snapshot ;;
             esac
     esac
 }
