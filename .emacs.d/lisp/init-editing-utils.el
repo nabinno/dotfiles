@@ -156,6 +156,7 @@
 (global-set-key (kbd "C-.")             'set-mark-command)
 (global-set-key (kbd "M-[ 1 ; 5 n")     'set-mark-command)
 (global-set-key (kbd "@")               'set-mark-command)
+(global-set-key (kbd "M-SPC")           'set-mark-command)
 (global-set-key (kbd "C-x C-.")         'pop-global-mark)
 (global-set-key (kbd "C-x M-[ 1 ; 5 n") 'pop-global-mark)
 
