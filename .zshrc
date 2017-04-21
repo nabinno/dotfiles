@@ -293,6 +293,120 @@ function get-base {
                     sudo add-apt-repository -y ppa:fcwu-tw/ppa
                     sudo add-apt-repository -y ppa:git-core/ppa
                     sudo apt-get update -y
+                    case "${DIST_VERSION=}" in
+                        12.04|14.04)
+                            sudo apt-get install -y \
+                                 libarchive12 \
+                                 libarchive-dev \
+                                 libbz2-1.0 \
+                                 libbz2-dev \
+                                 libc6 \
+                                 libcurl3 \
+                                 libcurl3-gnutls \
+                                 libcurl4-openssl-dev \
+                                 libdb5.1-dev \
+                                 libevent-1.4-2 \
+                                 libevent-core-1.4-2 \
+                                 libevent-dev \
+                                 libevent-extra-1.4-2 \
+                                 libffi-dev \
+                                 libgdbm-dev \
+                                 libglib2.0-dev \
+                                 libicu-dev \
+                                 libldap-2.4-2 \
+                                 libldap2-dev \
+                                 libltdl7 \
+                                 libltdl-dev \
+                                 liblzma5 \
+                                 liblzma-dev \
+                                 liblzma-doc \
+                                 libmagickcore-dev \
+                                 libmagickwand-dev \
+                                 libmysqlclient-dev \
+                                 libncap44 \
+                                 libncap-dev \
+                                 libncurses5-dev \
+                                 libncurses-dev \
+                                 libncursesw5 \
+                                 libncursesw5-dev \
+                                 libpam0g-dev \
+                                 libpcre3 \
+                                 libpcre3-dev \
+                                 libpng12-0 \
+                                 libpng12-dev \
+                                 libpq-dev \
+                                 libqt4-dev \
+                                 libreadline6-dev \
+                                 libreadline-dev \
+                                 libsndfile1-dev \
+                                 libsqlite3-dev \
+                                 libssl0.9.8 \
+                                 libssl-dev \
+                                 libxml2 \
+                                 libxml2-dev \
+                                 libxslt1-dev \
+                                 libxt6 \
+                                 libxt-dev \
+                                 libyaml-dev \
+                                 zlib1g \
+                                 zlib1g-dev \
+                                 tsconf ;;
+                        16.04)
+                            sudo apt-get install -y \
+                                 libarchive \
+                                 libarchive-dev \
+                                 libbz2-1.0 \
+                                 libbz2-dev \
+                                 libc6 \
+                                 libcurl3 \
+                                 libcurl3-gnutls \
+                                 libcurl4-openssl-dev \
+                                 libdb-dev \
+                                 libevent-1.4-2 \
+                                 libevent-core-1.4-2 \
+                                 libevent-dev \
+                                 libevent-extra-1.4-2 \
+                                 libffi-dev \
+                                 libgdbm-dev \
+                                 libglib2.0-dev \
+                                 libicu-dev \
+                                 libldap-2.4-2 \
+                                 libldap2-dev \
+                                 libltdl7 \
+                                 libltdl-dev \
+                                 liblzma5 \
+                                 liblzma-dev \
+                                 liblzma-doc \
+                                 libmagickcore-dev \
+                                 libmagickwand-dev \
+                                 libmysqlclient-dev \
+                                 libncap44 \
+                                 libncap-dev \
+                                 libncurses5-dev \
+                                 libncurses-dev \
+                                 libncursesw5 \
+                                 libncursesw5-dev \
+                                 libpam0g-dev \
+                                 libpcre3 \
+                                 libpcre3-dev \
+                                 libpng12-0 \
+                                 libpng12-dev \
+                                 libpq-dev \
+                                 libqt4-dev \
+                                 libreadline6-dev \
+                                 libreadline-dev \
+                                 libsndfile1-dev \
+                                 libsqlite3-dev \
+                                 libssl-dev \
+                                 libxml2 \
+                                 libxml2-dev \
+                                 libxslt1-dev \
+                                 libxt6 \
+                                 libxt-dev \
+                                 libyaml-dev \
+                                 zlib1g \
+                                 zlib1g-dev ;;
+                    esac
                     sudo apt-get install -y \
                          apt-transport-https \
                          automake \
@@ -311,75 +425,19 @@ function get-base {
                          gnupg \
                          htop \
                          imagemagick \
-                         libarchive12 \
-                         libarchive-dev \
-                         libbz2-1.0 \
-                         libbz2-dev \
-                         libc6 \
-                         libcurl3 \
-                         libcurl3-gnutls \
-                         libcurl4-openssl-dev \
-                         libdb5.1 \
-                         libdb5.1-dev \
-                         libevent-1.4-2 \
-                         libevent-core-1.4-2 \
-                         libevent-dev \
-                         libevent-extra-1.4-2 \
-                         libffi-dev \
-                         libgdbm-dev \
-                         libglib2.0-dev \
-                         libicu-dev \
-                         libldap-2.4-2 \
-                         libldap2-dev \
-                         libltdl7 \
-                         libltdl-dev \
-                         liblzma5 \
-                         liblzma-dev \
-                         liblzma-doc \
-                         libmagickcore-dev \
-                         libmagickwand-dev \
-                         libmysqlclient-dev \
-                         libncap44 \
-                         libncap-dev \
-                         libncurses5-dev \
-                         libncurses-dev \
-                         libncursesw5 \
-                         libncursesw5-dev \
-                         libpam0g-dev \
-                         libpcre3 \
-                         libpcre3-dev \
-                         libpng12-0 \
-                         libpng12-dev \
-                         libpq-dev \
-                         libqt4-dev \
-                         libreadline6-dev \
-                         libreadline-dev \
-                         libsndfile1-dev \
-                         libsqlite3-dev \
-                         libssl0.9.8 \
-                         libssl-dev \
-                         libxml2 \
-                         libxml2-dev \
-                         libxslt1-dev \
-                         libxt6 \
-                         libxt-dev \
-                         libyaml-dev \
                          make \
                          openssl \
                          psmisc \
-                         ruby1.9.3 \
+                         ruby \
                          s3cmd \
                          sqlite3 \
                          telnet \
-                         tsconf \
                          unzip \
                          util-linux \
                          wget \
                          whiptail \
                          xz-utils \
-                         zip \
-                         zlib1g \
-                         zlib1g-dev ;;
+                         zip
             esac
     esac
 }
@@ -1235,6 +1293,7 @@ function get-global-go-packages {
         freebsd*|darwin*|linux*)
             go get github.com/peco/peco/cmd/peco
             go get github.com/mattn/qq/cmd/qq
+            go get github.com/mattn/git-fixauthor
             go get github.com/shenwei356/csvtk/csvtk
     esac
 }
@@ -1505,8 +1564,9 @@ function get-java {
                             jenv add /usr/lib/jvm/java-1.8.0-openjdk-amd64/
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                         16.04)
-                            nix-install openjdk
-                            jenv add ~/.nix-profile/lib/openjdk
+                            sudo apt-get update
+                            sudo apt install -y openjdk-8-jdk
+                            jenv add /usr/lib/jvm/java-1.8.0-openjdk-amd64/
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                     esac
             esac
@@ -1527,11 +1587,8 @@ function set-javahome {
                         12.04)
                             export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
-                        14.04)
+                        14.04|16.04)
                             export JAVA_HOME=/usr/lib/jvm/java/
-                            jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
-                        16.04)
-                            export JAVA_HOME=~/.nix-profile/lib/openjdk
                             jenv global $REQUIRED_OEPNJDK_SHORT_VERSION ;;
                     esac
             esac
@@ -1584,6 +1641,7 @@ function get-php {
         linux*)
             case $DIST_VERSION in
                 14.04) sudo apt-get install php-$REQUIRED_PHP_VERSION ;;
+                16.04) phpenv install $REQUIRED_PHP_VERSION ;;
                 *) nix-install php ;;
             esac
     esac
@@ -1690,6 +1748,12 @@ exit $RET_VAL'
                                  php5-cli \
                                  spawn-fcgi \
                                  psmisc ;;
+                        16.04)
+                            sudo apt-get update -y
+                            sudo apt-get install -y \
+                                 nginx \
+                                 spawn-fcgi \
+                                 psmisc ;;
                     esac
             esac
     esac
@@ -1708,6 +1772,7 @@ function php-fastcgid {
                     case "${DIST_VERSION}" in
                         12.04) sudo /etc/init.d/php-fastcgi $1 ;;
                         14.04) sudo service php5-fpm $1 ;;
+                        16.04) sudo service php5-fpm $1 ;;
                     esac
             esac
     esac
@@ -1776,7 +1841,8 @@ function get-global-pip-packages {
                 ipython \
                 pulp \
                 boto \
-                pipenv
+                pipenv \
+                yamllint
             # pydata
             pip install -U \
                 numpy \
@@ -2000,7 +2066,7 @@ function get-protobuf {
         freebsd*|darwin*) nix-install protobuf-2.6.1 ;;
         linux*)
             case $DIST_VERSION in
-                14.04) ;;
+                14.04|16.04) ;;
                 *) nix-install protobuf-2.6.1 ;;
             esac
     esac
@@ -2010,7 +2076,7 @@ function get-thrift {
         freebsd*|darwin*) nix-install thrift-0.9.3 ;;
         linux*)
             case $DIST_VERSION in
-                14.04) ;;
+                14.04|16.04) ;;
                 *) nix-install thrift-0.9.3 ;;
             esac
     esac
@@ -2120,7 +2186,6 @@ function get-mysql {
                             sudo add-apt-repository -y ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
                             sudo apt-get update
                             sudo apt-get -y install mysql-server ;;
-                        16.04) nix-install mysql-$REQUIRED_MYSQL_VERSION && set-mysql ;;
                     esac
             esac
     esac
@@ -2233,9 +2298,7 @@ function get-redis {
                 Ubuntu)
                     case $DIST_VERSION in
                         12.04) parts install redis ;;
-                        16.04)
-                            nix-install redis
-                            nohup redis-server >/dev/null 2>&1 </dev/null & ;;
+                        16.04) ;;
                     esac
             esac
     esac
@@ -2281,7 +2344,7 @@ function get-memcached {
         darwin*) ;;
         linux*)
             case $DIST_VERSION in
-                14.04) ;;
+                14.04|16.04) ;;
                 *) nix-install memcached ;;
             esac
     esac
@@ -2338,7 +2401,7 @@ function get-nginx {
                     sudo yum install nginx ;;
                 Ubuntu|Debian)
                     case $DIST_VERSION in
-                        14.04) ;;
+                        14.04|16.04) ;;
                         *) nix-install nginx ;;
                     esac
             esac
@@ -2535,7 +2598,7 @@ function get-pandoc {
         freebsd*|darwin*) nix-install pandoc ;;
         linux*)
             case $DIST_VERSION in
-                14.04) ;;
+                14.04|16.04) ;;
                 *) nix-install pandoc ;;
             esac
     esac
@@ -2890,7 +2953,20 @@ if ! type -p dot > /dev/null ; then get-graphviz ; fi
 REQUIRED_IMAGEMAGICK_VERSION=6.9.7-6
 function get-imagemagick {
     case ${OSTYPE} in
-        freebsd*|darwin*|linux*) nix-install imagemagick-${REQUIRED_IMAGEMAGICK_VERSION} ;;
+        freebsd*|darwin*)
+            nix-install imagemagick-${REQUIRED_IMAGEMAGICK_VERSION} ;;
+        linux*)
+            case $DIST in
+                Redhat|RedHat)
+                    nix-install imagemagick-${REQUIRED_IMAGEMAGICK_VERSION} ;;
+                Ubuntu|Debian)
+                    case $DIST_VERSION in
+                        12.04|14.04)
+                            nix-install imagemagick-${REQUIRED_IMAGEMAGICK_VERSION} ;;
+                        16.04)
+                            sudo apt install -y imagemagick-${REQUIRED_IMAGEMAGICK_VERSION} ;;
+                    esac
+            esac
     esac
 }
 
@@ -2922,11 +2998,15 @@ function get-wrk {
                     cd wrk && make && cp wrk ~/.local/bin
                     cd ~ && rm -fr wrk ;;
                 Debian|Ubuntu)
-                    cd ~
-                    sudo apt-get install build-essential libssl-dev
-                    git clone https://github.com/wg/wrk.git
-                    cd wrk && make && cp wrk ~/.local/bin
-                    cd ~ && rm -fr wrk ;;
+                    case $DIST_VERSION in
+                        14.04)
+                            cd ~
+                            sudo apt-get install build-essential libssl-dev
+                            git clone https://github.com/wg/wrk.git
+                            cd wrk && make && cp wrk ~/.local/bin
+                            cd ~ && rm -fr wrk ;;
+                        16.04) sudo apt install -y wrk ;;
+                    esac
             esac
     esac
 }
@@ -3189,6 +3269,7 @@ function set-z {
     fi
     test $? || unset _Z_CMD _Z_DATA _Z_NO_PROMPT_COMMAND
     #}}}
+    unsetopt BG_NICE
 }
 if [ ! -f $ZDOTDIR/z/z.sh ]; then get-z; fi
 if [   -f $ZDOTDIR/z/z.sh ]; then set-z; fi
@@ -3372,8 +3453,11 @@ function get-powershell {
                             rm -fr powershell_6.0.0-alpha.15-1ubuntu1.14.04.1_amd64.deb
                             sudo apt-get install -f ;;
                         16.04)
-                            sudo dpkg -i powershell_6.0.0-alpha.15-1ubuntu1.16.04.1_amd64.deb
-                            sudo apt-get install -f ;;
+                            curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+                            curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list | sudo tee /etc/apt/sources.list.d/microsoft.list
+                            sudo apt-get update
+                            sudo apt-get install -y powershell
+                            ;;
                     esac ;;
             esac ;;
     esac
@@ -3757,10 +3841,4 @@ alias v="cat"
 function t { \mv (.*~|.*.org*|*.org*|*.tar.gz|*.stackdump|*.tar.gz|*.asx|*.0|*.msi|*.wav|*.doc|*.pdf|$1) .old/ }
 # ### other source file ###
 if [ -f ~/.zshrc.mine ]; then source ~/.zshrc.mine; fi
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/vagrant/google-cloud-sdk/path.zsh.inc' ]; then source '/home/vagrant/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/home/vagrant/google-cloud-sdk/completion.zsh.inc' ]; then source '/home/vagrant/google-cloud-sdk/completion.zsh.inc'; fi
 
