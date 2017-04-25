@@ -1,7 +1,8 @@
 ;;; init-plantuml --- plantuml configuration
 ;;; Commentary:
 ;;; Code:
-(require-package 'puml-mode)
+(unless (require 'puml-mode nil 'noerror)
+  (el-get-bundle skuro/puml-mode))
 (add-to-list 'auto-mode-alist '("\\.uml$" . puml-mode))
 
 (setq puml-plantuml-jar-path "~/.local/bin/plantuml.jar")
