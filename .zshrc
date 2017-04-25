@@ -1164,7 +1164,7 @@ fi
 
 # 2. ProgrammingLanguage::Elixir
 # ------------------------------
-REQUIRED_ERLANG_VERSION=19.3
+REQUIRED_ERLANG_VERSION=19.1
 REQUIRED_ELIXIR_VERSION=1.4.2
 REQUIRED_PHOENIXFRAMEWORK_VERSION=1.2.1
 export PATH="$HOME/.local/exenv/bin:$PATH"
