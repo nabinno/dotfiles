@@ -1,4 +1,8 @@
-(require-package 'marmalade)
+;;; init-marmalade --- ...
+;;; Commentary:
+;;; Code:
+(unless (require 'marmalade nil 'noerror)
+  (el-get-bundle nicferrier/emacs-marmalade-upload))
 
 ;;; Handy code for uploading new versions of my own packages to marmalade
 
@@ -65,4 +69,6 @@
       (message "Submitted version %s to marmalade" tag))))
 
 
+
 (provide 'init-marmalade)
+;;; init-marmalade.el ends here

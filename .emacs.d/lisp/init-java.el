@@ -4,7 +4,8 @@
 
 ;;; IDE
 ;; malabar-mode
-(require-package 'malabar-mode)
+(unless (require 'malabar-mode nil 'noerror)
+  (el-get-bundle m0smith/malabar-mode))
 (add-auto-mode 'malabar-mode "\\.java\\'")
 ;; (when (require 'malabar-mode nil t)
 ;;   (setq malabar-groovy-lib-dir (expand-file-name "~/.emacs.d/malabar/lib"))
