@@ -1,4 +1,6 @@
-;;; Colourise CSS colour literals
+;;; init-css --- Colourise CSS colour literals
+;;; Commentary:
+;;; Code:
 (when (eval-when-compile (>= emacs-major-version 24))
   ;; rainbow-mode needs color.el, bundled with Emacs >= 24.
   (require-package 'rainbow-mode)
@@ -40,7 +42,12 @@
 (require-package 'sass-mode)
 (require-package 'scss-mode)
 (setq-default scss-compile-at-save nil)
-
+(defun scss-custom ()
+  "scss-mode-hook"
+  (and
+   (set (make-local-variable 'css-indent-offset) 2)
+   (set (make-local-variable 'scss-compile-at-save) nil)))
+(add-hook 'scss-mode-hook '(lambda() (scss-custom)))
 
 
 ;;; LESS
@@ -63,3 +70,4 @@
 
 
 (provide 'init-css)
+;;; init-css.el ends here
