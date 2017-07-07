@@ -210,6 +210,10 @@ function set-ntp {
                 Redhat|RedHat)
                     sudo chkconfig ntpd on
                     sudo service ntpd start ;;
+                Debian|Ubuntu)
+                    sudo service ntp stop
+                    sudo ntpdate ntp.ubuntu.com
+                    sudo service ntp start ;;
             esac
     esac
 }
