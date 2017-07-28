@@ -1135,21 +1135,22 @@ function get-ruby {
 }
 function get-global-gem-packages {
     gem install \
-        bundler \
-        rubygems-bundler \
-        rails \
-        compass \
-        haml \
-        slim \
-        html2slim \
-        unicorn \
-        sidekiq \
         benchmark-ips \
-        stackprof \
-        rblineprof \
+        bundler \
+        compass \
+        git-trend
+        haml \
+        html2slim \
         peek-rblineprof \
         rack-lineprof \
-        git-trend
+        rails \
+        rblineprof \
+        rubygems-bundler \
+        rufo \
+        sidekiq \
+        slim \
+        stackprof \
+        unicorn
 }
 if ! type -p rbenv > /dev/null; then
     get-rbenv ;
