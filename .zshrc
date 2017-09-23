@@ -48,8 +48,9 @@
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Terminal
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Z
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Zsh::Alias
-# 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Screen
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::PowerShell
+# 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Screen
+# 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Asciinema
 # 4. IntegratedDevelopmentEnvironment::Chat::Slack
 # 5. Platform::Heroku
 # 5. Platform::GoogleCloudPlatform
@@ -3377,6 +3378,34 @@ case "${OSTYPE}" in
 esac
 
 
+# 4. IntegratedDevelopmentEnvironment::ComputerTerminal::PowerShell
+# -----------------------------------------------------------------
+function get-powershell {
+    case "${OSTYPE}" in
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat)
+                    sudo yum install https://github.com/PowerShell/PowerShell/releases/download/v6.0.0-alpha.15/powershell-6.0.0_alpha.15-1.el7.centos.x86_64.rpm ;;
+                Ubuntu)
+                    case "${DIST_VERSION=}" in
+                        14.04)
+                            wget https://github.com/PowerShell/PowerShell/releases/download/v6.0.0-alpha.15/powershell_6.0.0-alpha.15-1ubuntu1.14.04.1_amd64.deb
+                            sudo dpkg -i powershell_6.0.0-alpha.15-1ubuntu1.14.04.1_amd64.deb
+                            rm -fr powershell_6.0.0-alpha.15-1ubuntu1.14.04.1_amd64.deb
+                            sudo apt-get install -f ;;
+                        16.04)
+                            curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+                            curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list | sudo tee /etc/apt/sources.list.d/microsoft.list
+                            sudo apt-get update
+                            sudo apt-get install -y powershell
+                            ;;
+                    esac ;;
+            esac ;;
+    esac
+}
+if ! type -p powershell > /dev/null; then get-powershell; fi
+
+
 # 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Screen
 # -------------------------------------------------------------
 REQUIRED_SCREEN_VERSION=4.0.3
@@ -3442,32 +3471,25 @@ if [ "$TERM" = "screen" ]; then
 fi
 
 
-# 4. IntegratedDevelopmentEnvironment::ComputerTerminal::PowerShell
-# -----------------------------------------------------------------
-function get-powershell {
-    case "${OSTYPE}" in
+# 4. IntegratedDevelopmentEnvironment::ComputerTerminal::Asciinema
+# ----------------------------------------------------------------
+function get-asciinema {
+    case $OSTYPE in
         linux*)
-            case "${DIST}" in
+            case $DIST in
                 Redhat|RedHat)
-                    sudo yum install https://github.com/PowerShell/PowerShell/releases/download/v6.0.0-alpha.15/powershell-6.0.0_alpha.15-1.el7.centos.x86_64.rpm ;;
+                    sudo yum install asciinema ;;
+                Debian)
+                    sudo apt-get install asciinema ;;
                 Ubuntu)
-                    case "${DIST_VERSION=}" in
-                        14.04)
-                            wget https://github.com/PowerShell/PowerShell/releases/download/v6.0.0-alpha.15/powershell_6.0.0-alpha.15-1ubuntu1.14.04.1_amd64.deb
-                            sudo dpkg -i powershell_6.0.0-alpha.15-1ubuntu1.14.04.1_amd64.deb
-                            rm -fr powershell_6.0.0-alpha.15-1ubuntu1.14.04.1_amd64.deb
-                            sudo apt-get install -f ;;
-                        16.04)
-                            curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-                            curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list | sudo tee /etc/apt/sources.list.d/microsoft.list
-                            sudo apt-get update
-                            sudo apt-get install -y powershell
-                            ;;
-                    esac ;;
-            esac ;;
+                    sudo apt-add-repository ppa:zanchey/asciinema
+                    sudo apt-get update
+                    sudo apt-get install asciinema ;;
+            esac
     esac
 }
-if ! type -p powershell > /dev/null; then get-powershell; fi
+if ! type -p asciinema > /dev/null; then get-asciinema; fi
+
 
 # 4. IntegratedDevelopmentEnvironment::Chat::Slack
 # ------------------------------------------------
