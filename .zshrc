@@ -1852,6 +1852,12 @@ function get-global-pip-packages {
                 boto \
                 pipenv \
                 yamllint
+            # ide
+            pip install -U \
+                jedi \
+                epc \
+                autopep8 \
+                pyflakes
             # pydata
             pip install -U \
                 numpy \
