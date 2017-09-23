@@ -1800,7 +1800,9 @@ alias fk="php-fastcgid stop"
 
 # 2. ProgrammingLanguage::Python
 # ------------------------------
-REQUIRED_PYTHON_VERSION=2.7.11
+REQUIRED_ANACONDA2_VERSION=4.3.1
+REQUIRED_PYTHON_VERSION=2.7.13
+PYENV_VIRTUALENV_DISABLE_PROMPT=1
 PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
 PYTHONPATH="$HOME/.local/python:$PYTHONPATH"
 # ### version control ###
@@ -1818,9 +1820,10 @@ function get-python {
                     python
             python-setuptools ;;
         freebsd*|darwin*|linux*)
-            pyenv install $REQUIRED_PYTHON_VERSION
+            pyenv install anaconda2-$REQUIRED_ANACONDA2_VERSION
+            git clone https://github.com/yyuu/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv
             pyenv rehash
-            pyenv global $REQUIRED_PYTHON_VERSION
+            pyenv global anaconda2-$REQUIRED_ANACONDA2_VERSION
     esac
 }
 if ! type -p python > /dev/null; then get-python ; fi
@@ -1886,7 +1889,6 @@ function get-gym {
     esac
 }
 # if ! type -p gym > /dev/null ; then get-gym ; fi
-
 
 # 2. ProgrammingLanguage::Perl
 # ----------------------------
