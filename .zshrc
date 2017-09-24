@@ -1203,6 +1203,14 @@ function get-erlang {
 }
 if [ ! -f ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ] ; then get-erlang ; fi
 if [ -f ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ] ; then source ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ; fi
+function get-rebar3 {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            wget https://s3.amazonaws.com/rebar3/rebar3 -O ~/.local/bin/rebar3
+            chmod +x ~/.local/bin/rebar3
+    esac
+}
+if ! type -p rebar3 > /dev/null ; then get-rebar3 ; fi
 function get-elixir {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
