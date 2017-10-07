@@ -3602,6 +3602,7 @@ if type -p gcloud > /dev/null ; then set-gcloud ; fi
 
 # 5. Platform::GoogleCloudPlatform::GoogleContainerEngine
 # --------------------------------------------------------
+export REQUIRED_KUBERNETES_HELM=2.6.2
 export MINIKUBE_WANTUPDATENOTIFICATION=false
 export MINIKUBE_WANTREPORTERRORPROMPT=false
 export MINIKUBE_HOME=$HOME
@@ -3645,6 +3646,7 @@ function get-kubectl {
     esac
 }
 if ! type kubectl > /dev/null ; then get-kubectl ; fi
+# ### minikube ###
 function get-minikube {
     case $OSTYPE in
         darwin*)
@@ -3656,19 +3658,6 @@ function get-minikube {
     esac
 }
 if ! type minikube > /dev/null ; then get-minikube ; fi
-function set-minikube {
-    case $OSTYPE in
-        linux*)
-            if ! [ -d ~/.kube ]; then mkdir ~/.kube; fi
-            if ! [ -f ~/.kube/config ]; then touch ~/.kube/config; fi
-            if ! [ -d ~/.minikube ]; then mkdir ~/.minikube; fi
-            sudo chown -R $USER ~/.kube
-            sudo chgrp -R $USER ~/.kube
-            sudo chown -R $USER ~/.minikube
-            sudo chgrp -R $USER ~/.minikube
-    esac
-}
-if type kubectl > /dev/null && type minikube > /dev/null; then set-minikube; fi
 function minikube-start {
     case $OSTYPE in
         linux*)
@@ -3698,6 +3687,34 @@ function minikube-stop {
             ;;
     esac
 }
+# ### helm ###
+function get-kubernetes-helm {
+    case $OSTYPE in
+        darwin*)
+            brew install kubernetes-helm ;;
+        linux*)
+            curl https://kubernetes-helm.storage.googleapis.com/helm-v${REQUIRED_KUBERNETES_HELM}-linux-amd64.tar.gz
+            tar -zxvf helm-v${REQUIRED_KUBERNETES_HELM}-linux-amd64.tgz
+            chmod +x linux-amd64/helm
+            sudo mv linux-amd64/helm /usr/local/bin/helm
+            rm -rf linux-amd64 ;;
+    esac
+}
+if ! type helm > /dev/null; then get-kubernetes-helm; fi
+# ### other ###
+function set-kubernetes {
+    case $OSTYPE in
+        linux*)
+            if ! [ -d ~/.kube ]; then mkdir ~/.kube; fi
+            if ! [ -f ~/.kube/config ]; then touch ~/.kube/config; fi
+            if ! [ -d ~/.minikube ]; then mkdir ~/.minikube; fi
+            sudo chown -R $USER ~/.kube
+            sudo chgrp -R $USER ~/.kube
+            sudo chown -R $USER ~/.minikube
+            sudo chgrp -R $USER ~/.minikube
+    esac
+}
+if type kubectl > /dev/null && type minikube > /dev/null; then set-kubernetes; fi
 alias mkb='sudo minikube'
 alias mkbs=minikube-start
 alias mkbk=minikube-stop
