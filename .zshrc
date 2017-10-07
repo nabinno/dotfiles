@@ -965,8 +965,8 @@ alias dkilla='docker rm -f $(docker ps -a -q)'
 alias dl='docker images'  # | less -S
 alias dls='docker images' # | less -S
 alias dn='docker network'
-alias dp='docker ps -a'   # | less -S
-alias dps='docker ps -a'  # | less -S
+alias dp='docker ps -a --format "table {{.Names}}\t{{.Command}}\t{{.Status}}\t{{.Ports}}"'   # | less -S
+alias dps='docker ps -a --format "table {{.Names}}\t{{.Command}}\t{{.Status}}\t{{.Ports}}"'  # | less -S
 function dsshd { docker run -t -d -p 5000:3000 -P $1 /usr/sbin/sshd -D }
 alias dr='docker restart'
 alias dt='docker tag'
@@ -2188,7 +2188,7 @@ alias pgk="pg-stop"
 # --------------------------
 REQUIRED_MYSQL_VERSION=5.6
 # ### installation ###
-function get-mysql {
+function get-mysq {
     case "${OSTYPE}" in
         darwin*) nix-install mysql && set-mysql ;;
         linux*)
@@ -2244,7 +2244,30 @@ function get-innotop {
     cd ..
     rm -fr innotop
 }
-function my-restart {
+; ### mysqltuner ###
+function get-mysqltuner {
+    wget https://github.com/rackerhacker/MySQLTuner-perl/archive/master.zip -O mysqltuner.zip
+    unzip mysqltuner.zip
+    (
+        cd MySQLTuner-perl-master
+        chmod 755 mysqltuner.pl
+        mv mysqltuner.pl ~/.local/bin/
+    )
+    rm -rf mysqltuner.zip MySQLTuner-perl-master
+}
+function set-mysqltuner {
+    wget https://github.com/rackerhacker/MySQLTuner-perl/archive/master.zip -O mysqltuner.zip
+    unzip mysqltuner.zip
+    (
+        cd MySQLTuner-perl-master
+        chmod 755 mysqltuner.pl
+        mv mysqltuner.pl ~/.local/bin/
+    )
+    rm -rf mysqltuner.zip MySQLTuner-perl-master
+}
+function mysqltuner { perl ~/.local/bin/mysqltuner.pl $* }
+if ! [ -f ~/.local/bin/mysqltuner.pl ]; then get-mysqltuner; fi
+function mysql-restart {
     case "${OSTYPE}" in
         darwin*)
             sudo service mysql stop
@@ -2261,7 +2284,7 @@ function my-restart {
                         12.04)
                             sudo /etc/init.d/mysql restart
                             sudo /etc/init.d/mysql status ;;
-                        16.04)
+                        14.04|16.04)
                             sudo service mysql stop
                             sudo service mysql start
                             sudo service mysql status ;;
@@ -2269,7 +2292,7 @@ function my-restart {
             esac
     esac
 }
-function my-stop {
+function mysql-stop {
     case "${OSTYPE}" in
         darwin*) sudo service mysql stop ;;
         linux*)
@@ -2278,12 +2301,12 @@ function my-stop {
                 Ubuntu)
                     case $DIST_VERSION in
                         12.04) sudo /etc/init.d/mysql stop ;;
-                        16.04) sudo service mysql stop ;;
+                        14.04|16.04) sudo service mysql stop ;;
                     esac
             esac
     esac
 }
-function my-status {
+function mysql-status {
     case "${OSTYPE}" in
         darwin*) sudo service mysql status ;;
         linux*)
@@ -2297,10 +2320,10 @@ function my-status {
             esac
     esac
 }
-alias mr="my-restart"
+alias mr="mysql-restart"
 alias mp="ps aux | \grep -G 'mysql.*'"
-alias ms="my-status"
-alias mt="my-stop"
+alias ms="mysql-status"
+alias mt="mysql-stop"
 # alias mysql="rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus mysql -uroot --pager='less -S'"
 
 
@@ -3579,6 +3602,11 @@ if type -p gcloud > /dev/null ; then set-gcloud ; fi
 
 # 5. Platform::GoogleCloudPlatform::GoogleContainerEngine
 # --------------------------------------------------------
+export MINIKUBE_WANTUPDATENOTIFICATION=false
+export MINIKUBE_WANTREPORTERRORPROMPT=false
+export MINIKUBE_HOME=$HOME
+export CHANGE_MINIKUBE_NONE_USER=true
+export KUBECONFIG=$HOME/.kube/config
 # #
 # # CHEATSHEET
 # #
@@ -3617,6 +3645,65 @@ function get-kubectl {
     esac
 }
 if ! type kubectl > /dev/null ; then get-kubectl ; fi
+function get-minikube {
+    case $OSTYPE in
+        darwin*)
+            brew cask install minikube ;;
+        linux*)
+            curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+            chmod +x minikube
+            sudo mv minikube /usr/local/bin/ ;;
+    esac
+}
+if ! type minikube > /dev/null ; then get-minikube ; fi
+function set-minikube {
+    case $OSTYPE in
+        linux*)
+            if ! [ -d ~/.kube ]; then mkdir ~/.kube; fi
+            if ! [ -f ~/.kube/config ]; then touch ~/.kube/config; fi
+            sudo chown -R $USER ~/.kube
+            sudo chgrp -R $USER ~/.kube
+            sudo chown -R $USER ~/.minikube
+            sudo chgrp -R $USER ~/.minikube
+    esac
+}
+if type kubectl > /dev/null && type minikube > /dev/null; then set-minikube; fi
+function minikube-start {
+    case $OSTYPE in
+        linux*)
+            sudo minikube start --vm-driver=none
+            sudo chown -R $USER ~/.kube
+            sudo chgrp -R $USER ~/.kube
+            sudo chown -R $USER ~/.minikube
+            sudo chgrp -R $USER ~/.minikube
+            # timeout for 5 minutes
+            for i in {1..150}; do
+                kubectl get pod &> /dev/null
+                if [ $? -ne 1 ]; then
+                    break
+                fi
+                sleep 2
+            done
+            ;;
+    esac
+}
+function minikube-stop {
+    case $OSTYPE in
+        linux*)
+            sudo minikube stop
+            for n in $(docker ps -f name=k8s_ -f status=exited --format "{.Names}}"); do
+                docker rm -f $n
+            done
+            ;;
+    esac
+}
+alias mkb='sudo minikube'
+alias mkbs=minikube-start
+alias mkbk=minikube-stop
+alias mkbsl='minikube service list'
+alias kc=kubectl
+alias kcr='kubectl run'
+alias kcgp='kubectl get pod'
 
 
 # 5. Platform::GoogleCloudPlatform::GoogleContainerEngine::Postgresql
@@ -3705,7 +3792,7 @@ function cd-dove {
 }
 alias zd=cd-dove
 # ### dotfiles ###
-function get-dotfiles {
+function push-dotfiles {
     while getopts ":c:m:ih" opt ; do
         case $opt in
             "c") is_credential=true ;;
@@ -3751,8 +3838,8 @@ function get-dotfiles {
         if ! [ $is_init_el    ] ; then git checkout -- .emacs.d/init.el                 ; fi
     fi
 }
-alias zg='get-dotfiles'
-function put-dotfiles {
+alias zp=push-dotfiles
+function fetch-dotfiles {
     # pre proc
     local current_pwd=`pwd`
     cd ~/
@@ -3787,7 +3874,7 @@ function put-dotfiles {
     cd $current_pwd
     exec -l zsh
 }
-alias zp=put-dotfiles
+alias zf=fetch-dotfiles
 # ### other ###
 function bkup { cp -ipr $1 $1.org$(date +%y%m%d) }
 function bkup-targz { tar zcvf $2$(date +%y%m%d)_$1_$(date +%H).tar.gz $3$1 }
@@ -3883,5 +3970,5 @@ alias uz='unzip'
 alias v="cat"
 function t { \mv (.*~|.*.org*|*.org*|*.tar.gz|*.stackdump|*.tar.gz|*.asx|*.0|*.msi|*.wav|*.doc|*.pdf|$1) .old/ }
 # ### other source file ###
-if [ -f ~/.zshrc.mine ]; then source ~/.zshrc.mine; fi
+if [ -f ~/.zsh.d/init.zsh ]; then source ~/.zsh.d/init.zsh; fi
 
