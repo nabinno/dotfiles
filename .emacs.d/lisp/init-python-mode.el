@@ -11,11 +11,11 @@
 (require-package 'jedi)
 (add-hook 'python-mode-hook 'jedi:setup)
 (setq jedi:complete-on-dot t)
-(setq ac-sources
-      (delete 'ac-source-words-in-same-mode-buffers ac-sources))
-(add-to-list 'ac-sources 'ac-source-filename)
-(add-to-list 'ac-sources 'ac-source-jedi-direct)
-(define-key jedi-mode-map (kbd "<C-tab>") nil)
+;; (setq ac-sources
+;;       (delete 'ac-source-words-in-same-mode-buffers ac-sources))
+;; (add-to-list 'ac-sources 'ac-source-filename)
+;; (add-to-list 'ac-sources 'ac-source-jedi-direct)
+;; (define-key jedi-mode-map (kbd "<C-tab>") nil)
 
 
 ;;; Py-Autopep8
