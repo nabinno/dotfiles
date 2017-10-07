@@ -3661,6 +3661,7 @@ function set-minikube {
         linux*)
             if ! [ -d ~/.kube ]; then mkdir ~/.kube; fi
             if ! [ -f ~/.kube/config ]; then touch ~/.kube/config; fi
+            if ! [ -d ~/.minikube ]; then mkdir ~/.minikube; fi
             sudo chown -R $USER ~/.kube
             sudo chgrp -R $USER ~/.kube
             sudo chown -R $USER ~/.minikube
