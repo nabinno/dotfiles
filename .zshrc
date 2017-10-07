@@ -3691,7 +3691,7 @@ function minikube-stop {
     case $OSTYPE in
         linux*)
             sudo minikube stop
-            for n in $(docker ps -f name=k8s_ -f status=exited --format "{.Names}}"); do
+            for n in $(docker ps -f name=k8s_ -f status=exited --format "{{.Names}}"); do
                 docker rm -f $n
             done
             ;;
