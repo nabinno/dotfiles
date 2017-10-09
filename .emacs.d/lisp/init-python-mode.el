@@ -26,8 +26,9 @@
 
 
 ;;; PyFlakes
-(require-package 'flymake-python-pyflakes)
-(flymake-python-pyflakes-load)
+(unless (require 'flymake-python-pyflakes nil 'noerror)
+  (el-get-bundle purcell/flymake-python-pyflakes))
+(add-hook 'python-mode-hook 'flymake-python-pyflakes-load)
 
 
 (provide 'init-python-mode)
