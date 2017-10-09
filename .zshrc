@@ -30,6 +30,7 @@
 # 3. Daemon::Database::Mysql
 # 3. Daemon::Database::Redis
 # 3. Daemon::HttpServer::Nginx
+# 3. Daemon::Dns::DnsMasq
 # 4. IntegratedDevelopmentEnvironment::Emacs
 # 4. IntegratedDevelopmentEnvironment::Emacs::Ctags
 # 4. IntegratedDevelopmentEnvironment::Emacs::Pandoc
@@ -177,7 +178,7 @@ function update-ubuntu-from-12.04-to-14.04 {
 # export LANG=ja_JP.UTF-8
 # export LANG=ja_JP.eucJP
 export CLICOLOR=1
-export EDITOR='vim -f'
+export EDITOR='emacsclient -t' # vim -f
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
@@ -2508,6 +2509,45 @@ alias np="ps aux | grep '[n]ginx'"
 alias ns="nginx-status"
 
 
+# 3. Daemon::Dns::DnsMasq
+# -----------------------
+function get-dnsmasq {
+    case $OSTYPE in
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian) ;;
+                Ubuntu)
+                    sudo apt-get update
+                    sudo apt-get install dnsmasq ;;
+            esac
+    esac
+}
+if ! type dnsmasq > /dev/null; then get-dnsmasq; fi
+function dnsmasq-restart {
+    case $OSTYPE in
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian) ;;
+                Ubuntu) sudo service dnsmasq restart ;;
+            esac
+    esac
+}
+function set-dnsmasq {
+    case $OSTYPE in
+        linux*)
+            case "${DIST}" in
+                Redhat|RedHat|Debian) ;;
+                Ubuntu)
+                    if [ -f /etc/dnsmasq.d/minikube.conf ]; then return; fi
+                    sudo bash -c "echo address=/minikube.dev/127.0.0.1 > /etc/dnsmasq.d/minikube.conf"
+                    dnsmasq-restart ;;
+            esac
+    esac
+}
+if type dnsmasq > /dev/null; then set-dnsmasq; fi
+alias dmr=dnsmasq-restart
+
+
 # 4. IntegratedDevelopmentEnvironment::Emacs
 # ------------------------------------------
 export REQUIRED_EMACS_VERSION=24.5
@@ -3638,10 +3678,10 @@ export KUBECONFIG=$HOME/.kube/config
 function get-kubectl {
     case $OSTYPE in
         darwin*)
-            wget https://storage.googleapis.com/kubernetes-release/release/v1.0.1/bin/darwin/amd64/kubectl -O ~/.local/bin/kubectl
+            wget https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl -O  ~/.local/bin/kubectl
             chmod +x ~/.local/bin/kubectl ;;
         linux*)
-            wget https://storage.googleapis.com/kubernetes-release/release/v1.0.1/bin/linux/amd64/kubectl -O  ~/.local/bin/kubectl
+            wget https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl -O  ~/.local/bin/kubectl
             chmod +x ~/.local/bin/kubectl ;;
     esac
 }
@@ -3693,14 +3733,38 @@ function get-kubernetes-helm {
         darwin*)
             brew install kubernetes-helm ;;
         linux*)
-            curl https://kubernetes-helm.storage.googleapis.com/helm-v${REQUIRED_KUBERNETES_HELM}-linux-amd64.tar.gz
-            tar -zxvf helm-v${REQUIRED_KUBERNETES_HELM}-linux-amd64.tgz
+            curl -O https://kubernetes-helm.storage.googleapis.com/helm-v${REQUIRED_KUBERNETES_HELM}-linux-amd64.tar.gz
+            tar -zxvf helm-v${REQUIRED_KUBERNETES_HELM}-linux-amd64.tar.gz
             chmod +x linux-amd64/helm
             sudo mv linux-amd64/helm /usr/local/bin/helm
-            rm -rf linux-amd64 ;;
+            rm -rf helm-v${REQUIRED_KUBERNETES_HELM}-linux-amd64.tar.gz linux-amd64
+            case "${DIST}" in
+                Redhat|RedHat|Debian) ;;
+                Ubuntu)
+                    sudo apt-get install \
+                         socat \
+                         autopoint
+                    git clone git://git.kernel.org/pub/scm/utils/util-linux/util-linux.git util-linux
+                    (
+                        cd util-linux
+                        sh -c ./autogen.sh
+                        ./configure --without-python --disable-all-programs --enable-nsenter && make
+                        sudo cp ./nsenter /usr/bin
+                    )
+                    rm -rf util-linux
+            esac
     esac
 }
+function set-kubernetes-helm {
+    source <(helm completion zsh)
+}
 if ! type helm > /dev/null; then get-kubernetes-helm; fi
+if type helm > /dev/null; then set-kubernetes-helm; fi
+function get-global-helm-packages {
+    helm install stable/kubernetes-dashboard
+    helm install stable/rabbitmq
+    helm install stable/memcached
+}
 # ### other ###
 function set-kubernetes {
     case $OSTYPE in
@@ -3712,6 +3776,7 @@ function set-kubernetes {
             sudo chgrp -R $USER ~/.kube
             sudo chown -R $USER ~/.minikube
             sudo chgrp -R $USER ~/.minikube
+            source <(kubectl completion zsh)
     esac
 }
 if type kubectl > /dev/null && type minikube > /dev/null; then set-kubernetes; fi
@@ -3721,7 +3786,14 @@ alias mkbk=minikube-stop
 alias mkbsl='minikube service list'
 alias kc=kubectl
 alias kcr='kubectl run'
-alias kcgp='kubectl get pod'
+alias kcs='kubectl describe -n'
+alias kcl='kubectl get all,services,nodes,ingresses --all-namespaces=true'
+alias kce='kubectl edit -n'
+alias kcd='kubectl delete pods,services,replicationcontrollers,deployments -l'
+alias kcru='kubectl rollout undo'
+alias hm=helm
+alias hml='helm list'
+alias hmd='helm delete'
 
 
 # 5. Platform::GoogleCloudPlatform::GoogleContainerEngine::Postgresql
