@@ -22,12 +22,14 @@
 (require-package 'py-autopep8)
 (setq py-autopep8-options '("--max-line-length=200"))
 (setq flycheck-flake8-maximum-line-length 200)
-(py-autopep8-enable-on-save)
+(add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
 
 
 ;;; PyFlakes
-(require-package 'flymake-python-pyflakes)
-(flymake-python-pyflakes-load)
+(unless (require 'flymake-python-pyflakes nil 'noerror)
+  (el-get-bundle purcell/flymake-python-pyflakes))
+(after-load 'flymake-python-pyflakes
+  (flymake-python-pyflakes-load))
 
 
 (provide 'init-python-mode)
