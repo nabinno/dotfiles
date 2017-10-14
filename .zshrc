@@ -3765,6 +3765,15 @@ function get-global-helm-packages {
     helm install stable/rabbitmq
     helm install stable/memcached
 }
+# ### kubetail ###
+function get-kubetail {
+    case $OSTYPE in
+        linux*)
+            wget https://raw.githubusercontent.com/johanhaleby/kubetail/master/kubetail -O ~/.local/bin/kubetail
+            chmod +x ~/.local/bin/kubetail
+    esac
+}
+if ! type kubetail > /dev/null; then get-kubetail; fi
 # ### other ###
 function set-kubernetes {
     case $OSTYPE in
