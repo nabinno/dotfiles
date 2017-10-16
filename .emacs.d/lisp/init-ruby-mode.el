@@ -33,8 +33,7 @@
 ;;; Rufo
 (unless (require 'rufo nil 'noerror)
   (el-get-bundle danielma/rufo.el))
-(after-load 'ruby-mode
-  (add-hook 'ruby-mode-hook 'rufo-minor-mode))
+(add-hook 'ruby-mode-hook 'rufo-minor-mode)
 
 
 ;;; Inferior ruby
@@ -133,7 +132,7 @@
 (defun ruby-mode-hook-init ()
   "Disable auto-insert-encoding"
   (remove-hook 'before-save-hook 'ruby-mode-set-encoding))
-(add-hook 'ruby-mode-hook 'ruby-mode-init)
+(add-hook 'ruby-mode-hook 'ruby-mode-hook-init)
 (defun my-ruby-mode-set-encoding ()
   "set-encoding ruby-mode"
   (interactive)
