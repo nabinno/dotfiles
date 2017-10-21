@@ -212,10 +212,20 @@ function set-ntp {
                 Redhat|RedHat)
                     sudo chkconfig ntpd on
                     sudo service ntpd start ;;
-                Debian|Ubuntu)
+                Debian)
                     sudo service ntp stop
                     sudo ntpdate ntp.ubuntu.com
                     sudo service ntp start ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        12.04|14.04)
+                            sudo service ntp stop
+                            sudo ntpdate ntp.ubuntu.com
+                            sudo service ntp start ;;
+                        16.04)
+                            sudo service ntp stop
+                            sudo service ntp start ;;
+                    esac
             esac
     esac
 }
@@ -302,8 +312,25 @@ function get-base {
                     case "${DIST_VERSION=}" in
                         12.04|14.04)
                             sudo apt-get install -y \
-                                 libarchive12 \
+                                 apt-transport-https \
+                                 automake \
+                                 autotools-dev \
+                                 base-files \
+                                 base-passwd \
+                                 binutils \
+                                 build-essential \
+                                 bzip2 \
+                                 cmake \
+                                 curl \
+                                 dnsutils \
+                                 gdb \
+                                 git \
+                                 git-core \
+                                 gnupg \
+                                 htop \
+                                 imagemagick \
                                  libarchive-dev \
+                                 libarchive12 \
                                  libbz2-1.0 \
                                  libbz2-dev \
                                  libc6 \
@@ -321,18 +348,18 @@ function get-base {
                                  libicu-dev \
                                  libldap-2.4-2 \
                                  libldap2-dev \
-                                 libltdl7 \
                                  libltdl-dev \
-                                 liblzma5 \
+                                 libltdl7 \
                                  liblzma-dev \
                                  liblzma-doc \
+                                 liblzma5 \
                                  libmagickcore-dev \
                                  libmagickwand-dev \
                                  libmysqlclient-dev \
-                                 libncap44 \
                                  libncap-dev \
-                                 libncurses5-dev \
+                                 libncap44 \
                                  libncurses-dev \
+                                 libncurses5-dev \
                                  libncursesw5 \
                                  libncursesw5-dev \
                                  libpam0g-dev \
@@ -342,24 +369,54 @@ function get-base {
                                  libpng12-dev \
                                  libpq-dev \
                                  libqt4-dev \
-                                 libreadline6-dev \
                                  libreadline-dev \
+                                 libreadline6-dev \
                                  libsndfile1-dev \
                                  libsqlite3-dev \
-                                 libssl0.9.8 \
                                  libssl-dev \
+                                 libssl0.9.8 \
                                  libxml2 \
                                  libxml2-dev \
                                  libxslt1-dev \
-                                 libxt6 \
                                  libxt-dev \
+                                 libxt6 \
                                  libyaml-dev \
+                                 make \
+                                 openssl \
+                                 psmisc \
+                                 ruby \
+                                 s3cmd \
+                                 sqlite3 \
+                                 telnet \
+                                 tsconf \
+                                 unzip \
+                                 util-linux \
+                                 wget \
+                                 whiptail \
+                                 xz-utils \
                                  zlib1g \
                                  zlib1g-dev \
-                                 tsconf ;;
+                                 zip ;;
                         16.04)
-                            sudo apt-get install -y \
-                                 libarchive \
+                            sudo apt install -y \
+                                 apt-transport-https \
+                                 automake \
+                                 autotools-dev \
+                                 base-files \
+                                 base-passwd \
+                                 binutils \
+                                 bison \
+                                 build-essential \
+                                 bzip2 \
+                                 cmake \
+                                 curl \
+                                 dnsutils \
+                                 gdb \
+                                 git \
+                                 git-core \
+                                 gnupg \
+                                 htop \
+                                 imagemagick \
                                  libarchive-dev \
                                  libbz2-1.0 \
                                  libbz2-dev \
@@ -410,40 +467,23 @@ function get-base {
                                  libxt6 \
                                  libxt-dev \
                                  libyaml-dev \
-                                 zlib1g \
-                                 zlib1g-dev ;;
+                                 make \
+                                 openssl \
+                                 psmisc \
+                                 re2c \
+                                 ruby \
+                                 s3cmd \
+                                 sqlite3 \
+                                 telnet \
+                                 unzip \
+                                 util-linux \
+                                 wget \
+                                 whiptail \
+                                 xz-utils \
+                                 zip \
+                                 zlib1g-dev
+                                 ;;
                     esac
-                    sudo apt-get install -y \
-                         apt-transport-https \
-                         automake \
-                         autotools-dev \
-                         base-files \
-                         base-passwd \
-                         binutils \
-                         build-essential \
-                         bzip2 \
-                         cmake \
-                         curl \
-                         dnsutils \
-                         gdb \
-                         git \
-                         git-core \
-                         gnupg \
-                         htop \
-                         imagemagick \
-                         make \
-                         openssl \
-                         psmisc \
-                         ruby \
-                         s3cmd \
-                         sqlite3 \
-                         telnet \
-                         unzip \
-                         util-linux \
-                         wget \
-                         whiptail \
-                         xz-utils \
-                         zip
             esac
     esac
 }
@@ -779,9 +819,16 @@ case "${OSTYPE}" in
     cygwin*)
         if [ ! -f /usr/local/bin/nix-env ] ; then get-nix ; fi
         if [   -f /usr/local/bin/nix-env ] ; then set-nix ; fi ;;
-    darwin*|linux*)
-        if [ ! -f ~/.nix-profile/bin/nix-env ] ; then get-nix ; fi
-        if [   -f ~/.nix-profile/bin/nix-env ] ; then set-nix ; fi ;;
+    darwin*) ;;
+    linux*)
+            case $DIST in
+                Ubuntu)
+                    case $DIST_VERSION in
+                         12.04|16.04)
+                             if [ ! -f ~/.nix-profile/bin/nix-env ] ; then get-nix ; fi
+                             if [   -f ~/.nix-profile/bin/nix-env ] ; then set-nix ; fi
+                    esac
+            esac
 esac
 
 
@@ -1053,15 +1100,20 @@ esac
 
 # 1. BasicSettings::PackageManager::Homebrew
 # ------------------------------------------
-export MANPATH=$HOME/.linuxbrew/share/man:$MANPATH
-export INFOPATH=$HOME/.linuxbrew/share/info:$INFOPATH
-export LD_LIBRARY_PATH=$HOME/.linuxbrew/lib:$LD_LIBRARY_PATH
-export PATH="$HOME/.linuxbrew/bin:$PATH"
+export MANPATH=/home/linuxbrew/.linuxbrew/share/man:$MANPATH
+export INFOPATH=/home/linuxbrew/.linuxbrew/share/info:$INFOPATH
+export LD_LIBRARY_PATH=/home/linuxbrew/.linuxbrew/lib:$LD_LIBRARY_PATH
+export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 function get-brew {
     case "${OSTYPE}" in
         darwin*) ;;
-        linux*) ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"
+        linux*) sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
     esac
+}
+ function set-brew {
+     echo 'export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"' >>~/.bash_profile
+     echo 'export MANPATH="/home/linuxbrew/.linuxbrew/share/man:$MANPATH"' >>~/.bash_profile
+     echo 'export INFOPATH="/home/linuxbrew/.linuxbrew/share/info:$INFOPATH"' >>~/.bash_profile
 }
 function get-base-brew-packages {
     case "${OSTYPE}" in
@@ -1113,9 +1165,9 @@ esac
 
 # 2. ProgrammingLanguage::Ruby
 # ----------------------------
-REQUIRED_RUBY_VERSION=2.4.0
-REQUIRED_RUBY_VERSION_2=2.3.3
-REQUIRED_RUBY_VERSION_3=2.2.6
+REQUIRED_RUBY_VERSION=2.4.2
+REQUIRED_RUBY_VERSION_2=2.3.5
+REQUIRED_RUBY_VERSION_3=2.2.8
 # ### version control ###
 function get-rbenv {
     case "${OSTYPE}" in
@@ -1171,8 +1223,8 @@ fi
 
 # 2. ProgrammingLanguage::Elixir
 # ------------------------------
-REQUIRED_ERLANG_VERSION=19.1
-REQUIRED_ELIXIR_VERSION=1.4.2
+REQUIRED_ERLANG_VERSION=19.3
+REQUIRED_ELIXIR_VERSION=1.5.2
 REQUIRED_PHOENIXFRAMEWORK_VERSION=1.2.1
 export PATH="$HOME/.local/exenv/bin:$PATH"
 export PATH="$HOME/.mix:$PATH"
@@ -1218,24 +1270,15 @@ function get-elixir {
             exenv install $REQUIRED_ELIXIR_VERSION
             exenv rehash
             exenv global $REQUIRED_ELIXIR_VERSION
-            get-mix-packages ;;
+            get-global-mix-packages ;;
     esac
 }
-function get-mix-packages {
-    mix local.hex
-    mix archive.install https://github.com/phoenixframework/archives/raw/master/phoenix_new-$REQUIRED_PHOENIXFRAMEWORK_VERSION.ez
+function get-global-mix-packages {
+    sudo mix local.hex
+    sudo mix archive.install https://github.com/phoenixframework/archives/raw/master/phoenix_new-$REQUIRED_PHOENIXFRAMEWORK_VERSION.ez
+    sudo chown $(whoami):$(whoami) -R .
 }
 if ! type -p iex > /dev/null ; then get-elixir ; fi
-function get-ex_top {
-    case "${OSTYPE}" in
-        freebsd*|darwin*|linux*)
-            cd ~      && git clone https://github.com/utkarshkukreti/ex_top
-            cd ex_top && mix escript.build && cp -fr ./ex_top ~/.local/bin/
-            cd ~      && rm -fr ex_top
-            ;;
-    esac
-}
-if ! type -p ex_top > /dev/null; then get-ex_top; fi
 
 
 # 2. ProgrammingLanguage::Haskell
@@ -1352,7 +1395,7 @@ function get-mono {
                          mono-complete ;;
                 Debian|Ubuntu*)
                     case $DIST_VERSION in
-                        14.04)
+                        14.04|16.04)
                             sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
                             echo "deb http://download.mono-project.com/repo/debian wheezy main" | sudo tee /etc/apt/sources.list.d/mono-xamarin.list
                             sudo apt-get update
@@ -1398,7 +1441,7 @@ function get-dotnetcli {
                     rm -fr dotnet-dev-rhel-x64.latest.tar.gz ;;
                 Debian|Ubuntu*)
                     case $DIST_VERSION in
-                        14.04)
+                        14.04|16.04)
                             # ### dotnet ###
                             sudo sh -c 'echo "deb [arch=amd64] http://apt-mo.trafficmanager.net/repos/dotnet/ trusty main" > /etc/apt/sources.list.d/dotnetdev.list'
                             sudo apt-key adv --keyserver apt-mo.trafficmanager.net --recv-keys 417A0893
@@ -1449,7 +1492,7 @@ case "${OSTYPE}" in
     freebsd*|darwin*) ;;
     linux*)
         case $DIST_VERSION in
-            14.04) ;;
+            14.04|16.04) ;;
             *) if ! type -p mcs > /dev/null ; then get-mono ; fi ;;
         esac
 esac
@@ -1642,7 +1685,7 @@ if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ] ; then get-play && get-sbt ; fi
 # 2. ProgrammingLanguage::Php
 # ---------------------------
 # ### version control ###
-REQUIRED_PHP_VERSION=5.6.20
+REQUIRED_PHP_VERSION=5.6.31
 function get-phpenv {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) anyenv install phpenv && exec -l zsh ;;
@@ -1656,7 +1699,7 @@ function get-php {
         linux*)
             case $DIST_VERSION in
                 14.04) sudo apt-get install php-$REQUIRED_PHP_VERSION ;;
-                16.04) phpenv install $REQUIRED_PHP_VERSION ;;
+                16.04) sudo apt install php ;;
                 *) nix-install php ;;
             esac
     esac
@@ -2189,7 +2232,7 @@ alias pgk="pg-stop"
 # --------------------------
 REQUIRED_MYSQL_VERSION=5.6
 # ### installation ###
-function get-mysq {
+function get-mysql {
     case "${OSTYPE}" in
         darwin*) nix-install mysql && set-mysql ;;
         linux*)
@@ -2517,8 +2560,14 @@ function get-dnsmasq {
             case "${DIST}" in
                 Redhat|RedHat|Debian) ;;
                 Ubuntu)
-                    sudo apt-get update
-                    sudo apt-get install dnsmasq ;;
+                    case $DIST_VERSION in
+                        12.04|14.04)
+                            sudo apt-get update
+                            sudo apt-get install dnsmasq ;;
+                        16.04)
+                            sudo apt update
+                            sudo apt install dnsmasq ;;
+                    esac
             esac
     esac
 }
@@ -2539,6 +2588,7 @@ function set-dnsmasq {
                 Redhat|RedHat|Debian) ;;
                 Ubuntu)
                     if [ -f /etc/dnsmasq.d/minikube.conf ]; then return; fi
+                    sudo mkdir /etc/dnsmasq.d
                     sudo bash -c "echo address=/minikube.dev/127.0.0.1 > /etc/dnsmasq.d/minikube.conf"
                     dnsmasq-restart ;;
             esac
@@ -2575,7 +2625,7 @@ function get-emacs {
                     wget https://ftp.gnu.org/gnu/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
                     tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
                     cd emacs-$REQUIRED_EMACS_VERSION
-                    ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no
+                    ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no --with-jpeg=no --with-png=no
                     make
                     yes | sudo make install;  wait
                     cd $current_pwd; rm -fr emacs-$REQUIRED_EMACS_VERSION* ;;
@@ -4070,4 +4120,3 @@ alias v="cat"
 function t { \mv (.*~|.*.org*|*.org*|*.tar.gz|*.stackdump|*.tar.gz|*.asx|*.0|*.msi|*.wav|*.doc|*.pdf|$1) .old/ }
 # ### other source file ###
 if [ -f ~/.zsh.d/init.zsh ]; then source ~/.zsh.d/init.zsh; fi
-
