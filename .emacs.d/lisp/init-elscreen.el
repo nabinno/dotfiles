@@ -54,6 +54,7 @@
 (global-set-key (kbd "M-[ 1 ; 8 w") '(lambda () (interactive) (elscreen-goto 7)))
 (global-set-key (kbd "M-[ 1 ; 8 x") '(lambda () (interactive) (elscreen-goto 8)))
 (global-set-key (kbd "M-[ 1 ; 8 y") 'elscreen-jump-9)
+(global-set-key (kbd "<f50>") 'elscreen-create)
 (global-set-key (kbd "ESC <f2>") 'elscreen-create)
 (global-set-key (kbd "M-[ 1 ; 3 Q") 'elscreen-create)
 
@@ -61,7 +62,8 @@
 
 
 ;;; Elscreen persist
-(require-package 'elscreen-persist)
+(unless (require 'elscreen-persist nil 'noerror)
+  (el-get-bundle robario/elscreen-persist))
 ;; (elscreen-persist-mode 1)
 
 
