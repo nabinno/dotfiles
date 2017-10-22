@@ -3339,17 +3339,19 @@ autoload colors
 colors
 case ${UID} in
     0)
-	PROMPT="%B%{${fg[red]}%}%/#%{${reset_color}%}%b "
+ 	PROMPT="%B%{${fg[red]}%}%/#%{${reset_color}%}%b "
 	PROMPT2="%B%{${fg[red]}%}%_#%{${reset_color}%}%b "
 	SPROMPT="%B%{${fg[red]}%}%r is correct? [n,y,a,e]:%{${reset_color}%}%b "
 	[ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
-            PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') ${PROMPT}" ;;
+            PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') ${PROMPT}"
+        ;;
     *)
 	PROMPT="%{${fg[red]}%}%/%%%{${reset_color}%} "
 	PROMPT2="%{${fg[red]}%}%_%%%{${reset_color}%} "
 	SPROMPT="%{${fg[red]}%}%r is correct? [n,y,a,e]:%{${reset_color}%} "
 	[ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
-            PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') ${PROMPT}" ;;
+            PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') ${PROMPT}"
+        ;;
 esac
 setopt auto_cd           # auto change directory
 setopt auto_pushd        # auto directory pushd that you can get dirs list by cd -[tab]
@@ -3398,7 +3400,7 @@ unset LSCOLORS
 unsetopt PROMPT_SP
 zstyle ':completion:*' use-cache true
 case "${TERM}" in
-    xterm|screen.xterm) export TERM=xterm-color ;;
+    xterm|screen.xterm*) export TERM=xterm-color ;;
     kterm)
 	export TERM=kterm-color
         # set BackSpace control character
