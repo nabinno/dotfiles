@@ -281,22 +281,22 @@ function get-base {
                     rm -f epel-release-7-9.noarch.rpm
                     sudo yum update -y
                     sudo yum install -y \
-                        bind-utils \
-                        gcc \
-                        gdbm-devel \
-                        git \
-                        htop \
-                        libffi-devel \
-                        libicu \
-                        libyaml-devel \
-                        mysql-devel \
-                        ncurses-devel \
-                        openssl-devel \
-                        readline-devel \
-                        ruby \
-                        screen \
-                        zlib-devel \
-                        curl ;;
+                         bind-utils \
+                         gcc \
+                         gdbm-devel \
+                         git \
+                         htop \
+                         libffi-devel \
+                         libicu \
+                         libyaml-devel \
+                         mysql-devel \
+                         ncurses-devel \
+                         openssl-devel \
+                         readline-devel \
+                         ruby \
+                         screen \
+                         zlib-devel \
+                         curl ;;
                 Debian|Ubuntu)
                     sudo apt-get update -y
                     case "${DIST_VERSION=}" in
@@ -481,8 +481,7 @@ function get-base {
                                  whiptail \
                                  xz-utils \
                                  zip \
-                                 zlib1g-dev
-                                 ;;
+                                 zlib1g-dev ;;
                     esac
             esac
     esac
@@ -821,14 +820,14 @@ case "${OSTYPE}" in
         if [   -f /usr/local/bin/nix-env ] ; then set-nix ; fi ;;
     darwin*) ;;
     linux*)
-            case $DIST in
-                Ubuntu)
-                    case $DIST_VERSION in
-                         12.04|16.04)
-                             if [ ! -f ~/.nix-profile/bin/nix-env ] ; then get-nix ; fi
-                             if [   -f ~/.nix-profile/bin/nix-env ] ; then set-nix ; fi
-                    esac
-            esac
+        case $DIST in
+            Ubuntu)
+                case $DIST_VERSION in
+                    12.04|16.04)
+                        if [ ! -f ~/.nix-profile/bin/nix-env ] ; then get-nix ; fi
+                        if [   -f ~/.nix-profile/bin/nix-env ] ; then set-nix ; fi
+                esac
+        esac
 esac
 
 
@@ -1100,20 +1099,28 @@ esac
 
 # 1. BasicSettings::PackageManager::Homebrew
 # ------------------------------------------
-export MANPATH=/home/linuxbrew/.linuxbrew/share/man:$MANPATH
-export INFOPATH=/home/linuxbrew/.linuxbrew/share/info:$INFOPATH
-export LD_LIBRARY_PATH=/home/linuxbrew/.linuxbrew/lib:$LD_LIBRARY_PATH
-export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 function get-brew {
     case "${OSTYPE}" in
         darwin*) ;;
         linux*) sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
     esac
 }
- function set-brew {
-     echo 'export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"' >>~/.bash_profile
-     echo 'export MANPATH="/home/linuxbrew/.linuxbrew/share/man:$MANPATH"' >>~/.bash_profile
-     echo 'export INFOPATH="/home/linuxbrew/.linuxbrew/share/info:$INFOPATH"' >>~/.bash_profile
+function set-brew {
+    case "${OSTYPE}" in
+        darwin*) ;;
+        linux*)
+            if [ -d /home/linuxbrew/.linuxbrew ]; then
+                export MANPATH=/home/linuxbrew/.linuxbrew/share/man:$MANPATH
+                export INFOPATH=/home/linuxbrew/.linuxbrew/share/info:$INFOPATH
+                export LD_LIBRARY_PATH=/home/linuxbrew/.linuxbrew/lib:$LD_LIBRARY_PATH
+                export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+            elif [ -d ~/.linuxbrew ]; then
+                export MANPATH=$HOME/.linuxbrew/share/man:$MANPATH
+                export INFOPATH=$HOME/.linuxbrew/share/info:$INFOPATH
+                export LD_LIBRARY_PATH=$HOME/.linuxbrew/lib:$LD_LIBRARY_PATH
+                export PATH="$HOME/.linuxbrew/bin:$PATH"
+            fi
+    esac
 }
 function get-base-brew-packages {
     case "${OSTYPE}" in
@@ -1133,33 +1140,34 @@ function get-base-brew-packages {
             esac
     esac
 }
-if ! type -p brew > /dev/null ; then get-brew && get-base-brew-packages ; fi
+if ! type -p brew > /dev/null; then get-brew && get-base-brew-packages; fi
+if type -p brew > /dev/null; then set-brew; fi
 
 
 # 1. BasicSettings::PackageManager::Autoparts
 # -------------------------------------------
 case "${OSTYPE}" in
     linux*) case "${DIST}" in
-            Debian|Ubuntu)
-                export PATH="$HOME/.parts/autoparts/bin:$PATH"
-                export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
-                function get-parts {
-                    get-base
-                    ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
-                    eval "$(parts env)"
-                    get-parts-packages
-                }
-                function get-parts-packages {
-                    parts install \
-                          heroku_toolbelt \
-                          phantomjs \
-                          the_silver_searcher \
-                          tree \
-                          uuid
-                }
-                if ! type -p parts > /dev/null ; then ; get-parts ; fi
-                if type -p parts > /dev/null ; then ; eval "$(parts env)" ; fi
-        esac
+                Debian|Ubuntu)
+                    export PATH="$HOME/.parts/autoparts/bin:$PATH"
+                    export PATH="$HOME/.parts/lib/node_modules/less/bin:$PATH"
+                    function get-parts {
+                        get-base
+                        ruby -e "$(curl -fsSL https://raw.github.com/nitrous-io/autoparts/master/setup.rb)"
+                        eval "$(parts env)"
+                        get-parts-packages
+                    }
+                    function get-parts-packages {
+                        parts install \
+                              heroku_toolbelt \
+                              phantomjs \
+                              the_silver_searcher \
+                              tree \
+                              uuid
+                    }
+                    if ! type -p parts > /dev/null ; then ; get-parts ; fi
+                    if type -p parts > /dev/null ; then ; eval "$(parts env)" ; fi
+            esac
 esac
 
 
@@ -1200,7 +1208,7 @@ function get-global-gem-packages {
         bundler \
         compass \
         git-trend
-        haml \
+    haml \
         html2slim \
         peek-rblineprof \
         rack-lineprof \
@@ -2098,7 +2106,7 @@ function get-node {
             ndenv rehash
             ndenv global v$REQUIRED_NODE_VERSION
             ;;
-            # get-global-npm-packages ;;
+        # get-global-npm-packages ;;
     esac
 }
 function set-node {
@@ -2654,9 +2662,9 @@ function get-emacs {
                     make
                     yes | sudo make install;  wait
                     cd $current_pwd; rm -fr emacs-$REQUIRED_EMACS_VERSION* ;;
-                    # sudo add-apt-repository ppa:ubuntu-elisp/ppa
-                    # sudo apt-get update
-                    # sudo apt-get install emacs-snapshot ;;
+                # sudo add-apt-repository ppa:ubuntu-elisp/ppa
+                # sudo apt-get update
+                # sudo apt-get install emacs-snapshot ;;
             esac
     esac
 }
@@ -3652,7 +3660,7 @@ function get-slackchat {
         darwin*|linux*)
             wget https://github.com/vektorlab/slackcat/releases/download/v0.7/slackcat-0.7-linux-amd64 -O ~/.local/bin/slackchat
             chmod +x ~/.local/bin/slackchat
-        ;;
+            ;;
     esac
 }
 
