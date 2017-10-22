@@ -1165,13 +1165,20 @@ esac
 
 # 2. ProgrammingLanguage::Ruby
 # ----------------------------
-REQUIRED_RUBY_VERSION=2.4.2
+REQUIRED_RUBY_VERSION=2.4.0
 REQUIRED_RUBY_VERSION_2=2.3.5
 REQUIRED_RUBY_VERSION_3=2.2.8
 # ### version control ###
 function get-rbenv {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) anyenv install rbenv && exec -l zsh ;;
+    esac
+}
+function upgrade-ruby-build {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            rm -f "$(rbenv root)"/plugins/ruby-build
+            git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build ;;
     esac
 }
 # ### installation ###
@@ -1224,7 +1231,7 @@ fi
 # 2. ProgrammingLanguage::Elixir
 # ------------------------------
 REQUIRED_ERLANG_VERSION=19.3
-REQUIRED_ELIXIR_VERSION=1.5.2
+REQUIRED_ELIXIR_VERSION=1.5.1
 REQUIRED_PHOENIXFRAMEWORK_VERSION=1.2.1
 export PATH="$HOME/.local/exenv/bin:$PATH"
 export PATH="$HOME/.mix:$PATH"
@@ -1266,11 +1273,29 @@ function get-rebar3 {
 if ! type -p rebar3 > /dev/null ; then get-rebar3 ; fi
 function get-elixir {
     case "${OSTYPE}" in
-        freebsd*|darwin*|linux*)
+        freebsd*|darwin*)
             exenv install $REQUIRED_ELIXIR_VERSION
             exenv rehash
             exenv global $REQUIRED_ELIXIR_VERSION
             get-global-mix-packages ;;
+        linux*)
+            case $DIST in
+                RedHat|Redhat|Debian)
+                    exenv install $REQUIRED_ELIXIR_VERSION
+                    exenv rehash
+                    exenv global $REQUIRED_ELIXIR_VERSION
+                    get-global-mix-packages ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        12.04|14.04)
+                            exenv install $REQUIRED_ELIXIR_VERSION
+                            exenv rehash
+                            exenv global $REQUIRED_ELIXIR_VERSION
+                            get-global-mix-packages ;;
+                        16.04)
+                            nix-install elixir-$REQUIRED_ELIXIR_VERSION ;;
+                    esac
+            esac
     esac
 }
 function get-global-mix-packages {
