@@ -897,7 +897,7 @@ if type -p anyenv > /dev/null; then eval "$(anyenv init -)" ; fi
 
 # 1. BasicSettings::PackageManager::Docker
 # ----------------------------------------
-# case $DIST_VERSION in (14.04) DOCKER_HOST=tcp://:2375 ;; esac
+case $DIST_VERSION in (16.04) DOCKER_HOST=tcp://:2375 ;; esac
 ### setup ###
 function get-docker {
     case "${OSTYPE}" in
@@ -986,8 +986,8 @@ function docker-status {
 }
 ## ### alias ###
 # alias docker='docker'
-# case $DIST_VERSION in (14.04) alias docker="DOCKER_HOST=${DOCKER_HOST} docker";; esac
-# case $DIST_VERSION in (14.04) alias docker-compose="docker-compose -H ${DOCKER_HOST}";; esac
+case $DIST_VERSION in (16.04) alias docker="DOCKER_HOST=${DOCKER_HOST} docker";; esac
+case $DIST_VERSION in (16.04) alias docker-compose="docker-compose -H ${DOCKER_HOST}";; esac
 alias dcr="docker-restart"
 alias dcp="ps aux | \grep -G 'docker.*'"
 alias dcs="docker-status"
