@@ -897,7 +897,7 @@ if type -p anyenv > /dev/null; then eval "$(anyenv init -)" ; fi
 
 # 1. BasicSettings::PackageManager::Docker
 # ----------------------------------------
-case $DIST_VERSION in (16.04) DOCKER_HOST=tcp://:2375 ;; esac
+case $DIST_VERSION in (16.04) export DOCKER_HOST=tcp://:2375 ;; esac
 ### setup ###
 function get-docker {
     case "${OSTYPE}" in
@@ -922,23 +922,27 @@ function get-docker {
                     sudo usermod -aG docker ${current_user_name}
                     ;;
                 Ubuntu)
-                    sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-                    if [ -f /etc/apt/sources.list.d/docker.list ]; then
-                        sudo rm /etc/apt/sources.list.d/docker.list
-                        sudo touch /etc/apt/sources.list.d/docker.list
-                    fi
-                    case "${DIST_VERSION}" in
-                        12.04) sudo sh -c 'echo "deb https://apt.dockerproject.org/repo ubuntu-precise main" >> /etc/apt/sources.list.d/docker.list' ;;
-                        14.04) sudo sh -c 'echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" >> /etc/apt/sources.list.d/docker.list' ;;
-		    esac
-                    sudo apt-get update
-                    sudo apt-get purge lxc-docker*
-                    sudo apt-cache policy docker-engine
-		    sudo apt-get update
-                    sudo apt-get install -y docker-engine
-                    local current_user_name=$(whoami)
-                    sudo usermod -aG docker ${current_user_name}
-                    ;;
+                    case $DIST_VERSION in
+                        12.04|14.04)
+                            sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+                            if [ -f /etc/apt/sources.list.d/docker.list ]; then
+                                sudo rm /etc/apt/sources.list.d/docker.list
+                                sudo touch /etc/apt/sources.list.d/docker.list
+                            fi
+                            case "${DIST_VERSION}" in
+                                12.04) sudo sh -c 'echo "deb https://apt.dockerproject.org/repo ubuntu-precise main" >> /etc/apt/sources.list.d/docker.list' ;;
+                                14.04) sudo sh -c 'echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" >> /etc/apt/sources.list.d/docker.list' ;;
+		            esac
+                            sudo apt-get update
+                            sudo apt-get purge lxc-docker*
+                            sudo apt-cache policy docker-engine
+		            sudo apt-get update
+                            sudo apt-get install -y docker-engine
+                            local current_user_name=$(whoami)
+                            sudo usermod -aG docker ${current_user_name} ;;
+                        16.04)
+                            sudo apt install docker ;;
+                    esac
             esac
     esac
 }
@@ -1044,7 +1048,20 @@ function dnsenter {
 # ### docker compose / machine ###
 function get-docker-compose {
     case $OSTYPE in
-        freebsd*|darwin*|linux*) pip install docker-compose ;;
+        freebsd*|darwin*)
+            pip install docker-compose ;;
+        linux*)
+            case $DIST in
+                RedHat|Redhat|Debian)
+                    pip install docker-compose ;;
+                Ubuntu)
+                    case $DIST_VERSION in
+                        12.04|14.04)
+                            pip install docker-compose ;;
+                        16.04)
+                            sudo apt install docker-compose ;;
+                    esac
+            esac
     esac
 }
 function get-docker-machine {
@@ -1932,10 +1949,25 @@ function get-python {
                     python
             python-setuptools ;;
         freebsd*|darwin*|linux*)
-            pyenv install anaconda2-$REQUIRED_ANACONDA2_VERSION
-            git clone https://github.com/yyuu/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv
-            pyenv rehash
-            pyenv global anaconda2-$REQUIRED_ANACONDA2_VERSION
+            case $DIST in
+                    RedHat|Redhat|Debian)
+                        pyenv install anaconda2-$REQUIRED_ANACONDA2_VERSION
+                        git clone https://github.com/yyuu/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv
+                        pyenv rehash
+                        pyenv global anaconda2-$REQUIRED_ANACONDA2_VERSION ;;
+                     Ubuntu)
+                         case $DIST_VERSION in
+                             12.04|14.04)
+                                 pyenv install anaconda2-$REQUIRED_ANACONDA2_VERSION
+                                 git clone https://github.com/yyuu/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv
+                                 pyenv rehash
+                                 pyenv global anaconda2-$REQUIRED_ANACONDA2_VERSION ;;
+                             16.04)
+                                 sudo apt install -y \
+                                      python \
+                                      python-setuptools ;;
+                         esac
+            esac
     esac
 }
 if ! type -p python > /dev/null; then get-python ; fi
@@ -1958,7 +1990,6 @@ function get-global-pip-packages {
     case "$OSTYPE" in
         freebsd*|darwin*|linux*)
             pip install -U \
-                docker-compose \
                 ipython \
                 pulp \
                 boto \
@@ -2312,6 +2343,8 @@ function get-mysql {
                             sudo add-apt-repository -y ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
                             sudo apt-get update
                             sudo apt-get -y install mysql-server ;;
+                        16.04)
+                            sudo apt install mysql-client ;;
                     esac
             esac
     esac
