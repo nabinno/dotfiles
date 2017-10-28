@@ -129,6 +129,9 @@ case "${OSTYPE}" in
                 DIST="${DIST}[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed -e 's/VERSION.*//'`]"
             fi
             OSSTR="${OS} ${DIST} ${REV}(${PSUEDONAME} ${KERNEL} ${MACH})"
+            if [[ $KERNEL =~ Microsoft ]]; then
+                REV="WSL"
+            fi
         fi
 esac
 case $OSTYPE in
@@ -1251,8 +1254,8 @@ function get-global-gem-packages {
         benchmark-ips \
         bundler \
         compass \
-        git-trend
-    haml \
+        git-trend \
+        haml \
         html2slim \
         peek-rblineprof \
         rack-lineprof \
