@@ -390,6 +390,7 @@ function get-base {
                                  ruby \
                                  s3cmd \
                                  sqlite3 \
+                                 strace \
                                  telnet \
                                  tsconf \
                                  unzip \
@@ -477,6 +478,7 @@ function get-base {
                                  ruby \
                                  s3cmd \
                                  sqlite3 \
+                                 strace \
                                  telnet \
                                  unzip \
                                  util-linux \
