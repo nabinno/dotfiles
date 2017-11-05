@@ -71,7 +71,8 @@
 (require 'init-elscreen)
 ;; (require 'init-sessions)
 ;; (require 'init-fonts)
-(require 'init-mmm)
+;; (require 'init-mmm)
+(require 'init-web)
 
 (require 'init-editing-utils)
 
@@ -80,7 +81,7 @@
 (require 'init-git)
 (require 'init-github)
 
-;; (require 'init-crontab) ;;;
+(require 'init-crontab)
 ;; (require 'init-textile)
 (require 'init-markdown)
 (require 'init-csv)
@@ -142,7 +143,7 @@
 (require-package 'regex-tool)
 
 (require 'init-irc)
-(require 'init-esa)
+;; (require 'init-esa)
 (require 'init-proced)
 
 ;;----------------------------------------------------------------------------
