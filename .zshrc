@@ -3767,6 +3767,7 @@ function get-heroku {
 #
 GCLOUD_PROJECT_ID='utagaki-v2'
 PATH="$HOME/google-cloud-sdk/bin:$PATH"
+export CLOUDSDK_PYTHON=/usr/bin/python
 function get-gcloud {
     case "${OSTYPE}" in
         cygwin|darwin*|linux*)
