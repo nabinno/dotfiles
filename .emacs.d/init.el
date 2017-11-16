@@ -108,6 +108,7 @@
 (require 'init-java)
 ;; (require 'init-scala)
 (cond ((string-equal system-type "cygwin") (require 'init-android)))
+(require 'init-digdag)
 (require 'init-analytics)
 (require 'init-orchestration)
 
