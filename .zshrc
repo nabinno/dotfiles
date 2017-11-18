@@ -26,6 +26,7 @@
 # 2. ProgrammingLanguage::Perl
 # 2. ProgrammingLanguage::Javascript
 # 2. ProgrammingLanguage::RemoteProcedureCall
+# 3. Daemon::Database::Usql
 # 3. Daemon::Database::Postgresql
 # 3. Daemon::Database::Mysql
 # 3. Daemon::Database::Redis
@@ -1403,7 +1404,7 @@ if ! type -p cabal > /dev/null ; then get-cabal ; fi
 
 # 2. ProgrammingLanguage::Go
 # --------------------------
-export REQUIRED_GO_VERSION=1.4.2
+export REQUIRED_GO_VERSION=1.9.1
 export GOROOT=~/.anyenv/envs/goenv/versions/${REQUIRED_GO_VERSION}
 export GOPATH=~/.go.d
 export PATH="$GOPATH/bin:$GOROOT/bin:$PATH"
@@ -2245,6 +2246,14 @@ function get-thrift {
 }
 if ! type -p protoc > /dev/null ; then get-protobuf ; fi
 if ! type -p thrift > /dev/null ; then get-thrift ; fi
+
+
+# 3. Daemon::Database::Usql
+# -------------------------
+function get-usql {
+    go get -u -tags most github.com/xo/usql
+}
+if ! type -p usql > /dev/null; then get-usql; fi
 
 
 # 3. Daemon::Database::Postgresql
