@@ -3925,6 +3925,13 @@ function get-global-helm-packages {
     helm install stable/rabbitmq
     helm install stable/memcached
 }
+# ### kompose ###
+function get-kubernetes-kompose {
+    case $OSTYPE in
+        darwin*|linux*) go get -u github.com/kubernetes/kompose
+    esac
+}
+if ! type kompose > /dev/null; then get-kubernetes-kompose; fi
 # ### kubetail ###
 function get-kubetail {
     case $OSTYPE in
