@@ -1235,7 +1235,7 @@ function get-rbenv {
 function upgrade-ruby-build {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
-            rm -f "$(rbenv root)"/plugins/ruby-build
+            rm -fr "$(rbenv root)"/plugins/ruby-build
             git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build ;;
     esac
 }
