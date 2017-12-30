@@ -57,6 +57,7 @@
 (global-set-key (kbd "<f50>") 'elscreen-create)
 (global-set-key (kbd "ESC <f2>") 'elscreen-create)
 (global-set-key (kbd "M-[ 1 ; 3 Q") 'elscreen-create)
+(global-set-key (kbd "<f2>") 'elscreen-create)
 
 (elscreen-start)
 
