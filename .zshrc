@@ -3681,7 +3681,7 @@ if [ x$TERM = xscreen ] ; then alias ssh=ssh_screen ; fi
 # ### screen for status line ###
 if [ "$TERM" = "screen" ]; then
     export LSCOLORS=gxfxcxdxbxegedabagacad
-    export LS_COLORS='di=36;40:ln=35;40:so=32;40:pi=33;40:ex=31;40:bd=34;46:cd=34;43:su=0;41:sg=0;46:tw=0;42:ow=0;43:'
+    export LS_COLORS='di=36;40:ln=35;40:so=32;40:pi=33;40:ex=31;40:bd=34;46:cd=34;43:su=0;41:sg=0;46:tw=0;42:ow=0;36:'
     # function chpwd { echo -n "_`dirs`\\" | ll }
     function chpwd { echo -n "_`dirs`\\" }
     function preexec {
