@@ -2181,6 +2181,7 @@ function set-node {
 function get-global-npm-packages {
     npm install -g \
         bower \
+        frontpack \
         grunt-cli \
         gulp \
         hexo-cli \
@@ -2191,8 +2192,10 @@ function get-global-npm-packages {
         npm2dot \
         phantomjs \
         requirejs \
-        yamljs \
-        tern
+        tern \
+        webpack \
+        webpack-merge \
+        yamljs
 }
 if ! type -p npm > /dev/null ; then get-node ; fi
 if type -p npm > /dev/null ; then set-node ; fi
