@@ -1290,7 +1290,7 @@ fi
 # ------------------------------
 REQUIRED_ERLANG_VERSION=19.3
 REQUIRED_ELIXIR_VERSION=1.5.1
-REQUIRED_PHOENIXFRAMEWORK_VERSION=1.2.1
+REQUIRED_PHOENIXFRAMEWORK_VERSION=1.3.0
 export PATH="$HOME/.local/exenv/bin:$PATH"
 export PATH="$HOME/.mix:$PATH"
 # ### version control ###
@@ -1357,9 +1357,8 @@ function get-elixir {
     esac
 }
 function get-global-mix-packages {
-    sudo mix local.hex
-    sudo mix archive.install https://github.com/phoenixframework/archives/raw/master/phoenix_new-$REQUIRED_PHOENIXFRAMEWORK_VERSION.ez
-    sudo chown $(whoami):$(whoami) -R .
+    mix local.hex
+    mix archive.install https://github.com/phoenixframework/archives/raw/master/phx_new-$REQUIRED_PHOENIXFRAMEWORK_VERSION.ez
 }
 if ! type -p iex > /dev/null ; then get-elixir ; fi
 
@@ -1404,7 +1403,7 @@ if ! type -p cabal > /dev/null ; then get-cabal ; fi
 
 # 2. ProgrammingLanguage::Go
 # --------------------------
-export REQUIRED_GO_VERSION=1.9.2
+export REQUIRED_GO_VERSION=1.9.1
 export GOROOT=~/.anyenv/envs/goenv/versions/${REQUIRED_GO_VERSION}
 export GOPATH=~/.go.d
 export PATH="$GOPATH/bin:$GOROOT/bin:$PATH"
@@ -2148,7 +2147,7 @@ alias cpanmini='cpan --mirror ~/.cpan/minicpan --mirror-only'
 
 # 2. ProgrammingLanguage::Javascript
 # ----------------------------------
-export REQUIRED_NODE_VERSION='6.9.5'
+export REQUIRED_NODE_VERSION='6.9.1'
 export node='NODE_NO_READLINE=1 node'
 case $OSTYPE in (msys|cygwin) export PATH=$(get-winpath "C:\Program Files\nodejs"):$PATH ;; esac
 # ### version control ###
@@ -2181,7 +2180,6 @@ function set-node {
 function get-global-npm-packages {
     npm install -g \
         bower \
-        frontpack \
         grunt-cli \
         gulp \
         hexo-cli \
@@ -2192,10 +2190,8 @@ function get-global-npm-packages {
         npm2dot \
         phantomjs \
         requirejs \
-        tern \
-        webpack \
-        webpack-merge \
-        yamljs
+        yamljs \
+        tern
 }
 if ! type -p npm > /dev/null ; then get-node ; fi
 if type -p npm > /dev/null ; then set-node ; fi
@@ -2256,7 +2252,7 @@ if ! type -p thrift > /dev/null ; then get-thrift ; fi
 function get-usql {
     go get -u -tags most github.com/xo/usql
 }
-# if ! type -p usql > /dev/null; then get-usql; fi
+if ! type -p usql > /dev/null; then get-usql; fi
 
 
 # 3. Daemon::Database::Postgresql
@@ -3921,8 +3917,8 @@ function get-kubernetes-helm {
 function set-kubernetes-helm {
     source <(helm completion zsh)
 }
-# if ! type helm > /dev/null; then get-kubernetes-helm; fi
-# if type helm > /dev/null; then set-kubernetes-helm; fi
+if ! type helm > /dev/null; then get-kubernetes-helm; fi
+if type helm > /dev/null; then set-kubernetes-helm; fi
 function get-global-helm-packages {
     helm install stable/kubernetes-dashboard
     helm install stable/rabbitmq
@@ -3934,7 +3930,7 @@ function get-kubernetes-kompose {
         darwin*|linux*) go get -u github.com/kubernetes/kompose
     esac
 }
-# if ! type kompose > /dev/null; then get-kubernetes-kompose; fi
+if ! type kompose > /dev/null; then get-kubernetes-kompose; fi
 # ### kubetail ###
 function get-kubetail {
     case $OSTYPE in
