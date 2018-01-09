@@ -19,10 +19,22 @@
 
 (setq alchemist-goto-erlang-source-dir "~/.parts/lib/erlang/")
 (setq alchemist-goto-elixir-source-dir "~/.parts/lib/elixir/")
+
 (defun custom-erlang-mode-hook ()
+  "Define key to erlang-mode-map."
   (define-key erlang-mode-map (kbd "M-,") 'alchemist-goto-jump-back))
+
+(defadvice alchemist-project-root (around seancribbs/alchemist-project-root activate)
+  "Advice alchemist-project-mix-project-indicator."
+  (let ((alchemist-project-mix-project-indicator ".git"))
+    ad-do-it))
+(defun seancribbs/activate-alchemist-root-advice ()
+  "Activates advice to override alchemist's root-finding logic."
+  (ad-activate 'alchemist-project-root))
+
 (add-hook 'erlang-mode-hook 'custom-erlang-mode-hook)
 (add-hook 'elixir-mode-hook 'alchemist-mode)
+(add-hook 'elixir-mode-hook 'seancribbs/activate-alchemist-root-advice)
 
 
 ;;; Phoenix
