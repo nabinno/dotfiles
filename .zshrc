@@ -1124,7 +1124,9 @@ esac
 function get-brew {
     case "${OSTYPE}" in
         darwin*) ;;
-        linux*) sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+        linux*)
+            sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+            brew vendor-install ruby ;;
     esac
 }
 function get-base-brew-packages {
