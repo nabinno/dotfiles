@@ -26,7 +26,6 @@
 # 2. ProgrammingLanguage::Perl
 # 2. ProgrammingLanguage::Javascript
 # 2. ProgrammingLanguage::RemoteProcedureCall
-# 3. Daemon::Database::Usql
 # 3. Daemon::Database::Postgresql
 # 3. Daemon::Database::Mysql
 # 3. Daemon::Database::Redis
@@ -2245,14 +2244,6 @@ function get-thrift {
 }
 if ! type -p protoc > /dev/null ; then get-protobuf ; fi
 if ! type -p thrift > /dev/null ; then get-thrift ; fi
-
-
-# 3. Daemon::Database::Usql
-# -------------------------
-function get-usql {
-    go get -u -tags most github.com/xo/usql
-}
-if ! type -p usql > /dev/null; then get-usql; fi
 
 
 # 3. Daemon::Database::Postgresql
