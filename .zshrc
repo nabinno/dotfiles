@@ -1306,7 +1306,10 @@ function get-kerl {
 if ! type -p kerl > /dev/null ; then get-kerl ; fi
 function get-exenv {
     case "${OSTYPE}" in
-        freebsd*|darwin*|linux*) anyenv install exenv && exec -l zsh
+        freebsd*|darwin*|linux*)
+            anyenv install exenv
+            git clone git://github.com/mururu/elixir-build.git ~/.exenv/plugins/elixir-build
+            exec -l zsh
     esac
 }
 if ! type -p exenv > /dev/null ; then get-exenv ; fi
