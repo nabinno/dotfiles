@@ -1,3 +1,6 @@
+;;; init-rails --- rails configuration
+;;; Commentary:
+;;; Code:
 (require-package 'rinari)
 (after-load 'rinari
   (diminish 'rinari-minor-mode "Rin"))
@@ -36,6 +39,5 @@
      (add-to-list 'grep-find-ignored-directories "tmp")
      (add-to-list 'grep-find-ignored-directories "vendor")))
 
-
-
 (provide 'init-rails)
+;;; init-rails.el ends here
