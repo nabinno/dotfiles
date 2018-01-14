@@ -66,14 +66,20 @@
 ;;; Company-tern
 (require-package 'company-tern)
 (setq company-tern-property-marker "")
+
 (defun company-tern-depth (candidate)
-  "Return depth attribute for CANDIDATE. 'nil' entries are treated as 0"
+  "Return depth attribute for CANDIDATE, 'nil' entries are treated as 0."
   (let ((depth (get-text-property 0 'depth candidate)))
     (if (eq depth nil) 0 depth)))
+
 (dolist (hook '(js-mode-hook js2-mode))
   (add-hook hook '(lambda ()
                     (tern-mode)
                     (add-to-list 'company-backends '(company-tern :with company-dabbrev-code)))))
+(eval-after-load 'tern
+  '(progn
+     (define-key tern-mode-keymap (kbd "M-,") 'mc/mark-previous-like-this)
+     (define-key tern-mode-keymap (kbd "M-.") 'mc/mark-next-like-this)))
 
 
 ;; Javascript nests {} and () a lot, so I find this helpful
