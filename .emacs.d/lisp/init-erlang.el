@@ -13,6 +13,9 @@
 ;;; Exlixr
 (require-package 'elixir-mode)
 
+(setq auto-mode-alist
+      (cons '("\\.\\(po\\|pot\\)\\'" . elixir-mode) auto-mode-alist))
+
 ;; alchemist
 (el-get-bundle tonini/alchemist.el)
 (setq alchemist-key-command-prefix (kbd "C-c ,")) ;; default: (kbd "C-c a")
