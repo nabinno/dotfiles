@@ -809,6 +809,7 @@ function nix-search        { nix-env -qa $1 }
 function nix-list          { nix-env -q }
 function nix-list-versions { nix-env -qc }
 function nix-update        { nix-env --upgrade $1 }
+function nix-update-all    { nix-channel --update }
 function get-nix-packages {
     case "${OSTYPE}" in
         darwin*|linux*)
