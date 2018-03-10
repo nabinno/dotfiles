@@ -25,6 +25,7 @@
 # 2. ProgrammingLanguage::Python
 # 2. ProgrammingLanguage::Perl
 # 2. ProgrammingLanguage::Javascript
+# 2. ProgrammingLanguage::Rust
 # 2. ProgrammingLanguage::RemoteProcedureCall
 # 3. Daemon::Database::Postgresql
 # 3. Daemon::Database::Mysql
@@ -1348,14 +1349,14 @@ function get-elixir {
                     exenv global $REQUIRED_ELIXIR_VERSION
                     get-global-mix-packages ;;
                 Ubuntu)
-                    case $DIST_VERSION in
-                        12.04|14.04)
+                    case $REV in
+                        WSL)
+                            nix-install elixir-$REQUIRED_ELIXIR_VERSION ;;
+                        *)
                             exenv install $REQUIRED_ELIXIR_VERSION
                             exenv rehash
                             exenv global $REQUIRED_ELIXIR_VERSION
                             get-global-mix-packages ;;
-                        16.04)
-                            nix-install elixir-$REQUIRED_ELIXIR_VERSION ;;
                     esac
             esac
     esac
@@ -2222,6 +2223,25 @@ function get-yoeman {
     npm i -g \
         generator-standard-readme \
         yo
+}
+
+
+# 2. ProgrammingLanguage::Rust
+# ----------------------------
+function get-rust {
+    case $OSTYPE in
+        linux*) curl https://sh.rustup.rs -sSf | sh ;;
+    esac
+}
+if ! type -p rust > /dev/null; then get-rust; fi
+function set-rust {
+    case $OSTYPE in
+        linux*) source $HOME/.cargo/env ;;
+    esac
+}
+if type -p rust > /dev/null; then set-rust; fi
+function get-global-cargo-packages {
+    cargo install fselect
 }
 
 
