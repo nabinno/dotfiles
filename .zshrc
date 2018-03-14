@@ -2234,13 +2234,12 @@ function get-rust {
         linux*) curl https://sh.rustup.rs -sSf | sh ;;
     esac
 }
-if ! type -p rust > /dev/null; then get-rust; fi
 function set-rust {
     case $OSTYPE in
         linux*) source $HOME/.cargo/env ;;
     esac
 }
-if type -p rust > /dev/null; then set-rust; fi
+if [ -f ~/.cargo/env ]; then set-rust; else get-rust; fi
 function get-global-cargo-packages {
     cargo install fselect
 }
