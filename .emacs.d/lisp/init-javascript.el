@@ -58,6 +58,11 @@
 (after-load 'js2-mode (js2-imenu-extras-setup))
 
 
+;; Language Server Protocol
+(unless (require 'lsp-javascript nil 'noerror)
+  (el-get-bundle emacs-lsp/lsp-javascript))
+
+
 ;; ;;; Repl: Babel, Node.js
 ;; (require-package 'babel-repl)
 ;; (require-package 'nodejs-repl)

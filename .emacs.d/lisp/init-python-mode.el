@@ -5,6 +5,10 @@
       (append '(("SConstruct\\'" . python-mode)
 		("SConscript\\'" . python-mode))
               auto-mode-alist))
+
+;; Language Server Protocol
+(unless (require 'lsp-python nil 'noerror)
+  (el-get-bundle emacs-lsp/lsp-python))
 
 
 ;;; Jedi

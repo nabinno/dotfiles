@@ -27,6 +27,11 @@
 ;; (require-package 'jdee)
 
 
+;; Language Server Protocol
+(unless (require 'lsp-java nil 'noerror)
+  (el-get-bundle emacs-lsp/lsp-java))
+
+
 ;;; Maven
 (require-package 'mvn)
 

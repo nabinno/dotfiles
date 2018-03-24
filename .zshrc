@@ -1369,6 +1369,30 @@ function get-global-mix-packages {
 if ! type -p iex > /dev/null ; then get-elixir ; fi
 
 
+# 2. ProgrammingLanguage::OCaml
+# -----------------------------
+export REQUIRED_OCAML_VERSION=4.06.1
+
+function get-ocaml {
+    curl -kL https://raw.github.com/hcarty/ocamlbrew/master/ocamlbrew-install | bash
+    source ~/ocamlbrew/ocaml-*/etc/ocamlbrew.bashrc
+    opam switch $REQUIRED_OCAML_VERSION
+    eval `opam config env`
+}
+
+if [ -d ~/ocamlbrew ]; then source ~/ocamlbrew/ocaml-*/etc/ocamlbrew.bashrc; fi
+if ! type -p ocaml > /dev/null; then get-ocaml; fi
+
+function get-global-opam-packages {
+    opam install \
+         core_kernel \
+         core \
+         ounit \
+         utop \
+         tuareg \
+         merlin
+}
+
 # 2. ProgrammingLanguage::Haskell
 # -------------------------------
 # export REQUIRED_GHC_VERSION=7.10.3
