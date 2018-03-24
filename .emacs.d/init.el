@@ -71,21 +71,22 @@
 (require 'init-elscreen)
 ;; (require 'init-sessions)
 ;; (require 'init-fonts)
-;; (require 'init-mmm)
-(require 'init-web)
-
-(require 'init-editing-utils)
 
 ;; (require 'init-vc)
 ;; (require 'init-darcs)
 (require 'init-git)
 (require 'init-github)
 
+(require 'init-lsp)
+;; (require 'init-mmm)
+(require 'init-web)
+(require 'init-editing-utils)
 ;; (require 'init-crontab)
 ;; (require 'init-textile)
 (require 'init-markdown)
 (require 'init-csv)
 (require 'init-erlang)
+(require 'init-ocaml)
 (require 'init-javascript)
 (require 'init-express)
 (require 'init-php)
@@ -103,7 +104,6 @@
 ;; (require 'init-edbi)
 (require 'init-restclient)
 ;; (require 'init-perl)
-
 (require 'init-csharp)
 (require 'init-java)
 ;; (require 'init-scala)
@@ -189,3 +189,6 @@
 ;;;
 ;;; init.el ends here
 (put 'erase-buffer 'disabled nil)
+;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
+(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
+;; ## end of OPAM user-setup addition for emacs / base ## keep this line

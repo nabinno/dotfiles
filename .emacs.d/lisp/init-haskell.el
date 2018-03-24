@@ -1,3 +1,6 @@
+;;; init-haskell --- haskell configuration
+;;; Commentary:
+;;; Code:
 (require-package 'haskell-mode)
 
 (custom-set-variables
@@ -63,6 +66,11 @@ been saved."
         ad-do-it))
 
     (require 'flycheck-hdevtools)))
+
+
+;; Language Server Protocol
+(unless (require 'lsp-haskell nil 'noerror)
+  (el-get-bundle emacs-lsp/lsp-haskell))
 
 
 ;; Interactive hasskell mode
@@ -204,3 +212,4 @@ been saved."
 
 
 (provide 'init-haskell)
+;;; init-haskell.el ends here
