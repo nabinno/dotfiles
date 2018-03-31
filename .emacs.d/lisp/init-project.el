@@ -68,11 +68,6 @@
 ;;           )
 
 
-;; ;;; Projectile
-;; (require-package 'project)
-;; (projectile-global-mode)
-
-
 ;;; Task management
 ;; todo hilight
 (dolist (mode '(ruby js js2 terraform cperl elixir erlang python jade haml emacs-lisp ielm))

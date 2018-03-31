@@ -2269,7 +2269,9 @@ function set-rust {
 }
 if [ -f ~/.cargo/env ]; then set-rust; else get-rust; fi
 function get-global-cargo-packages {
-    cargo install fselect
+    cargo install \
+          ripgrep \
+          fselect
 }
 
 
