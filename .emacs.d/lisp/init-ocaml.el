@@ -9,8 +9,7 @@
 
 ;; Language Server Protocol
 (unless (require 'lsp-ocaml nil 'noerror)
-  (el-get-bundle emacs-lsp/lsp-ocaml)
-  (ignore-errors (car (process-lines "npm" "install" "-g" "ocaml-language-server"))))
+  (el-get-bundle emacs-lsp/lsp-ocaml))
 
 
 ;; Merlin as IDE
@@ -143,10 +142,7 @@ But return nil unless the process returned 0 (`shell-command-to-string' ignore r
 
 ;; ReasonML as AltJS
 (unless (require 'reason-mode nil 'noerror)
-  (el-get-bundle reasonml-editor/reason-mode)
-  (ignore-errors (car (process-lines "npm" "install" "-g" "reason-cli")))
-  (ignore-errors (car (process-lines "npm" "install" "-g" "bs-platform")))
-  )
+  (el-get-bundle reasonml-editor/reason-mode))
 
 (defun shell-cmd (cmd)
     "Returns the stdout output of a shell command or nil if the command returned

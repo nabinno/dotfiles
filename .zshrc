@@ -17,6 +17,7 @@
 # 1. BasicSettings::PackageManager::Autoparts
 # 2. ProgrammingLanguage::Ruby
 # 2. ProgrammingLanguage::Elixir
+# 2. ProgrammingLanguage::OCaml
 # 2. ProgrammingLanguage::Haskell
 # 2. ProgrammingLanguage::Go
 # 2. ProgrammingLanguage::DotNetFramework
@@ -1371,18 +1372,16 @@ if ! type -p iex > /dev/null ; then get-elixir ; fi
 
 # 2. ProgrammingLanguage::OCaml
 # -----------------------------
-export REQUIRED_OCAML_VERSION=4.06.1
-
+export REQUIRED_OCAML_VERSION=4.02.3+buckle-1
 function get-ocaml {
     curl -kL https://raw.github.com/hcarty/ocamlbrew/master/ocamlbrew-install | bash
     source ~/ocamlbrew/ocaml-*/etc/ocamlbrew.bashrc
     opam switch $REQUIRED_OCAML_VERSION
     eval `opam config env`
+    get-global-opam-packages
 }
-
 if [ -d ~/ocamlbrew ]; then source ~/ocamlbrew/ocaml-*/etc/ocamlbrew.bashrc; fi
 if ! type -p ocaml > /dev/null; then get-ocaml; fi
-
 function get-global-opam-packages {
     opam install \
          core_kernel \
@@ -1390,7 +1389,12 @@ function get-global-opam-packages {
          ounit \
          utop \
          tuareg \
+         reason \
          merlin
+}
+function get-global-npm-packages-for-ocaml {
+    npm i -g \
+        ocaml-language-server
 }
 
 # 2. ProgrammingLanguage::Haskell
