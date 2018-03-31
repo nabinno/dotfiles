@@ -17,6 +17,7 @@
 # 1. BasicSettings::PackageManager::Autoparts
 # 2. ProgrammingLanguage::Ruby
 # 2. ProgrammingLanguage::Elixir
+# 2. ProgrammingLanguage::OCaml
 # 2. ProgrammingLanguage::Haskell
 # 2. ProgrammingLanguage::Go
 # 2. ProgrammingLanguage::DotNetFramework
@@ -1371,18 +1372,16 @@ if ! type -p iex > /dev/null ; then get-elixir ; fi
 
 # 2. ProgrammingLanguage::OCaml
 # -----------------------------
-export REQUIRED_OCAML_VERSION=4.06.1
-
+export REQUIRED_OCAML_VERSION=4.02.3+buckle-1
 function get-ocaml {
     curl -kL https://raw.github.com/hcarty/ocamlbrew/master/ocamlbrew-install | bash
     source ~/ocamlbrew/ocaml-*/etc/ocamlbrew.bashrc
     opam switch $REQUIRED_OCAML_VERSION
     eval `opam config env`
+    get-global-opam-packages
 }
-
 if [ -d ~/ocamlbrew ]; then source ~/ocamlbrew/ocaml-*/etc/ocamlbrew.bashrc; fi
 if ! type -p ocaml > /dev/null; then get-ocaml; fi
-
 function get-global-opam-packages {
     opam install \
          core_kernel \
@@ -1390,7 +1389,12 @@ function get-global-opam-packages {
          ounit \
          utop \
          tuareg \
+         reason \
          merlin
+}
+function get-global-npm-packages-for-ocaml {
+    npm i -g \
+        ocaml-language-server
 }
 
 # 2. ProgrammingLanguage::Haskell
@@ -2746,7 +2750,8 @@ alias dmr=dnsmasq-restart
 
 # 4. IntegratedDevelopmentEnvironment::Emacs
 # ------------------------------------------
-export REQUIRED_EMACS_VERSION=24.5
+export REQUIRED_EMACS_VERSION=25.3
+export UNREQUIRED_EMACS_VERSION=24.5
 # ### installation ###
 function get-emacs {
     case "${OSTYPE}" in
@@ -2757,24 +2762,34 @@ function get-emacs {
                 Redhat|RedHat)
                     sudo yum install -y ncurses-devel
                     local current_pwd=`pwd`
-                    wget https://ftp.gnu.org/gnu/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
-                    tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
+                    wget https://ftp.gnu.org/gnu/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz
+                    tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz
                     cd emacs-$REQUIRED_EMACS_VERSION
                     ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no
                     make
-                    yes | sudo make install;  wait
-                    cd $current_pwd; rm -fr emacs-$REQUIRED_EMACS_VERSION* ;;
+                    yes | sudo make install
+                    cd $current_pwd
+                    rm -fr emacs-$REQUIRED_EMACS_VERSION* ;;
                 Debian|Ubuntu)
-                    sudo apt-get install build-essential
-                    sudo apt-get build-dep emacs24
-                    sudo apt-get install lincurses5-dev
-                    wget https://ftp.gnu.org/gnu/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
-                    tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz;  wait
-                    cd emacs-$REQUIRED_EMACS_VERSION
-                    ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no --with-jpeg=no --with-png=no
-                    make
-                    yes | sudo make install;  wait
-                    cd $current_pwd; rm -fr emacs-$REQUIRED_EMACS_VERSION* ;;
+                    case $DIST_VERSION in
+                        16.04)
+                            sudo add-apt-repository ppa:kelleyk/emacs
+                            sudo apt update
+                            sudo apt install emacs25 ;;
+                        *)
+                            sudo apt-get install build-essential checkinstall
+                            sudo apt-get build-dep
+                            # sudo apt-get build-dep emacs24
+                            sudo apt-get install lincurses5-dev
+                            wget https://ftp.gnu.org/gnu/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz
+                            tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz
+                            cd emacs-$REQUIRED_EMACS_VERSION
+                            ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no --with-jpeg=no --with-png=no
+                            make
+                            yes | sudo make install
+                            cd $current_pwd
+                            rm -fr emacs-$REQUIRED_EMACS_VERSION* ;;
+                    esac
                 # sudo add-apt-repository ppa:ubuntu-elisp/ppa
                 # sudo apt-get update
                 # sudo apt-get install emacs-snapshot ;;
@@ -2788,6 +2803,24 @@ else
     _CURRENT_EMACS_VERSION=$(emacs --version | head -n 1 | sed 's/GNU Emacs //' | awk '$0 = substr($0, 1, index($0, ".") + 1)')
     if [[ $_REQUIRED_EMACS_VERSION > $_CURRENT_EMACS_VERSION ]]; then get-emacs; fi
 fi
+# ### uninstall ###
+function remove-emacs {
+    case $OSTYPE in
+        linux*)
+            case $DIST in
+                Ubuntu)
+                    sudo apt remove emacs24
+                    wget https://ftp.gnu.org/gnu/emacs/emacs-$UNREQUIRED_EMACS_VERSION.tar.gz
+                    tar zxf emacs-$UNREQUIRED_EMACS_VERSION.tar.gz
+                    cd emacs-$UNREQUIRED_EMACS_VERSION
+                    ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no --with-jpeg=no --with-png=no
+                    make
+                    yes | sudo make uninstall
+                    cd $current_pwd
+                    rm -fr emacs-$UNREQUIRED_EMACS_VERSION* ;;
+            esac
+    esac
+}
 # ### aspell ###
 function get-aspell {
     case "${OSTYPE}" in
