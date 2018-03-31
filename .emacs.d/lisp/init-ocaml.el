@@ -7,15 +7,13 @@
   (el-get-bundle ocaml/tuareg))
 
 
-;; Language Server Protocol
+;; Language Server Protocol and Merlin as IDE
 (unless (require 'lsp-ocaml nil 'noerror)
   (el-get-bundle emacs-lsp/lsp-ocaml)
-  (ignore-errors (car (process-lines "npm" "install" "-g" "ocaml-language-server"))))
-
-
-;; Merlin as IDE
+  (require 'lsp-ocaml))
 (unless (require 'merlin nil 'noerror)
   (el-get-bundle ocaml/merlin))
+
 (let ((opam-share (ignore-errors (car (process-lines "opam" "config" "var" "share")))))
   (when (and opam-share (file-directory-p opam-share))
     ;; Register Merlin
@@ -23,7 +21,9 @@
     (autoload 'merlin-mode "merlin" nil t nil)
     ;; Automatically start it in OCaml buffers
     (add-hook 'tuareg-mode-hook 'merlin-mode t)
+    (add-hook 'tuareg-mode-hook #'lsp-ocaml-enable)
     (add-hook 'caml-mode-hook 'merlin-mode t)
+    (add-hook 'caml-mode-hook #'lsp-ocaml-enable)
     ;; Use opam switch to lookup ocamlmerlin binary
     (setq merlin-command 'opam)))
 
@@ -35,7 +35,7 @@ But return nil unless the process returned 0 (`shell-command-to-string' ignore r
   (let* ((return-value 0)
          (return-string
           (with-output-to-string
-            (setq return-value
+  (setq return-value
                   (with-current-buffer standard-output
                     (process-file shell-file-name nil t nil
                                   shell-command-switch command))))))
@@ -56,8 +56,8 @@ But return nil unless the process returned 0 (`shell-command-to-string' ignore r
 (opam-update-env nil)
 
 (setq opam-share
-  (let ((reply (opam-shell-command-to-string "opam config var share")))
-    (when reply (substring reply 0 -1))))
+      (let ((reply (opam-shell-command-to-string "opam config var share")))
+        (when reply (substring reply 0 -1))))
 
 (add-to-list 'load-path (concat opam-share "/emacs/site-lisp"))
 ;; OPAM-installed tools automated detection and initialisation
@@ -74,8 +74,8 @@ But return nil unless the process returned 0 (`shell-command-to-string' ignore r
   (if (require 'company nil t)
     (opam-setup-add-ocaml-hook
       (lambda ()
-         (company-mode)
-         (defalias 'auto-complete 'company-complete)))
+  (company-mode)
+  (defalias 'auto-complete 'company-complete)))
     (require 'auto-complete nil t)))
 
 (defun opam-setup-ocp-indent ()
@@ -95,18 +95,18 @@ But return nil unless the process returned 0 (`shell-command-to-string' ignore r
   (opam-setup-add-ocaml-hook 'merlin-mode)
 
   (defcustom ocp-index-use-auto-complete nil
-    "Use auto-complete with ocp-index (disabled by default by opam-user-setup because merlin is in use)"
-    :group 'ocp_index)
+  "Use auto-complete with ocp-index (disabled by default by opam-user-setup because merlin is in use)"
+  :group 'ocp_index)
   (defcustom merlin-ac-setup 'easy
-    "Use auto-complete with merlin (enabled by default by opam-user-setup)"
-    :group 'merlin-ac)
+  "Use auto-complete with merlin (enabled by default by opam-user-setup)"
+  :group 'merlin-ac)
 
   ;; So you can do it on a mac, where `C-<up>` and `C-<down>` are used
   ;; by spaces.
   (define-key merlin-mode-map
-    (kbd "C-c <up>") 'merlin-type-enclosing-go-up)
+  (kbd "C-c <up>") 'merlin-type-enclosing-go-up)
   (define-key merlin-mode-map
-    (kbd "C-c <down>") 'merlin-type-enclosing-go-down)
+  (kbd "C-c <down>") 'merlin-type-enclosing-go-down)
   (set-face-background 'merlin-type-face "skyblue"))
 
 (defun opam-setup-utop ()
@@ -115,15 +115,15 @@ But return nil unless the process returned 0 (`shell-command-to-string' ignore r
   (add-hook 'tuareg-mode-hook 'utop-minor-mode))
 
 (setq opam-tools
-  '(("tuareg" . opam-setup-tuareg)
-    ("ocp-indent" . opam-setup-ocp-indent)
-    ("ocp-index" . opam-setup-ocp-index)
-    ("merlin" . opam-setup-merlin)
-    ("utop" . opam-setup-utop)))
+      '(("tuareg" . opam-setup-tuareg)
+        ("ocp-indent" . opam-setup-ocp-indent)
+        ("ocp-index" . opam-setup-ocp-index)
+        ("merlin" . opam-setup-merlin)
+        ("utop" . opam-setup-utop)))
 
 (defun opam-detect-installed-tools ()
   (let*
-      ((command "opam list --installed --short --safe --color=never")
+    ((command "opam list --installed --short --safe --color=never")
        (names (mapcar 'car opam-tools))
        (command-string (mapconcat 'identity (cons command names) " "))
        (reply (opam-shell-command-to-string command-string)))
@@ -139,17 +139,13 @@ But return nil unless the process returned 0 (`shell-command-to-string' ignore r
 
 (opam-auto-tools-setup)
 
-
 
 ;; ReasonML as AltJS
 (unless (require 'reason-mode nil 'noerror)
-  (el-get-bundle reasonml-editor/reason-mode)
-  (ignore-errors (car (process-lines "npm" "install" "-g" "reason-cli")))
-  (ignore-errors (car (process-lines "npm" "install" "-g" "bs-platform")))
-  )
+  (el-get-bundle reasonml-editor/reason-mode))
 
 (defun shell-cmd (cmd)
-    "Returns the stdout output of a shell command or nil if the command returned
+  "Returns the stdout output of a shell command or nil if the command returned
    an error"
     (car (ignore-errors (apply 'process-lines (split-string cmd)))))
 
@@ -169,8 +165,8 @@ But return nil unless the process returned 0 (`shell-command-to-string' ignore r
 (add-hook 'reason-mode-hook
           (lambda ()
             (add-hook 'before-save-hook 'refmt-before-save)
+            (add-hook 'reason-mode-hook #'lsp-ocaml-enable)
             (merlin-mode)))
-
 
 
 (provide 'init-ocaml)
