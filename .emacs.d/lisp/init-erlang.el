@@ -12,7 +12,6 @@
 
 ;;; Exlixr
 (require-package 'elixir-mode)
-
 (setq auto-mode-alist
       (cons '("\\.\\(po\\|pot\\)\\'" . elixir-mode) auto-mode-alist))
 
@@ -21,7 +20,6 @@
 (setq alchemist-key-command-prefix (kbd "C-c ,")) ;; default: (kbd "C-c a")
 (setq alchemist-goto-erlang-source-dir "~/.local/erlang/")
 (setq alchemist-goto-elixir-source-dir "~/.local/elixir/")
-
 (defun custom-erlang-mode-hook ()
   "Define key to erlang-mode-map."
   (define-key erlang-mode-map (kbd "M-,") 'alchemist-goto-jump-back))
@@ -29,7 +27,6 @@
   "Define key to alchemist-mode-map."
   (define-key alchemist-mode-map (kbd "M-,") 'mc/mark-previous-like-this)
   (define-key alchemist-mode-map (kbd "M-.") 'mc/mark-next-like-this))
-
 (defadvice alchemist-project-root (around seancribbs/alchemist-project-root activate)
   "Advice alchemist-project-mix-project-indicator."
   (let ((alchemist-project-mix-project-indicator ".git"))
@@ -37,11 +34,17 @@
 (defun seancribbs/activate-alchemist-root-advice ()
   "Activates advice to override alchemist's root-finding logic."
   (ad-activate 'alchemist-project-root))
-
 (add-hook 'erlang-mode-hook 'custom-erlang-mode-hook)
 (add-hook 'alchemist-mode-hook 'custom-alchemist-mode-hook)
 (add-hook 'elixir-mode-hook 'alchemist-mode)
 (add-hook 'elixir-mode-hook 'seancribbs/activate-alchemist-root-advice)
+
+;; mix-format
+(defun mix-format-after-save ()
+  "Run `mix format' in Emacs."
+  (if (derived-mode-p 'elixir-mode)
+      (shell-command (concat "mix format " (buffer-file-name)))))
+(add-hook 'after-save-hook 'mix-format-after-save)
 
 
 ;;; Phoenix

@@ -35,7 +35,7 @@ But return nil unless the process returned 0 (`shell-command-to-string' ignore r
   (let* ((return-value 0)
          (return-string
           (with-output-to-string
-  (setq return-value
+            (setq return-value
                   (with-current-buffer standard-output
                     (process-file shell-file-name nil t nil
                                   shell-command-switch command))))))
@@ -144,10 +144,9 @@ But return nil unless the process returned 0 (`shell-command-to-string' ignore r
 (unless (require 'reason-mode nil 'noerror)
   (el-get-bundle reasonml-editor/reason-mode))
 
-(defun shell-cmd (cmd)
-  "Returns the stdout output of a shell command or nil if the command returned
-   an error"
-    (car (ignore-errors (apply 'process-lines (split-string cmd)))))
+(defun shell-cmd (command)
+  "Return the stdout output of a shell COMMAND or nil if the command returned an error."
+    (car (ignore-errors (apply 'process-lines (split-string command)))))
 
 (let* ((refmt-bin (or (shell-cmd "refmt ----where")
                       (shell-cmd "which refmt")))
