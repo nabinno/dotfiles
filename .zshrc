@@ -1316,6 +1316,13 @@ function get-exenv {
     esac
 }
 if ! type -p exenv > /dev/null ; then get-exenv ; fi
+function upgrade-elixir-build {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            rm -fr "$(exenv root)"/plugins/elixir-build
+            git clone https://github.com/mururu/elixir-build.git "$(exenv root)"/plugins/elixir-build ;;
+    esac
+}
 # ### installation ###
 function get-erlang {
     case "${OSTYPE}" in
