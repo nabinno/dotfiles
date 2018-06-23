@@ -12,6 +12,7 @@
 # 1. BasicSettings::PackageManager::Nix
 # 1. BasicSettings::PackageManager::Chef
 # 1. BasicSettings::PackageManager::Anyenv
+# 1. BasicSettings::PackageManager::Asdf
 # 1. BasicSettings::PackageManager::Docker
 # 1. BasicSettings::PackageManager::Homebrew
 # 1. BasicSettings::PackageManager::Autoparts
@@ -775,7 +776,7 @@ function get-nix {
                             sudo echo "build-users-group = nixbld" >> /etc/nix/nix.conf
                             sudo chown -R ${CURRENT_USER} /nix
                             source ~/.nix-profile/etc/profile.d/nix.sh ;;
-                        16.04)
+                        14.04|16.04)
                             cd ~ && curl https://nixos.org/nix/install | sh
                             sudo chown -R ${CURRENT_USER} /nix ;;
                     esac
@@ -791,7 +792,7 @@ function set-nix {
         linux*)
             case $DIST in
                 Redhat|RedHat|Debian) source ~/.nix-profile/etc/profile.d/nix.sh ;;
-                Ubuntu) case $DIST_VERSION in (12.04|16.04) source ~/.nix-profile/etc/profile.d/nix.sh ;; esac
+                Ubuntu) source ~/.nix-profile/etc/profile.d/nix.sh ;;
             esac
     esac
 }
@@ -801,7 +802,7 @@ function nix-install {
         linux*)
             case $DIST in
                 Redhat|RedHat|Debian) nix-env --install $1 ;;
-                Ubuntu) case $DIST_VERSION in (12.04|16.04) nix-env --install $1 ;; esac
+                Ubuntu) nix-env --install $1 ;;
             esac
     esac
 }
@@ -901,6 +902,49 @@ function get-anyenv {
 }
 if ! type -p anyenv > /dev/null; then get-anyenv ; fi
 if type -p anyenv > /dev/null; then eval "$(anyenv init -)" ; fi
+
+
+# 1. BasicSettings::PackageManager::Asdf
+# --------------------------------------
+function get-asdf {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            git clone https://github.com/asdf-vm/asdf.git ~/.asdf
+            get-global-asdf-packages ;;
+    esac
+}
+function set-asdf {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            source ~/.asdf/asdf.sh
+            source ~/.asdf/completions/asdf.bash ;;
+    esac
+}
+if [ ! -f ~/.asdf/asdf.sh ] > /dev/null; then get-asdf ; fi
+if [ -f ~/.asdf/asdf.sh ]; then set-asdf ; fi
+function get-global-asdf-packages {
+    # asdf plugin-add coq
+    asdf plugin-add crystal
+    asdf plugin-add dotnet-core
+    asdf plugin-add elixir
+    asdf plugin-add erlang
+    asdf plugin-add golang
+    # asdf plugin-add haskell
+    asdf plugin-add java
+    asdf plugin-add nodejs
+    asdf plugin-add ocaml
+    # asdf plugin-add php
+    # asdf plugin-add python
+    asdf plugin-add r
+    asdf plugin-add rebar
+    asdf plugin-add ruby
+    asdf plugin-add rust
+    # other
+    asdf plugin-add helm
+    asdf plugin-add kops
+    asdf plugin-add kubectl
+    asdf plugin-add minikube
+}
 
 
 # 1. BasicSettings::PackageManager::Docker
@@ -1248,6 +1292,17 @@ function get-ruby {
     case "${OSTYPE}" in
         cygwin) apt-cyg install ruby ;;
         freebsd*|darwin*|linux*)
+            asfd install ruby $REQUIRED_RUBY_VERSION
+            asfd install ruby $REQUIRED_RUBY_VERSION_2
+            asfd install ruby $REQUIRED_RUBY_VERSION_3
+            asdf global ruby $REQUIRED_RUBY_VERSION
+            get-global-gem-packages ;;
+    esac
+}
+function get-ruby-with-rbenv {
+    case "${OSTYPE}" in
+        cygwin) apt-cyg install ruby ;;
+        freebsd*|darwin*|linux*)
             rbenv install $REQUIRED_RUBY_VERSION
             rbenv install $REQUIRED_RUBY_VERSION_2
             rbenv install $REQUIRED_RUBY_VERSION_3
@@ -1275,24 +1330,21 @@ function get-global-gem-packages {
         stackprof \
         unicorn
 }
-if ! type -p rbenv > /dev/null; then
-    get-rbenv ;
+if ! type -p ruby > /dev/null; then
+    get-ruby
 else
-    if ! type -p ruby > /dev/null; then
-        get-ruby
-    else
-        rm -f ~/.ruby-version
-        rbenv global $REQUIRED_RUBY_VERSION
-        _REQUIRED_RUBY_VERSION=$(echo $REQUIRED_RUBY_VERSION | sed 's/\(.*\..*\)\..*/\1/')
-        _CURRENT_RUBY_VERSION=$(ruby -v | cut -f 2 -d " " | sed 's/^\([0-9]\{1,\}\.[0-9]\{1,\}\)\..*/\1/')
-        if [[ $_REQUIRED_RUBY_VERSION > $_CURRENT_RUBY_VERSION ]]; then get-ruby; fi
-    fi
+    # rm -f ~/.ruby-version
+    # rbenv global $REQUIRED_RUBY_VERSION
+    # _REQUIRED_RUBY_VERSION=$(echo $REQUIRED_RUBY_VERSION | sed 's/\(.*\..*\)\..*/\1/')
+    # _CURRENT_RUBY_VERSION=$(ruby -v | cut -f 2 -d " " | sed 's/^\([0-9]\{1,\}\.[0-9]\{1,\}\)\..*/\1/')
+    # if [[ $_REQUIRED_RUBY_VERSION > $_CURRENT_RUBY_VERSION ]]; then get-ruby; fi
 fi
 
 
 # 2. ProgrammingLanguage::Elixir
 # ------------------------------
 REQUIRED_ERLANG_VERSION=20.3
+REQUIRED_REBAR_VERSION=3.6.0
 REQUIRED_ELIXIR_VERSION=1.6.2
 REQUIRED_PHOENIXFRAMEWORK_VERSION=1.3.0
 export PATH="$HOME/.local/exenv/bin:$PATH"
@@ -1306,7 +1358,6 @@ function get-kerl {
             echo 'KERL_CONFIGURE_OPTIONS="--disable-hipe --enable-smp-support --enable-threads --enable-kernel-poll"' > ~/.kerlrc
     esac
 }
-if ! type -p kerl > /dev/null ; then get-kerl ; fi
 function get-exenv {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
@@ -1315,7 +1366,6 @@ function get-exenv {
             exec -l zsh
     esac
 }
-if ! type -p exenv > /dev/null ; then get-exenv ; fi
 function upgrade-elixir-build {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
@@ -1327,6 +1377,13 @@ function upgrade-elixir-build {
 function get-erlang {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
+            asdf install erlang $REQUIRED_ERLANG_VERSION
+            asdf global erlang $REQUIRED_ERLANG_VERSION ;;
+    esac
+}
+function get-erlang-with-kerl {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
             mkdir -p ~/.local/otp
             rm -fr ~/.kerl/archives/otp_src_$REQUIRED_ERLANG_VERSION.tar.gz
             kerl build $REQUIRED_ERLANG_VERSION $REQUIRED_ERLANG_VERSION
@@ -1334,9 +1391,15 @@ function get-erlang {
             source ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ;;
     esac
 }
-if [ ! -f ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ] ; then get-erlang ; fi
-if [ -f ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ] ; then source ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ; fi
+if ! type -p erl > /dev/null ; then get-erlang ; fi
 function get-rebar3 {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            asdf install rebar $REQUIRED_REBAR_VERSION
+            asdf global rebar $REQUIRED_REBAR_VERSION ;;
+    esac
+}
+function get-rebar3-with-wget {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             wget https://s3.amazonaws.com/rebar3/rebar3 -O ~/.local/bin/rebar3
@@ -1345,6 +1408,14 @@ function get-rebar3 {
 }
 if ! type -p rebar3 > /dev/null ; then get-rebar3 ; fi
 function get-elixir {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            asdf install elixir $REQUIRED_ELIXIR_VERSION
+            asdf global elixir $REQUIRED_ELIXIR_VERSION
+            get-global-mix-packages ;;
+    esac
+}
+function get-elixir-with-exenv {
     case "${OSTYPE}" in
         freebsd*|darwin*)
             exenv install $REQUIRED_ELIXIR_VERSION
@@ -1378,17 +1449,35 @@ function get-global-mix-packages {
 if ! type -p iex > /dev/null ; then get-elixir ; fi
 
 
+# 2. ProgrammingLanguage::Crystal
+# -------------------------------
+export REQUIRED_CRYSTAL_VERSION=0.25.0
+function get-crystal {
+    case $OSTYPE in
+        linux*)
+            asdf install rust $REQUIRED_CRYSTAL_VERSION
+            asdf global rust $REQUIRED_CRYSTAL_VERSION ;;
+    esac
+}
+if ! type -p crystal > /dev/null; then get-crystal; fi
+
+
 # 2. ProgrammingLanguage::OCaml
 # -----------------------------
 export REQUIRED_OCAML_VERSION=4.02.3+buckle-1
+export REQUIRED_COQ_VERSION=8.7.2
 function get-ocaml {
+    asdf install ocaml $REQUIRED_OCAML_VERSION
+    asdf global ocaml $REQUIRED_OCAML_VERSION
+    get-global-opam-packages
+}
+function get-ocaml-with-ocamlbrew {
     curl -kL https://raw.github.com/hcarty/ocamlbrew/master/ocamlbrew-install | bash
     source ~/ocamlbrew/ocaml-*/etc/ocamlbrew.bashrc
     opam switch $REQUIRED_OCAML_VERSION
     eval `opam config env`
     get-global-opam-packages
 }
-if [ -d ~/ocamlbrew ]; then source ~/ocamlbrew/ocaml-*/etc/ocamlbrew.bashrc; fi
 if ! type -p ocaml > /dev/null; then get-ocaml; fi
 function get-global-opam-packages {
     opam install \
@@ -1404,10 +1493,18 @@ function get-global-npm-packages-for-ocaml {
     npm i -g \
         ocaml-language-server
 }
+function get-coq {
+    nix-install coq
+}
+function get-coq-with-asdf {
+    asdf install coq $REQUIRED_COQ_VERSION
+    asdf global coq $REQUIRED_COQ_VERSION
+}
+
 
 # 2. ProgrammingLanguage::Haskell
 # -------------------------------
-# export REQUIRED_GHC_VERSION=7.10.3
+export REQUIRED_GHC_VERSION=8.4.3
 # export REQUIRED_CABAL_VERSION=1.22.9.0
 function get-ghc {
     case $OSTYPE in
@@ -1420,6 +1517,13 @@ function get-ghc {
                         14.04)  ;;
                     esac
             esac
+    esac
+}
+function get-ghc-with-asdf {
+    case $OSTYPE in
+        freebsd*|darwin*|linux*)
+            asdf install haskell $REQUIRED_GHC_VERSION
+            asdf global haskell $REQUIRED_GHC_VERSION ;;
     esac
 }
 function get-cabal {
@@ -1446,7 +1550,7 @@ if ! type -p cabal > /dev/null ; then get-cabal ; fi
 # 2. ProgrammingLanguage::Go
 # --------------------------
 export REQUIRED_GO_VERSION=1.9.1
-export GOROOT=~/.anyenv/envs/goenv/versions/${REQUIRED_GO_VERSION}
+export GOROOT=$(asdf where golang)${REQUIRED_GO_VERSION}
 export GOPATH=~/.go.d
 export PATH="$GOPATH/bin:$GOROOT/bin:$PATH"
 # ### version control ###
@@ -1455,8 +1559,15 @@ function get-goenv {
         freebsd*|darwin*|linux*) anyenv install goenv && exec -l zsh ;;
     esac
 }
-if ! type -p goenv > /dev/null ; then get-goenv ; fi
+# if ! type -p goenv > /dev/null ; then get-goenv ; fi
 function get-go {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            asdf install golang $REQUIRED_GO_VERSION
+            asdf global golang $REQUIRED_GO_VERSION ;;
+    esac
+}
+function get-go-with-goenv {
     case "${OSTYPE}" in
         freebsd*|darwin*) ;;
         linux*) goenv install $REQUIRED_GO_VERSION ;;
@@ -1469,7 +1580,6 @@ function set-go {
             goenv global $REQUIRED_GO_VERSION > /dev/null ;;
     esac
 }
-if type -p go > /dev/null ; then set-go ; fi
 function get-global-go-packages {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
@@ -1546,6 +1656,13 @@ function get-dotnetcli {
             mkdir ~/.local/dotnet
             tar xf dotnet-dev-rhel-x64.latest.tar.gz -C ~/.local/dotnet --verbose
             rm -fr dotnet-dev-rhel-x64.latest.tar.gz ;;
+        freebsd*|darwin*|linux*)
+            asdf install dotnet-core 2.1.4
+            asdf global dotnet-core 2.1.4 ;;
+    esac
+}
+function get-dotnetcli-with-nix {
+    case "${OSTYPE}" in
         freebsd*|darwin*) ;;
         linux*)
             case $DIST in
@@ -1689,7 +1806,7 @@ esac
 
 # 2. ProgrammingLanguage::Java
 # ----------------------------
-REQUIRED_OPENJDK_VERSION=8u92b14
+REQUIRED_OPENJDK_VERSION=8.172
 case $DIST in
     Redhat|RedHat) REQUIRED_OEPNJDK_SHORT_VERSION=1.8 ;;
     Ubuntu)
@@ -1713,9 +1830,15 @@ function get-jenv {
         freebsd*|darwin*|linux*) anyenv install jenv && exec -l zsh ;;
     esac
 }
-if ! type -p jenv > /dev/null ; then get-jenv ; fi
 # ### installation ###
 function get-java {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            asdf install java $REQUIRED_OPENJDK_VERSION
+            asdf global java $REQUIRED_OPENJDK_VERSION ;;
+    esac
+}
+function get-java-with-nix {
     case "${OSTYPE}" in
         freebsd*|darwin*)
             nix-install openjdk
@@ -1755,6 +1878,12 @@ function get-java {
     esac
 }
 function set-javahome {
+    case "${OSTYPE}" in
+        freebsd*|darwin*|linux*)
+            export JAVA_HOME=$(asdf where java)$REQUIRED_OPENJDK_VERSION
+    esac
+}
+function set-javahome-with-nix {
     case "${OSTYPE}" in
         freebsd*|darwin*)
             export JAVA_HOME=~/.nix-profile/lib/openjdk
@@ -1809,13 +1938,12 @@ if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ] ; then get-play && get-sbt ; fi
 # 2. ProgrammingLanguage::Php
 # ---------------------------
 # ### version control ###
-REQUIRED_PHP_VERSION=5.6.31
+REQUIRED_PHP_VERSION=7.2.7
 function get-phpenv {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*) anyenv install phpenv && exec -l zsh ;;
     esac
 }
-if ! type -p phpenv > /dev/null ; then get-phpenv ; fi
 # ### installation ###
 function get-php {
     case "${OSTYPE}" in
@@ -1976,7 +2104,8 @@ alias fk="php-fastcgid stop"
 
 # 2. ProgrammingLanguage::Python
 # ------------------------------
-REQUIRED_ANACONDA2_VERSION=4.3.1
+REQUIRED_ANACONDA_VERSION=anaconda2-5.2.0
+REQUIRED_ANACONDA_VERSION_2=anaconda3-5.2.0
 REQUIRED_PYTHON_VERSION=2.7.13
 PYENV_VIRTUALENV_DISABLE_PROMPT=1
 PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
@@ -1987,7 +2116,6 @@ function get-pyenv {
         freebsd*|darwin*|linux*) anyenv install pyenv && exec -l zsh ;;
     esac
 }
-if ! type -p pyenv > /dev/null ; then get-pyenv ; fi
 # ### installation ###
 function get-python {
     case "${OSTYPE}" in
@@ -1996,19 +2124,31 @@ function get-python {
                     python
             python-setuptools ;;
         freebsd*|darwin*|linux*)
+            asdf install python $REQUIRED_ANACONDA_VERSION
+            asdf global python $REQUIRED_ANACONDA_VERSION
+            git clone https://github.com/yyuu/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv
+    esac
+}
+function get-python-with-pyenv {
+    case "${OSTYPE}" in
+        cygwin)
+            apt-cyg install \
+                    python
+            python-setuptools ;;
+        freebsd*|darwin*|linux*)
             case $DIST in
                     RedHat|Redhat|Debian)
-                        pyenv install anaconda2-$REQUIRED_ANACONDA2_VERSION
+                        pyenv install $REQUIRED_ANACONDA_VERSION
                         git clone https://github.com/yyuu/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv
                         pyenv rehash
-                        pyenv global anaconda2-$REQUIRED_ANACONDA2_VERSION ;;
+                        pyenv global $REQUIRED_ANACONDA_VERSION ;;
                      Ubuntu)
                          case $DIST_VERSION in
                              12.04|14.04)
-                                 pyenv install anaconda2-$REQUIRED_ANACONDA2_VERSION
+                                 pyenv install $REQUIRED_ANACONDA_VERSION
                                  git clone https://github.com/yyuu/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv
                                  pyenv rehash
-                                 pyenv global anaconda2-$REQUIRED_ANACONDA2_VERSION ;;
+                                 pyenv global $REQUIRED_ANACONDA_VERSION ;;
                              16.04)
                                  sudo apt install -y \
                                       python \
@@ -2201,9 +2341,18 @@ function get-ndenv {
             exec -l zsh ;;
     esac
 }
-if ! type -p ndenv > /dev/null; then get-ndenv; fi
 # ### installation ###
 function get-node {
+    case "$OSTYPE" in
+        msys|cygwin) choco install nodejs ;;
+        linux*)
+            rm -rf ~/.asdf/keyrings/nodejs
+            ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
+            asdf install nodejs $REQUIRED_NODE_VERSION
+            asdf global nodejs $REQUIRED_NODE_VERSION ;;
+    esac
+}
+function get-node-with-ndenv {
     case "$OSTYPE" in
         msys|cygwin) choco install nodejs ;;
         linux*)
@@ -2214,7 +2363,7 @@ function get-node {
         # get-global-npm-packages ;;
     esac
 }
-function set-node {
+function set-node-with-ndenv {
     case "$OSTYPE" in
         linux*) ndenv global v$REQUIRED_NODE_VERSION
     esac
@@ -2236,7 +2385,6 @@ function get-global-npm-packages {
         tern
 }
 if ! type -p npm > /dev/null ; then get-node ; fi
-if type -p npm > /dev/null ; then set-node ; fi
 function rebuild-sass {
     npm uninstall --save-dev gulp-sass
     npm install --save-dev gulp-sass@2
@@ -2265,17 +2413,13 @@ function get-yoeman {
 
 # 2. ProgrammingLanguage::Rust
 # ----------------------------
+export REQUIRED_RUST_VERSION=1.27.0
 function get-rust {
     case $OSTYPE in
-        linux*) curl https://sh.rustup.rs -sSf | sh ;;
+        linux*)
+            asdf install rust $REQUIRED_RUST_VERSION
     esac
 }
-function set-rust {
-    case $OSTYPE in
-        linux*) source $HOME/.cargo/env ;;
-    esac
-}
-if [ -f ~/.cargo/env ]; then set-rust; else get-rust; fi
 function get-global-cargo-packages {
     cargo install \
           ripgrep \
