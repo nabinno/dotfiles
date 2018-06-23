@@ -42,7 +42,9 @@
 ;; mix-format
 (defun mix-format-after-save ()
   "Run `mix format' in Emacs."
-  (if (derived-mode-p 'elixir-mode)
+  (if (and (derived-mode-p 'elixir-mode)
+           (not (or (equal (file-name-extension (buffer-file-name)) "po")
+                    (equal (file-name-extension (buffer-file-name)) "pot"))))
       (shell-command (concat "mix format " (buffer-file-name)))))
 (add-hook 'after-save-hook 'mix-format-after-save)
 
