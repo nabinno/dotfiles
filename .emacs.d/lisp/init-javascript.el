@@ -38,6 +38,17 @@
              nil)))))))
 
 
+;;; Prettier
+(unless (require 'prettier-js nil 'noerror)
+  (el-get-bundle prettier/prettier-emacs))
+(unless (require 'add-node-modules-path nil 'noerror)
+  (el-get-bundle codesuki/add-node-modules-path))
+(eval-after-load 'typescript-mode
+  '(progn
+     (add-hook 'typescript-mode-hook #'add-node-modules-path)
+          (add-hook 'typescript-mode-hook #'prettier-js-mode)))
+
+
 ;;; Js-mode
 (after-load 'js-mode
   (add-hook 'js-mode-hook '(lambda () (setq mode-name "JS"))))
