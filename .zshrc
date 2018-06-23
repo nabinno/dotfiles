@@ -1292,8 +1292,8 @@ fi
 
 # 2. ProgrammingLanguage::Elixir
 # ------------------------------
-REQUIRED_ERLANG_VERSION=19.3
-REQUIRED_ELIXIR_VERSION=1.5.1
+REQUIRED_ERLANG_VERSION=20.3
+REQUIRED_ELIXIR_VERSION=1.6.2
 REQUIRED_PHOENIXFRAMEWORK_VERSION=1.3.0
 export PATH="$HOME/.local/exenv/bin:$PATH"
 export PATH="$HOME/.mix:$PATH"
@@ -1328,6 +1328,7 @@ function get-erlang {
     case "${OSTYPE}" in
         freebsd*|darwin*|linux*)
             mkdir -p ~/.local/otp
+            rm -fr ~/.kerl/archives/otp_src_$REQUIRED_ERLANG_VERSION.tar.gz
             kerl build $REQUIRED_ERLANG_VERSION $REQUIRED_ERLANG_VERSION
             kerl install $REQUIRED_ERLANG_VERSION ~/.local/otp/$REQUIRED_ERLANG_VERSION
             source ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate ;;
