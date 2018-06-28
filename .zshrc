@@ -5,6 +5,7 @@
 # 1. BasicSettings::EnvironmentVariable::Locale
 # 1. BasicSettings::EnvironmentVariable::Local
 # 1. BasicSettings::BaseInstallation
+# 1. BasicSettings::Shell
 # 1. BasicSettings::PackageManager::WindowsManagementFramework
 # 1. BasicSettings::PackageManager::WindowsManagementFramework::Chocolatey
 # 1. BasicSettings::PackageManager::WindowsManagementFramework::Chocolatey::Pacman
@@ -580,6 +581,18 @@ function gnu-get {
             rm -fr $softwares[$k]-$k $softwares[$k]-$k.tar.gz
         done
     fi
+}
+
+
+# 1. BasicSettings::Shell
+# -----------------------
+function get-shellcheck {
+    case $OSTYPE in
+        linux*)
+            case $DIST in
+                Ubuntu) sudo apt-get install shellcheck ;;
+            esac
+    esac
 }
 
 
@@ -1324,11 +1337,11 @@ function get-global-gem-packages {
         rails \
         rblineprof \
         rubygems-bundler \
-        rufo \
         sidekiq \
         slim \
         stackprof \
         unicorn
+    gem install rufo -v 0.1.0
 }
 if ! type -p ruby > /dev/null; then
     get-ruby
@@ -1343,9 +1356,9 @@ fi
 
 # 2. ProgrammingLanguage::Elixir
 # ------------------------------
-REQUIRED_ERLANG_VERSION=20.3
+REQUIRED_ERLANG_VERSION=21.0
 REQUIRED_REBAR_VERSION=3.6.0
-REQUIRED_ELIXIR_VERSION=1.6.2
+REQUIRED_ELIXIR_VERSION=1.6.6
 REQUIRED_PHOENIXFRAMEWORK_VERSION=1.3.0
 export PATH="$HOME/.local/exenv/bin:$PATH"
 export PATH="$HOME/.mix:$PATH"
@@ -1550,7 +1563,7 @@ if ! type -p cabal > /dev/null ; then get-cabal ; fi
 # 2. ProgrammingLanguage::Go
 # --------------------------
 export REQUIRED_GO_VERSION=1.9.1
-export GOROOT=$(asdf where golang)${REQUIRED_GO_VERSION}
+# export GOROOT=$(asdf where golang)${REQUIRED_GO_VERSION}
 export GOPATH=~/.go.d
 export PATH="$GOPATH/bin:$GOROOT/bin:$PATH"
 # ### version control ###
@@ -1587,6 +1600,7 @@ function get-global-go-packages {
             go get github.com/mattn/qq/cmd/qq
             go get github.com/mattn/git-fixauthor
             go get github.com/shenwei356/csvtk/csvtk
+            go get -u mvdan.cc/sh/cmd/shfmt
     esac
 }
 
@@ -2414,6 +2428,7 @@ function get-yoeman {
 # 2. ProgrammingLanguage::Rust
 # ----------------------------
 export REQUIRED_RUST_VERSION=1.27.0
+export PATH=$PATH:~/.cargo/bin
 function get-rust {
     case $OSTYPE in
         linux*)
