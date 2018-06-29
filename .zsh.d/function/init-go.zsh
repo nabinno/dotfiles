@@ -1,0 +1,52 @@
+export REQUIRED_GO_VERSION=1.9.1
+# export GOROOT=$(asdf where golang)${REQUIRED_GO_VERSION}
+export GOPATH=~/.go.d
+export PATH="$GOPATH/bin:$GOROOT/bin:$PATH"
+
+# ----------------------------------------------------------------------
+# ### version control ###
+get-goenv() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*) anyenv install goenv && exec -l zsh ;;
+  esac
+}
+# if ! type -p goenv > /dev/null ; then get-goenv ; fi
+
+# ----------------------------------------------------------------------
+get-go() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      asdf install golang $REQUIRED_GO_VERSION
+      asdf global golang $REQUIRED_GO_VERSION
+      ;;
+  esac
+}
+
+get-go-with-goenv() {
+  case "${OSTYPE}" in
+    freebsd* | darwin*) ;;
+    linux*) goenv install $REQUIRED_GO_VERSION ;;
+  esac
+}
+if ! type -p go >/dev/null; then get-go; fi
+
+set-go() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      goenv global $REQUIRED_GO_VERSION >/dev/null
+      ;;
+  esac
+}
+
+# ----------------------------------------------------------------------
+get-global-go-packages() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      go get github.com/peco/peco/cmd/peco
+      go get github.com/mattn/qq/cmd/qq
+      go get github.com/mattn/git-fixauthor
+      go get github.com/shenwei356/csvtk/csvtk
+      go get -u mvdan.cc/sh/cmd/shfmt
+      ;;
+  esac
+}
