@@ -1,0 +1,43 @@
+get-asdf() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      git clone https://github.com/asdf-vm/asdf.git ~/.asdf
+      get-global-asdf-packages
+      ;;
+  esac
+}
+
+set-asdf() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      source ~/.asdf/asdf.sh
+      source ~/.asdf/completions/asdf.bash
+      ;;
+  esac
+}
+if [ ! -f ~/.asdf/asdf.sh ] >/dev/null; then get-asdf; fi
+if [ -f ~/.asdf/asdf.sh ]; then set-asdf; fi
+
+get-global-asdf-packages() {
+  # asdf plugin-add coq
+  asdf plugin-add crystal
+  asdf plugin-add dotnet-core
+  asdf plugin-add elixir
+  asdf plugin-add erlang
+  asdf plugin-add golang
+  # asdf plugin-add haskell
+  asdf plugin-add java
+  asdf plugin-add nodejs
+  asdf plugin-add ocaml
+  # asdf plugin-add php
+  # asdf plugin-add python
+  asdf plugin-add r
+  asdf plugin-add rebar
+  asdf plugin-add ruby
+  asdf plugin-add rust
+  # other
+  asdf plugin-add helm
+  asdf plugin-add kops
+  asdf plugin-add kubectl
+  asdf plugin-add minikube
+}

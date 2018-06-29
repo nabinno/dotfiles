@@ -1,0 +1,193 @@
+# #
+# # CHEATSHEET
+# #
+# # 1. Pod
+# kubectl get pod
+# kubectl describe pod [pod-name]
+# kubectl attach [pod-name]
+# kubectl logs [-f] [pod-name] [-c container-name]
+#
+# # 2. Replication Controller
+# kubectl get rc
+# kubectl describe rc [rc-name]
+# kubectl rolling-update [rc-name] [new-image-url]
+# kubectl rolling-update [rc-name] -f [new-rc-schema-json-file-path]
+# kubectl scale rc [rc-name] --replicas=[num]
+#
+# # 3. Service
+# kubectl service service
+# kubectl describe service [service-name]
+#
+# # 4. Cluster
+# kubectl cluster-info
+# gcloud compute instance-groups managed resize [gke-cluster-instance-group] --size [num]
+#
+# # 9. Create a secure tunnel
+# ssh -f -nNT -L 8080:127.0.0.1:8080 core@<master-public-ip>
+#
+export REQUIRED_KUBERNETES_HELM=2.6.2
+export MINIKUBE_WANTUPDATENOTIFICATION=false
+export MINIKUBE_WANTREPORTERRORPROMPT=false
+export MINIKUBE_HOME=$HOME
+export CHANGE_MINIKUBE_NONE_USER=true
+export KUBECONFIG=$HOME/.kube/config
+
+get-kubectl() {
+  case $OSTYPE in
+    darwin*)
+      wget https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl -O ~/.local/bin/kubectl
+      chmod +x ~/.local/bin/kubectl
+      ;;
+    linux*)
+      wget https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl -O ~/.local/bin/kubectl
+      chmod +x ~/.local/bin/kubectl
+      ;;
+  esac
+}
+if ! type kubectl >/dev/null; then get-kubectl; fi
+
+# ----------------------------------------------------------------------
+# ### minikube ###
+get-minikube() {
+  case $OSTYPE in
+    darwin*)
+      brew cask install minikube
+      ;;
+    linux*)
+      curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+      chmod +x minikube
+      sudo mv minikube /usr/local/bin/
+      ;;
+  esac
+}
+if ! type minikube >/dev/null; then get-minikube; fi
+
+minikube-start() {
+  case $OSTYPE in
+    linux*)
+      sudo minikube start --vm-driver=none
+      sudo chown -R $USER ~/.kube
+      sudo chgrp -R $USER ~/.kube
+      sudo chown -R $USER ~/.minikube
+      sudo chgrp -R $USER ~/.minikube
+      # timeout for 5 minutes
+      for i in {1..150}; do
+        kubectl get pod &>/dev/null
+        if [ $? -ne 1 ]; then
+          break
+        fi
+        sleep 2
+      done
+      ;;
+  esac
+}
+
+minikube-stop() {
+  case $OSTYPE in
+    linux*)
+      sudo minikube stop
+      for n in $(docker ps -f name=k8s_ -f status=exited --format "{{.Names}}"); do
+        docker rm -f $n
+      done
+      ;;
+  esac
+}
+
+# ----------------------------------------------------------------------
+# ### helm ###
+get-kubernetes-helm() {
+  case $OSTYPE in
+    darwin*)
+      brew install kubernetes-helm
+      ;;
+    linux*)
+      curl -O https://kubernetes-helm.storage.googleapis.com/helm-v${REQUIRED_KUBERNETES_HELM}-linux-amd64.tar.gz
+      tar -zxvf helm-v${REQUIRED_KUBERNETES_HELM}-linux-amd64.tar.gz
+      chmod +x linux-amd64/helm
+      sudo mv linux-amd64/helm /usr/local/bin/helm
+      rm -rf helm-v${REQUIRED_KUBERNETES_HELM}-linux-amd64.tar.gz linux-amd64
+      case "${DIST}" in
+        Redhat | RedHat | Debian) ;;
+        Ubuntu)
+          sudo apt-get install \
+            socat \
+            autopoint
+          git clone git://git.kernel.org/pub/scm/utils/util-linux/util-linux.git util-linux
+          (
+            cd util-linux
+            sh -c ./autogen.sh
+            ./configure --without-python --disable-all-programs --enable-nsenter && make
+            sudo cp ./nsenter /usr/bin
+          )
+          rm -rf util-linux
+          ;;
+      esac
+      ;;
+  esac
+}
+
+set-kubernetes-helm() {
+  source <(helm completion zsh)
+}
+if ! type helm >/dev/null; then get-kubernetes-helm; fi
+if type helm >/dev/null; then set-kubernetes-helm; fi
+
+get-global-helm-packages() {
+  helm install stable/kubernetes-dashboard
+  helm install stable/rabbitmq
+  helm install stable/memcached
+}
+
+# ----------------------------------------------------------------------
+# ### kompose ###
+get-kubernetes-kompose() {
+  case $OSTYPE in
+    darwin* | linux*) go get -u github.com/kubernetes/kompose ;;
+  esac
+}
+if ! type kompose >/dev/null; then get-kubernetes-kompose; fi
+
+# ----------------------------------------------------------------------
+# ### kubetail ###
+get-kubetail() {
+  case $OSTYPE in
+    linux*)
+      wget https://raw.githubusercontent.com/johanhaleby/kubetail/master/kubetail -O ~/.local/bin/kubetail
+      chmod +x ~/.local/bin/kubetail
+      ;;
+  esac
+}
+if ! type kubetail >/dev/null; then get-kubetail; fi
+
+# ----------------------------------------------------------------------
+# ### other ###
+set-kubernetes() {
+  case $OSTYPE in
+    linux*)
+      if ! [ -d ~/.kube ]; then mkdir ~/.kube; fi
+      if ! [ -f ~/.kube/config ]; then touch ~/.kube/config; fi
+      if ! [ -d ~/.minikube ]; then mkdir ~/.minikube; fi
+      sudo chown -R $USER ~/.kube
+      sudo chgrp -R $USER ~/.kube
+      sudo chown -R $USER ~/.minikube
+      sudo chgrp -R $USER ~/.minikube
+      source <(kubectl completion zsh)
+      ;;
+  esac
+}
+if type kubectl >/dev/null && type minikube >/dev/null; then set-kubernetes; fi
+
+alias mkb='sudo minikube'
+alias mkbs=minikube-start
+alias mkbk=minikube-stop
+alias mkbsl='minikube service list'
+alias kc=kubectl
+alias kcr='kubectl run'
+alias kcs='kubectl describe -n'
+alias kcl='kubectl get all,services,nodes,ingresses --all-namespaces=true'
+alias kce='kubectl edit -n'
+alias kcd='kubectl delete pods,services,replicationcontrollers,deployments -l'
+alias kcru='kubectl rollout undo'
+alias hm=helm
+alias hml='helm list'
+alias hmd='helm delete'

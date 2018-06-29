@@ -1,0 +1,61 @@
+# ### installation ###
+get-redis() {
+  case "${OSTYPE}" in
+    darwin*)
+      nix-install redis
+      nohup redis-server >/dev/null 2>&1 </dev/null &
+      ;;
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat | Debian)
+          nix-install redis
+          nohup redis-server >/dev/null 2>&1 </dev/null &
+          ;;
+        Ubuntu)
+          case $DIST_VERSION in
+            12.04) parts install redis ;;
+            16.04) ;;
+          esac
+          ;;
+      esac
+      ;;
+  esac
+}
+if ! type -p redis-cli >/dev/null; then get-redis; fi
+
+# ----------------------------------------------------------------------
+redis-restart() {
+  case "${OSTYPE}" in
+    darwin*) ;;
+    linux*)
+      sudo pkill redis-server
+      nohup redis-server >/dev/null 2>&1 </dev/null &
+      ps aux | \grep -G 'redis.*'
+      ;;
+  esac
+}
+
+redis-stop() {
+  case "${OSTYPE}" in
+    darwin*) ;;
+    linux*) sudo pkill redis-server ;;
+  esac
+}
+
+redis-status() {
+  case "${OSTYPE}" in
+    darwin*) ;;
+    linux*) ps aux | \grep -G 'redis.*' ;;
+  esac
+}
+
+# alias redis-cli='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus redis-cli'
+alias redis-cli-monitor='redis-cli monitor'
+alias redis-cli-info='redis-cli info'
+alias redis-cli-dump='redis-cli bgsave'
+alias rdr="redis-restart"
+alias rdp="redis-status"
+alias rds="redis-status"
+alias rdi="redis-cli-info"
+alias rdm="redis-cli-monitor"
+alias rdk="redis-stop"

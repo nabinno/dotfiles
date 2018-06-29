@@ -1,0 +1,67 @@
+alias vu='vagrant up'
+alias vt='vagrant halt'
+alias vr='vagrant reload'
+alias vp='vagrant global-status'
+alias vk='vagrant destroy --force'
+alias vl='vagrant box list'
+alias vd='vagrant box remove'
+alias vsh='vagrant ssh'
+alias vshconfig='vagrant ssh-config'
+case $OSTYPE in
+  msys | cygwin)
+    export PATH=$(get-winpath 'C:\HashiCorp\Vagrant\bin'):$PATH
+    export VBOX_MSI_INSTALL_PATH=$(get-winpath $VBOX_MSI_INSTALL_PATH)
+    ;;
+esac
+
+# ----------------------------------------------------------------------
+# ### vagrant ###
+get-vagrant() {
+  case $OSTYPE in
+    msys | cygwin) choco install vagrant ;;
+    linux*)
+      case $DIST in
+        Debian | Ubuntu)
+          sudo bash -c 'echo deb http://vagrant-deb.linestarve.com/ any main > /etc/apt/sources.list.d/wolfgang42-vagrant.list'
+          sudo apt-key adv --keyserver pgp.mit.edu --recv-key AD319E0F7CFFA38B4D9F6E55CE3F3DE92099F7A4
+          sudo apt-get update
+          sudo apt-get install vagrant
+          ;;
+      esac
+      ;;
+  esac
+}
+if ! type -p vagrant >/dev/null; then get-vagrant; fi
+
+# ----------------------------------------------------------------------
+# ### virtualbox ###
+vbm-scaleup() {
+  while getopts "i:s:" opt; do
+    case $opt in
+      i)
+        image=$OPTARG
+        is_image='true'
+        ;;
+      s)
+        size=$OPTARG
+        is_size='true'
+        ;;
+    esac
+  done
+  if [[ $# == 4 ]] && [ $is_image ] && [ $is_size ]; then
+    current_basename=$(basename $(pwd))
+    uuid=$(VBoxManage list vms | \grep $current_basename | cut -f 2 -d " " | sed -e 's/[\{\}]//g')
+    VBoxManage clonehd $image.vmdk $image.vdi --format vdi
+    wait
+    VBoxManage modifyhd $image.vdi --resize $size
+    wait
+    VBoxManage storagectl $uuid --name SATA --remove
+    VBoxManage storagectl $uuid --name SATA --add SATA
+    VBoxManage storageattach $uuid --storagectl SATA --type hdd --medium $image.vdi --port 0
+  else
+    echo ''
+    echo "Usage: vbm-scaleup -i image[.vdmi] -s size[MB]" 1>&2
+  fi
+}
+
+alias vbm='VBoxManage'

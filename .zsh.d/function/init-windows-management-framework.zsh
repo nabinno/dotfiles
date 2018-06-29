@@ -1,0 +1,60 @@
+abstract-powershell() {
+  case "$OSTYPE" in
+    msys)
+      local args=$(echo $*)
+      /c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -noprofile -executionpolicy bypass -command "$args"
+      ;;
+    cygwin)
+      local args=$(echo $*)
+      /cygdrive/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -noprofile -executionpolicy bypass -command "$args"
+      ;;
+  esac
+}
+
+case "$OSTYPE" in
+  msys | cygwin)
+    get-package() {
+      abstract-powershell $0 $*
+    }
+    get-packageprovider() {
+      abstract-powershell $0 $*
+    }
+    find-package() {
+      abstract-powershell $0 $*
+    }
+    install-package() {
+      abstract-powershell $0 $*
+    }
+    uninstall-package() {
+      abstract-powershell $0 $*
+    }
+    get-wmf() {
+      find-package && get-packageprovider -name chocolatey
+    }
+    wmf-add() {
+      get-packageprovider -name $1
+    }
+    wmf-install() {
+      install-package $*
+    }
+    wmf-uninstall() {
+      uninstall-package $*
+    }
+    wmf-search() {
+      find-package $*
+    }
+    get-global-wmf-packages() {
+      wmf-install FoxitReader
+      wmf-install Gpg4win
+      wmf-install InkScape
+      wmf-install IrfanView
+      wmf-install WinSplitRevolution
+      wmf-install googledrive
+      wmf-install 7zip
+      wmf-install f.lux
+      wmf-install nodejs
+      wmf-install terminals
+      wmf-install vagrant
+    }
+    ;;
+esac
