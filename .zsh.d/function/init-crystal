@@ -5,8 +5,8 @@ export REQUIRED_CRYSTAL_VERSION=0.25.0
 get-crystal() {
   case $OSTYPE in
     linux*)
-      asdf install rust $REQUIRED_CRYSTAL_VERSION
-      asdf global rust $REQUIRED_CRYSTAL_VERSION
+      asdf install crystal $REQUIRED_CRYSTAL_VERSION
+      asdf global crystal $REQUIRED_CRYSTAL_VERSION
       ;;
   esac
 }

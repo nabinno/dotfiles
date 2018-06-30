@@ -7,6 +7,7 @@ get-rust() {
   case $OSTYPE in
     linux*)
       asdf install rust $REQUIRED_RUST_VERSION
+      asdf global rust $REQUIRED_RUST_VERSION
       ;;
   esac
 }
