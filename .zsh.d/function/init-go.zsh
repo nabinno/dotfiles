@@ -22,7 +22,7 @@ get-go() {
   esac
 }
 
-get-go-with-goenv() {
+get-go-by-goenv() {
   case "${OSTYPE}" in
     freebsd* | darwin*) ;;
     linux*) goenv install $REQUIRED_GO_VERSION ;;

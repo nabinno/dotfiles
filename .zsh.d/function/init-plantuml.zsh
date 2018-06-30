@@ -1,4 +1,4 @@
-REQUIRED_GRAPHVIZ_VERSION=2.38
+export REQUIRED_GRAPHVIZ_VERSION=2.38
 case $OSTYPE in
   msys) export PATH=/C/Program~2/Graphviz${REQUIRED_GRAPHVIZ_VERSION}/bin:$PATH ;;
   cygwin) export PATH=/cygdrive/C/Program~2/Graphviz${REQUIRED_GRAPHVIZ_VERSION}/bin:$PATH ;;

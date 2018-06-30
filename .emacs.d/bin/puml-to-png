@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 puml generate "$1" -o "$2"
-if [ ! -f "$2" ] ; then http-server $3 ; fi
+if [ ! -f "$2" ]; then http-server "$3"; fi

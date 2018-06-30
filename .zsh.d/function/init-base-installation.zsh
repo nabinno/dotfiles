@@ -1,4 +1,4 @@
-REQUIRED_MACPORT_VERSION=2.3.3
+export REQUIRED_MACPORT_VERSION=2.3.3
 
 get-base() {
   case "${OSTYPE}" in

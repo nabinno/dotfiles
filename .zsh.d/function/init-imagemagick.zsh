@@ -1,4 +1,4 @@
-REQUIRED_IMAGEMAGICK_VERSION=6.9.7-6
+export REQUIRED_IMAGEMAGICK_VERSION=6.9.7-6
 
 function get-imagemagick() {
   case ${OSTYPE} in

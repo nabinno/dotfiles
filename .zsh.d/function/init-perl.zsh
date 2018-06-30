@@ -1,4 +1,4 @@
-REQUIRED_PERL_VERSION=5.20.3
+export REQUIRED_PERL_VERSION=5.20.3
 export PATH="$HOME/.cask/bin:$PATH"
 
 # ----------------------------------------------------------------------

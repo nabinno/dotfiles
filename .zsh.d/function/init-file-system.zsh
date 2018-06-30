@@ -1,5 +1,5 @@
 # Inotify
-REQUIRED_INOTIFY_VERSION=3.14
+export REQUIRED_INOTIFY_VERSION=3.14
 
 get-inotify() {
   case "${OSTYPE}" in

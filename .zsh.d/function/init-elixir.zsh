@@ -1,7 +1,7 @@
-REQUIRED_ERLANG_VERSION=21.0
-REQUIRED_REBAR_VERSION=3.6.0
-REQUIRED_ELIXIR_VERSION=1.6.6
-REQUIRED_PHOENIXFRAMEWORK_VERSION=1.3.0
+export REQUIRED_ERLANG_VERSION=21.0
+export REQUIRED_REBAR_VERSION=3.6.0
+export REQUIRED_ELIXIR_VERSION=1.6.6
+export REQUIRED_PHOENIXFRAMEWORK_VERSION=1.3.0
 export PATH="$HOME/.local/exenv/bin:$PATH"
 export PATH="$HOME/.mix:$PATH"
 
@@ -47,7 +47,7 @@ get-erlang() {
   esac
 }
 
-get-erlang-with-kerl() {
+get-erlang-by-kerl() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       mkdir -p ~/.local/otp
@@ -69,7 +69,7 @@ get-rebar3() {
   esac
 }
 
-get-rebar3-with-wget() {
+get-rebar3-by-wget() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       wget https://s3.amazonaws.com/rebar3/rebar3 -O ~/.local/bin/rebar3
@@ -89,7 +89,7 @@ get-elixir() {
   esac
 }
 
-get-elixir-with-exenv() {
+get-elixir-by-exenv() {
   case "${OSTYPE}" in
     freebsd* | darwin*)
       exenv install $REQUIRED_ELIXIR_VERSION

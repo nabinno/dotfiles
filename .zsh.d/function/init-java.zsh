@@ -1,15 +1,15 @@
-REQUIRED_OPENJDK_VERSION=8.172
+export REQUIRED_OPENJDK_VERSION=8.172
 case $DIST in
-  Redhat | RedHat) REQUIRED_OEPNJDK_SHORT_VERSION=1.8 ;;
+  Redhat | RedHat) export REQUIRED_OEPNJDK_SHORT_VERSION=1.8 ;;
   Ubuntu)
     case $DIST_VERSION in
-      12.04) REQUIRED_OEPNJDK_SHORT_VERSION=8 ;;
-      14.04) REQUIRED_OEPNJDK_SHORT_VERSION=system ;;
-      16.04) REQUIRED_OEPNJDK_SHORT_VERSION=1.8 ;;
+      12.04) export REQUIRED_OEPNJDK_SHORT_VERSION=8 ;;
+      14.04) export REQUIRED_OEPNJDK_SHORT_VERSION=system ;;
+      16.04) export REQUIRED_OEPNJDK_SHORT_VERSION=1.8 ;;
     esac
     ;;
 esac
-REQUIRED_PLAY_VERSION=2.2.3
+export REQUIRED_PLAY_VERSION=2.2.3
 export PLAY_HOME=/usr/local/play-$REQUIRED_PLAY_VERSION
 export PATH="$PLAY_HOME:$PATH"
 case $OSTYPE in
@@ -38,7 +38,7 @@ get-java() {
   esac
 }
 
-get-java-with-nix() {
+get-java-by-nix() {
   case "${OSTYPE}" in
     freebsd* | darwin*)
       nix-install openjdk

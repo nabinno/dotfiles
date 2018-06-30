@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-FILE_NAME=$(basename $* .uml)
+FILE_NAME=$(basename "$@" .uml)
 
-java -jar ~/.local/bin/plantuml.jar -tutxt "$*"
-# puml generate --unicode "$*"
-cat $FILE_NAME.utxt
+java -jar ~/.local/bin/plantuml.jar -tutxt "$@"
+# puml generate --unicode "$@"
+cat "$FILE_NAME.utxt"

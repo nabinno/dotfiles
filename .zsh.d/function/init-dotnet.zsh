@@ -1,6 +1,6 @@
-REQUIRED_DOTNETFRAMEWORK_VERSION=4.0.30319
-REQUIRED_MONO_VERSION=4.0.4.1
-REQUIRED_NUNIT_VERSION=3.2.1
+export REQUIRED_DOTNETFRAMEWORK_VERSION=4.0.30319
+export REQUIRED_MONO_VERSION=4.0.4.1
+export REQUIRED_NUNIT_VERSION=3.2.1
 export DOTNET_HOME=$HOME/.local/dotnet
 export PATH=$PATH:$DOTNET_HOME
 export PATH="$HOME/.local/NUnit/bin:$PATH"
@@ -79,7 +79,7 @@ get-dotnetcli() {
       ;;
   esac
 }
-get-dotnetcli-with-nix() {
+get-dotnetcli-by-nix() {
   case "${OSTYPE}" in
     freebsd* | darwin*) ;;
     linux*)

@@ -1,4 +1,4 @@
-REQUIRED_PHP_VERSION=7.2.7
+export REQUIRED_PHP_VERSION=7.2.7
 
 # ### version control ###
 get-phpenv() {
