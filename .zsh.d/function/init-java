@@ -1,0 +1,160 @@
+#!/usr/bin/env zsh
+
+export REQUIRED_OPENJDK_VERSION=8.172
+case $DIST in
+  Redhat | RedHat) export REQUIRED_OEPNJDK_SHORT_VERSION=1.8 ;;
+  Ubuntu)
+    case $DIST_VERSION in
+      12.04) export REQUIRED_OEPNJDK_SHORT_VERSION=8 ;;
+      14.04) export REQUIRED_OEPNJDK_SHORT_VERSION=system ;;
+      16.04) export REQUIRED_OEPNJDK_SHORT_VERSION=1.8 ;;
+    esac
+    ;;
+esac
+export REQUIRED_PLAY_VERSION=2.2.3
+export PLAY_HOME=/usr/local/play-$REQUIRED_PLAY_VERSION
+export PATH="$PLAY_HOME:$PATH"
+case $OSTYPE in
+  msys | cygwin)
+    export JAVA_HOME=$(get-winpath $JAVA_HOME)
+    export PATH=$JAVA_HOME/bin:$PATH
+    ;;
+esac
+
+# ----------------------------------------------------------------------
+# ### version control ###
+get-jenv() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*) anyenv install jenv && exec -l zsh ;;
+  esac
+}
+
+# ----------------------------------------------------------------------
+# ### installation ###
+get-java() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      asdf install java $REQUIRED_OPENJDK_VERSION
+      asdf global java $REQUIRED_OPENJDK_VERSION
+      ;;
+  esac
+}
+
+get-java-by-nix() {
+  case "${OSTYPE}" in
+    freebsd* | darwin*)
+      nix-install openjdk
+      jenv add ~/.nix-profile/lib/openjdk
+      jenv global $REQUIRED_OEPNJDK_SHORT_VERSION
+      ;;
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat | Debian)
+          nix-install openjdk
+          jenv add ~/.nix-profile/lib/openjdk
+          jenv global $REQUIRED_OEPNJDK_SHORT_VERSION
+          sudo yum install java-${REQUIRED_OEPNJDK_SHORT_VERSION}-openjdk-devel
+          ;;
+        Ubuntu)
+          case $DIST_VERSION in
+            12.04)
+              sudo apt-add-repository ppa:openjdk-r/ppa
+              sudo apt-get update
+              sudo apt-get install -y openjdk-8-jdk
+              jenv add /usr/lib/jvm/java-1.8.0-openjdk-amd64/
+              jenv global $REQUIRED_OEPNJDK_SHORT_VERSION
+              ;;
+            14.04)
+              sudo apt-get install apt-transport-https
+              sudo add-apt-repository ppa:jochenkemnade/openjdk-8
+              sudo apt-add-repository ppa:openjdk-r/ppa
+              sudo apt-get update
+              sudo apt-get install -y openjdk-8-jdk
+              jenv add /usr/lib/jvm/java-1.8.0-openjdk-amd64/
+              jenv global $REQUIRED_OEPNJDK_SHORT_VERSION
+              ;;
+            16.04)
+              sudo apt-get update
+              sudo apt install -y openjdk-8-jdk
+              jenv add /usr/lib/jvm/java-1.8.0-openjdk-amd64/
+              jenv global $REQUIRED_OEPNJDK_SHORT_VERSION
+              ;;
+          esac
+          ;;
+      esac
+      ;;
+  esac
+}
+
+set-javahome() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      export JAVA_HOME=$(asdf where java)$REQUIRED_OPENJDK_VERSION
+      ;;
+  esac
+}
+
+set-javahome-with-nix() {
+  case "${OSTYPE}" in
+    freebsd* | darwin*)
+      export JAVA_HOME=~/.nix-profile/lib/openjdk
+      jenv global $REQUIRED_OEPNJDK_SHORT_VERSION
+      ;;
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat | Debian)
+          export JAVA_HOME=~/.nix-profile/lib/openjdk
+          jenv global $REQUIRED_OEPNJDK_SHORT_VERSION
+          ;;
+        Ubuntu)
+          case $DIST_VERSION in
+            12.04)
+              export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
+              jenv global $REQUIRED_OEPNJDK_SHORT_VERSION
+              ;;
+            14.04 | 16.04)
+              export JAVA_HOME=/usr/lib/jvm/java/
+              jenv global $REQUIRED_OEPNJDK_SHORT_VERSION
+              ;;
+          esac
+          ;;
+      esac
+      ;;
+  esac
+}
+
+if ! type -p java >/dev/null; then get-java && set-javahome; fi
+if type -p java >/dev/null; then set-javahome; fi
+
+# ----------------------------------------------------------------------
+get-play() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      wget http://downloads.typesafe.com/play/$REQUIRED_PLAY_VERSION/play-$REQUIRED_PLAY_VERSION.zip
+      unzip play-$REQUIRED_PLAY_VERSION.zip
+      mv play-$REQUIRED_PLAY_VERSION ~/.local/
+      rm -fr play-$REQUIRED_PLAY_VERSION.zip
+      ;;
+  esac
+}
+
+get-sbt() {
+  case "${OSTYPE}" in
+    freebsd* | darwin*) sudo port install sbt ;;
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat)
+          curl https://bintray.com/sbt/rpm/rpm | sudo tee /etc/yum.repos.d/bintray-sbt-rpm.repo
+          sudo yum install -y sbt
+          ;;
+        Debian | Ubuntu)
+          echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823
+          sudo apt-get update
+          sudo apt-get install -y sbt
+          ;;
+      esac
+      ;;
+  esac
+}
+if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ]; then get-play && get-sbt; fi
