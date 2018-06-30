@@ -17,7 +17,7 @@ get-ghc() {
   esac
 }
 
-get-ghc-with-asdf() {
+get-ghc-by-asdf() {
   case $OSTYPE in
     freebsd* | darwin* | linux*)
       asdf install haskell $REQUIRED_GHC_VERSION

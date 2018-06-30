@@ -7,7 +7,7 @@ get-ocaml() {
   get-global-opam-packages
 }
 
-get-ocaml-with-ocamlbrew() {
+get-ocaml-by-ocamlbrew() {
   curl -kL https://raw.github.com/hcarty/ocamlbrew/master/ocamlbrew-install | bash
   source ~/ocamlbrew/ocaml-*/etc/ocamlbrew.bashrc
   opam switch $REQUIRED_OCAML_VERSION
@@ -38,7 +38,7 @@ get-coq() {
   nix-install coq
 }
 
-get-coq-with-asdf() {
+get-coq-by-asdf() {
   asdf install coq $REQUIRED_COQ_VERSION
   asdf global coq $REQUIRED_COQ_VERSION
 }

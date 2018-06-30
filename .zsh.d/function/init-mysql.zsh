@@ -1,4 +1,4 @@
-REQUIRED_MYSQL_VERSION=5.6
+export REQUIRED_MYSQL_VERSION=5.6
 
 # ----------------------------------------------------------------------
 # ### installation ###

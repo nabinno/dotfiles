@@ -158,7 +158,7 @@ get-sekka() {
 
 # ----------------------------------------------------------------------
 # Ctags
-REQUIRED_CTAGS_VERSION=5.8
+export REQUIRED_CTAGS_VERSION=5.8
 
 get-ctags() {
   case "${OSTYPE}" in

@@ -1,4 +1,4 @@
-REQUIRED_SCREEN_VERSION=4.0.3
+export REQUIRED_SCREEN_VERSION=4.0.3
 
 get-screen() {
   case $OSTYPE in

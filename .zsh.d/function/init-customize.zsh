@@ -35,6 +35,7 @@ push-dotfiles() {
         ;;
     esac
   done
+
   if ! [ $is_exit ]; then
     cd ~/
     if [ ! -d ~/.local/dotfiles ]; then
@@ -57,6 +58,8 @@ push-dotfiles() {
     cp -pr ~/.zshenv .
     cp -pr ~/.zshrc .
     cp -pr ~/.docker .
+    cp -pr ~/.rufo .
+    cp -pr ~/.iex .
     rm -rf ~/.local/dotfiles/.docker/config.json
     rm -rf ~/.local/dotfiles/.docker/etc/nginx/conf.d/*
     case "${OSTYPE}" in freebsd* | darwin* | linux*) cp -pr ~/.screenrc . ;; esac
@@ -85,6 +88,7 @@ fetch-dotfiles() {
   rm -rf .emacs.d/lisp/init-mu4e.el
   rm -rf .emacs.d/lisp/init-esa.el
   rm -rf .emacs.d/lisp/init-credential.el
+
   # main proc
   cp -pr .emacs.d/lisp/* ~/.emacs.d/lisp/
   cp -pr .emacs.d/bin/* ~/.emacs.d/bin/
@@ -96,7 +100,10 @@ fetch-dotfiles() {
   cp -pr .zshenv ~/
   cp -pr .zshrc ~/
   cp -pr .docker ~/
+  cp -pr .rufo ~/
+  cp -pr .iex ~/
   case "${OSTYPE}" in freebsd* | darwin* | linux*) cp -pr .screenrc ~/ ;; esac
+
   # post proc
   git checkout -- .emacs.d/lisp/init-mu4e.el
   git checkout -- .emacs.d/lisp/init-esa.el

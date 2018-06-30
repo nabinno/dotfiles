@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-~/.parts/packages/python2/2.7.6/bin/aws route53 $*
+
+~/.parts/packages/python2/2.7.6/bin/aws route53 "$@"

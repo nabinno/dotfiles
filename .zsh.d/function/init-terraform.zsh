@@ -1,4 +1,4 @@
-REQUIRED_TERRAFORM_VERSION=0.6.6
+export REQUIRED_TERRAFORM_VERSION=0.6.6
 
 get-terraform() {
   local current_pwd=$(pwd)

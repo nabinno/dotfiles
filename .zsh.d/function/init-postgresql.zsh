@@ -1,5 +1,5 @@
-REQUIRED_POSTGRESQL_VERSION=9.2.15
-PSQL_PAGER='less -S'
+export REQUIRED_POSTGRESQL_VERSION=9.2.15
+export PSQL_PAGER='less -S'
 
 # ----------------------------------------------------------------------
 # ### installation ###

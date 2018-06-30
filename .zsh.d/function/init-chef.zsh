@@ -1,4 +1,4 @@
-REQUIRED_CHEF_VERSION=0.17.9
+export REQUIRED_CHEF_VERSION=0.17.9
 
 get-chef() {
   case $OSTYPE in

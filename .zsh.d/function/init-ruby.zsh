@@ -1,6 +1,6 @@
-REQUIRED_RUBY_VERSION=2.4.0
-REQUIRED_RUBY_VERSION_2=2.3.5
-REQUIRED_RUBY_VERSION_3=2.2.8
+export REQUIRED_RUBY_VERSION=2.4.0
+export REQUIRED_RUBY_VERSION_2=2.3.5
+export REQUIRED_RUBY_VERSION_3=2.2.8
 
 # ### version control ###
 get-rbenv() {
@@ -33,7 +33,7 @@ get-ruby() {
   esac
 }
 
-get-ruby-with-rbenv() {
+get-ruby-by-rbenv() {
   case "${OSTYPE}" in
     cygwin) apt-cyg install ruby ;;
     freebsd* | darwin* | linux*)

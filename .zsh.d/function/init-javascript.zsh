@@ -28,7 +28,7 @@ get-node() {
   esac
 }
 
-get-node-with-ndenv() {
+get-node-by-ndenv() {
   case "$OSTYPE" in
     msys | cygwin) choco install nodejs ;;
     linux*)

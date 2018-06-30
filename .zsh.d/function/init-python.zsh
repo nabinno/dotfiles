@@ -1,9 +1,9 @@
-REQUIRED_ANACONDA_VERSION=anaconda2-5.2.0
-REQUIRED_ANACONDA_VERSION_2=anaconda3-5.2.0
-REQUIRED_PYTHON_VERSION=2.7.13
-PYENV_VIRTUALENV_DISABLE_PROMPT=1
-PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
-PYTHONPATH="$HOME/.local/python:$PYTHONPATH"
+export REQUIRED_ANACONDA_VERSION=anaconda2-5.2.0
+export REQUIRED_ANACONDA_VERSION_2=anaconda3-5.2.0
+export REQUIRED_PYTHON_VERSION=2.7.13
+export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+export PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
+export PYTHONPATH="$HOME/.local/python:$PYTHONPATH"
 
 # ----------------------------------------------------------------------
 # ### version control ###
@@ -30,7 +30,7 @@ get-python() {
   esac
 }
 
-get-python-with-pyenv() {
+get-python-by-pyenv() {
   case "${OSTYPE}" in
     cygwin)
       apt-cyg install \
