@@ -1,0 +1,185 @@
+#!/usr/bin/env zsh
+
+export REQUIRED_PHP_VERSION=7.2.7
+
+# ### version control ###
+get-phpenv() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*) anyenv install phpenv && exec -l zsh ;;
+  esac
+}
+
+# ----------------------------------------------------------------------
+# ### installation ###
+get-php() {
+  case "${OSTYPE}" in
+    freebsd* | darwin*) nix-install php ;;
+    linux*)
+      case $DIST_VERSION in
+        14.04) sudo apt-get install php-$REQUIRED_PHP_VERSION ;;
+        16.04) sudo apt install php ;;
+        *) nix-install php ;;
+      esac
+      ;;
+  esac
+}
+if ! type -p php >/dev/null; then get-php; fi
+
+# ----------------------------------------------------------------------
+# FastCGI
+get-fastcgi() {
+  case "${OSTYPE}" in
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat)
+          sudo yum install -y php-fpm
+          sudo chkconfig php-fpm on
+          ;;
+        Ubuntu)
+          case "${DIST_VERSION}" in
+            12.04)
+              php_fastcgi_file='#!/bin/bash
+FASTCGI_USER=www-data
+FASTCGI_GROUP=www-data
+ADDRESS=127.0.0.1
+PORT=10003
+PIDFILE=/var/run/php5-fpm.pid
+CHILDREN=6
+PHP5=/usr/sbin/php5-fpm
+/usr/bin/spawn-fcgi -a $ADDRESS -p $PORT_DBDIR -P $PIDFILE -C $CHILDREN -u $FASTCGI_USER -g $FASTCGI_GROUP -f $PHP5'
+              php_fastcgid_file='#!/bin/bash
+PHP_SCRIPT=/usr/bin/php-fastcgi
+FASTCGI_USER=www-data
+FASTCGI_GROUP=www-data
+PID_DIR=/var/run/php-fastcgi
+PID_FILE=/var/run/php-fastcgi/php-fastcgi.pid
+RET_VAL=0
+case "$1" in
+    start)
+        if [[ ! -d $PID_DIR ]]
+        then
+            mkdir $PID_DIR
+            chown $FASTCGI_USER:$FASTCGI_GROUP $PID_DIR
+            chmod 0770 $PID_DIR
+        fi
+        if [[ -r $PID_FILE ]]
+        then
+            echo "php-fastcgi already running with PID `cat $PID_FILE`"
+            RET_VAL=1
+        else
+            $PHP_SCRIPT
+            RET_VAL=$?
+        fi
+        ;;
+    stop)
+        if [[ -r $PID_FILE ]]
+        then
+            kill `cat $PID_FILE`
+            rm $PID_FILE
+            RET_VAL=$?
+        else
+            echo "Could not find PID file $PID_FILE"
+            RET_VAL=1
+        fi
+        ;;
+    restart)
+        if [[ -r $PID_FILE ]]
+        then
+            kill `cat $PID_FILE`
+            rm $PID_FILE
+            RET_VAL=$?
+        else
+            echo "Could not find PID file $PID_FILE"
+        fi
+        $PHP_SCRIPT
+        RET_VAL=$?
+        ;;
+    status)
+        if [[ -r $PID_FILE ]]
+        then
+            echo "php-fastcgi running with PID `cat $PID_FILE`"
+            RET_VAL=$?
+        else
+            echo "Could not find PID file $PID_FILE, php-fastcgi does not appear to be running"
+        fi
+        ;;
+    *)
+        echo "Usage: php-fastcgi {start|stop|restart|status}"
+        RET_VAL=1
+        ;;
+esac
+exit $RET_VAL'
+              sudo apt-get update -y
+              sudo apt-get install -y \
+                nginx \
+                php5-cli \
+                spawn-fcgi \
+                psmisc
+              sudo rm -fr /usr/bin/php-fastcgi
+              sudo rm -fr /etc/init.d/php-fastcgi
+              echo $php_fastcgi_file | sudo tee --append /usr/bin/php-fastcgi
+              echo $php_fastcgid_file | sudo tee --append /etc/init.d/php-fastcgi
+              sudo chmod +x /usr/bin/php-fastcgi
+              sudo chmod +x /etc/init.d/php-fastcgi
+              sudo update-rc.d php-fastcgi defaults
+              ;;
+            14.04)
+              sudo apt-get update -y
+              sudo apt-get install -y \
+                nginx \
+                php5-cli \
+                spawn-fcgi \
+                psmisc
+              ;;
+            16.04)
+              sudo apt-get update -y
+              sudo apt-get install -y \
+                nginx \
+                spawn-fcgi \
+                psmisc
+              ;;
+          esac
+          ;;
+      esac
+      ;;
+  esac
+}
+case $DIST in
+  Redhat | RedHat) if ! type -p php-fpm >/dev/null; then get-fastcgi; fi ;;
+  Ubuntu) if ! type -p spawn-fcgi >/dev/null; then get-fastcgi; fi ;;
+esac
+
+php-fastcgid() {
+  case "${OSTYPE}" in
+    darwin*) ;;
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat) sudo /etc/init.d/php-fpm $1 ;;
+        Ubuntu)
+          case "${DIST_VERSION}" in
+            12.04) sudo /etc/init.d/php-fastcgi $1 ;;
+            14.04) sudo service php5-fpm $1 ;;
+            16.04) sudo service php5-fpm $1 ;;
+          esac
+          ;;
+      esac
+      ;;
+  esac
+}
+
+fastcgi-restart() {
+  sudo killall php-fpm php-fastcgi php-fastcgid $1
+  wait
+  case "${OSTYPE}" in
+    darwin*) ;;
+    linux*)
+      php-fastcgid start
+      php-fastcgid status
+      ;;
+  esac
+}
+
+alias fr="fastcgi-restart"
+alias fp="ps aux | \grep -G 'php.*'"
+alias fs="php-fastcgid status"
+alias fk="php-fastcgid stop"

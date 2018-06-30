@@ -1,0 +1,147 @@
+#!/usr/bin/env zsh
+
+export REQUIRED_ANACONDA_VERSION=anaconda2-5.2.0
+export REQUIRED_ANACONDA_VERSION_2=anaconda3-5.2.0
+export REQUIRED_PYTHON_VERSION=2.7.13
+export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+export PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
+export PYTHONPATH="$HOME/.local/python:$PYTHONPATH"
+
+# ----------------------------------------------------------------------
+# ### version control ###
+get-pyenv() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*) anyenv install pyenv && exec -l zsh ;;
+  esac
+}
+
+# ----------------------------------------------------------------------
+# ### installation ###
+get-python() {
+  case "${OSTYPE}" in
+    cygwin)
+      apt-cyg install \
+        python
+      python-setuptools
+      ;;
+    freebsd* | darwin* | linux*)
+      asdf install python $REQUIRED_ANACONDA_VERSION
+      asdf global python $REQUIRED_ANACONDA_VERSION
+      git clone https://github.com/yyuu/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv
+      ;;
+  esac
+}
+
+get-python-by-pyenv() {
+  case "${OSTYPE}" in
+    cygwin)
+      apt-cyg install \
+        python
+      python-setuptools
+      ;;
+    freebsd* | darwin* | linux*)
+      case $DIST in
+        RedHat | Redhat | Debian)
+          pyenv install $REQUIRED_ANACONDA_VERSION
+          git clone https://github.com/yyuu/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv
+          pyenv rehash
+          pyenv global $REQUIRED_ANACONDA_VERSION
+          ;;
+        Ubuntu)
+          case $DIST_VERSION in
+            12.04 | 14.04)
+              pyenv install $REQUIRED_ANACONDA_VERSION
+              git clone https://github.com/yyuu/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv
+              pyenv rehash
+              pyenv global $REQUIRED_ANACONDA_VERSION
+              ;;
+            16.04)
+              sudo apt install -y \
+                python \
+                python-setuptools
+              ;;
+          esac
+          ;;
+      esac
+      ;;
+  esac
+}
+if ! type -p python >/dev/null; then get-python; fi
+
+# ----------------------------------------------------------------------
+# Pip
+get-pip() {
+  case "${OSTYPE}" in
+    cygwin)
+      if type -p easy_install-2.7 >/dev/null; then
+        easy_install-2.7 https://pypi.python.org/packages/source/p/pip/pip-1.4.1.tar.gz
+        get-global-pip-packages
+      elif type -p easy_install-2.7 >/dev/null; then
+        easy_install https://pypi.python.org/packages/source/p/pip/pip-1.4.1.tar.gz
+        get-global-pip-packages
+      fi
+      ;;
+    freebsd* | darwin* | linux*)
+      easy_install pip
+      get-global-pip-packages
+      ;;
+  esac
+}
+
+get-global-pip-packages() {
+  case "$OSTYPE" in
+    freebsd* | darwin* | linux*)
+      pip install -U \
+        ipython \
+        pulp \
+        boto \
+        pipenv \
+        yamllint
+      # ide
+      pip install -U \
+        jedi \
+        epc \
+        autopep8 \
+        pyflakes
+      # pydata
+      pip install -U \
+        numpy \
+        scipy \
+        pandas \
+        matplotlib \
+        scikit-image
+      # machine_learning
+      pip install -U \
+        chainer \
+        tensorflow \
+        Theano \
+        keras \
+        scikit-learn
+      ;;
+  esac
+}
+if ! type -p pip >/dev/null; then get-pip; fi
+
+get-keras-rl() {
+  (
+    pip install -U h5py
+    cd ~
+    git clone https://github.com/matthiasplappert/keras-rl
+    cd keras-rl
+    python setup.py install
+  )
+}
+
+get-gym() {
+  case $OSTYPE in
+    linux*)
+      case $DIST in
+        Debian | Ubuntu)
+          sudo apt-get install -y python-numpy python-dev cmake zlib1g-dev libjpeg-dev xvfb libav-tools xorg-dev python-opengl libboost-all-dev libsdl2-dev swig
+          pip install -U gym
+          ;;
+      esac
+      ;;
+  esac
+}
+# if ! type -p gym > /dev/null ; then get-gym ; fi

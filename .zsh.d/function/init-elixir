@@ -1,0 +1,132 @@
+#!/usr/bin/env zsh
+
+export REQUIRED_ERLANG_VERSION=21.0
+export REQUIRED_REBAR_VERSION=3.6.0
+export REQUIRED_ELIXIR_VERSION=1.6.6
+export REQUIRED_PHOENIXFRAMEWORK_VERSION=1.3.0
+export PATH="$HOME/.local/exenv/bin:$PATH"
+export PATH="$HOME/.mix:$PATH"
+
+# ----------------------------------------------------------------------
+# ### version control ###
+get-kerl() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      curl https://raw.githubusercontent.com/yrashk/kerl/master/kerl -o ~/.local/bin/kerl
+      chmod a+x ~/.local/bin/kerl
+      echo 'KERL_CONFIGURE_OPTIONS="--disable-hipe --enable-smp-support --enable-threads --enable-kernel-poll"' >~/.kerlrc
+      ;;
+  esac
+}
+
+get-exenv() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      anyenv install exenv
+      git clone git://github.com/mururu/elixir-build.git ~/.exenv/plugins/elixir-build
+      exec -l zsh
+      ;;
+  esac
+}
+
+upgrade-elixir-build() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      rm -fr "$(exenv root)"/plugins/elixir-build
+      git clone https://github.com/mururu/elixir-build.git "$(exenv root)"/plugins/elixir-build
+      ;;
+  esac
+}
+
+# ----------------------------------------------------------------------
+# ### installation ###
+get-erlang() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      asdf install erlang $REQUIRED_ERLANG_VERSION
+      asdf global erlang $REQUIRED_ERLANG_VERSION
+      ;;
+  esac
+}
+
+get-erlang-by-kerl() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      mkdir -p ~/.local/otp
+      rm -fr ~/.kerl/archives/otp_src_$REQUIRED_ERLANG_VERSION.tar.gz
+      kerl build $REQUIRED_ERLANG_VERSION $REQUIRED_ERLANG_VERSION
+      kerl install $REQUIRED_ERLANG_VERSION ~/.local/otp/$REQUIRED_ERLANG_VERSION
+      source ~/.local/otp/$REQUIRED_ERLANG_VERSION/activate
+      ;;
+  esac
+}
+if ! type -p erl >/dev/null; then get-erlang; fi
+
+get-rebar3() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      asdf install rebar $REQUIRED_REBAR_VERSION
+      asdf global rebar $REQUIRED_REBAR_VERSION
+      ;;
+  esac
+}
+
+get-rebar3-by-wget() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      wget https://s3.amazonaws.com/rebar3/rebar3 -O ~/.local/bin/rebar3
+      chmod +x ~/.local/bin/rebar3
+      ;;
+  esac
+}
+if ! type -p rebar3 >/dev/null; then get-rebar3; fi
+
+get-elixir() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      asdf install elixir $REQUIRED_ELIXIR_VERSION
+      asdf global elixir $REQUIRED_ELIXIR_VERSION
+      get-global-mix-packages
+      ;;
+  esac
+}
+
+get-elixir-by-exenv() {
+  case "${OSTYPE}" in
+    freebsd* | darwin*)
+      exenv install $REQUIRED_ELIXIR_VERSION
+      exenv rehash
+      exenv global $REQUIRED_ELIXIR_VERSION
+      get-global-mix-packages
+      ;;
+    linux*)
+      case $DIST in
+        RedHat | Redhat | Debian)
+          exenv install $REQUIRED_ELIXIR_VERSION
+          exenv rehash
+          exenv global $REQUIRED_ELIXIR_VERSION
+          get-global-mix-packages
+          ;;
+        Ubuntu)
+          case $REV in
+            WSL)
+              nix-install elixir-$REQUIRED_ELIXIR_VERSION
+              ;;
+            *)
+              exenv install $REQUIRED_ELIXIR_VERSION
+              exenv rehash
+              exenv global $REQUIRED_ELIXIR_VERSION
+              get-global-mix-packages
+              ;;
+          esac
+          ;;
+      esac
+      ;;
+  esac
+}
+
+get-global-mix-packages() {
+  mix local.hex
+  mix archive.install https://github.com/phoenixframework/archives/raw/master/phx_new-$REQUIRED_PHOENIXFRAMEWORK_VERSION.ez
+}
+if ! type -p iex >/dev/null; then get-elixir; fi

@@ -1,0 +1,174 @@
+#!/usr/bin/env zsh
+
+export REQUIRED_MYSQL_VERSION=5.6
+
+# ----------------------------------------------------------------------
+# ### installation ###
+get-mysql() {
+  case "${OSTYPE}" in
+    darwin*) nix-install mysql && set-mysql ;;
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat | Debian)
+          # nix-install mysql && set-mysql
+          sudo yum install -y mariadb-server
+          sudo systemctl enable mariadb.service
+          /usr/bin/mysql_secure_installation
+          ;;
+        Ubuntu)
+          case $DIST_VERSION in
+            12.04)
+              sudo apt-get -y remove mysql-server
+              sudo apt-get -y autoremove
+              sudo apt-get -y install software-properties-common
+              sudo add-apt-repository -y ppa:ondrej/mysql-$REQUIRED_MYSQL_VERSION
+              sudo apt-get update
+              sudo apt-get -y install mysql-server
+              ;;
+            16.04)
+              sudo apt install mysql-client
+              ;;
+          esac
+          ;;
+      esac
+      ;;
+  esac
+}
+if ! type -p mysql >/dev/null; then get-mysql; fi
+
+set-mysql() {
+  case "${OSTYPE}" in
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat)
+          echo "innodb_file_format = Barracuda" | sudo tee -a /etc/my.cnf
+          echo "innodb_file_per_table = 1" | sudo tee -a /etc/my.cnf
+          echo "innodb_large_prefix" | sudo tee -a /etc/my.cnf
+          ;;
+        Ubuntu)
+          echo "innodb_file_format = Barracuda" | sudo tee -a /etc/mysql/my.cnf
+          echo "innodb_file_per_table = 1" | sudo tee -a /etc/mysql/my.cnf
+          echo "innodb_large_prefix" | sudo tee -a /etc/mysql/my.cnf
+          ;;
+      esac
+      ;;
+  esac
+}
+
+# ----------------------------------------------------------------------
+# ### innotop ###
+get-innotop() {
+  yes | cpanm -fi DBI \
+    DBD::mysql \
+    ExtUtils::MakeMaker \
+    Time::HiRes \
+    TermReadKey
+  git clone https://github.com/innotop/innotop
+  cd innotop
+  perl Makefile.PL
+  make install
+  cd ..
+  rm -fr innotop
+}
+
+# ----------------------------------------------------------------------
+# ### mysqltuner ###
+get-mysqltuner() {
+  wget https://github.com/rackerhacker/MySQLTuner-perl/archive/master.zip -O mysqltuner.zip
+  unzip mysqltuner.zip
+  (
+    cd MySQLTuner-perl-master
+    chmod 755 mysqltuner.pl
+    mv mysqltuner.pl ~/.local/bin/
+  )
+  rm -rf mysqltuner.zip MySQLTuner-perl-master
+}
+
+set-mysqltuner() {
+  wget https://github.com/rackerhacker/MySQLTuner-perl/archive/master.zip -O mysqltuner.zip
+  unzip mysqltuner.zip
+  (
+    cd MySQLTuner-perl-master
+    chmod 755 mysqltuner.pl
+    mv mysqltuner.pl ~/.local/bin/
+  )
+  rm -rf mysqltuner.zip MySQLTuner-perl-master
+}
+
+mysqltuner() {
+  perl ~/.local/bin/mysqltuner.pl $*
+}
+if ! [ -f ~/.local/bin/mysqltuner.pl ]; then get-mysqltuner; fi
+
+# ----------------------------------------------------------------------
+mysql-restart() {
+  case "${OSTYPE}" in
+    darwin*)
+      sudo service mysql stop
+      sudo service mysql start
+      sudo service mysql status
+      ;;
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat | Debian)
+          sudo service mariadb stop
+          sudo service mariadb start
+          sudo service mariadb status
+          ;;
+        Ubuntu)
+          case $DIST_VERSION in
+            12.04)
+              sudo /etc/init.d/mysql restart
+              sudo /etc/init.d/mysql status
+              ;;
+            14.04 | 16.04)
+              sudo service mysql stop
+              sudo service mysql start
+              sudo service mysql status
+              ;;
+          esac
+          ;;
+      esac
+      ;;
+  esac
+}
+
+mysql-stop() {
+  case "${OSTYPE}" in
+    darwin*) sudo service mysql stop ;;
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat | Debian) sudo service mariadb stop ;;
+        Ubuntu)
+          case $DIST_VERSION in
+            12.04) sudo /etc/init.d/mysql stop ;;
+            14.04 | 16.04) sudo service mysql stop ;;
+          esac
+          ;;
+      esac
+      ;;
+  esac
+}
+
+mysql-status() {
+  case "${OSTYPE}" in
+    darwin*) sudo service mysql status ;;
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat | Debian) sudo service mariadb status ;;
+        Ubuntu)
+          case $DIST_VERSION in
+            12.04) sudo /etc/init.d/mysql status ;;
+            14.04) sudo service mysql status ;;
+          esac
+          ;;
+      esac
+      ;;
+  esac
+}
+
+alias mr="mysql-restart"
+alias mp="ps aux | \grep -G 'mysql.*'"
+alias ms="mysql-status"
+alias mt="mysql-stop"
+# alias mysql="rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus mysql -uroot --pager='less -S'"
