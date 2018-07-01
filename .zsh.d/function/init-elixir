@@ -83,16 +83,6 @@ if ! type -p rebar3 >/dev/null; then get-rebar3; fi
 
 get-elixir() {
   case "${OSTYPE}" in
-    freebsd* | darwin* | linux*)
-      asdf install elixir $REQUIRED_ELIXIR_VERSION
-      asdf global elixir $REQUIRED_ELIXIR_VERSION
-      get-global-mix-packages
-      ;;
-  esac
-}
-
-get-elixir-by-exenv() {
-  case "${OSTYPE}" in
     freebsd* | darwin*)
       exenv install $REQUIRED_ELIXIR_VERSION
       exenv rehash
@@ -121,6 +111,16 @@ get-elixir-by-exenv() {
           esac
           ;;
       esac
+      ;;
+  esac
+}
+
+get-elixir-by-asdf() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      asdf install elixir $REQUIRED_ELIXIR_VERSION
+      asdf global elixir $REQUIRED_ELIXIR_VERSION
+      get-global-mix-packages
       ;;
   esac
 }
