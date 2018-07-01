@@ -1,1 +1,1 @@
-IEx.configure(inspect: [limit: :infinity])
+IEx.configure(inspect: [limit: :infinity, charlists: :as_lists])
