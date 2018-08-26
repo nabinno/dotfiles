@@ -1,0 +1,120 @@
+#!/usr/bin/env zsh
+# init-hatena-bookmark --- hatena bookmark configuration
+# Commentary:
+#   environmental variables
+#     ```
+#     export HATENA_BOOKMARK_HEADERS="\
+#        -H 'Pragma: no-cache' \
+#        -H 'Origin: http://b.hatena.ne.jp' \
+#        -H 'Accept-Encoding: gzip, deflate' \
+#        -H 'Accept-Language: en-US,en;q=0.9,ja;q=0.8' \
+#        -H 'User-Agent: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' \
+#        -H 'content-type: application/x-www-form-urlencoded' \
+#        -H 'Accept: */*' \
+#        -H 'Cache-Control: no-cache' \
+#        -H 'x-requested-with: XMLHttpRequest' \
+#        -H 'Cookie: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' \
+#        -H 'Connection: keep-alive' \
+#        -H 'Referer: http://b.hatena.ne.jp/' \
+#        --compressed"
+#     export HATENA_BOOKMARK_USERNAME='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+#     export HATENA_BOOKMARK_RKS='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+#     ```
+#  dependencies
+#   - ruby
+#   - sed
+#   - curl
+#   - jq
+# Code:
+# ----------------------------------------------------------------------
+# add
+add-hb-entry() {
+  local url=$(urlencode "$1" | sed 's/"//g')
+  local comment=$(urlencode "$2" | sed 's/"//g')
+  local data="'url=$url&comment=$comment&rks=$RKS&private=0&keep_original_url=1&with_status_op=1&from=inplace&post_twitter=0&post_evernote=0'"
+  eval "curl http://b.hatena.ne.jp/$HATENA_BOOKMARK_USERNAME/add.edit.json $HATENA_BOOKMARK_HEADERS --data $data"
+  echo "$data"
+}
+
+# ----------------------------------------------------------------------
+# delete
+delete-hb-entries() {
+  if [ $# -eq 2 ]; then
+    while getopts "t:u:q:" opt; do
+      case "$opt" in
+        t | u)
+          tag_or_url="$OPTARG"
+          first_response=$(eval "get-hb-entries -${opt} ${tag_or_url}")
+          for page in $(echo "$first_response" | jq '.pager.pages[].label' | sed 's/"//g'); do
+            for url in $(eval "get-hb-entries -$opt $tag_or_url -p $page" | jq '.item.bookmarks[].url' | sed 's/"//g'); do
+              delete-hb-entry "$url"
+            done
+          done
+          for url in $(echo "$first_response" | jq '.item.bookmarks[].url' | sed 's/"//g'); do
+            delete-hb-entry "$url"
+          done
+          ;;
+        q)
+          query="$OPTARG"
+          first_response=$(search-hb-entries -q "$query")
+          offset_start=0
+          offset=$(echo "$first_response" | jq '.meta.total' | sed 's/"//g' | xargs -I '{}' expr '{}' / 20 - 1)
+          while [ "$offset_start" -lt "$offset" ]; do
+            for url in $(search-hb-entries -q "$query" -o "$offset" | jq '.bookmarks[].entry.url' | sed 's/"//g'); do
+              delete-hb-entry "$url"
+            done
+            offset=$((offset - 1))
+          done
+          for url in $(echo "$first_response" | jq '.bookmarks[].entry.url' | sed 's/"//g'); do
+            delete-hb-entry "$url"
+          done
+          ;;
+      esac
+    done
+  else
+    echo ''
+    echo 'Usage:'
+    echo '  bash ./hatena_bookmark_delete.sh -t del'
+    echo '  bash ./hatena_bookmark_delete.sh -u https://www.google.com/url'
+    echo '  bash ./hatena_bookmark_delete.sh -q .tk' 1>&2
+  fi
+}
+
+delete-hb-entry() {
+  local url=$(urlencode "$1" | sed 's/"//g')
+  local data="url=${url}&rks=${HATENA_BOOKMARK_RKS}"
+  eval "curl http://b.hatena.ne.jp/${HATENA_BOOKMARK_USERNAME}/api.delete_bookmark.json ${HATENA_BOOKMARK_HEADERS} --data '$data'"
+  echo "$data"
+}
+
+# ----------------------------------------------------------------------
+# other
+get-hb-entries() {
+  local tag=
+  local url=
+  local page=1
+  while getopts "t:u:p:" opt; do
+    case "$opt" in
+      t) tag="$OPTARG" ;;
+      u) url=$(urlencode "$OPTARG" | sed 's/"//g') ;;
+      p) page="$OPTARG" ;;
+    esac
+  done
+  eval "curl 'http://b.hatena.ne.jp/api/users/${HATENA_BOOKMARK_USERNAME}/bookmarks?tag=${tag}&url=${url}&page=${page}' ${HATENA_BOOKMARK_HEADERS}"
+}
+
+search-hb-entries() {
+  local query=
+  local offset=0
+  while getopts "q:o:" opt; do
+    case "$opt" in
+      q) query="$OPTARG" ;;
+      o) offset="$OPTARG" ;;
+    esac
+  done
+  curl "http://b.hatena.ne.jp/$HATENA_BOOKMARK_USERNAME/search/json?q=$query&of=$offset $HATENA_BOOKMARK_HEADERS"
+}
+
+urlencode() {
+  ruby -r cgi -e "p CGI.escape('$1')"
+}
