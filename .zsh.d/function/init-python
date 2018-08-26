@@ -117,6 +117,9 @@ get-global-pip-packages() {
         Theano \
         keras \
         scikit-learn
+      # other
+      pip install -U \
+        q
       ;;
   esac
 }
