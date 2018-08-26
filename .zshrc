@@ -62,6 +62,7 @@ require init-powershell
 require init-screen
 require init-asciinema
 require init-slack
+require init-hatena-bookmark
 
 # Platform
 require init-heroku
