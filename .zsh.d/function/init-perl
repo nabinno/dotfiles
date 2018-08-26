@@ -65,6 +65,7 @@ get-plagger() {
         XML::Feed::RSS \
         XML::Atom \
         WebService::Bloglines \
+        LWP::Protocol::https \
         Plagger
       ;;
     linux*)
@@ -88,6 +89,7 @@ get-plagger() {
             XML::Feed::RSS \
             XML::Atom \
             WebService::Bloglines \
+            LWP::Protocol::https \
             Plagger
           ;;
       esac
