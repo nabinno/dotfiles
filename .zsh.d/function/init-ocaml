@@ -31,7 +31,8 @@ get-global-opam-packages() {
 
 get-global-npm-packages-for-ocaml() {
   npm i -g \
-    ocaml-language-server
+    ocaml-language-server \
+    reason-cli@latest-linux
 }
 
 # ----------------------------------------------------------------------

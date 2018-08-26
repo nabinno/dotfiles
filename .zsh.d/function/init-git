@@ -177,11 +177,11 @@ parse-git-branch() {
 # ----------------------------------------------------------------------
 # github-pull-repositories() {
 #   # # Setup Example:
-#   # function setup-git-pull-repositories {
-#   #     case $1 in
-#   #         foo) echo 'npm install';;
-#   #         bar) echo 'npm install && bower install';;
-#   #     esac
+#   # setup-git-pull-repositories() {
+#   #   case $1 in
+#   #     foo) echo 'npm install';;
+#   #     bar) echo 'npm install && bower install';;
+#   #   esac
 #   # }
 #   typeset -A users
 #   typeset -A branches
