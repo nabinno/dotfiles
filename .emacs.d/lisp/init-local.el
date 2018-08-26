@@ -47,6 +47,7 @@
 (transient-mark-mode t)
 (set-face-attribute 'default nil :height 100)
 (set-default 'truncate-lines t)
+(set-default 'fill-column 120)
 
 ;; display-time-mode
 (display-time-mode t)

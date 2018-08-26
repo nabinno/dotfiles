@@ -144,6 +144,8 @@ But return nil unless the process returned 0 (`shell-command-to-string' ignore r
 (unless (require 'reason-mode nil 'noerror)
   (el-get-bundle reasonml-editor/reason-mode))
 
+(setq refmt-width-mode 'fill)
+
 (defun shell-cmd (command)
   "Return the stdout output of a shell COMMAND or nil if the command returned an error."
     (car (ignore-errors (apply 'process-lines (split-string command)))))
