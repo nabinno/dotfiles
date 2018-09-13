@@ -7,7 +7,7 @@
 ;; RipGrep
 (require-package 'helm-ag)
 
-(setq helm-ag-base-command "rg --vimgrep --no-heading")
+(setq helm-ag-base-command "rg --vimgrep --no-heading --hidden")
 (setq helm-ag-insert-at-point 'symbol) ; set up current symbol to default query
 (defun helm-ag-dot-emacs ()
   "Search .emacs.d directory."
