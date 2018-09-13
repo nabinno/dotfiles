@@ -19,23 +19,17 @@
 ;; Need to first remove from list if present, since elpa adds entries too, which
 ;; may be in an arbitrary order
 (eval-when-compile (require 'cl))
-(setq auto-mode-alist (cons `("\\.js\\(\\.erb\\)?\\'" . ,preferred-javascript-mode)
-                            (loop for entry in auto-mode-alist
-                                  unless (eq preferred-javascript-mode (cdr entry))
-                                  collect entry)))
+(setq auto-mode-alist
+      (append '(("\\.js\\(\\.erb\\)?\\'" . js-mode))
+              auto-mode-alist))
+;; (setq auto-mode-alist (cons `("\\.js\\(\\.erb\\)?\\'" . ,preferred-javascript-mode)
+;;                             (loop for entry in auto-mode-alist
+;;                                   unless (eq preferred-javascript-mode (cdr entry))
+;;                                   collect entry)))
 (setq auto-mode-alist (cons `("\\.es6\\'" . ,preferred-javascript-mode)
                             (loop for entry in auto-mode-alist
                                   unless (eq preferred-javascript-mode (cdr entry))
                                   collect entry)))
-
-(dolist (mode '(js js2))
-  (progn
-    (font-lock-add-keywords
-     (intern (format "%s-mode" mode))
-     `(("\\(function *\\)("
-        (0 (progn
-             (compose-region (match-beginning 1) (match-end 1) "ƒ")
-             nil)))))))
 
 
 ;;; Prettier
@@ -46,7 +40,15 @@
 (eval-after-load 'typescript-mode
   '(progn
      (add-hook 'typescript-mode-hook #'add-node-modules-path)
-          (add-hook 'typescript-mode-hook #'prettier-js-mode)))
+     (add-hook 'typescript-mode-hook #'prettier-js-mode)))
+(eval-after-load 'js-mode
+  '(progn
+     (add-hook 'js-mode-hook #'add-node-modules-path)
+     (add-hook 'js-mode-hook #'prettier-js-mode)))
+(eval-after-load 'js2-mode
+  '(progn
+     (add-hook 'js2-mode-hook #'add-node-modules-path)
+     (add-hook 'js2-mode-hook #'prettier-js-mode)))
 
 
 ;;; Js-mode
