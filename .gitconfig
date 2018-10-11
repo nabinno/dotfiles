@@ -1,5 +1,5 @@
 [user]
-	name = Nab Inno
+	name = nabinno
 	email = nab@blahfe.com
 [core]
 	excludesfile = ~/.gitignore_global
@@ -66,4 +66,7 @@
 [branch]
 	autosetuprebase = always
 	autosetupmerge = always
-
+[push]
+	default = simple
+[ghq]
+	root = ~/.ghq.d

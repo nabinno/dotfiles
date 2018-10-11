@@ -17,12 +17,17 @@
   "Search .zsh.d directory."
   (interactive)
   (helm-ag "~/.zsh.d/"))
+(defun helm-ag-dot-ghq ()
+  "Search .ghq.d directory."
+  (interactive)
+  (helm-ag "~/.ghq.d/"))
 (defun helm-projectile-ag ()
   "Connect to projectile."
   (interactive)
   (helm-ag (projectile-project-root)))
 (global-set-key (kbd "C-c ; G") 'helm-projectile-ag)
 (global-set-key (kbd "C-c ; E") 'helm-ag-dot-emacs)
+(global-set-key (kbd "C-c ; H") 'helm-ag-dot-ghq)
 (global-set-key (kbd "C-c ; Z") 'helm-ag-dot-zsh)
 
 
