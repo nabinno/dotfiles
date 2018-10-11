@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-function get-shellcheck() {
+get-shellcheck() {
   case $OSTYPE in
     linux*)
       case $DIST in

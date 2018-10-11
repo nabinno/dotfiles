@@ -48,6 +48,7 @@ get-global-go-packages() {
       go get github.com/mattn/qq/cmd/qq
       go get github.com/mattn/git-fixauthor
       go get github.com/shenwei356/csvtk/csvtk
+      go get github.com/motemen/ghq
       go get -u mvdan.cc/sh/cmd/shfmt
       ;;
   esac

@@ -2,12 +2,16 @@
 
 export REQUIRED_RUBY_VERSION=2.4.0
 export REQUIRED_RUBY_VERSION_2=2.3.5
-export REQUIRED_RUBY_VERSION_3=2.2.8
+export GEMSRC_USE_GHQ=~/.ghq.d
 
 # ### version control ###
 get-rbenv() {
   case "${OSTYPE}" in
-    freebsd* | darwin* | linux*) anyenv install rbenv && exec -l zsh ;;
+    freebsd* | darwin* | linux*)
+      anyenv install rbenv
+      git clone https://github.com/amatsuda/gem-src.git "$(rbenv root)"/plugins/gem-src
+      exec -l zsh
+      ;;
   esac
 }
 
@@ -22,26 +26,24 @@ upgrade-ruby-build() {
 
 # ----------------------------------------------------------------------
 # ### installation ###
-get-ruby() {
+get-ruby-by-asdf() {
   case "${OSTYPE}" in
     cygwin) apt-cyg install ruby ;;
     freebsd* | darwin* | linux*)
       asfd install ruby $REQUIRED_RUBY_VERSION
       asfd install ruby $REQUIRED_RUBY_VERSION_2
-      asfd install ruby $REQUIRED_RUBY_VERSION_3
       asdf global ruby $REQUIRED_RUBY_VERSION
       get-global-gem-packages
       ;;
   esac
 }
 
-get-ruby-by-rbenv() {
+get-ruby() {
   case "${OSTYPE}" in
     cygwin) apt-cyg install ruby ;;
     freebsd* | darwin* | linux*)
       rbenv install $REQUIRED_RUBY_VERSION
       rbenv install $REQUIRED_RUBY_VERSION_2
-      rbenv install $REQUIRED_RUBY_VERSION_3
       rbenv rehash
       rbenv global $REQUIRED_RUBY_VERSION
       get-global-gem-packages

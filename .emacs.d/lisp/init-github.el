@@ -14,11 +14,17 @@
   (require-package 'magit-gh-pulls))
 (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
 
+
+(unless (require 'helm-ghq nil 'noerror)
+  (el-get-bundle masutaka/emacs-helm-ghq))
+
+
 ;; (require-package 'magithub)
 ;; (defun require-magithub ()
 ;;   "Requre magithub."
 ;;   (require 'magithub))
 ;; (add-hook 'magit-mode-hook 'require-magithub)
+
 
 (provide 'init-github)
 ;;; init-github.el ends here
