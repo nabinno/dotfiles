@@ -19,7 +19,7 @@ export PATH="/opt/local/sbin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
 
-et-ntp() {
+get-ntp() {
   case "${OSTYPE}" in
     linux*)
       case "${DIST}" in
@@ -50,7 +50,7 @@ set-ntp() {
               sudo ntpdate ntp.ubuntu.com
               sudo service ntp start
               ;;
-            16.04)
+            16.04 | 18.04)
               sudo service ntp stop
               sudo service ntp start
               ;;
