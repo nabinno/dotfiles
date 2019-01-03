@@ -1,0 +1,22 @@
+#!/usr/bin/env zsh
+
+export REQUIRED_RED_VERSION=064
+export PATH=$PATH:~/.cargo/bin
+
+get-red() {
+  case $OSTYPE in
+    linux*)
+      case $DIST in
+        Ubuntu | Debian)
+          sudo apt-get install lib32ncurses5 lib32z1 libc6-i386 libcurl3
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install libc6:i386 libcurl3:i386
+          wget https://static.red-lang.org/dl/linux/red-064 -O ~/.local/bin/red-${REQUIRED_RED_VERSION}
+          chmod 755 ~/.local/bin/red-${REQUIRED_RED_VERSION}
+          ln -s ~/.local/bin/red-${REQUIRED_RED_VERSION} ~/.local/bin/red
+          ;;
+      esac
+      ;;
+  esac
+}

@@ -29,20 +29,21 @@ require init-crystal
 require init-ocaml
 require init-haskell
 require init-go
-require init-dotnet
+# require init-dotnet
 require init-java
 require init-php
 require init-python
 require init-perl
 require init-javascript
 require init-rust
-require init-remote-procedure-call
+require init-red
+# require init-remote-procedure-call
 
 # Daemon
-require init-postgresql
-require init-mysql
-require init-redis
-require init-memcached
+# require init-postgresql
+# require init-mysql
+# require init-redis
+# require init-memcached
 require init-nginx
 require init-dns
 
@@ -50,8 +51,8 @@ require init-dns
 require init-emacs
 require init-file-system
 require init-git
-require init-plantuml
-require init-imagemagick
+# require init-plantuml
+# require init-imagemagick
 require init-benchmark
 require init-vagrant
 require init-wercker
@@ -60,7 +61,7 @@ require init-terraform
 require init-zsh
 require init-powershell
 require init-screen
-require init-asciinema
+# require init-asciinema
 require init-slack
 require init-hatena-bookmark
 
@@ -73,3 +74,8 @@ require init-amazon-web-services
 # Other
 require init-customize
 if [ -f ~/.zsh.d/init.zsh ]; then source ~/.zsh.d/init.zsh; fi
+
+#
+# TODO: the followting error
+#
+# lvm2 libguestfs0 libguestfs-reiserfs libguestfs-perl libguestfs-hfsplus libguestfs-tools libguestfs-xfs initramfs-tools
