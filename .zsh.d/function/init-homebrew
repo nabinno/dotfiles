@@ -65,7 +65,7 @@ case "${OSTYPE}" in
               export PATH="$HOME/.linuxbrew/bin:$PATH"
             fi
             ;;
-          16.04)
+          16.04 | 18.04)
             if [ -d /home/linuxbrew/.linuxbrew ]; then
               export MANPATH=/home/linuxbrew/.linuxbrew/share/man:$MANPATH
               export INFOPATH=/home/linuxbrew/.linuxbrew/share/info:$INFOPATH

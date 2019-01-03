@@ -2,7 +2,7 @@
 
 export REQUIRED_ANACONDA_VERSION=anaconda2-5.2.0
 export REQUIRED_ANACONDA_VERSION_2=anaconda3-5.2.0
-export REQUIRED_PYTHON_VERSION=2.7.13
+export REQUIRED_PYTHON_VERSION=2.7.15
 export PYENV_VIRTUALENV_DISABLE_PROMPT=1
 export PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
 export PYTHONPATH="$HOME/.local/python:$PYTHONPATH"
@@ -49,7 +49,7 @@ get-python-by-pyenv() {
           ;;
         Ubuntu)
           case $DIST_VERSION in
-            12.04 | 14.04)
+            12.04 | 14.04 | 18.04)
               pyenv install $REQUIRED_ANACONDA_VERSION
               git clone https://github.com/yyuu/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv
               pyenv rehash
@@ -59,6 +59,12 @@ get-python-by-pyenv() {
               sudo apt install -y \
                 python \
                 python-setuptools
+              ;;
+            18.04)
+              pyenv install $REQUIRED_PYTHON_VERSION
+              git clone https://github.com/yyuu/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv
+              pyenv rehash
+              pyenv global $REQUIRED_PYTHON_VERSION
               ;;
           esac
           ;;
