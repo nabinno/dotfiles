@@ -65,7 +65,8 @@
 
 
 ;;; Multi eshell
-(require-package 'multi-eshell)
+(unless (require 'multi-eshell nil 'noerror)
+  (el-get-bundle emacsmirror/multi-eshell))
 (setq multi-eshell-shell-function '(eshell))
 (setq multi-eshell-name "*eshell*")
 

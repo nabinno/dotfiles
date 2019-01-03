@@ -360,7 +360,8 @@ With arg N, insert N newlines."
 ;;; Ag
 (when (executable-find "ag")
   (require-package 'ag)
-  (require-package 'wgrep-ag)
+  (unless (require 'wgrep-ag nil 'noerror)
+    (el-get-bundle mhayashi1120/Emacs-wgrep))
   (setq-default ag-highlight-search t)
   (global-set-key (kbd "M-?") 'ag-project))
 

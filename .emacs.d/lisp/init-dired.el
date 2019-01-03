@@ -1,7 +1,8 @@
 ;;; init-dired --- dired configuration
 ;;; Commentary:
 ;;; Code:
-(require-package 'dired+)
+(unless (require 'dired+ nil 'noerror)
+  (el-get-bundle emacsmirror/dired-plus))
 
 (setq diredp-hide-details-initially-flag nil)
 (setq dired-listing-switches "-AFl --group-directories-first")

@@ -40,7 +40,8 @@
 
 ;; wgrep
 (add-hook 'ag-mode-hook '(lambda ()
-                           (require-package 'wgrep-ag)
+                           (unless (require 'wgrep-ag nil 'noerror)
+                             (el-get-bundle mhayashi1120/Emacs-wgrep))
                            (setq wgrep-auto-save-buffer t)
                            (setq wgrep-enable-key "r")
                            (wgrep-ag-setup)))
