@@ -47,7 +47,7 @@ if ! type -p perl >/dev/null; then get-perl; fi
 get-plagger() {
   case "${OSTYPE}" in
     cygwin) ;;
-    freebsd* | darwin*)
+    freebsd* | darwin* | linux*)
       cpanm -fi YAML::Loader \
         XML::LibXML \
         XML::LibXML::SAX \
@@ -66,33 +66,10 @@ get-plagger() {
         XML::Atom \
         WebService::Bloglines \
         LWP::Protocol::https \
+        JSON \
+        OAuth::Lite::Consumer \
+        OAuth::Lite::Token \
         Plagger
-      ;;
-    linux*)
-      case $DIST in
-        Redhat | RedHat) ;;
-        Debian | Ubuntu)
-          cpanm -fi YAML::Loader \
-            XML::LibXML \
-            XML::LibXML::SAX \
-            XML::LibXML::XPathContext \
-            XML::Liberal \
-            Text::Glob \
-            Module::Runtime \
-            Params::Util \
-            Digest::SHA1 \
-            Class::Load \
-            XML::RSS \
-            XML::RSS::LibXML \
-            XML::RSS::Liberal \
-            XML::Feed \
-            XML::Feed::RSS \
-            XML::Atom \
-            WebService::Bloglines \
-            LWP::Protocol::https \
-            Plagger
-          ;;
-      esac
       ;;
   esac
 }

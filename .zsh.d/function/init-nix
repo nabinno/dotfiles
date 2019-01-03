@@ -54,7 +54,7 @@ get-nix() {
               sudo chown -R ${CURRENT_USER} /nix
               source ~/.nix-profile/etc/profile.d/nix.sh
               ;;
-            14.04 | 16.04)
+            14.04 | 16.04 | 18.04)
               cd ~ && curl https://nixos.org/nix/install | sh
               sudo chown -R ${CURRENT_USER} /nix
               ;;
@@ -140,7 +140,7 @@ case "${OSTYPE}" in
     case $DIST in
       Ubuntu)
         case $DIST_VERSION in
-          12.04 | 16.04)
+          12.04 | 16.04 | 18.04)
             if [ ! -f ~/.nix-profile/bin/nix-env ]; then get-nix; fi
             if [ -f ~/.nix-profile/bin/nix-env ]; then set-nix; fi
             ;;
