@@ -3,22 +3,9 @@
 # Commentary:
 #   environmental variables
 #     ```
-#     export HATENA_BOOKMARK_HEADERS="\
-#        -H 'Pragma: no-cache' \
-#        -H 'Origin: http://b.hatena.ne.jp' \
-#        -H 'Accept-Encoding: gzip, deflate' \
-#        -H 'Accept-Language: en-US,en;q=0.9,ja;q=0.8' \
-#        -H 'User-Agent: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' \
-#        -H 'content-type: application/x-www-form-urlencoded' \
-#        -H 'Accept: */*' \
-#        -H 'Cache-Control: no-cache' \
-#        -H 'x-requested-with: XMLHttpRequest' \
-#        -H 'Cookie: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' \
-#        -H 'Connection: keep-alive' \
-#        -H 'Referer: http://b.hatena.ne.jp/' \
-#        --compressed"
 #     export HATENA_BOOKMARK_USERNAME='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 #     export HATENA_BOOKMARK_RKS='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+#     export HATENA_BOOKMARK_COOKIE='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 #     ```
 #  dependencies
 #   - ruby
@@ -26,12 +13,27 @@
 #   - curl
 #   - jq
 # Code:
+export HATENA_BOOKMARK_HEADERS="\
+       -H 'Pragma: no-cache' \
+       -H 'Origin: http://b.hatena.ne.jp' \
+       -H 'Accept-Encoding: gzip, deflate' \
+       -H 'Accept-Language: en-US,en;q=0.9,ja;q=0.8' \
+       -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36' \
+       -H 'content-type: application/x-www-form-urlencoded' \
+       -H 'Accept: */*' \
+       -H 'Cache-Control: no-cache' \
+       -H 'x-requested-with: XMLHttpRequest' \
+       -H 'Cookie: ${HATENA_BOOKMARK_COOKIE}' \
+       -H 'Connection: keep-alive' \
+       -H 'Referer: http://b.hatena.ne.jp/' \
+       --compressed"
+
 # ----------------------------------------------------------------------
 # add
 add-hb-entry() {
   local url=$(urlencode "$1" | sed 's/"//g')
   local comment=$(urlencode "$2" | sed 's/"//g')
-  local data="'url=$url&comment=$comment&rks=$RKS&private=0&keep_original_url=1&with_status_op=1&from=inplace&post_twitter=0&post_evernote=0'"
+  local data="'url=$url&comment=$comment&rks=$HATENA_BOOKMARK_RKS&private=0&keep_original_url=1&with_status_op=1&from=inplace&post_twitter=0&post_evernote=0'"
   eval "curl http://b.hatena.ne.jp/$HATENA_BOOKMARK_USERNAME/add.edit.json $HATENA_BOOKMARK_HEADERS --data $data"
   echo "$data"
 }
@@ -57,6 +59,8 @@ delete-hb-entries() {
         q)
           query="$OPTARG"
           first_response=$(search-hb-entries -q "$query")
+          echo "$query"
+          echo "$first_response"
           offset_start=0
           offset=$(echo "$first_response" | jq '.meta.total' | sed 's/"//g' | xargs -I '{}' expr '{}' / 20 - 1)
           while [ "$offset_start" -lt "$offset" ]; do
@@ -74,9 +78,9 @@ delete-hb-entries() {
   else
     echo ''
     echo 'Usage:'
-    echo '  bash ./hatena_bookmark_delete.sh -t del'
-    echo '  bash ./hatena_bookmark_delete.sh -u https://www.google.com/url'
-    echo '  bash ./hatena_bookmark_delete.sh -q .tk' 1>&2
+    echo '  delete-hb-entries -t del'
+    echo '  delete-hb-entries -u https://www.google.com/url'
+    echo '  delete-hb-entries -q .tk' 1>&2
   fi
 }
 
