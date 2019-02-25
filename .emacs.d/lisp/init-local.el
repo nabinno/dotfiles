@@ -43,6 +43,7 @@
 (setq make-backup-files nil)
 (setq message-log-max 512)
 (setq truncate-partial-width-windows nil)
+(setq default-tab-width 4)
 (tool-bar-mode 0)
 (transient-mark-mode t)
 (set-face-attribute 'default nil :height 100)
