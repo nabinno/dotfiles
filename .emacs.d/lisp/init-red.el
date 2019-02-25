@@ -13,22 +13,45 @@
               (regexp-opt-group
                (split-string
                 "
-NaN? a-an about absolute acos action? add ail alias all and and~ any any-block? any-function? any-object? any-path?
-any-string? any-word?  append arccosine arcsine arctangent arctangent2 as as-pair asin ask at atan atan2 attempt back
-bind bitset? block? body-of break byte!  c-string! case catch cause-error cdecl char? charset clear comment complement
-complement? complete-from-path compose cond construct context continue copy cos cosine datatype? declare
-default-input-completer dehex difference divide do does e either empty? equal? error? eval-set-path even? exclude exit
-exp extend false fifth file? find first float! float32! float? forall foreach forever form fourth func function
-function? get get-path? get-word?  greater-or-equal? greater? halt has hash? head head? help if in index?  input insert
-integer! integer? intersect issue? keys-of last last-lf?  length? lesser-or-equal? lesser? lit-path? lit-word? load
-local log-10 log-2 log-e logic! logic? loop lowercase make map? max min modify modulo mold multiply native? negate
-negative? next none?  not not-equal? object object? odd? op? or or~ pad pair? paren? parse parse-trace path? percent?
-pick pointer! poke positive? power prin print probe put quit quit-return quote random read-input reduce refinement?
-reflect remainder remove repeat replace return reverse round routine? same? second select series? set set-buffer-history
-set-path? set-word? shift shift-left shift-logical shift-right sin sine skip sort source spec-of square-root stats
-strict-equal? string?  struct! subtract swap switch tail tail? take tan tangent third throw to to-hex trim true try
-tuple? type? typeset? union unique unless unset? axis until uppercase url? value? values-of variadic vector?  what while
-word? words-of xor xor~ zero? ctx fn |>")
+NaN? action? any-block? any-function? any-object? any-path?
+any-string? any-word? bitset? block? char? complement? datatype?
+empty? equal? error? float! even? file? float32! float? function?
+get-path? get-word? greater-or-equal? greater? integer! hash?
+head? index? integer? issue? last-lf? length? lesser-or-equal?
+lesser? lit-path? lit-word? logic? map? native? negative? none?
+not-equal? object? odd? op? pair? paren? path? percent? pointer!
+positive? refinement? routine? same? series? set-path? set-word?
+strict-equal? string? struct! tail? tuple? type? typeset? unset?
+url? value? vector? word? zero? byte! c-string! logic!  |> a-an
+about all and and~ any as as-pair asin xor xor~ atan atan2 case
+catch cause-error clear ctx cond construct context continue does
+unless until not object or or~ if try to func function fn forall
+foreach forever extend either exclude false true union declare
+quote what while loop local help repeat source quit-return return
+skip quit next do load break switch wait
+")
+               t t)
+              "\\>"))
+(setq red-words-2-regex
+      (concat "\\<"
+              (regexp-opt-group
+               (split-string
+                "
+arccosine arcsine arctangent arctangent2 absolute acos add ail
+alias append ask at cos cosine divide attempt axis back
+bind body-of cdecl charset comment complement complete-from-path
+compose copy default-input-completer dehex difference e
+eval-set-path exit exp fifth find first form fourth halt has
+head in input insert intersect keys-of last log-10 log-2 log-e
+lowercase make max min modify modulo mold multiply negate pad
+parse parse-trace pick poke power prin print probe random
+read-input reduce reflect remainder remove replace reverse round
+second select set set-buffer-history shift shift-left
+shift-logical shift-right sin sine sort spec-of square-root stats
+subtract swap tail take tan tangent third throw
+trim unique uppercase values-of variadic words-of
+"
+                )
                t t)
               "\\>"))
 (defconst red-constant-regex
@@ -44,7 +67,8 @@ word? words-of xor xor~ zero? ctx fn |>")
     (,red-float-regex . font-lock-constant-face)
     (,red-hexadecimal-regex . font-lock-constant-face)
     (,red-integer-regex . font-lock-constant-face)
-    (,red-words-regex . font-lock-function-name-face)
+    (,red-words-regex . font-lock-keyword-face)
+    (,red-words-2-regex . font-lock-function-name-face)
     (,red-setter-regex . font-lock-variable-name-face))
   "Font lock table for the Red programming language")
 
