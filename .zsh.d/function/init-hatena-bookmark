@@ -3,9 +3,22 @@
 # Commentary:
 #   environmental variables
 #     ```
+#     export HATENA_BOOKMARK_HEADERS="\
+#        -H 'Pragma: no-cache' \
+#        -H 'Origin: http://b.hatena.ne.jp' \
+#        -H 'Accept-Encoding: gzip, deflate' \
+#        -H 'Accept-Language: en-US,en;q=0.9,ja;q=0.8' \
+#        -H 'User-Agent: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' \
+#        -H 'content-type: application/x-www-form-urlencoded' \
+#        -H 'Accept: */*' \
+#        -H 'Cache-Control: no-cache' \
+#        -H 'x-requested-with: XMLHttpRequest' \
+#        -H 'Cookie: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' \
+#        -H 'Connection: keep-alive' \
+#        -H 'Referer: http://b.hatena.ne.jp/' \
+#        --compressed"
 #     export HATENA_BOOKMARK_USERNAME='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 #     export HATENA_BOOKMARK_RKS='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-#     export HATENA_BOOKMARK_COOKIE='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 #     ```
 #  dependencies
 #   - ruby
