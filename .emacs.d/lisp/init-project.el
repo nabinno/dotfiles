@@ -70,11 +70,15 @@
 
 ;;; Task management
 ;; todo hilight
-(dolist (mode '(ruby js js2 terraform cperl elixir erlang python jade haml emacs-lisp ielm))
+(dolist (mode '(ruby js js2 terraform cperl elixir erlang python jade haml emacs-lisp ielm red))
   (progn
     (font-lock-add-keywords
      (intern (format "%s-mode" mode))
      '(("\\<\\(FIX\\|TODO\\|DONE\\|FIXME\\|HACK\\|REFACTOR\\):"
+        1 font-lock-warning-face t)))
+    (font-lock-add-keywords
+     (intern (format "%s-mode" mode))
+     '((" \\(@\\(todo\\|desc\\|param\\|note\\|see\\|type\\|return\\|fixme\\|example\\|raise\\)\\)"
         1 font-lock-warning-face t)))))
 
 ;; (require-package 'fic-mode)
