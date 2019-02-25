@@ -47,3 +47,11 @@ function get-wrk() {
   esac
 }
 if ! type -p wrk >/dev/null; then get-wrk; fi
+
+curlb() {
+  local num=$1
+  shift
+  for _i in {0..$num}; do
+    curl $* -s -w '%{time_total}\n' -o /dev/null
+  done >&2 | awk '{t+=$0}END{print "AVG: " t/NR}'
+}
