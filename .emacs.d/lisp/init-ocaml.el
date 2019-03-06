@@ -8,9 +8,9 @@
 
 
 ;; Language Server Protocol and Merlin as IDE
-(unless (require 'lsp-ocaml nil 'noerror)
-  (el-get-bundle emacs-lsp/lsp-ocaml)
-  (require 'lsp-ocaml))
+;; (unless (require 'lsp-ocaml nil 'noerror)
+;;   (el-get-bundle emacs-lsp/lsp-ocaml)
+;;   (require 'lsp-ocaml))
 (unless (require 'merlin nil 'noerror)
   (el-get-bundle ocaml/merlin))
 

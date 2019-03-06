@@ -1,7 +1,9 @@
 ;;; init-html --- initial html-mode configuration
 ;;; Commentary:
 ;;; Code:
-(require-package 'tidy)
+(unless (require 'tidy nil 'noerror)
+  (el-get-bundle lwiechec/tidy.el))
+
 (add-hook 'html-mode-hook (lambda () (tidy-build-menu html-mode-map)))
 
 

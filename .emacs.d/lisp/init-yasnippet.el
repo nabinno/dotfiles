@@ -9,7 +9,8 @@
 (yas-reload-all)
 ;; (define-key yas-minor-mode-map (kbd "M-B") 'yas-insert-snippet)
 
-(require-package 'dropdown-list)
+(unless (require 'dropdown-list nil 'noerror)
+  (el-get-bundle emacsmirror/dropdown-list))
 ;; (setq yas-prompt-functions '(yas-dropdown-prompt
 ;;                              yas-ido-prompt
 ;;                              yas-completing-prompt))

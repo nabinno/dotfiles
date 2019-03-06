@@ -6,6 +6,13 @@
 ;;;
 ;;; Code:
 
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
 (let ((minver 23))
   (unless (>= emacs-major-version minver)
     (error "Your Emacs is too old -- this config requires v%s or higher" minver)))
@@ -36,10 +43,12 @@
 ;;----------------------------------------------------------------------------
 
 (require-package 'wgrep)
-(require-package 'project-local-variables)
+(unless (require 'project-local-variables nil 'noerror)
+  (el-get-bundle emacsmirror/project-local-variables))
 (require-package 'diminish)
 (require-package 'scratch)
-(require-package 'mwe-log-commands)
+(unless (require 'mwe-log-commands nil 'noerror)
+  (el-get-bundle tshemeng/mwe-log-commands))
 
 ;; (require 'init-frame-hooks)
 ;; (require 'init-xterm)
@@ -115,6 +124,7 @@
 (require 'init-origami)
 ;; (require 'init-paredit)
 (require 'init-project)
+(require 'init-projectile)
 ;; (require 'init-lisp)
 ;; (require 'init-slime)
 ;; (require 'init-clojure)
@@ -188,7 +198,3 @@
 ;;; no-byte-compile: t
 ;;;
 ;;; init.el ends here
-(put 'erase-buffer 'disabled nil)
-;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
-(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
-;; ## end of OPAM user-setup addition for emacs / base ## keep this line
