@@ -29,6 +29,8 @@ unless until not object or or~ if try to func function fn forall
 foreach forever extend either exclude false true union declare
 quote what while loop local help repeat source quit-return return
 skip quit next do load break switch wait
+layout left right panel white offset area rate base space text-list
+collect
 ")
                t t)
               "\\>"))
@@ -50,6 +52,9 @@ second select set set-buffer-history shift shift-left
 shift-logical shift-right sin sine sort spec-of square-root stats
 subtract swap tail take tan tangent third throw
 trim unique uppercase values-of variadic words-of
+text button title on-create on-up on-down style on-over on-time group-box
+scroller show make-fonts draw view unview do-actor do-events to-image set-focus size-text
+write read
 "
                 )
                t t)
