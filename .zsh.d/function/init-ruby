@@ -1,7 +1,6 @@
 #!/usr/bin/env zsh
 
-export REQUIRED_RUBY_VERSION=2.4.0
-export REQUIRED_RUBY_VERSION_2=2.3.5
+export REQUIRED_RUBY_VERSION=2.5.3
 export GEMSRC_USE_GHQ=~/.ghq.d
 
 # ### version control ###
@@ -31,7 +30,6 @@ get-ruby-by-asdf() {
     cygwin) apt-cyg install ruby ;;
     freebsd* | darwin* | linux*)
       asfd install ruby $REQUIRED_RUBY_VERSION
-      asfd install ruby $REQUIRED_RUBY_VERSION_2
       asdf global ruby $REQUIRED_RUBY_VERSION
       get-global-gem-packages
       ;;
@@ -43,7 +41,6 @@ get-ruby() {
     cygwin) apt-cyg install ruby ;;
     freebsd* | darwin* | linux*)
       rbenv install $REQUIRED_RUBY_VERSION
-      rbenv install $REQUIRED_RUBY_VERSION_2
       rbenv rehash
       rbenv global $REQUIRED_RUBY_VERSION
       get-global-gem-packages
