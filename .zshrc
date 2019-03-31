@@ -74,8 +74,3 @@ require init-amazon-web-services
 # Other
 require init-customize
 if [ -f ~/.zsh.d/init.zsh ]; then source ~/.zsh.d/init.zsh; fi
-
-#
-# TODO: the followting error
-#
-# lvm2 libguestfs0 libguestfs-reiserfs libguestfs-perl libguestfs-hfsplus libguestfs-tools libguestfs-xfs initramfs-tools
