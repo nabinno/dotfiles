@@ -9,3 +9,15 @@ get-shellcheck() {
       ;;
   esac
 }
+
+get-shfmt() {
+  case $OSTYPE in
+    linux*)
+      local current_pwd=$(pwd)
+      cd $(mktemp -d)
+      go mod init tmp
+      go get mvdan.cc/sh/cmd/shfmt
+      cd $current_pwd
+      ;;
+  esac
+}
