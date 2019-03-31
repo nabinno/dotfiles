@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-export REQUIRED_NODE_VERSION='6.9.1'
+export REQUIRED_NODE_VERSION='10.15.3'
 export node='NODE_NO_READLINE=1 node'
 case $OSTYPE in msys | cygwin) export PATH=$(get-winpath "C:\Program Files\nodejs"):$PATH ;; esac
 
@@ -18,7 +18,7 @@ get-ndenv() {
 
 # ----------------------------------------------------------------------
 # ### installation ###
-get-node() {
+get-node-by-asdf() {
   case "$OSTYPE" in
     msys | cygwin) choco install nodejs ;;
     linux*)
@@ -30,7 +30,7 @@ get-node() {
   esac
 }
 
-get-node-by-ndenv() {
+get-node() {
   case "$OSTYPE" in
     msys | cygwin) choco install nodejs ;;
     linux*)
@@ -38,7 +38,7 @@ get-node-by-ndenv() {
       ndenv rehash
       ndenv global v$REQUIRED_NODE_VERSION
       ;;
-    # get-global-npm-packages ;;
+      # get-global-npm-packages ;;
   esac
 }
 
@@ -49,25 +49,53 @@ set-node-with-ndenv() {
 }
 
 # ----------------------------------------------------------------------
-# Npm
+# ### NPM ###
 get-global-npm-packages() {
+  npm install -g \
+    http-server \
+    node-plantuml \
+    npm2dot \
+    tern
+}
+if ! type -p npm >/dev/null; then get-node; fi
+
+get-global-npm-packages-old() {
   npm install -g \
     bower \
     grunt-cli \
     gulp \
     hexo-cli \
     html2jade \
-    http-server \
     less \
-    node-plantuml \
-    npm2dot \
     phantomjs \
     requirejs \
-    yamljs \
-    tern
+    yamljs
 }
-if ! type -p npm >/dev/null; then get-node; fi
 
+# ----------------------------------------------------------------------
+# ReasonML
+get-revery() {
+  case $OSTYPE in
+    linux*)
+      case $DIST in
+        Ubuntu | Debian)
+          sudo apt-get install \
+            libpng-dev \
+            libbz2-dev \
+            m4 \
+            xorg-dev \
+            libglu1-mesa-dev \
+            libharfbuzz-dev \
+            libgtk-3-dev
+          npm install -g esy
+          ;;
+      esac
+      ;;
+  esac
+}
+
+# ----------------------------------------------------------------------
+# Other
 rebuild-sass() {
   npm uninstall --save-dev gulp-sass
   npm install --save-dev gulp-sass@2
