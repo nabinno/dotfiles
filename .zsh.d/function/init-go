@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
-export REQUIRED_GO_VERSION=1.9.1
-# export GOROOT=$(asdf where golang)${REQUIRED_GO_VERSION}
+export REQUIRED_GO_VERSION=1.12.1
+# export GOROOT=$(asdf where golang)
 export GOPATH=~/.go.d
 export PATH="$GOPATH/bin:$GOROOT/bin:$PATH"
 
@@ -12,10 +12,10 @@ get-goenv() {
     freebsd* | darwin* | linux*) anyenv install goenv && exec -l zsh ;;
   esac
 }
-# if ! type -p goenv > /dev/null ; then get-goenv ; fi
+if ! type -p goenv > /dev/null ; then get-goenv ; fi
 
 # ----------------------------------------------------------------------
-get-go() {
+get-go-by-asdf() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       asdf install golang $REQUIRED_GO_VERSION
@@ -24,10 +24,13 @@ get-go() {
   esac
 }
 
-get-go-by-goenv() {
+get-go() {
   case "${OSTYPE}" in
     freebsd* | darwin*) ;;
-    linux*) goenv install $REQUIRED_GO_VERSION ;;
+    linux*)
+        goenv install $REQUIRED_GO_VERSION
+        set-go
+        ;;
   esac
 }
 if ! type -p go >/dev/null; then get-go; fi
@@ -49,7 +52,6 @@ get-global-go-packages() {
       go get github.com/mattn/git-fixauthor
       go get github.com/shenwei356/csvtk/csvtk
       go get github.com/motemen/ghq
-      go get -u mvdan.cc/sh/cmd/shfmt
       ;;
   esac
 }
