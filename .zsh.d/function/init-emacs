@@ -193,7 +193,6 @@ get-pandoc() {
       ;;
   esac
 }
-if ! type -p pandoc >/dev/null; then get-pandoc; fi
 
 alias pandocpdf="pandoc -V documentclass=ltjarticle --latex-engine=lualatex -t pdf"
 alias pandocslide="pandoc -t slidy -s"
