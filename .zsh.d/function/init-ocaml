@@ -1,9 +1,29 @@
 #!/usr/bin/env zsh
 
-export REQUIRED_OCAML_VERSION=4.02.3+buckle-1
+export REQUIRED_OCAML_VERSION=4.05.0
 export REQUIRED_COQ_VERSION=8.7.2
 
 get-ocaml() {
+  case $OS in
+    linux*)
+      case $DIST in
+        Debian* | Ubuntu*)
+          case $DIST_VERSION in
+            16.04) get-ocaml-by-asdf ;;
+            18.04)
+              case $REV in
+                WSL) get-ocaml-by-ocamlbrew ;;
+                *) get-ocaml-by-asdf ;;
+              esac
+              ;;
+          esac
+          ;;
+      esac
+      ;;
+  esac
+}
+
+get-ocaml-by-asdf() {
   asdf install ocaml $REQUIRED_OCAML_VERSION
   asdf global ocaml $REQUIRED_OCAML_VERSION
   get-global-opam-packages
@@ -16,7 +36,6 @@ get-ocaml-by-ocamlbrew() {
   eval $(opam config env)
   get-global-opam-packages
 }
-if ! type -p ocaml >/dev/null; then get-ocaml; fi
 
 get-global-opam-packages() {
   opam install \
@@ -28,6 +47,7 @@ get-global-opam-packages() {
     reason \
     merlin
 }
+if ! type -p ocaml >/dev/null; then get-ocaml; fi
 
 get-global-npm-packages-for-ocaml() {
   npm i -g \
