@@ -1,7 +1,7 @@
 ;;; init-php --- php configuration
 ;;; Commentary:
 ;;; Code:
-(require-package 'php-mode)
+(straight-use-package 'php-mode)
 (require-package 'smarty-mode)
 
 

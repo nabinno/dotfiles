@@ -28,8 +28,8 @@
 
 
 ;; Language Server Protocol
-(unless (require 'lsp-java nil 'noerror)
-  (el-get-bundle emacs-lsp/lsp-java))
+(straight-use-package
+  '(el-patch :type git :host github :repo "emacs-lsp/lsp-java"))
 
 
 ;;; Maven

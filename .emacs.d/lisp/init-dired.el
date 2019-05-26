@@ -1,8 +1,8 @@
 ;;; init-dired --- dired configuration
 ;;; Commentary:
 ;;; Code:
-(unless (require 'dired+ nil 'noerror)
-  (el-get-bundle emacsmirror/dired-plus))
+(straight-use-package
+  '(el-patch :type git :host github :repo "emacsmirror/dired-plus"))
 
 (setq diredp-hide-details-initially-flag nil)
 (setq dired-listing-switches "-AFl --group-directories-first")
