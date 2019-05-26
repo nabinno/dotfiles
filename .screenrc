@@ -45,7 +45,7 @@ defscrollback 10000
 
 # `"
 # hardstatus ignore "%w | %h"
-
+caption string "%{kk}XXXXXXX"
 
 
 # XTERM TWEAKS
@@ -145,6 +145,7 @@ termcapinfo kterm XT
 #termcapinfo kterm G0:KJ=euc
 termcap xterm*   G0:KJ=jis
 terminfo term  G0:KJ=jis
+
 # ### これでステータスラインが消えなくなる
 termcapinfo kterm 'hs:ts=\E[?2S\E[?E\E[?%i%dT:fs=\E[?F:es:ds=\E[?E'
 # termcapinfo xterm* 'hs:ts=\E[?E\E[?%i%dT:fs=\E[?F:es:ds=\E[?E'
