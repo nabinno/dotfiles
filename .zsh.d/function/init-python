@@ -1,8 +1,7 @@
 #!/usr/bin/env zsh
 
-export REQUIRED_ANACONDA_VERSION=anaconda2-5.2.0
-export REQUIRED_ANACONDA_VERSION_2=anaconda3-5.2.0
-export REQUIRED_PYTHON_VERSION=2.7.15
+export REQUIRED_ANACONDA_VERSION=anaconda3-5.2.0
+export REQUIRED_PYTHON_VERSION=3.7.3
 export PYENV_VIRTUALENV_DISABLE_PROMPT=1
 export PATH="$HOME/.parts/packages/python2/$REQUIRED_PYTHON_VERSION/bin:$PATH"
 export PYTHONPATH="$HOME/.local/python:$PYTHONPATH"
@@ -17,7 +16,7 @@ get-pyenv() {
 
 # ----------------------------------------------------------------------
 # ### installation ###
-get-python() {
+get-python-by-asdf() {
   case "${OSTYPE}" in
     cygwin)
       apt-cyg install \
@@ -32,7 +31,7 @@ get-python() {
   esac
 }
 
-get-python-by-pyenv() {
+get-python() {
   case "${OSTYPE}" in
     cygwin)
       apt-cyg install \
