@@ -14,7 +14,7 @@ require init-base-installation
 require init-shell
 require init-windows-management-framework
 require init-chocolatey
-require init-nix
+# require init-nix
 # require init-chef
 require init-anyenv
 require init-asdf
@@ -44,7 +44,7 @@ require init-red
 # require init-mysql
 # require init-redis
 # require init-memcached
-require init-nginx
+# require init-nginx
 require init-dns
 
 # IntegratedDevelopmentEnvironment
@@ -68,7 +68,7 @@ require init-hatena-bookmark
 # Platform
 require init-heroku
 require init-google-cloud-platform
-require init-kubernetes
+# require init-kubernetes
 require init-amazon-web-services
 
 # Other
