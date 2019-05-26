@@ -17,7 +17,7 @@ get-php() {
     linux*)
       case $DIST_VERSION in
         14.04) sudo apt-get install php-$REQUIRED_PHP_VERSION ;;
-        16.04) sudo apt install php ;;
+        16.04 | 18.04) sudo apt install php ;;
         *) nix-install php ;;
       esac
       ;;
