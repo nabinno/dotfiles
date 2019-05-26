@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-export REQUIRED_OPENJDK_VERSION=8.172
+export REQUIRED_OPENJDK_VERSION=openjdk-11.0.1
 case $DIST in
   Redhat | RedHat) export REQUIRED_OEPNJDK_SHORT_VERSION=1.8 ;;
   Ubuntu)
