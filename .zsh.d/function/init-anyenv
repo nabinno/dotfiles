@@ -6,9 +6,10 @@ get-anyenv() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       git clone https://github.com/riywo/anyenv ~/.anyenv
-      eval "$(anyenv init -)"
+      eval "$(anyenv init - zsh)"
       ;;
   esac
 }
+
 if ! type -p anyenv >/dev/null; then get-anyenv; fi
-if type -p anyenv >/dev/null; then eval "$(anyenv init -)"; fi
+if type -p anyenv >/dev/null; then eval "$(anyenv init - zsh)"; fi
