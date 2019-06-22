@@ -34,6 +34,7 @@ get-jenv() {
 get-java() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
+      case $(asdf plugin-list) in *java*) ;; *) asdf plugin-add java ;; esac
       asdf install java $REQUIRED_OPENJDK_VERSION
       asdf global java $REQUIRED_OPENJDK_VERSION
       ;;

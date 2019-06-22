@@ -76,6 +76,7 @@ get-dotnetcli() {
       rm -fr dotnet-dev-rhel-x64.latest.tar.gz
       ;;
     freebsd* | darwin* | linux*)
+      case $(asdf plugin-list) in *dotnet-core*) ;; *) asdf plugin-add dotnet-core ;; esac
       asdf install dotnet-core 2.1.4
       asdf global dotnet-core 2.1.4
       ;;

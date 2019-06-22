@@ -24,6 +24,7 @@ get-python-by-asdf() {
       python-setuptools
       ;;
     freebsd* | darwin* | linux*)
+      case $(asdf plugin-list) in *python*) ;; *) asdf plugin-add python ;; esac
       asdf install python $REQUIRED_ANACONDA_VERSION
       asdf global python $REQUIRED_ANACONDA_VERSION
       git clone https://github.com/yyuu/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv

@@ -12,12 +12,13 @@ get-goenv() {
     freebsd* | darwin* | linux*) anyenv install goenv && exec -l zsh ;;
   esac
 }
-if ! type -p goenv > /dev/null ; then get-goenv ; fi
+if ! type -p goenv >/dev/null; then get-goenv; fi
 
 # ----------------------------------------------------------------------
 get-go-by-asdf() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
+      case $(asdf plugin-list) in *golang*) ;; *) asdf plugin-add golang ;; esac
       asdf install golang $REQUIRED_GO_VERSION
       asdf global golang $REQUIRED_GO_VERSION
       ;;
@@ -28,9 +29,9 @@ get-go() {
   case "${OSTYPE}" in
     freebsd* | darwin*) ;;
     linux*)
-        goenv install $REQUIRED_GO_VERSION
-        set-go
-        ;;
+      goenv install $REQUIRED_GO_VERSION
+      set-go
+      ;;
   esac
 }
 if ! type -p go >/dev/null; then get-go; fi

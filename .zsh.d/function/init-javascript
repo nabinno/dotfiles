@@ -22,6 +22,7 @@ get-node-by-asdf() {
   case "$OSTYPE" in
     msys | cygwin) choco install nodejs ;;
     linux*)
+      case $(asdf plugin-list) in *nodejs*) ;; *) asdf plugin-add nodejs ;; esac
       rm -rf ~/.asdf/keyrings/nodejs
       ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
       asdf install nodejs $REQUIRED_NODE_VERSION

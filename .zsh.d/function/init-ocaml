@@ -24,6 +24,7 @@ get-ocaml() {
 }
 
 get-ocaml-by-asdf() {
+  case $(asdf plugin-list) in *ocaml*) ;; *) asdf plugin-add ocaml ;; esac
   asdf install ocaml $REQUIRED_OCAML_VERSION
   asdf global ocaml $REQUIRED_OCAML_VERSION
   get-global-opam-packages
@@ -62,6 +63,7 @@ get-coq() {
 }
 
 get-coq-by-asdf() {
+  case $(asdf plugin-list) in *coq*) ;; *) asdf plugin-add coq ;; esac
   asdf install coq $REQUIRED_COQ_VERSION
   asdf global coq $REQUIRED_COQ_VERSION
 }
