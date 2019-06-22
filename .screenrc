@@ -45,7 +45,7 @@ defscrollback 10000
 
 # `"
 # hardstatus ignore "%w | %h"
-caption string "%{kk}XXXXXXX"
+caption string "%{kk} "
 
 
 # XTERM TWEAKS
