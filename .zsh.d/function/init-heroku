@@ -3,18 +3,7 @@
 function get-heroku() {
   case "${OSTYPE}" in
     freebsd* | darwin*) nix-install heroku-3.43.16 ;;
-    linux*)
-      case "${DIST}" in
-        Redhat | RedHat | Debian)
-          wget -qO- https://toolbelt.heroku.com/install.sh | sudo sh
-          /usr/local/heroku/bin/heroku
-          ;;
-        Ubuntu)
-          parts install \
-            heroku_toolbelt \
-            hk
-          ;;
-      esac
-      ;;
+    linux*) curl https://cli-assets.heroku.com/install.sh | sh ;;
   esac
 }
+if ! type -p heroku >/dev/null; then get-heroku; fi

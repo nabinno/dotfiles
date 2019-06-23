@@ -20,7 +20,7 @@ require init-anyenv
 require init-asdf
 require init-docker
 require init-homebrew
-require init-autoparts
+# require init-autoparts
 
 # ProgrammingLanguage
 require init-ruby
