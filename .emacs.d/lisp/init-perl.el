@@ -99,7 +99,7 @@
 		    ;; ("M-C-i" . perltidy)
                     ("M-," . cperl-perldoc)
                     ("M-C-," . plcmp-cmd-show-doc-at-point)
-                    ("M-[ 1 ; 7 l" . plcmp-cmd-show-doc-at-point)
+                    ;; ("M-[ 1 ; 7 l" . plcmp-cmd-show-doc-at-point)
 		    ))))
 
 

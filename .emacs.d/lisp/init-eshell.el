@@ -118,7 +118,7 @@
 
 (global-set-key (kbd "C-c s") '(lambda () (interactive) (shell)))
 (global-set-key (kbd "M-C-1") '(lambda () (interactive) (shell)))
-(global-set-key (kbd "M-[ 1 ; 7 q") '(lambda () (interactive) (shell)))
+;; (global-set-key (kbd "M-[ 1 ; 7 q") '(lambda () (interactive) (shell)))
 
 
 (provide 'init-eshell)

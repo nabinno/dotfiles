@@ -6,7 +6,6 @@
 ;;;
 ;;; Code:
 
-
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
@@ -31,6 +30,7 @@
 (require 'init-site-lisp) ;; Must come before elpa, as it may provide package.el
 (require 'init-elpa)      ;; Machinery for installing required packages
 (require 'init-el-get)    ;; Machinery for installing required packages
+(require 'init-straight)  ;; Machinery for installing required packages
 (require 'init-exec-path) ;; Set up $PATH
 
 ;;----------------------------------------------------------------------------
@@ -41,6 +41,8 @@
 ;;----------------------------------------------------------------------------
 ;; Load configs for specific features and modes
 ;;----------------------------------------------------------------------------
+
+(require 'init-dired)
 
 (require-package 'wgrep)
 (unless (require 'project-local-variables nil 'noerror)
@@ -60,7 +62,6 @@
 (require 'init-w3m)
 ;; (require 'init-mu4e)
 (require 'init-view)
-(require 'init-dired)
 (require 'init-grep)
 (require 'init-isearch)
 (require 'init-uniquify)
@@ -77,9 +78,9 @@
 (require 'init-windows)
 (require 'init-other-window)
 ;; (require 'init-e2wm)
-(require 'init-elscreen)
 ;; (require 'init-sessions)
 ;; (require 'init-fonts)
+(require 'init-elscreen)
 
 ;; (require 'init-vc)
 ;; (require 'init-darcs)
@@ -135,6 +136,7 @@
 (when *spell-check-support-enabled*
   (require 'init-spelling))
 
+(require 'init-shell)
 (require 'init-eshell)
 (require 'init-marmalade)
 (require 'init-translation)
@@ -190,6 +192,12 @@
           (lambda ()
             (message "init completed in %.2fms"
                      (sanityinc/time-subtract-millis after-init-time before-init-time))))
+
+;;----------------------------------------------------------------------------
+;; Workaround for Windows Terminal
+;;----------------------------------------------------------------------------
+(when (require 'elscreen nil 'noerror)
+  (global-set-key (kbd "<f2>") 'elscreen-create))
 
 
 (provide 'init)

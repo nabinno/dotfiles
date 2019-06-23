@@ -23,14 +23,14 @@
 (win-switch-set-keys '("u" [return]) 'exit)
 (win-switch-set-keys '("\M-\C-g") 'emergency-exit)
 ;; global set key
-(global-set-key (kbd "M-[ 1 ; 8 a") 'win-switch-up)
-(global-set-key (kbd "M-[ 1 ; 8 b") 'win-switch-down)
-(global-set-key (kbd "M-[ 1 ; 8 c") 'win-switch-right)
-(global-set-key (kbd "M-[ 1 ; 8 d") 'win-switch-left)
+;; (global-set-key (kbd "M-[ 1 ; 8 a") 'win-switch-up)
+;; (global-set-key (kbd "M-[ 1 ; 8 b") 'win-switch-down)
+;; (global-set-key (kbd "M-[ 1 ; 8 c") 'win-switch-right)
+;; (global-set-key (kbd "M-[ 1 ; 8 d") 'win-switch-left)
 ;; (global-set-key (kbd "M-[ 1 ; 4 a") 'shrink-window)
 ;; (global-set-key (kbd "M-[ 1 ; 4 b") 'enlarge-window)
-(global-set-key (kbd "M-[ 1 ; 4 c") 'shrink-window-horizontally)
-(global-set-key (kbd "M-[ 1 ; 4 d") 'enlarge-window-horizontally)
+;; (global-set-key (kbd "M-[ 1 ; 4 c") 'shrink-window-horizontally)
+;; (global-set-key (kbd "M-[ 1 ; 4 d") 'enlarge-window-horizontally)
 (global-set-key (kbd "M-") 'delete-window)
 (global-set-key (kbd "S-C-M-q") 'delete-window)
 (global-set-key (kbd "S-M-q") 'delete-window)
@@ -41,7 +41,7 @@
 ;;; Switch window
 (require-package 'switch-window)
 (setq switch-window-shortcut-style 'qwerty)
-(global-set-key (kbd "M-[ 1 ; 6 i") 'switch-window)
+;; (global-set-key (kbd "M-[ 1 ; 6 i") 'switch-window)
 (global-set-key (kbd "M-i") 'switch-window)
 
 

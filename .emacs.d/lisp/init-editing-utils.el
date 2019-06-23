@@ -128,7 +128,7 @@
 (require-package 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
 (global-set-key (kbd "M-=") 'er/expand-region)
-(global-set-key (kbd "M-[ 1 ; 5 k") 'er/expand-region)
+;; (global-set-key (kbd "M-[ 1 ; 5 k") 'er/expand-region)
 
 ;;----------------------------------------------------------------------------
 ;; Don't disable case-change functions
@@ -154,10 +154,10 @@
 (global-set-key (kbd "C-c J") (lambda () (interactive) (join-line 1)))
 
 (global-set-key (kbd "C-.")             'set-mark-command)
-(global-set-key (kbd "M-[ 1 ; 5 n")     'set-mark-command)
+;; (global-set-key (kbd "M-[ 1 ; 5 n")     'set-mark-command)
 (global-set-key (kbd "M-SPC")           'set-mark-command)
 (global-set-key (kbd "C-x C-.")         'pop-global-mark)
-(global-set-key (kbd "C-x M-[ 1 ; 5 n") 'pop-global-mark)
+;; (global-set-key (kbd "C-x M-[ 1 ; 5 n") 'pop-global-mark)
 
 (require-package 'ace-jump-mode)
 (global-set-key (kbd "") 'ace-jump-word-mode)
@@ -166,15 +166,15 @@
 ;; multiple-cursors
 (global-set-key (kbd "M-,")             'mc/mark-previous-like-this)
 (global-set-key (kbd "C-<")             'mc/mark-previous-like-this)
-(global-set-key (kbd "M-[ 1 ; 6 l")     'mc/mark-previous-like-this)
+;; (global-set-key (kbd "M-[ 1 ; 6 l")     'mc/mark-previous-like-this)
 (global-set-key (kbd "M-.")             'mc/mark-next-like-this)
 (global-set-key (kbd "C->")             'mc/mark-next-like-this)
-(global-set-key (kbd "M-[ 1 ; 6 n")     'mc/mark-next-like-this)
+;; (global-set-key (kbd "M-[ 1 ; 6 n")     'mc/mark-next-like-this)
 (global-set-key (kbd "C-+")             'mc/mark-next-like-this)
 (global-set-key (kbd "M-+")             'mc/mark-next-like-this)
-(global-set-key (kbd "M-[ 1 ; 6 k")     'mc/mark-next-like-this)
+;; (global-set-key (kbd "M-[ 1 ; 6 k")     'mc/mark-next-like-this)
 (global-set-key (kbd "C-c C-<")         'mc/mark-all-like-this)
-(global-set-key (kbd "C-c M-[ 1 ; 6 l") 'mc/mark-all-like-this)
+;; (global-set-key (kbd "C-c M-[ 1 ; 6 l") 'mc/mark-all-like-this)
 ;; From active region to multiple cursors:
 (global-set-key (kbd "C-c c r") 'set-rectangular-region-anchor)
 (global-set-key (kbd "C-c c c") 'mc/edit-lines)
@@ -257,13 +257,13 @@
 ;;----------------------------------------------------------------------------
 (require-package 'move-dup)
 (global-set-key [M-up]              'md-move-lines-up)
-(global-set-key (kbd "M-[ 1 ; 3 A") 'md-move-lines-up)
+;; (global-set-key (kbd "M-[ 1 ; 3 A") 'md-move-lines-up)
 (global-set-key [M-down]            'md-move-lines-down)
-(global-set-key (kbd "M-[ 1 ; 3 B") 'md-move-lines-down)
+;; (global-set-key (kbd "M-[ 1 ; 3 B") 'md-move-lines-down)
 (global-set-key [M-S-up]            'md-move-lines-up)
-(global-set-key (kbd "M-[ 1 ; 4 A") 'md-move-lines-up)
+;; (global-set-key (kbd "M-[ 1 ; 4 A") 'md-move-lines-up)
 (global-set-key [M-S-down]          'md-move-lines-down)
-(global-set-key (kbd "M-[ 1 ; 4 B") 'md-move-lines-down)
+;; (global-set-key (kbd "M-[ 1 ; 4 B") 'md-move-lines-down)
 
 (global-set-key (kbd "C-c p") 'md-duplicate-down)
 
@@ -369,8 +369,8 @@ With arg N, insert N newlines."
 
 ;; Avy
 (require-package 'avy)
-(global-set-key (kbd "M-[ 1 ; 5 n") 'avy-goto-char)
-(global-set-key (kbd "M-[ 1 ; 5 l") 'avy-goto-char-2)
+;; (global-set-key (kbd "M-[ 1 ; 5 n") 'avy-goto-char)
+;; (global-set-key (kbd "M-[ 1 ; 5 l") 'avy-goto-char-2)
 (global-set-key (kbd "M-g f") 'avy-goto-line)
 (global-set-key (kbd "M-g w") 'avy-goto-word-1)
 (global-set-key (kbd "M-g e") 'avy-goto-word-0)

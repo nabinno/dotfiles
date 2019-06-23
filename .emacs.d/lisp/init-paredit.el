@@ -76,19 +76,20 @@
                           (func (cdr pair)))
                       (define-key paredit-mode-map
                         (read-kbd-macro key) func)))
-                  '(("M-[ 1 ; 5 c" . paredit-backward-barf-sexp)
+                  '(
+                    ;; ("M-[ 1 ; 5 c" . paredit-backward-barf-sexp)
                     ("C-M-d" . paredit-forward-down)
-                    ("M-[ 1 ; 5 d" . paredit-forward-slurp-sexp)
+                    ;; ("M-[ 1 ; 5 d" . paredit-forward-slurp-sexp)
                     ("M-J" . paredit-join-sexps)
                     ("C-k" . paredit-kill)
                     ("M-\"" . paredit-meta-doublequote)
                     ("M-r" . paredit-raise-sexp)
                     ("M-s" . paredit-splice-sexp)
-                    ("M-[ 1 ; 6 a" . paredit-splice-sexp-killing-backward)
+                    ;; ("M-[ 1 ; 6 a" . paredit-splice-sexp-killing-backward)
                     ("M-S" . paredit-split-sexp)
                     ("M-" . paredit-wrap-curly)
                     ("M-(" . paredit-wrap-round)
-                    ("M-[ [" . paredit-wrap-square)
+                    ;; ("M-[ [" . paredit-wrap-square)
                     ))))
 
 

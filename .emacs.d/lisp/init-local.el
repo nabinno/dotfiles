@@ -109,6 +109,12 @@
 (global-set-key (kbd "C-t") 'quoted-insert)
 (global-set-key (kbd "") 'indent-for-tab-command)
 (global-set-key (kbd "") 'erase-buffer)
+(global-set-key (kbd "ESC M-<") 'beginning-of-buffer)
+(global-set-key (kbd "ESC M->") 'end-of-buffer)
+(global-set-key (kbd "M-[") 'backward-paragraph)
+(global-set-key (kbd "M-]") 'forward-paragraph)
+(global-set-key (kbd "ESC M-{") 'backward-paragraph)
+(global-set-key (kbd "ESC M-}") 'forward-paragraph)
 (global-unset-key (kbd "C-z"))
 (global-unset-key (kbd "<f2>"))
 

@@ -80,8 +80,8 @@
                 (other-window 1) (or (jinari-find-component) (jinari-find-view) (jinari-find-model)))
             (split-window-horizontally))))))
   (other-window 1))
-(add-hook 'jinari-minor-mode-hook
-          (lambda () (global-set-key (kbd "M-[ 1 ; 5 i") 'jinari--other-window-or-split)))
+;; (add-hook 'jinari-minor-mode-hook
+;;           (lambda () (global-set-key (kbd "M-[ 1 ; 5 i") 'jinari--other-window-or-split)))
 
 ;; ;; Projectile
 ;; (add-hook 'jinari-minor-mode-hook 'projectile-mode)

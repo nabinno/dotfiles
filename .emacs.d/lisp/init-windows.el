@@ -1,7 +1,7 @@
 ;;; Navigate window layouts with "C-c <left>" and "C-c <right>"
 (winner-mode 1)
 
-(global-set-key (kbd "M-[ 1 ; 6 B") 'balance-windows)
+;; (global-set-key (kbd "M-[ 1 ; 6 B") 'balance-windows)
 
 
 ;;; Make "C-x o" prompt for a target window when there are more than 2
@@ -128,7 +128,7 @@ Call a second time to restore the original window configuration."
     (delete-other-windows)
     (sr-speedbar-close)))
 
-(global-set-key (kbd "M-[ 1 ; 5 i") 'other-window-or-split)
+;; (global-set-key (kbd "M-[ 1 ; 5 i") 'other-window-or-split)
 (global-set-key (kbd "<backtab>") 'delete-other-windows-and-speedbar-close)
 
 

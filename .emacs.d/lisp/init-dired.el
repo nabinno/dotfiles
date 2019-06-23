@@ -176,8 +176,8 @@ other window."
                  (define-key dired-mode-map "\C-x" '(lambda () (interactive) (dired-search-word "x")))
                  (define-key dired-mode-map "\C-y" '(lambda () (interactive) (dired-search-word "y")))
                  (define-key dired-mode-map "\C-z" '(lambda () (interactive) (dired-search-word "z")))
-                 (define-key dired-mode-map (kbd "M-[ 1 ; 3 C") 'dired-next-buffer)
-                 (define-key dired-mode-map (kbd "M-[ 1 ; 3 D") 'dired-previous-buffer)
+                 ;; (define-key dired-mode-map (kbd "M-[ 1 ; 3 C") 'dired-next-buffer)
+                 ;; (define-key dired-mode-map (kbd "M-[ 1 ; 3 D") 'dired-previous-buffer)
                  ))))
 
 
