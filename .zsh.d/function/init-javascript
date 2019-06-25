@@ -6,11 +6,11 @@ case $OSTYPE in msys | cygwin) export PATH=$(get-winpath "C:\Program Files\nodej
 
 # ----------------------------------------------------------------------
 # ### version control ###
-get-ndenv() {
+get-nodenv() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
-      anyenv install ndenv
-      git clone https://github.com/pine/ndenv-yarn-install.git "$(ndenv root)/plugins/ndenv-yarn-install"
+      anyenv install nodenv
+      git clone https://github.com/pine/nodenv-yarn-install.git "$(nodenv root)/plugins/nodenv-yarn-install"
       exec -l zsh
       ;;
   esac
@@ -35,17 +35,18 @@ get-node() {
   case "$OSTYPE" in
     msys | cygwin) choco install nodejs ;;
     linux*)
-      ndenv install v$REQUIRED_NODE_VERSION
-      ndenv rehash
-      ndenv global v$REQUIRED_NODE_VERSION
+      if ! type -p nodenv >/dev/null; then get-nodenv; fi
+      nodenv install v$REQUIRED_NODE_VERSION
+      nodenv rehash
+      nodenv global v$REQUIRED_NODE_VERSION
       ;;
       # get-global-npm-packages ;;
   esac
 }
 
-set-node-with-ndenv() {
+set-node-with-nodenv() {
   case "$OSTYPE" in
-    linux*) ndenv global v$REQUIRED_NODE_VERSION ;;
+    linux*) nodenv global v$REQUIRED_NODE_VERSION ;;
   esac
 }
 
