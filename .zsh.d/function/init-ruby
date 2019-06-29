@@ -40,6 +40,7 @@ get-ruby() {
   case "${OSTYPE}" in
     cygwin) apt-cyg install ruby ;;
     freebsd* | darwin* | linux*)
+      if ! type -p rbenv >/dev/null; then get-rbenv; fi
       rbenv install $REQUIRED_RUBY_VERSION
       rbenv rehash
       rbenv global $REQUIRED_RUBY_VERSION

@@ -29,6 +29,7 @@ get-go() {
   case "${OSTYPE}" in
     freebsd* | darwin*) ;;
     linux*)
+      if ! type -p goenv >/dev/null; then get-goenv; fi
       goenv install $REQUIRED_GO_VERSION
       set-go
       ;;
