@@ -210,7 +210,7 @@ get-docker-compose() {
             12.04 | 14.04)
               pip install docker-compose
               ;;
-            16.04)
+            16.04 | 18.04)
               sudo apt install docker-compose
               ;;
           esac
