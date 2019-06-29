@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-export REQUIRED_NODE_VERSION='10.15.3'
+export REQUIRED_NODE_VERSION='12.4.0'
 export node='NODE_NO_READLINE=1 node'
 case $OSTYPE in msys | cygwin) export PATH=$(get-winpath "C:\Program Files\nodejs"):$PATH ;; esac
 
@@ -36,9 +36,9 @@ get-node() {
     msys | cygwin) choco install nodejs ;;
     linux*)
       if ! type -p nodenv >/dev/null; then get-nodenv; fi
-      nodenv install v$REQUIRED_NODE_VERSION
+      nodenv install $REQUIRED_NODE_VERSION
       nodenv rehash
-      nodenv global v$REQUIRED_NODE_VERSION
+      nodenv global $REQUIRED_NODE_VERSION
       ;;
       # get-global-npm-packages ;;
   esac
@@ -46,7 +46,7 @@ get-node() {
 
 set-node-with-nodenv() {
   case "$OSTYPE" in
-    linux*) nodenv global v$REQUIRED_NODE_VERSION ;;
+    linux*) nodenv global $REQUIRED_NODE_VERSION ;;
   esac
 }
 
