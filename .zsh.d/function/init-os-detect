@@ -62,9 +62,8 @@ case "${OSTYPE}" in
         DIST="${DIST}[$(cat /etc/UnitedLinux-release | tr "\n" ' ' | sed -e 's/VERSION.*//')]"
       fi
       OSSTR="${OS} ${DIST} ${REV}(${PSUEDONAME} ${KERNEL} ${MACH})"
-      if [[ $KERNEL =~ Microsoft ]]; then
-        REV="WSL"
-      fi
+      if [[ $KERNEL =~ Microsoft ]]; then REV="WSL"; fi
+      if [[ $KERNEL =~ microsoft ]]; then REV="WSL2"; fi
     fi
     ;;
 esac
