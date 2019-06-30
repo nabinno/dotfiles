@@ -10,7 +10,9 @@
 # IntegratedDevelopmentEnvironment::Editor::Vi
 # IntegratedDevelopmentEnvironment::ResourceManagement::Git
 # IntegratedDevelopmentEnvironment::Network
+# IntegratedDevelopmentEnvironment::OsLevelVirtualization::WSL
 # IntegratedDevelopmentEnvironment::OsLevelVirtualization::HyperV
+# IntegratedDevelopmentEnvironment::IoT
 # Other
 
 
@@ -62,12 +64,14 @@ Set-Alias bash 'C:\Windows\System32\bash.exe'
 
 
 # IntegratedDevelopmentEnvironment::Editor::Emacs
-function f { emacs -nw args[1] }
+if (!(Get-Command -ErrorAction Ignore emacs)) { choco install emacs }
 Set-PSReadlineOption -EditMode Emacs
 
 
 # IntegratedDevelopmentEnvironment::Editor::Vi
-Set-Alias e 'vim'
+$Vim = "C:\Program Files (x86)\vim\vim80\vim.exe"
+Set-Alias e $Vim
+if (!(Get-Command -ErrorAction Ignore $Vim)) { choco install vim }
 
 
 # IntegratedDevelopmentEnvironment::ResourceManagement::Git
@@ -108,6 +112,12 @@ Set-Alias gna Get-NetAdapter
 Set-Alias spf Start-PortForwarding
 Set-Alias rna Restart-NetAdapter
 Set-Alias shw Sync-HostsToWslIp
+
+
+# IntegratedDevelopmentEnvironment::OsLevelVirtualization::WSL
+if (!(Get-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform).State = "Enabled") {
+    Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform
+}
 
 
 # IntegratedDevelopmentEnvironment::OsLevelVirtualization::HyperV
@@ -164,9 +174,14 @@ Set-Alias gvm Get-VM
 Set-Alias gvmn Get-VMNetworkAdapter
 
 
+# IntegratedDevelopmentEnvironment::IoT
+if (!(Get-Command -ErrorAction Ignore fwup)) { choco install fwup }
+
+
 # Other
 function d { Remove-Item args[1] -Recurse -Force }
 function re { vim $PROFILE }
+function ree { Start-Process -NoNewWindow emacs $PROFILE }
 function rr { . $PROFILE }
 function ll { Get-ChildItem -Exclude .* -Name }
 function lf { Get-ChildItem -Exclude .* }
