@@ -65,6 +65,7 @@ Set-Alias bash 'C:\Windows\System32\bash.exe'
 
 # IntegratedDevelopmentEnvironment::Editor::Emacs
 if (!(Get-Command -ErrorAction Ignore emacs)) { choco install emacs }
+function f($file) { Start-Process -NoNewWindow emacs $file }
 Set-PSReadlineOption -EditMode Emacs
 
 
@@ -75,9 +76,9 @@ if (!(Get-Command -ErrorAction Ignore $Vim)) { choco install vim }
 
 
 # IntegratedDevelopmentEnvironment::ResourceManagement::Git
-function ga { git add args[1] }
+function ga($path) { git add $path }
 function gaa { git add . }
-function gct { git commit -m "args[1]" }
+function gct($comment) { git commit -m "$comment" }
 function gd { git diff }
 function gdf { git diff }
 function glg { git log }
@@ -115,7 +116,7 @@ Set-Alias shw Sync-HostsToWslIp
 
 
 # IntegratedDevelopmentEnvironment::OsLevelVirtualization::WSL
-if (!(Get-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform).State = "Enabled") {
+if ((Get-WindowsOptionalFeature -Online -ErrorAction Ignore -FeatureName VirtualMachinePlatform).State -ne "Enabled") {
     Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform
 }
 
@@ -179,7 +180,7 @@ if (!(Get-Command -ErrorAction Ignore fwup)) { choco install fwup }
 
 
 # Other
-function d { Remove-Item args[1] -Recurse -Force }
+function d($path) { Remove-Item $path -Recurse -Force }
 function re { vim $PROFILE }
 function ree { Start-Process -NoNewWindow emacs $PROFILE }
 function rr { . $PROFILE }
