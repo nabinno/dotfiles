@@ -62,6 +62,12 @@ push-dotfiles() {
     cp -pr ~/.docker .
     cp -pr ~/.rufo .
     cp -pr ~/.iex.exs .
+    case $REV in
+      WSL | WSL2)
+        cp -pr "$(wslpath $(powershell.exe -Command "[Environment]::GetFolderPath('mydocuments')") | sed 's/\r//')/WindowsPowerShell/Microsoft.PowerShell_profile.ps1" .wsl/mydocuments/WindowsPowerShell/
+        cp -pr "$(wslpath $(wslvar appdata))/.emacs" .wsl/appdata/
+        ;;
+    esac
     rm -rf ~/.local/dotfiles/.docker/config.json
     rm -rf ~/.local/dotfiles/.docker/etc/nginx/conf.d/*
     case "${OSTYPE}" in freebsd* | darwin* | linux*) cp -pr ~/.screenrc . ;; esac
@@ -105,6 +111,12 @@ fetch-dotfiles() {
   cp -pr .rufo ~/
   cp -pr .iex.exs ~/
   case "${OSTYPE}" in freebsd* | darwin* | linux*) cp -pr .screenrc ~/ ;; esac
+  case $REV in
+    WSL | WSL2)
+      cp -pr .wsl/mydocuments/WindowsPowerShell/* "$(wslpath $(powershell.exe -Command "[Environment]::GetFolderPath('mydocuments')") | sed 's/\r//')/WindowsPowerShell/"
+      cp -pr .wsl/appdata/* "$(wslpath $(wslvar appdata))/"
+      ;;
+  esac
 
   # post proc
   git checkout -- .emacs.d/lisp/init-mu4e.el
