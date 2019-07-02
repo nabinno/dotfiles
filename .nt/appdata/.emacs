@@ -46,3 +46,7 @@
 ;;; Misc initialization
 (straight-use-package
  '(el-patch :type git :host github :repo "jschaf/powershell.el"))
+
+(straight-use-package
+ '(el-patch :type git :host github :repo "jrblevin/markdown-mode"))
+
