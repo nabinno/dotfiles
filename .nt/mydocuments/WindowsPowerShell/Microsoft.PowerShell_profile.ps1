@@ -71,6 +71,7 @@ Set-PSReadlineOption -EditMode Emacs
 
 # IntegratedDevelopmentEnvironment::Editor::Vi
 $Vim = "C:\Program Files (x86)\vim\vim80\vim.exe"
+Set-Alias vim $Vim
 Set-Alias e $Vim
 if (!(Get-Command -ErrorAction Ignore $Vim)) { choco install vim }
 
