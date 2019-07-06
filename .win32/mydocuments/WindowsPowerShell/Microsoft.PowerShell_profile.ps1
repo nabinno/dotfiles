@@ -89,14 +89,16 @@ Set-Alias g git
 
 # IntegratedDevelopmentEnvironment::Network
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-function Edit-Hosts { vim 'C:\Windows\System32\drivers\etc\hosts' }
+function Edit-Hosts {
+    Start-Process -NoNewWindow emacs $env:SystemRoot\System32\drivers\etc\hosts
+}
 function Start-PortForwarding {
     Start-Job -Name 'PortForwarding' -ScriptBlock {
         ssh -N -L 3000:localhost:3000 -L 443:localhost:443 vagrant@fe80::215:5dff:fe00:4100
     }
 }
 function Sync-HostsToWslIp {
-    $hosts = "C:\Windows\System32\drivers\etc\hosts";
+    $hosts = "$env:SystemRoot\System32\drivers\etc\hosts";
     $pattern = "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}";
     $wslip = bash.exe -c "ifconfig eth0 | grep 'inet '";
     if ($wslip -match $pattern) {
@@ -184,7 +186,6 @@ if (!(Get-Command -ErrorAction Ignore fwup)) { choco install fwup }
 function d($path) { Remove-Item $path -Recurse -Force }
 function re { vim $PROFILE }
 function ree { Start-Process -NoNewWindow emacs $PROFILE }
-function rr { . $PROFILE }
 function ll { Get-ChildItem -Exclude .* -Name }
 function lf { Get-ChildItem -Exclude .* }
 function la { Get-ChildItem -Exclude .*; Get-ChildItem -Hidden }
@@ -196,4 +197,4 @@ Set-Alias p Write-Output
 Set-Alias ip Get-Process
 Set-Alias j Set-Location
 Set-Alias v Get-Content
-Set-Alias which Get-Command
+function which($command) { (Get-Command $command).Source }

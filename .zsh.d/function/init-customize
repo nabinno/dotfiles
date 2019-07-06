@@ -64,8 +64,8 @@ push-dotfiles() {
     cp -pr ~/.iex.exs .
     case $REV in
       WSL | WSL2)
-        cp -pr "$(wslpath $(powershell.exe -Command "[Environment]::GetFolderPath('mydocuments')" | sed 's/\r//'))/WindowsPowerShell/Microsoft.PowerShell_profile.ps1" .nt/mydocuments/WindowsPowerShell/
-        cp -pr "$(wslpath $(wslvar appdata))/.emacs" .nt/appdata/
+        cp -pr "$(wslpath $(powershell.exe -Command "[Environment]::GetFolderPath('mydocuments')" | sed 's/\r//'))/WindowsPowerShell/Microsoft.PowerShell_profile.ps1" .win32/mydocuments/WindowsPowerShell/
+        cp -pr "$(wslpath $(wslvar appdata))/.emacs" .win32/appdata/
         ;;
     esac
     rm -rf ~/.local/dotfiles/.docker/config.json
@@ -113,8 +113,8 @@ fetch-dotfiles() {
   case "${OSTYPE}" in freebsd* | darwin* | linux*) cp -pr .screenrc ~/ ;; esac
   case $REV in
     WSL | WSL2)
-      cp -pr .nt/mydocuments/WindowsPowerShell/* "$(wslpath $(powershell.exe -Command "[Environment]::GetFolderPath('mydocuments')" | sed 's/\r//'))/WindowsPowerShell/"
-      cp -pr .nt/appdata/.* "$(wslpath $(wslvar appdata))/"
+      cp -pr .win32/mydocuments/WindowsPowerShell/* "$(wslpath $(powershell.exe -Command "[Environment]::GetFolderPath('mydocuments')" | sed 's/\r//'))/WindowsPowerShell/"
+      cp -pr .win32/appdata/.* "$(wslpath $(wslvar appdata))/"
       ;;
   esac
 
