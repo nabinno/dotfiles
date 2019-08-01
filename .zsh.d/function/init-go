@@ -49,11 +49,16 @@ set-go() {
 get-global-go-packages() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
-      go get github.com/peco/peco/cmd/peco
-      go get github.com/mattn/qq/cmd/qq
-      go get github.com/mattn/git-fixauthor
-      go get github.com/shenwei356/csvtk/csvtk
-      go get github.com/motemen/ghq
+      go get -u golang.org/x/tools/cmd/gopls
+      go get -u golang.org/x/tools/cmd/goimports
+
+      # utility
+      go get -u github.com/peco/peco/cmd/peco
+      go get -u github.com/mattn/qq/cmd/qq
+      go get -u github.com/mattn/git-fixauthor
+      go get -u github.com/shenwei356/csvtk/csvtk
+      go get -u github.com/motemen/ghq
+      GO111MODULE=off go get -u github.com/motemen/gore/cmd/gore
       ;;
   esac
 }
