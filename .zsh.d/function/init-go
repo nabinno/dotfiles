@@ -35,12 +35,17 @@ get-go() {
       ;;
   esac
 }
-if ! type -p go >/dev/null; then get-go; fi
+if ! type -p go >/dev/null; then
+  get-go
+else
+  export GOROOT=$(go env GOROOT)
+fi
 
 set-go() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       goenv global $REQUIRED_GO_VERSION >/dev/null
+      export GOROOT=$(go env GOROOT)
       ;;
   esac
 }
@@ -58,7 +63,11 @@ get-global-go-packages() {
       go get -u github.com/mattn/git-fixauthor
       go get -u github.com/shenwei356/csvtk/csvtk
       go get -u github.com/motemen/ghq
-      GO111MODULE=off go get -u github.com/motemen/gore/cmd/gore
+      GO111MODULE=off go get -u github.com/motemen/gore/cmd/gore # REPL
+      go get -u github.com/rogpeppe/godef                        # 関数定義等の参照パッケージ
+      go get -u github.com/nsf/gocode                            # 補完パッケージ
+      go get -u golang.org/x/lint/golint                         # flycheckでシンタックスエラーを検知
+      go get -u github.com/kisielk/errcheck                      # flycheckでシンタックスエラーを検知
       ;;
   esac
 }
