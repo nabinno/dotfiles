@@ -1,8 +1,8 @@
 #!/usr/bin/env zsh
 
 # Emacs
-export REQUIRED_EMACS_VERSION=25.3
-export UNREQUIRED_EMACS_VERSION=24.5
+export REQUIRED_EMACS_VERSION=26.2
+export UNREQUIRED_EMACS_VERSION=25.3
 
 # ----------------------------------------------------------------------
 # ### installation ###
@@ -32,10 +32,10 @@ get-emacs() {
               sudo apt install emacs25
               ;;
             *)
+              local current_pwd=$(pwd)
               sudo apt-get install build-essential checkinstall
               sudo apt-get build-dep
-              # sudo apt-get build-dep emacs24
-              sudo apt-get install lincurses5-dev
+              sudo apt-get install lincurses5-dev libgnutls28-dev
               wget https://ftp.gnu.org/gnu/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz
               tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz
               cd emacs-$REQUIRED_EMACS_VERSION
@@ -46,9 +46,6 @@ get-emacs() {
               rm -fr emacs-$REQUIRED_EMACS_VERSION*
               ;;
           esac
-          # sudo add-apt-repository ppa:ubuntu-elisp/ppa
-          # sudo apt-get update
-          # sudo apt-get install emacs-snapshot ;;
           ;;
       esac
       ;;

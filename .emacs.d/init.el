@@ -95,6 +95,7 @@
 ;; (require 'init-textile)
 (require 'init-markdown)
 (require 'init-csv)
+(require 'init-golang)
 (require 'init-erlang)
 (require 'init-ocaml)
 (require 'init-javascript)

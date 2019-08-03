@@ -1,7 +1,8 @@
 ;;; init-golang -- basic golang configuration
 ;;; Commentary:
 ;;; Code:
-; @todo 2019-08-02
+(straight-use-package
+  '(el-patch :type git :host github :repo "dominikh/go-mode.el"))
 (use-package go-mode
   :mode "\\.go$"
   :straight t
@@ -10,14 +11,17 @@
           (message "Goimports not found; using default `gofmt-command'"))
   :config (add-hook 'before-save-hook 'gofmt-before-save))
 
-(use-package company-go
-  :after go
-  :disabled t)
+(use-package eglot
+  :straight t
+  :config
+  (define-key eglot-mode-map (kbd "M-.") 'xref-find-definitions)
+  (define-key eglot-mode-map (kbd "M-,") 'pop-tag-mark)
+  (add-to-list 'eglot-server-programs '(go-mode . ("gopls")))
+  (add-hook 'go-mode-hook 'eglot-ensure))
 
 (use-package go-guru
   :after go
   :straight t)
-
 
 
 (provide 'init-golang)
