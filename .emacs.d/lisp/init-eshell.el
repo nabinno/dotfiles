@@ -1,3 +1,6 @@
+;;; init-eshell --- eshell configuration
+;;; Commentary:
+;;; Code:
 (setq eshell-directory-name "~/.emacs.d/eshell/")
 (setq eshell-cmpl-cycle-completions nil)
 (setq eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'")
@@ -15,8 +18,7 @@
      (add-hook 'eshell-mode-hook ;; for some reason this needs to be a hook
                '(lambda () (define-key eshell-mode-map "\C-a" 'eshell-bol)))
      (add-to-list 'eshell-visual-commands "ssh")
-     (add-to-list 'eshell-visual-commands "tail")
-     ))
+     (add-to-list 'eshell-visual-commands "tail")))
 
 (defun eshell--initialize ()
   (interactive)
@@ -31,9 +33,7 @@
                  '("gunzip" "gz\\'"))
     (add-to-list 'eshell-command-completions-alist
                  '("tar" "\\(\\.tar|\\.tgz\\|\\.tar\\.gz\\)\\'"))
-    (set-face-attribute 'eshell-prompt nil :foreground "turquoise1")
-    ))
-
+    (set-face-attribute 'eshell-prompt nil :foreground "turquoise1")))
 (defun eshell--delete-other-windows-and-speedbar-close ()
   (interactive)
   (progn
@@ -65,20 +65,19 @@
 
 
 ;;; Multi eshell
-(unless (require 'multi-eshell nil 'noerror)
-  (el-get-bundle emacsmirror/multi-eshell))
-(setq multi-eshell-shell-function '(eshell))
-(setq multi-eshell-name "*eshell*")
-
-(defun multi-eshell--kill-all ()
-  (interactive)
-  (dolist
-      (buffer (buffer-list))
-    (if (string-match-p"^\*eshell"  (buffer-name buffer))
-        (kill-buffer buffer))))
-
-(global-set-key (kbd "M-1") 'multi-eshell-switch)
-(global-set-key (kbd "M-2") 'multi-eshell)
+(use-package multi-eshell
+  :straight t
+  :config
+  (setq multi-eshell-shell-function '(eshell))
+  (setq multi-eshell-name "*eshell*")
+  (defun multi-eshell--kill-all ()
+    (interactive)
+    (dolist
+        (buffer (buffer-list))
+      (if (string-match-p"^\*eshell"  (buffer-name buffer))
+          (kill-buffer buffer))))
+  (global-set-key (kbd "M-1") '(lambda () (interactive) (progn (multi-eshell-switch) (delete-other-windows))))
+  (global-set-key (kbd "M-2") '(lambda () (interactive) (progn (multi-eshell) (delete-other-windows)))))
 
 
 ;; ;;; Eshell Z
@@ -93,15 +92,16 @@
 
 
 ;; ;;; Eshell pop
-;; (require 'eshell-pop)
-;; (setq shell-pop-window-height 30)
+;; (use-package eshell-pop
+;;   :config (setq shell-pop-window-height 30))
 
 
 ;;; Tramp
-(require 'tramp)
-(setq tramp-default-method "ssh")
-(setq tramp-debug-buffer t)
-(setq tramp-completion-without-shell-p t)
+(use-package tramp
+  :config
+  (setq tramp-default-method "ssh")
+  (setq tramp-debug-buffer t)
+  (setq tramp-completion-without-shell-p t))
 
 
 ;;; Zsh
@@ -122,3 +122,4 @@
 
 
 (provide 'init-eshell)
+;;; init-eshell.el ends here
