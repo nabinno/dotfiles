@@ -21,7 +21,18 @@
 
 (use-package go-guru
   :after go
+  :straight t
+  :config (add-hook 'go-mode-hook #'go-guru-hl-identifier-mode))
+
+(use-package golint
+  :after go
   :straight t)
+
+(use-package go-eldoc
+  :after go
+  :straight t
+  :config (add-hook 'go-mode-hook 'go-eldoc-setup))
+
 
 
 (provide 'init-golang)
