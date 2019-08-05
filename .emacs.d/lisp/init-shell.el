@@ -18,7 +18,7 @@
 
 
 ;; Other
-(defun shell-command-current-file ()
+(defun eval-current-file ()
   "Execute the current file.
 For example, if the current buffer is the file x.py, then it'll
 call 「python x.py」 in a shell.  The file can be Emacs Lisp,
@@ -58,6 +58,7 @@ version 2016-01-28"
           (message "Running…")
           (shell-command -cmd-str "*xah-run-current-file output*" ))
       (message "No recognized program file suffix for this file."))))
+(global-set-key (kbd "C-x M-e") 'eval-current-file)
 
 
 
