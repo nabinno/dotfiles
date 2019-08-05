@@ -1,11 +1,9 @@
 ;;; init-golang -- basic golang configuration
 ;;; Commentary:
 ;;; Code:
-(straight-use-package
-  '(el-patch :type git :host github :repo "dominikh/go-mode.el"))
 (use-package go-mode
   :mode "\\.go$"
-  :straight t
+  :straight (el-patch :type git :host github :repo "dominikh/go-mode.el")
   :init (if (executable-find "goimports")
             (setq gofmt-command "goimports")
           (message "Goimports not found; using default `gofmt-command'"))
@@ -33,6 +31,9 @@
   :straight t
   :config (add-hook 'go-mode-hook 'go-eldoc-setup))
 
+(use-package ginkgo-mode
+  :after go
+  :straight (el-patch :type git :host github :repo "garslo/ginkgo-mode"))
 
 
 (provide 'init-golang)
