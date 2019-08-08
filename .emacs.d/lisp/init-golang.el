@@ -7,7 +7,11 @@
   :init (if (executable-find "goimports")
             (setq gofmt-command "goimports")
           (message "Goimports not found; using default `gofmt-command'"))
-  :config (add-hook 'before-save-hook 'gofmt-before-save))
+  :config
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  (add-hook 'go-mode-hook
+            (lambda ()
+              (setq tab-width 4))))
 
 (use-package eglot
   :straight t
