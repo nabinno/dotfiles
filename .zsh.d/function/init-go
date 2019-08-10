@@ -2,7 +2,7 @@
 
 export REQUIRED_GO_VERSION=1.12.1
 # export GOROOT=$(asdf where golang)
-export GOPATH=~/.go.d
+export GOPATH=~/.ghq.d
 export PATH="$GOPATH/bin:$GOROOT/bin:$PATH"
 
 # ----------------------------------------------------------------------

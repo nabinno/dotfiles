@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 export REQUIRED_RUBY_VERSION=2.5.3
-export GEMSRC_USE_GHQ=~/.ghq.d
+export GEMSRC_USE_GHQ=~/.ghq.d/src
 
 # ### version control ###
 get-rbenv() {

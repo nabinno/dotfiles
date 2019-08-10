@@ -69,4 +69,4 @@
 [push]
 	default = simple
 [ghq]
-	root = ~/.ghq.d
+	root = ~/.ghq.d/src
