@@ -7,6 +7,18 @@ require() {
   $1
 }
 
+require_other() {
+  (
+    cd /home/app/.zsh.d/function
+    go run .
+  )
+}
+
+# Env
+export REQUIRED_RUBY_VERSION=2.5.3
+export GEMSRC_USE_GHQ=~/.ghq.d/src
+
+# Base
 require init-os-detect
 require init-os-update
 require init-environmental-variable
@@ -23,12 +35,13 @@ require init-homebrew
 # require init-autoparts
 
 # ProgrammingLanguage
-require init-ruby
+require init-go
+require_other
+require init-ruby # migrating
 require init-elixir
 require init-crystal
 require init-ocaml
 require init-haskell
-require init-go
 # require init-dotnet
 require init-java
 require init-php
