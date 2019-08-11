@@ -49,13 +49,15 @@ version 2016-01-28"
          -cmd-str)
     (when (null (buffer-file-name)) (save-buffer))
     (when (buffer-modified-p) (save-buffer))
-    (setq -fname (buffer-file-name))
-    (setq -fSuffix (file-name-extension -fname))
+    (setq -fname (if (equal (file-name-extension (buffer-file-name)) "go")
+                     "."
+                   (buffer-file-name)))
+    (setq -fSuffix (file-name-extension (buffer-file-name)))
     (setq -prog-name (cdr (assoc -fSuffix -suffix-map)))
     (setq -cmd-str (concat -prog-name " \""   -fname "\""))
     (if -prog-name
         (progn
-          (message "Running…")
+          (message "Running...")
           (shell-command -cmd-str "*xah-run-current-file output*" ))
       (message "No recognized program file suffix for this file."))))
 (global-set-key (kbd "C-x M-e") 'eval-current-file)
