@@ -11,4 +11,5 @@ get-crystal() {
       ;;
   esac
 }
+
 if ! type -p crystal >/dev/null; then get-crystal; fi

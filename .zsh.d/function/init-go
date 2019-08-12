@@ -1,11 +1,8 @@
 #!/usr/bin/env zsh
 
 export REQUIRED_GO_VERSION=1.12.1
-# export GOROOT=$(asdf where golang)
 export GOPATH=~/.ghq.d
-export PATH="$GOPATH/bin:$GOROOT/bin:$PATH"
 
-# ----------------------------------------------------------------------
 # ### version control ###
 get-goenv() {
   case "${OSTYPE}" in
@@ -45,15 +42,17 @@ set-go() {
     freebsd* | darwin* | linux*)
       goenv global $REQUIRED_GO_VERSION >/dev/null
       export GOROOT=$(go env GOROOT)
+      export PATH="$GOROOT/bin:$PATH"
       ;;
   esac
 }
 
 if ! type -p go >/dev/null; then
   get-go
-  get-global-go-packages
+  (get-global-go-packages 2 &)
 else
   export GOROOT=$(go env GOROOT)
+  export PATH="$GOROOT/bin:$PATH"
 fi
 
 # ----------------------------------------------------------------------

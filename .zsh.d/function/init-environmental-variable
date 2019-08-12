@@ -19,6 +19,24 @@ export PATH="/opt/local/sbin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;36m\]\w\[\033[00m\]\$(parse_git_branch)\$ "
 
+# ProgrammingLanguage
+# ProgrammingLanguage::Ruby
+export GEMSRC_USE_GHQ=~/.ghq.d/src
+# ProgrammingLanguage::Go
+export PATH="$GOPATH/bin:$PATH"
+# ProgrammingLanguage::Elixir
+export PATH="$HOME/.local/exenv/bin:$HOME/.mix:$PATH"
+# ProgrammingLanguage::Python
+export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+export PYTHONPATH="$HOME/.local/python:$PYTHONPATH"
+# IntegratedDevelopmentEnvironment
+# IntegratedDevelopmentEnvironment::Wercker
+export WERCKER_ENVIRONMENT_FILE=./.env
+# IntegratedDevelopmentEnvironment::Ansible
+export ANSIBLE_HOST_KEY_CHECKING=false
+export PATH=~/.ans/bin:$PATH
+export ANS_PROJECTS_PATH=~/toki
+
 get-ntp() {
   case "${OSTYPE}" in
     linux*)

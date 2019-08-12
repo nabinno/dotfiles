@@ -1,9 +1,5 @@
 #!/usr/bin/env zsh
 
-export ANSIBLE_HOST_KEY_CHECKING=false
-export PATH=~/.ans/bin:$PATH
-export ANS_PROJECTS_PATH=~/toki
-
 get-ansible() {
   pip install \
     ansible \

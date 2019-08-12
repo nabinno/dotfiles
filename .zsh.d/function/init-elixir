@@ -5,10 +5,7 @@ export REQUIRED_REBAR_VERSION=3.9.0
 export REQUIRED_ELIXIR_VERSION=1.9.0
 export REQUIRED_PHOENIXFRAMEWORK_VERSION=1.3.4
 export REQUIRED_FWUP_VERSION=1.3.1
-export PATH="$HOME/.local/exenv/bin:$PATH"
-export PATH="$HOME/.mix:$PATH"
 
-# ----------------------------------------------------------------------
 # ### version control ###
 get-kerl() {
   case "${OSTYPE}" in
@@ -164,4 +161,5 @@ get-global-mix-packages() {
   mix local.hex
   mix archive.install https://github.com/phoenixframework/archives/raw/master/phx_new-$REQUIRED_PHOENIXFRAMEWORK_VERSION.ez
 }
+
 if ! type -p iex >/dev/null; then get-elixir; fi

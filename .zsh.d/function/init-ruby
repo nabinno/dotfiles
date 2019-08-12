@@ -1,7 +1,6 @@
 #!/usr/bin/env zsh
 
 export REQUIRED_RUBY_VERSION=2.5.3
-export GEMSRC_USE_GHQ=~/.ghq.d/src
 
 # ### version control ###
 get-rbenv() {
@@ -14,15 +13,6 @@ get-rbenv() {
   esac
 }
 
-upgrade-ruby-build() {
-  case "${OSTYPE}" in
-    freebsd* | darwin* | linux*)
-      rm -fr "$(rbenv root)"/plugins/ruby-build
-      git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
-      ;;
-  esac
-}
-
 # ----------------------------------------------------------------------
 # ### installation ###
 get-ruby-by-asdf() {
@@ -31,7 +21,7 @@ get-ruby-by-asdf() {
     freebsd* | darwin* | linux*)
       asfd install ruby $REQUIRED_RUBY_VERSION
       asdf global ruby $REQUIRED_RUBY_VERSION
-      get-global-gem-packages
+      (get-global-gem-packages 2 &)
       ;;
   esac
 }
@@ -44,7 +34,7 @@ get-ruby() {
       rbenv install $REQUIRED_RUBY_VERSION
       rbenv rehash
       rbenv global $REQUIRED_RUBY_VERSION
-      get-global-gem-packages
+      (get-global-gem-packages 2 &)
       ;;
   esac
 }
@@ -68,6 +58,7 @@ get-global-gem-packages() {
     unicorn
   gem install rufo -v 0.1.0
 }
+
 if ! type -p ruby >/dev/null; then
   get-ruby
 else

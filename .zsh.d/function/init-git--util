@@ -1,0 +1,127 @@
+#!/usr/bin/env zsh
+
+# ### alias ###
+alias g='git'
+alias ga='git add -v'
+alias galiases="git !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /'"
+alias gammend='git commit --amend'
+alias gb='git branch'
+alias gbr='git branch'
+alias gbranches='git branch -a'
+alias gbrs='git branch -a'
+alias gc='git commit -a -v -m'
+alias gca='git commit -a -v -m'
+alias gcd="git !bash -c 'while  ! -d .git; do cd ..; done'"
+alias gci='git commit -v'
+alias gco='git checkout'
+alias gd='git rm'
+alias gdel='git rm'
+alias gdelbr='git !git branch -D'
+alias gdb='git !git branch -D'
+alias gdrb='git "!sh -c \"git push origin --delete $1\""'
+alias gdf='git diff HEAD^'
+alias gdfc='git diff --cached'
+alias gexport='git "!sh -c \"git checkout-index -a -f --prefix=$1/\" -"'
+alias ghist='git log --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --'
+alias gl='git-log'
+alias glast='git diff HEAD~1..HEAD'
+alias glf='git log --decorate=full --graph --pretty=full'
+alias glg='git log --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --'
+alias gpick='git cherry-pick'
+alias gp='git push -v'
+alias gpom='git push -v -u origin master'
+alias gpr='git pull --rebase'
+alias gs='git status -sb'
+alias gsearch=git "!sh -c \'git rev-list --all | grep ^$1 | while read commit; do git --no-pager log -n1 --pretty=format:\"%H %ci %an %s%n\" $commit; done\' -"
+alias gslog='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --date=relative'
+alias gst='git status -sb'
+alias gswitch='git checkout'
+alias gvlog='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen - %cD (%cr) %C(bold blue)<%an>%Creset%n" --abbrev-commit --date=relative -p ; echo ""'
+alias gwho='git shortlog -s --'
+
+ghclone() {
+  git clone git@github.com:${1}.git
+}
+
+git-log() {
+  \git log ${1} --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --
+}
+
+git-trend() {
+  g trend -n 10
+  g trend -l ruby -n 5
+  g trend -l elixir -n 5
+  g trend -l erlang -n 5
+  g trend -l JavaScript -n 5
+  g trend -l php -n 3
+}
+
+parse-git-dirty() {
+  git diff --no-ext-diff --quiet --exit-code &>/dev/null || echo "*"
+}
+
+parse-git-branch() {
+  git branch --no-color 2>/dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty))/"
+}
+
+# ----------------------------------------------------------------------
+# github-pull-repositories() {
+#   # # Setup Example:
+#   # setup-git-pull-repositories() {
+#   #   case $1 in
+#   #     foo) echo 'npm install';;
+#   #     bar) echo 'npm install && bower install';;
+#   #   esac
+#   # }
+#   typeset -A users
+#   typeset -A branches
+#   typeset -A build_commands
+#   while getopts "n:r:" opt; do
+#     case $opt in
+#       n)
+#         dirname=$OPTARG
+#         is_dirname='true'
+#         ;;
+#       r)
+#         array=("${(@s:,:)OPTARG}")
+#         repository=$array[2]
+#         users[$repository]=$array[1]
+#         branches[$repository]=$array[3]
+#         build_commands[$repository]=$(setup-github-pull-repositories $repository)
+#         is_repositoy='true'
+#         ;;
+#     esac
+#   done
+#   if [ $# -ge 4 ] && [ $is_dirname ] && [ $is_repositoy ]; then
+#     local directory=$(date +%y%m%d)_$dirname
+#     local current_pwd=$(pwd)
+#     cd ~/
+#     mkdir -p ~/${directory}
+#     cd ~/${directory}
+#     for k in ${(@k)build_commands}; do
+#       echo ''
+#       echo 'Start git clone:' $k
+#       echo '--------------------------------------------------'
+#       git clone git@github.com:$users[$k]/$k.git; wait
+#       cd ./$k
+#       echo ''
+#       echo 'Start build:' $build_commands[$k] 'in' $k
+#       echo '--------------------------------------------------'
+#       git checkout $branches[$k]
+#       eval $build_commands[$k]; wait
+#       cd ~/${directory}
+#     done
+#     cd ${current_pwd}
+#     echo ''
+#     echo ''
+#     echo '   _______ __  ____        ____'
+#     echo '  / ____(_) /_/ __ \__  __/ / /'
+#     echo ' / / __/ / __/ /_/ / / / / / /'
+#     echo '/ /_/ / / /_/ ____/ /_/ / / /'
+#     echo '\____/_/\__/_/    \__,_/_/_/'
+#     echo '                                ....is now installed!'
+#   else
+#     echo ''
+#     echo "Usage: github-pull-repositories -r user1,repository1,branch1 -r user2,repository2,branch2 -n dirname .." 1>&2
+#   fi
+# }

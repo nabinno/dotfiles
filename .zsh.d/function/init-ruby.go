@@ -37,7 +37,7 @@ func getRbenv() {
 	cmd("exec -l zsh")
 }
 
-func upgradeRubyBuild() {
+func upgradeRbenvByRubyBuild() {
 	res, err := exec.Command("rbenv", "root").Output()
 	if err != nil {
 		fmt.Println(err)

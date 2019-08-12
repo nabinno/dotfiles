@@ -27,7 +27,7 @@ get-ocaml-by-asdf() {
   case $(asdf plugin-list) in *ocaml*) ;; *) asdf plugin-add ocaml ;; esac
   asdf install ocaml $REQUIRED_OCAML_VERSION
   asdf global ocaml $REQUIRED_OCAML_VERSION
-  get-global-opam-packages
+  (get-global-opam-packages 2 &)
 }
 
 get-ocaml-by-ocamlbrew() {
@@ -35,7 +35,7 @@ get-ocaml-by-ocamlbrew() {
   source ~/ocamlbrew/ocaml-*/etc/ocamlbrew.bashrc
   opam switch $REQUIRED_OCAML_VERSION
   eval $(opam config env)
-  get-global-opam-packages
+  (get-global-opam-packages 2 &)
 }
 
 get-global-opam-packages() {
@@ -48,13 +48,14 @@ get-global-opam-packages() {
     reason \
     merlin
 }
-if ! type -p ocaml >/dev/null; then get-ocaml; fi
 
 get-global-npm-packages-for-ocaml() {
   npm i -g \
     ocaml-language-server \
     reason-cli@latest-linux
 }
+
+if ! type -p ocaml >/dev/null; then get-ocaml; fi
 
 # ----------------------------------------------------------------------
 # Coq

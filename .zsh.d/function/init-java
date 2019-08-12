@@ -21,7 +21,6 @@ case $OSTYPE in
     ;;
 esac
 
-# ----------------------------------------------------------------------
 # ### version control ###
 get-jenv() {
   case "${OSTYPE}" in
