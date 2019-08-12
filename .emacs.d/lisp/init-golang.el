@@ -36,9 +36,7 @@
   :config (add-hook 'go-mode-hook 'go-eldoc-setup))
 
 (use-package ginkgo-mode
-  :after go
   :straight (el-patch :type git :host github :repo "garslo/ginkgo-mode"))
-
 
 
 

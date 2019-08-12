@@ -63,6 +63,10 @@ get-global-go-packages() {
       go get -u golang.org/x/tools/cmd/goimports
       go get -u golang.org/x/tools/cmd/guru
 
+      # test
+      go get -u github.com/onsi/ginkgo/ginkgo
+      go get -u github.com/onsi/gomega
+
       # utility
       go get -u github.com/github/hub
       go get -u github.com/peco/peco/cmd/peco
