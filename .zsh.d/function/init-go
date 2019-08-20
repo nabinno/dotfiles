@@ -68,6 +68,11 @@ get-global-go-packages() {
       go get -u github.com/onsi/ginkgo/ginkgo
       go get -u github.com/onsi/gomega
 
+      # debug
+      go get -u github.com/go-delve/delve/cmd/dlv
+      go get -u github.com/d4l3k/go-pry
+      go install -i github.com/d4l3k/go-pry
+
       # utility
       go get -u github.com/github/hub
       go get -u github.com/peco/peco/cmd/peco

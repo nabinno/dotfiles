@@ -36,7 +36,7 @@ require init-go
 (require_other 2 &)
 # (require init-ruby 2 &) # migrating
 require init-ruby--util
-(require init-elixir 2 &)
+require init-elixir
 (require init-crystal 2 &)
 (require init-ocaml 2 &)
 (require init-haskell 2 &)
@@ -57,7 +57,7 @@ require init-rust
 # (require init-redis 2 &)
 # (require init-memcached 2 &)
 # (require init-nginx 2 &)
-(require init-dns 2 &)
+require init-dns
 
 # IntegratedDevelopmentEnvironment
 (require init-emacs 2 &)
