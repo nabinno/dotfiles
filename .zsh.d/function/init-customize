@@ -37,92 +37,79 @@ push-dotfiles() {
         ;;
     esac
   done
-
   if ! [ $is_exit ]; then
-    cd ~/
-    if [ ! -d ~/.local/dotfiles ]; then
-      mkdir -p ~/.local
-      sh -c "$(curl -fsSL https://raw.github.com/nabinno/dotfiles/master/install)"
-      wait
-    fi
-    cd ~/.local/dotfiles
-    git checkout -- .
-    git checkout master
-    git pull
-    rm -rf .emacs.d/lisp/*
-    cp -pr ~/.emacs.d/lisp/* .emacs.d/lisp/
-    cp -pr ~/.emacs.d/bin/* .emacs.d/bin/
-    cp -pr ~/.emacs.d/eshell/alias .emacs.d/eshell/
-    cp -pr ~/.emacs.d/init.el .emacs.d/
-    cp -pr ~/.zsh.d/function/* .zsh.d/function/
-    cp -pr ~/.offlineimap.py .
-    cp -pr ~/.aspell.conf .
-    cp -pr ~/.zshenv .
-    cp -pr ~/.zshrc .
-    cp -pr ~/.docker .
-    cp -pr ~/.rufo .
-    cp -pr ~/.iex.exs .
-    case $REV in
-      WSL | WSL2)
-        cp -pr "$(wslpath $(powershell.exe -Command "[Environment]::GetFolderPath('mydocuments')" | sed 's/\r//'))/WindowsPowerShell/Microsoft.PowerShell_profile.ps1" .win32/mydocuments/WindowsPowerShell/
-        cp -pr "$(wslpath $(wslvar appdata))/.emacs" .win32/appdata/
-        ;;
-    esac
-    rm -rf ~/.local/dotfiles/.docker/config.json
-    rm -rf ~/.local/dotfiles/.docker/etc/nginx/conf.d/*
-    case "${OSTYPE}" in freebsd* | darwin* | linux*) cp -pr ~/.screenrc . ;; esac
-    if ! [ $is_credential ]; then git checkout -- .emacs.d/lisp/init-credential.el; fi
-    if ! [ $is_mu4e ]; then git checkout -- .emacs.d/lisp/init-mu4e.el; fi
-    if ! [ $is_esa ]; then git checkout -- .emacs.d/lisp/init-esa.el; fi
-    if ! [ $is_irc ]; then git checkout -- .emacs.d/lisp/init-irc.el; fi
-    if ! [ $is_init_el ]; then git checkout -- .emacs.d/init.el; fi
+    (
+      cd $DOTFILES_PATH
+      git checkout -- .
+      git checkout master
+      git pull
+      rm -rf .emacs.d/lisp/*
+      cp -pr ~/.emacs.d/lisp/* .emacs.d/lisp/
+      cp -pr ~/.emacs.d/bin/* .emacs.d/bin/
+      cp -pr ~/.emacs.d/eshell/alias .emacs.d/eshell/
+      cp -pr ~/.emacs.d/init.el .emacs.d/
+      cp -pr ~/.offlineimap.py .
+      cp -pr ~/.aspell.conf .
+      cp -pr ~/.zshenv .
+      cp -pr ~/.zshrc .
+      cp -pr ~/.docker .
+      cp -pr ~/.rufo .
+      cp -pr ~/.iex.exs .
+      case $REV in
+        WSL | WSL2)
+          cp -pr "$(wslpath $(powershell.exe -Command "[Environment]::GetFolderPath('mydocuments')" | sed 's/\r//'))/WindowsPowerShell/Microsoft.PowerShell_profile.ps1" .win32/mydocuments/WindowsPowerShell/
+          cp -pr "$(wslpath $(wslvar appdata))/.emacs" .win32/appdata/
+          ;;
+      esac
+      rm -rf ~/.local/dotfiles/.docker/config.json
+      rm -rf ~/.local/dotfiles/.docker/etc/nginx/conf.d/*
+      case "${OSTYPE}" in freebsd* | darwin* | linux*) cp -pr ~/.screenrc . ;; esac
+      if ! [ $is_credential ]; then git checkout -- .emacs.d/lisp/init-credential.el; fi
+      if ! [ $is_mu4e ]; then git checkout -- .emacs.d/lisp/init-mu4e.el; fi
+      if ! [ $is_esa ]; then git checkout -- .emacs.d/lisp/init-esa.el; fi
+      if ! [ $is_irc ]; then git checkout -- .emacs.d/lisp/init-irc.el; fi
+      if ! [ $is_init_el ]; then git checkout -- .emacs.d/init.el; fi
+    )
   fi
 }
 alias zp=push-dotfiles
 
 fetch-dotfiles() {
-  # pre proc
-  local current_pwd=$(pwd)
-  cd ~/
-  if [ ! -d ~/.local/dotfiles ]; then
-    mkdir -p ~/.local
-    sh -c "$(curl -fsSL https://raw.github.com/nabinno/dotfiles/master/install)"
-    wait
-  fi
-  cd ~/.local/dotfiles
-  git checkout -- .
-  git checkout master
-  git pull
-  rm -rf .emacs.d/lisp/init-mu4e.el
-  rm -rf .emacs.d/lisp/init-esa.el
-  rm -rf .emacs.d/lisp/init-credential.el
+  (
+    # pre proc
+    cd $DOTFILES_path
+    git checkout -- .
+    git checkout master
+    git pull
+    rm -rf .emacs.d/lisp/init-mu4e.el
+    rm -rf .emacs.d/lisp/init-esa.el
+    rm -rf .emacs.d/lisp/init-credential.el
 
-  # main proc
-  cp -pr .emacs.d/lisp/* ~/.emacs.d/lisp/
-  cp -pr .emacs.d/bin/* ~/.emacs.d/bin/
-  cp -pr .emacs.d/eshell/alias ~/.emacs.d/eshell/
-  cp -pr .emacs.d/init.el ~/.emacs.d/
-  cp -pr .zsh.d/function/* ~/.zsh.d/function/
-  cp -pr .offlineimap.py ~/
-  cp -pr .aspell.conf ~/
-  cp -pr .zshenv ~/
-  cp -pr .zshrc ~/
-  cp -pr .docker ~/
-  cp -pr .rufo ~/
-  cp -pr .iex.exs ~/
-  case "${OSTYPE}" in freebsd* | darwin* | linux*) cp -pr .screenrc ~/ ;; esac
-  case $REV in
-    WSL | WSL2)
-      cp -pr .win32/mydocuments/WindowsPowerShell/* "$(wslpath $(powershell.exe -Command "[Environment]::GetFolderPath('mydocuments')" | sed 's/\r//'))/WindowsPowerShell/"
-      cp -pr .win32/appdata/.* "$(wslpath $(wslvar appdata))/"
-      ;;
-  esac
+    # main proc
+    cp -pr .emacs.d/lisp/* ~/.emacs.d/lisp/
+    cp -pr .emacs.d/bin/* ~/.emacs.d/bin/
+    cp -pr .emacs.d/eshell/alias ~/.emacs.d/eshell/
+    cp -pr .emacs.d/init.el ~/.emacs.d/
+    cp -pr .offlineimap.py ~/
+    cp -pr .aspell.conf ~/
+    cp -pr .zshenv ~/
+    cp -pr .zshrc ~/
+    cp -pr .docker ~/
+    cp -pr .rufo ~/
+    cp -pr .iex.exs ~/
+    case "${OSTYPE}" in freebsd* | darwin* | linux*) cp -pr .screenrc ~/ ;; esac
+    case $REV in
+      WSL | WSL2)
+        cp -pr .win32/mydocuments/WindowsPowerShell/* "$(wslpath $(powershell.exe -Command "[Environment]::GetFolderPath('mydocuments')" | sed 's/\r//'))/WindowsPowerShell/"
+        cp -pr .win32/appdata/.* "$(wslpath $(wslvar appdata))/"
+        ;;
+    esac
 
-  # post proc
-  git checkout -- .emacs.d/lisp/init-mu4e.el
-  git checkout -- .emacs.d/lisp/init-esa.el
-  git checkout -- .emacs.d/lisp/init-credential.el
-  cd $current_pwd
+    # post proc
+    git checkout -- .emacs.d/lisp/init-mu4e.el
+    git checkout -- .emacs.d/lisp/init-esa.el
+    git checkout -- .emacs.d/lisp/init-credential.el
+  )
   exec -l zsh
 }
 alias zf=fetch-dotfiles

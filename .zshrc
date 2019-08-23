@@ -1,6 +1,21 @@
 #!/usr/bin/env zsh
 
-export FPATH=~/.zsh.d/function:$FPATH
+if type -p ghq >/dev/null; then
+  export DOTFILES_PATH=$(ghq root)/github.com/nabinno/dotfiles
+  if [ ! -d $DOTFILES_PATH ]; then
+    ghq get nabinno/dotfiles
+    wait
+  fi
+else
+  export DOTFILES_PATH=~/.local/dotfiles
+  if [ ! -d $DOTFILES_PATH ]; then
+    mkdir -p ~/.local
+    sh -c "$(curl -fsSL https://raw.github.com/nabinno/dotfiles/master/install)"
+    wait
+  fi
+fi
+
+export FPATH=$DOTFILES_PATH/.zsh.d/function:$FPATH
 
 require() {
   autoload $1
@@ -9,7 +24,7 @@ require() {
 
 require_other() {
   (
-    cd /home/app/.zsh.d/function
+    cd $DOTFILES_PATH/.zsh.d/function
     GO111MODULE=off go run .
   )
 }
