@@ -2,6 +2,7 @@
 
 export REQUIRED_GO_VERSION=1.12.1
 export GOPATH=~/.ghq.d
+export GO111MODULE=on
 
 # ### version control ###
 get-goenv() {
@@ -63,6 +64,7 @@ get-global-go-packages() {
       go get -u golang.org/x/tools/cmd/goimports
       go get -u golang.org/x/tools/cmd/guru
       go get -u github.com/golang/dep/cmd/dep
+      get-mage
 
       # test
       go get -u github.com/onsi/ginkgo/ginkgo
@@ -88,4 +90,12 @@ get-global-go-packages() {
       go get -u github.com/kisielk/errcheck                      # flycheckでシンタックスエラーを検知
       ;;
   esac
+}
+
+get-mage() {
+  go get -u -d github.com/magefile/mage
+  (
+    cd $GOPATH/src/github.com/magefile/mage
+    go run bootstrap.go
+  )
 }

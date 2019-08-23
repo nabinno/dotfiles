@@ -10,7 +10,7 @@ require() {
 require_other() {
   (
     cd /home/app/.zsh.d/function
-    go run .
+    GO111MODULE=off go run .
   )
 }
 
