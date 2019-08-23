@@ -1,16 +1,13 @@
 #!/bin/bash -u
 
-cd ~/
-if [ -d ~/.local/dotfiles ]; then rm -fr .local/dotfiles; fi
-mkdir -p .local/dotfiles
-git clone https://github.com/nabinno/dotfiles.git .local/dotfiles
-mv -f ~/.local/dotfiles/* ~/
-mv -f ~/.local/dotfiles/.* ~/
-rm -fr \
-   ~/.git \
-   ~/Dockerfile \
-   ~/README.md \
-   ~/install.sh
+(
+  cd ~/ || exit
+  if [ -d ~/.local/dotfiles ]; then rm -fr .local/dotfiles; fi
+  mkdir -p .local/dotfiles
+  git clone https://github.com/nabinno/dotfiles.git .local/dotfiles
+  cp -f ~/.local/dotfiles/* ~/
+  cp -f ~/.local/dotfiles/.* ~/
+)
 
 printf "${GREEN}"
 echo '                                     '
