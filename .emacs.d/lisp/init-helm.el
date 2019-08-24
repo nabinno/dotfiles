@@ -13,11 +13,11 @@
   (defun helm-ag-dot-emacs ()
     "Search .emacs.d directory."
     (interactive)
-    (progn (helm-ag "~/.emacs.d/") (delete-other-windows)))
+    (progn (helm-ag (concat (getenv "DOTFILES_PATH") "/.emacs.d/")) (delete-other-windows)))
   (defun helm-ag-dot-zsh ()
     "Search .zsh.d directory."
     (interactive)
-    (progn (helm-ag "~/.zsh.d/") (delete-other-windows)))
+    (progn (helm-ag (concat (getenv "DOTFILES_PATH") "/.zsh.d/")) (delete-other-windows)))
   (defun helm-ag-dot-ghq ()
     "Search .ghq.d directory."
     (interactive)

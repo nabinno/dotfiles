@@ -43,8 +43,6 @@ push-dotfiles() {
       git checkout -- .
       git checkout master
       git pull
-      rm -rf .emacs.d/lisp/*
-      cp -pr ~/.emacs.d/lisp/* .emacs.d/lisp/
       cp -pr ~/.emacs.d/bin/* .emacs.d/bin/
       cp -pr ~/.emacs.d/eshell/alias .emacs.d/eshell/
       cp -pr ~/.emacs.d/init.el .emacs.d/
@@ -86,7 +84,6 @@ fetch-dotfiles() {
     rm -rf .emacs.d/lisp/init-credential.el
 
     # main proc
-    cp -pr .emacs.d/lisp/* ~/.emacs.d/lisp/
     cp -pr .emacs.d/bin/* ~/.emacs.d/bin/
     cp -pr .emacs.d/eshell/alias ~/.emacs.d/eshell/
     cp -pr .emacs.d/init.el ~/.emacs.d/
