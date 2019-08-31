@@ -142,7 +142,7 @@ mu-restart() {
 # if ! type -p mu > /dev/null ; then get-mu ; fi
 
 # ----------------------------------------------------------------------
-# ### sekka ###
+# ### IME ###
 set-sekka() {
   case "${OSTYPE}" in
     freebsd* | linux*) docker restart sekka ;;
@@ -154,6 +154,17 @@ get-sekka() {
     freebsd* | linux*) docker run -p 12929:12929 -d --name=sekka -t kiyoka/sekka ;;
   esac
 }
+
+get-mozc() {
+  case "${OSTYPE}" in
+    linux*)
+      case "$DIST" in
+        Ubuntu) sudo apt-get install emacs-mozc-bin ;;
+      esac
+      ;;
+  esac
+}
+if ! type -p mozc_emacs_helper >/dev/null; then get-mozc; fi
 
 # ----------------------------------------------------------------------
 # Ctags
