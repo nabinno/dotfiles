@@ -1,25 +1,28 @@
 #!/usr/bin/env zsh
 
 export REQUIRED_TERRAFORM_VERSION=0.6.6
+export REQUIRED_TERRAFORM_SWITCHER_VERSION=0.7.737
 
 get-terraform() {
-  local current_pwd=$(pwd)
-  cd ~/.local/bin
-  rm -fr terraform*
-  case "${OSTYPE}" in
-    darwin*)
-      wget https://releases.hashicorp.com/terraform/${REQUIRED_TERRAFORM_VERSION}/terraform_${REQUIRED_TERRAFORM_VERSION}_darwin_amd64.zip
-      unzip terraform_${REQUIRED_TERRAFORM_VERSION}_darwin_amd64.zip
-      ;;
-    freebsd*)
-      wget https://releases.hashicorp.com/terraform/${REQUIRED_TERRAFORM_VERSION}/terraform_${REQUIRED_TERRAFORM_VERSION}_freebsd_amd64.zip
-      unzip terraform_${REQUIRED_TERRAFORM_VERSION}_freebsd_amd64.zip
-      ;;
-    linux*)
-      wget https://releases.hashicorp.com/terraform/${REQUIRED_TERRAFORM_VERSION}/terraform_${REQUIRED_TERRAFORM_VERSION}_linux_amd64.zip
-      unzip terraform_${REQUIRED_TERRAFORM_VERSION}_linux_amd64.zip
-      ;;
-  esac
-  cd $current_pwd
+  (
+    cd ~/.local/bin
+    rm -fr terraform*
+    case "${OSTYPE}" in
+      darwin*)
+        wget https://releases.hashicorp.com/terraform/${REQUIRED_TERRAFORM_VERSION}/terraform_${REQUIRED_TERRAFORM_VERSION}_darwin_amd64.zip
+        unzip terraform_${REQUIRED_TERRAFORM_VERSION}_darwin_amd64.zip
+        ;;
+      freebsd*)
+        wget https://releases.hashicorp.com/terraform/${REQUIRED_TERRAFORM_VERSION}/terraform_${REQUIRED_TERRAFORM_VERSION}_freebsd_amd64.zip
+        unzip terraform_${REQUIRED_TERRAFORM_VERSION}_freebsd_amd64.zip
+        ;;
+      linux*)
+        wget https://releases.hashicorp.com/terraform/${REQUIRED_TERRAFORM_VERSION}/terraform_${REQUIRED_TERRAFORM_VERSION}_linux_amd64.zip
+        unzip terraform_${REQUIRED_TERRAFORM_VERSION}_linux_amd64.zip
+        wget https://github.com/warrensbox/terraform-switcher/releases/download/${REQUIRED_TERRAFORM_SWITCHER_VERSION}/terraform-switcher_${REQUIRED_TERRAFORM_SWITCHER_VERSION}_linux_amd64.tar.gz
+        unzip terraform-switcher_${REQUIRED_TERRAFORM_SWITCHER_VERSION}_linux_amd64.tar.gz
+        ;;
+    esac
+  )
 }
 if ! type -p terraform >/dev/null; then get-terraform; fi
