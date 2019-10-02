@@ -18,6 +18,17 @@ get-terraform-switcher() {
 }
 if ! type -p tfswitch >/dev/null; then get-terraform-switcher; fi
 
+set-terraform-switcher() {
+  local tfswitchrc_path=".tfswitchrc"
+  if [ -f "$tfswitchrc_path" ]; then
+    tfswitch
+  fi
+}
+if type -p tfswitch >/dev/null; then
+  add-zsh-hook chpwd set-terraform-switcher
+  set-terraform-switcher
+fi
+
 get-terraform() {
   tfswitch -b ~/.local/bin/terraform $REQUIRED_TERRAFORM_VERSION
   echo $REQUIRED_TERRAFORM_VERSION >~/.tfswitchrc
