@@ -10,10 +10,15 @@ get-aws() {
       ;;
   esac
 }
+if ! type -p aws >/dev/null; then get-aws; fi
+
+get-aws-cdk() {
+  npm i -g aws-cdk
+}
+if ! type -p cdk >/dev/null; then get-aws-cdk; fi
 
 fix-compdef-problem() {
   touch ~/.zshenv
   echo 'autoload -Uz compinit
 compinit' >>~/.zshenv
 }
-if ! type -p aws >/dev/null; then get-aws; fi
