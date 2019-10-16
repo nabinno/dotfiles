@@ -75,6 +75,9 @@ get-global-go-packages() {
       go get -u github.com/d4l3k/go-pry
       go install -i github.com/d4l3k/go-pry
 
+      # live reload
+      GO111MODULE=off go get -u github.com/oxequa/realize
+
       # utility
       go get -u github.com/github/hub
       go get -u github.com/peco/peco/cmd/peco
