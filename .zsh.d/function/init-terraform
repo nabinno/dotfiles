@@ -21,11 +21,13 @@ if ! type -p tfswitch >/dev/null; then get-terraform-switcher; fi
 set-terraform-switcher() {
   local tfswitchrc_path=".tfswitchrc"
   if [ -f "$tfswitchrc_path" ]; then
-    tfswitch
+    rm ~/.local/bin/terraform
+    tfswitch -b ~/.local/bin/terraform $REQUIRED_TERRAFORM_VERSION
   fi
 }
 if type -p tfswitch >/dev/null; then
-  add-zsh-hook chpwd set-terraform-switcher
+  # @todo
+  # add-zsh-hook chpwd set-terraform-switcher
   set-terraform-switcher
 fi
 
