@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # Emacs
-export REQUIRED_EMACS_VERSION=26.2
+export REQUIRED_EMACS_VERSION=26.3
 export UNREQUIRED_EMACS_VERSION=25.3
 
 # ----------------------------------------------------------------------
@@ -14,35 +14,35 @@ get-emacs() {
       case "${DIST}" in
         Redhat | RedHat)
           sudo yum install -y ncurses-devel
-          local current_pwd=$(pwd)
           wget https://ftp.gnu.org/gnu/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz
           tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz
-          cd emacs-$REQUIRED_EMACS_VERSION
-          ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no
-          make
-          yes | sudo make install
-          cd $current_pwd
+          (
+            cd emacs-$REQUIRED_EMACS_VERSION
+            ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no
+            make
+            yes | sudo make install
+          )
           rm -fr emacs-$REQUIRED_EMACS_VERSION*
           ;;
         Debian | Ubuntu)
           case $DIST_VERSION in
-            16.04)
+            16.04 | 18.04)
               sudo add-apt-repository ppa:kelleyk/emacs
               sudo apt update
-              sudo apt install emacs25
+              sudo apt install emacs26
               ;;
             *)
-              local current_pwd=$(pwd)
               sudo apt-get install build-essential checkinstall
               sudo apt-get build-dep
               sudo apt-get install lincurses5-dev libgnutls28-dev
               wget https://ftp.gnu.org/gnu/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz
               tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz
-              cd emacs-$REQUIRED_EMACS_VERSION
-              ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no --with-jpeg=no --with-png=no
-              make
-              yes | sudo make install
-              cd $current_pwd
+              (
+                cd emacs-$REQUIRED_EMACS_VERSION
+                ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no --with-jpeg=no --with-png=no
+                make
+                yes | sudo make install
+              )
               rm -fr emacs-$REQUIRED_EMACS_VERSION*
               ;;
           esac
