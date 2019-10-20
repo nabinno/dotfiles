@@ -6,6 +6,7 @@ get-anyenv() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       git clone https://github.com/riywo/anyenv ~/.anyenv
+      anyenv install --init
       eval "$(anyenv init - zsh)"
       ;;
   esac
