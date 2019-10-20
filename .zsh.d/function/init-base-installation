@@ -35,19 +35,16 @@ get-base() {
             bind-utils \
             gcc \
             gdbm-devel \
-            git \
-            htop \
             libffi-devel \
             libicu \
             libyaml-devel \
             mysql-devel \
             ncurses-devel \
             openssl-devel \
+            python \
             readline-devel \
             ruby \
-            screen \
-            zlib-devel \
-            curl
+            zlib-devel
           ;;
         Debian | Ubuntu)
           sudo apt-get update -y
@@ -60,27 +57,20 @@ get-base() {
               ;;
           esac
           sudo add-apt-repository -y ppa:fcwu-tw/ppa
-          sudo add-apt-repository -y ppa:git-core/ppa
           sudo apt-get update -y
           case "${DIST_VERSION=}" in
             12.04 | 14.04)
               sudo apt-get install -y \
                 apt-transport-https \
-                automake \
                 autotools-dev \
                 base-files \
                 base-passwd \
                 binutils \
                 build-essential \
                 bzip2 \
-                cmake \
-                curl \
                 dnsutils \
                 gdb \
-                git \
-                git-core \
                 gnupg \
-                htop \
                 imagemagick \
                 libarchive-dev \
                 libarchive12 \
@@ -134,43 +124,33 @@ get-base() {
                 libxt-dev \
                 libxt6 \
                 libyaml-dev \
-                make \
                 openssl \
                 psmisc \
+                python \
                 ruby \
                 s3cmd \
                 sqlite3 \
                 strace \
                 telnet \
                 tsconf \
-                unzip \
                 util-linux \
-                wget \
                 whiptail \
                 xz-utils \
                 zlib1g \
-                zlib1g-dev \
-                zip
+                zlib1g-dev
               ;;
             16.04)
               sudo apt install -y \
                 apt-transport-https \
-                automake \
                 autotools-dev \
                 base-files \
                 base-passwd \
                 binutils \
-                bison \
                 build-essential \
                 bzip2 \
-                cmake \
-                curl \
                 dnsutils \
                 gdb \
-                git \
-                git-core \
                 gnupg \
-                htop \
                 imagemagick \
                 libarchive-dev \
                 libbz2-1.0 \
@@ -222,42 +202,32 @@ get-base() {
                 libxt6 \
                 libxt-dev \
                 libyaml-dev \
-                make \
                 openssl \
                 psmisc \
+                python \
                 re2c \
                 ruby \
                 s3cmd \
                 sqlite3 \
                 strace \
                 telnet \
-                unzip \
                 util-linux \
-                wget \
                 whiptail \
                 xz-utils \
-                zip \
                 zlib1g-dev
               ;;
             18.04)
               sudo apt install -y \
                 apt-transport-https \
-                automake \
                 autotools-dev \
                 base-files \
                 base-passwd \
                 binutils \
-                bison \
                 build-essential \
                 bzip2 \
-                cmake \
-                curl \
                 dnsutils \
                 gdb \
-                git \
-                git-core \
                 gnupg \
-                htop \
                 imagemagick \
                 libarchive-dev \
                 libbz2-1.0 \
@@ -302,21 +272,18 @@ get-base() {
                 libxt6 \
                 libxt-dev \
                 libyaml-dev \
-                make \
                 openssl \
                 psmisc \
+                python \
                 re2c \
                 ruby \
                 s3cmd \
                 sqlite3 \
                 strace \
                 telnet \
-                unzip \
                 util-linux \
-                wget \
                 whiptail \
                 xz-utils \
-                zip \
                 zlib1g-dev
               ;;
           esac
@@ -325,6 +292,25 @@ get-base() {
       ;;
   esac
 }
+if (! type -p python >/dev/null && ! type -p ruby >/dev/null); then get-base; fi
+
+# ### version control ###
+get-git() {
+  case $OSTYPE in
+    darwin*) brew install git ;;
+    freebsd*) port install git ;;
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat) sudo yum install -y git ;;
+        Debian | Ubuntu)
+          sudo add-apt-repository -y ppa:git-core/ppa
+          sudo apt-get install -y git git-core
+          ;;
+      esac
+      ;;
+  esac
+}
+if ! type -p git >/dev/null; then get-git; fi
 
 get-wget() {
   case $OSTYPE in
@@ -338,25 +324,65 @@ get-wget() {
       ;;
   esac
 }
+if ! type -p wget >/dev/null; then get-wget; fi
 
-get-rlwrap() {
-  if ! type -p wget >/dev/null; then get-wget; fi
-  case "${OSTYPE}" in
-    freebsd* | darwin*) ;;
+get-curl() {
+  case $OSTYPE in
+    darwin*) brew install curl ;;
+    freebsd*) port install curl ;;
     linux*)
       case "${DIST}" in
-        Redhat | RedHat) sudo yum install -y rlwrap ;;
-        Debian | Ubuntu) sudo apt-get install -y rlwrap ;;
+        Redhat | RedHat) sudo yum install -y curl ;;
+        Debian | Ubuntu) sudo apt-get install -y curl ;;
       esac
-      local current_pwd=$(pwd)
-      mkdir -p ~/.local/rlwrap
-      cd ~/.local/rlwrap
-      wget http://www.linuxification.at/download/rlwrap-extensions-V12-0.01.tar.gz
-      tar xvfz rlwrap-extensions-V12-0.01.tar.gz
-      cd $current_pwd
       ;;
   esac
 }
+if ! type -p curl >/dev/null; then get-curl; fi
+
+# ### data compressor ###
+get-zip() {
+  case $OSTYPE in
+    darwin*) brew install zip ;;
+    freebsd*) port install zip ;;
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat) sudo yum install -y zip ;;
+        Debian | Ubuntu) sudo apt-get install -y zip ;;
+      esac
+      ;;
+  esac
+}
+if ! type -p zip >/dev/null; then get-zip; fi
+
+get-unzip() {
+  case $OSTYPE in
+    darwin*) brew install unzip ;;
+    freebsd*) port install unzip ;;
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat) sudo yum install -y unzip ;;
+        Debian | Ubuntu) sudo apt-get install -y unzip ;;
+      esac
+      ;;
+  esac
+}
+if ! type -p unzip >/dev/null; then get-unzip; fi
+
+# ### build ###
+get-make() {
+  case $OSTYPE in
+    darwin*) brew install make ;;
+    freebsd*) port install make ;;
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat) sudo yum install -y automake bison cmake make ;;
+        Debian | Ubuntu) sudo apt-get install -y automake bison cmake make ;;
+      esac
+      ;;
+  esac
+}
+if ! type -p make >/dev/null; then get-make; fi
 
 get-autoconf() {
   if ! type -p wget >/dev/null; then get-wget; fi
@@ -401,6 +427,40 @@ get-boost() {
             libevent-dev
           ;;
       esac
+      ;;
+  esac
+}
+
+# ### other ###
+get-htop() {
+  case $OSTYPE in
+    darwin*) brew install htop ;;
+    freebsd*) port install htop ;;
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat) sudo yum install -y htop ;;
+        Debian | Ubuntu) sudo apt-get install -y htop ;;
+      esac
+      ;;
+  esac
+}
+if ! type -p htop >/dev/null; then get-htop; fi
+
+get-rlwrap() {
+  if ! type -p wget >/dev/null; then get-wget; fi
+  case "${OSTYPE}" in
+    freebsd* | darwin*) ;;
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat) sudo yum install -y rlwrap ;;
+        Debian | Ubuntu) sudo apt-get install -y rlwrap ;;
+      esac
+      local current_pwd=$(pwd)
+      mkdir -p ~/.local/rlwrap
+      cd ~/.local/rlwrap
+      wget http://www.linuxification.at/download/rlwrap-extensions-V12-0.01.tar.gz
+      tar xvfz rlwrap-extensions-V12-0.01.tar.gz
+      cd $current_pwd
       ;;
   esac
 }

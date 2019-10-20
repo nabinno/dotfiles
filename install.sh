@@ -13,7 +13,8 @@
     README.md \
     dotfiles.jpg \
     go.mod \
-    go.sum
+    go.sum \
+    install.sh
 )
 
 printf "${GREEN}"
