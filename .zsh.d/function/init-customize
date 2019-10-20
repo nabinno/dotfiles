@@ -63,8 +63,8 @@ push-dotfiles() {
           )
           ;;
       esac
-      rm -rf ~/.local/dotfiles/.docker/config.json
-      rm -rf ~/.local/dotfiles/.docker/etc/nginx/conf.d/*
+      rm -rf .docker/config.json
+      if [ -d .docker/etc/nginx/conf.d ]; then rm -rf .docker/etc/nginx/conf.d; fi
       case "${OSTYPE}" in freebsd* | darwin* | linux*) cp -pr ~/.screenrc . ;; esac
       if ! [ $is_credential ]; then git checkout -- .emacs.d/lisp/init-credential.el; fi
       if ! [ $is_mu4e ]; then git checkout -- .emacs.d/lisp/init-mu4e.el; fi
