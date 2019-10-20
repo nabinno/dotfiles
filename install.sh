@@ -7,7 +7,13 @@
   git clone https://github.com/nabinno/dotfiles.git .local/dotfiles
   cp -f .local/dotfiles/* .
   cp -f .local/dotfiles/.* .
-  rm -f Dockerfile dotfiles.jpg LICENSE README.md go.mod go.sum
+  rm -f \
+    Dockerfile \
+    LICENSE \
+    README.md \
+    dotfiles.jpg \
+    go.mod \
+    go.sum
 )
 
 printf "${GREEN}"
