@@ -42,4 +42,5 @@ get-global-asdf-packages() {
   asdf plugin-add kops
   asdf plugin-add kubectl
   asdf plugin-add minikube
+  asdf reshim
 }
