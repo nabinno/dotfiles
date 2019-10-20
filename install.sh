@@ -5,8 +5,9 @@
   if [ -d ~/.local/dotfiles ]; then rm -fr .local/dotfiles; fi
   mkdir -p .local/dotfiles
   git clone https://github.com/nabinno/dotfiles.git .local/dotfiles
-  cp -f ~/.local/dotfiles/* ~/
-  cp -f ~/.local/dotfiles/.* ~/
+  cp -f .local/dotfiles/* .
+  cp -f .local/dotfiles/.* .
+  rm -f Dockerfile dotfiles.jpg LICENSE README.md
 )
 
 printf "${GREEN}"
