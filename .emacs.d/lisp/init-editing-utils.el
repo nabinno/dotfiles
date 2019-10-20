@@ -159,8 +159,10 @@
 (global-set-key (kbd "C-x C-.")         'pop-global-mark)
 ;; (global-set-key (kbd "C-x M-[ 1 ; 5 n") 'pop-global-mark)
 
-(require-package 'ace-jump-mode)
-(global-set-key (kbd "") 'ace-jump-word-mode)
+(use-package ace-jump-mode
+  :straight t
+  :config
+  (global-set-key (kbd "") 'ace-jump-word-mode))
 
 (require-package 'multiple-cursors)
 ;; multiple-cursors
