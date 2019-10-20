@@ -10,7 +10,6 @@ get-goenv() {
     freebsd* | darwin* | linux*) anyenv install goenv && exec -l zsh ;;
   esac
 }
-if ! type -p goenv >/dev/null; then get-goenv; fi
 
 # ----------------------------------------------------------------------
 get-go() {
@@ -28,6 +27,7 @@ get-go-by-asdf() {
 }
 
 get-go-by-goenv() {
+  if ! type -p goenv >/dev/null; then get-goenv; fi
   case "${OSTYPE}" in
     freebsd* | darwin*) ;;
     linux*)
@@ -50,7 +50,7 @@ set-go() {
 
 if ! type -p go >/dev/null; then
   get-go
-  (get-global-go-packages 2 &)
+  get-global-go-packages
 else
   export GOROOT=$(go env GOROOT)
   export PATH="$GOROOT/bin:$PATH"

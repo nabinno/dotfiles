@@ -25,7 +25,8 @@ require() {
 require_other() {
   (
     cd $DOTFILES_PATH/.zsh.d/function
-    GO111MODULE=off go run .
+    go mod why
+    go run .
   )
 }
 
@@ -85,7 +86,7 @@ require init-git--util
 (require init-vagrant 2 &)
 (require init-wercker 2 &)
 (require init-ansible 2 &)
-(require init-terraform 2 &)
+require init-terraform
 require init-terraform--util
 require init-zsh
 (require init-powershell 2 &)
