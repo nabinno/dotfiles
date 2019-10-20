@@ -10,6 +10,7 @@ get-rust() {
       asdf plugin-add rust
       asdf install rust $REQUIRED_RUST_VERSION
       asdf global rust $REQUIRED_RUST_VERSION
+      get-global-cargo-packages
       ;;
   esac
 }
@@ -19,3 +20,4 @@ get-global-cargo-packages() {
     ripgrep \
     fselect
 }
+if ! type rustc >/dev/null; then get-rust; fi
