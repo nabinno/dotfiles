@@ -7,13 +7,10 @@ get-inotify() {
   case "${OSTYPE}" in
     freebsd* | darwin*) ;;
     linux*)
-      local current_pwd=$(pwd)
-      curl -O http://jensd.be/download/inotify-tools-${REQUIRED_INOTIFY_VERSION}.tar.gz
-      tar -xvzf inotify-tools-${REQUIRED_INOTIFY_VERSION}.tar.gz
-      cd inotify-tools-${REQUIRED_INOTIFY_VERSION}
-      ./configure && make && (yes | sudo make install)
-      cd $current_pwd
-      rm -fr inotify-tools-${REQUIRED_INOTIFY_VERSION}*
+      case "${DIST}" in
+        Redhat | RedHat) sudo yum install inotify-tools ;;
+        Debian | Ubuntu) sudo apt-get install inotify-tools ;;
+      esac
       ;;
   esac
 }
