@@ -446,6 +446,20 @@ get-htop() {
 }
 if ! type -p htop >/dev/null; then get-htop; fi
 
+get-jq() {
+  case $OSTYPE in
+    darwin*) brew install jq ;;
+    freebsd*) port install jq ;;
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat) sudo yum install -y jq ;;
+        Debian | Ubuntu) sudo apt-get install -y jq ;;
+      esac
+      ;;
+  esac
+}
+if ! type -p jq >/dev/null; then get-jq; fi
+
 get-rlwrap() {
   if ! type -p wget >/dev/null; then get-wget; fi
   case "${OSTYPE}" in

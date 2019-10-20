@@ -1,13 +1,21 @@
 #!/usr/bin/env zsh
 
-export REQUIRED_OPENJDK_VERSION=openjdk-11.0.1
-case $DIST in
-  Redhat | RedHat) export REQUIRED_OEPNJDK_SHORT_VERSION=1.8 ;;
-  Ubuntu)
-    case $DIST_VERSION in
-      12.04) export REQUIRED_OEPNJDK_SHORT_VERSION=8 ;;
-      14.04) export REQUIRED_OEPNJDK_SHORT_VERSION=system ;;
-      16.04) export REQUIRED_OEPNJDK_SHORT_VERSION=1.8 ;;
+export JAVA_PACKAGE_MANAGER=asdf
+case "${JAVA_PACKAGE_MANAGER}" in
+  asdf)
+    export REQUIRED_OPENJDK_VERSION=adopt-openjdk-11.0.4+11
+    ;;
+  anyenv)
+    export REQUIRED_OPENJDK_VERSION=openjdk-11.0.1
+    case $DIST in
+      Redhat | RedHat) export REQUIRED_OEPNJDK_SHORT_VERSION=1.8 ;;
+      Ubuntu)
+        case $DIST_VERSION in
+          12.04) export REQUIRED_OEPNJDK_SHORT_VERSION=8 ;;
+          14.04) export REQUIRED_OEPNJDK_SHORT_VERSION=system ;;
+          16.04) export REQUIRED_OEPNJDK_SHORT_VERSION=1.8 ;;
+        esac
+        ;;
     esac
     ;;
 esac
@@ -31,6 +39,10 @@ get-jenv() {
 # ----------------------------------------------------------------------
 # ### installation ###
 get-java() {
+  eval "get-java-by-${JAVA_PACKAGE_MANAGER}"
+}
+
+get-java-by-asdf() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       case $(asdf plugin-list) in *java*) ;; *) asdf plugin-add java ;; esac
@@ -40,7 +52,7 @@ get-java() {
   esac
 }
 
-get-java-by-nix() {
+get-java-by-anyenv() {
   case "${OSTYPE}" in
     freebsd* | darwin*)
       nix-install openjdk
@@ -87,6 +99,10 @@ get-java-by-nix() {
 }
 
 set-javahome() {
+  eval "set-javahome-by-${JAVA_PACKAGE_MANAGER}"
+}
+
+set-javahome-by-asdf() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       export JAVA_HOME=$(asdf where java)$REQUIRED_OPENJDK_VERSION
@@ -94,7 +110,7 @@ set-javahome() {
   esac
 }
 
-set-javahome-with-nix() {
+set-javahome-by-anyenv() {
   case "${OSTYPE}" in
     freebsd* | darwin*)
       export JAVA_HOME=~/.nix-profile/lib/openjdk
