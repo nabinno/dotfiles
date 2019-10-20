@@ -1,6 +1,7 @@
 #!/usr/bin/env zsh
 
 export REQUIRED_RUBY_VERSION=2.5.3
+export RUBY_PACKAGE_MANAGER=anyenv
 
 # ### version control ###
 get-rbenv() {
@@ -15,18 +16,23 @@ get-rbenv() {
 
 # ----------------------------------------------------------------------
 # ### installation ###
+get-ruby() {
+  eval "get-ruby-by-${RUBY_PACKAGE_MANAGER}"
+  (get-global-gem-packages 2 &)
+}
+
 get-ruby-by-asdf() {
   case "${OSTYPE}" in
     cygwin) apt-cyg install ruby ;;
     freebsd* | darwin* | linux*)
+      case $(asdf plugin-list) in *ruby*) ;; *) asdf plugin-add ruby ;; esac
       asfd install ruby $REQUIRED_RUBY_VERSION
       asdf global ruby $REQUIRED_RUBY_VERSION
-      (get-global-gem-packages 2 &)
       ;;
   esac
 }
 
-get-ruby() {
+get-ruby-by-anyenv() {
   case "${OSTYPE}" in
     cygwin) apt-cyg install ruby ;;
     freebsd* | darwin* | linux*)
@@ -34,7 +40,6 @@ get-ruby() {
       rbenv install $REQUIRED_RUBY_VERSION
       rbenv rehash
       rbenv global $REQUIRED_RUBY_VERSION
-      (get-global-gem-packages 2 &)
       ;;
   esac
 }
@@ -59,12 +64,13 @@ get-global-gem-packages() {
   gem install rufo -v 0.1.0
 }
 
-if ! type -p ruby >/dev/null; then
-  get-ruby
-else
-  # rm -f ~/.ruby-version
-  # rbenv global $REQUIRED_RUBY_VERSION
-  # _REQUIRED_RUBY_VERSION=$(echo $REQUIRED_RUBY_VERSION | sed 's/\(.*\..*\)\..*/\1/')
-  # _CURRENT_RUBY_VERSION=$(ruby -v | cut -f 2 -d " " | sed 's/^\([0-9]\{1,\}\.[0-9]\{1,\}\)\..*/\1/')
-  # if [[ $_REQUIRED_RUBY_VERSION > $_CURRENT_RUBY_VERSION ]]; then get-ruby; fi
-fi
+case ${RUBY_PACKAGE_MANAGER} in
+  rbenv)
+    if (
+      ! type -p ruby >/dev/null &&
+        [[ $(rbenv versions | awk '{print $1$2}') == "*system" ]]
+    ); then
+      get-ruby
+    fi
+    ;;
+esac

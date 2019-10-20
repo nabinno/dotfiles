@@ -50,7 +50,7 @@ require init-homebrew
 # ProgrammingLanguage
 require init-go
 (require_other 2 &)
-# (require init-ruby 2 &) # migrating
+require init-ruby
 require init-ruby--util
 require init-elixir
 (require init-crystal 2 &)
