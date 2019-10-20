@@ -42,19 +42,9 @@ get-nix() {
           ;;
         Ubuntu)
           case $DIST_VERSION in
-            12.04)
-              cd ~ && curl https://nixos.org/nix/install | sh
-              nix-channel --add https://nixos.org/channels/nixpkgs-unstable
-              nix-channel --update
-              sudo groupadd -g 20000 nixbld
-              for i in $(seq 1 10); do
-                sudo useradd -u $(expr 20000 + $i) -g nixbld -c "Nix build user $i" -d /var/empty -s /noshell
-              done
-              sudo echo "build-users-group = nixbld" >>/etc/nix/nix.conf
-              sudo chown -R ${CURRENT_USER} /nix
-              source ~/.nix-profile/etc/profile.d/nix.sh
-              ;;
             14.04 | 16.04 | 18.04)
+              sudo mkdir /etc/nix
+              echo 'use-sqlite-wal = false' | sudo tee -a /etc/nix/nix.conf
               cd ~ && curl https://nixos.org/nix/install | sh
               sudo chown -R ${CURRENT_USER} /nix
               ;;
