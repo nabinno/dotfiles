@@ -57,7 +57,10 @@ push-dotfiles() {
         WSL | WSL2)
           cp -pr "$(wslpath $(powershell.exe -Command "[Environment]::GetFolderPath('MyDocuments')" | sed 's/\r//'))/WindowsPowerShell/Microsoft.PowerShell_profile.ps1" .win32/MyDocuments/WindowsPowerShell/
           cp -pr "$(wslpath $(wslvar AppData))/.emacs" .win32/AppData/Roaming/
-          cp -pr "$(wslpath $(wslvar LocalAppData))"/Packages/Microsoft.WindowsTerminal_*/LocalState/profiles.json .win32/AppData/Local/Packages/Microsoft.WindowsTerminal/LocalState/
+          (
+            cd "$(wslpath $(wslvar LocalAppData))"/Packages/Microsoft.WindowsTerminal_*/LocalState
+            cp -pr profiles.json $DOTFILES_PATH/.win32/AppData/Local/Packages/Microsoft.WindowsTerminal/LocalState/
+          )
           ;;
       esac
       rm -rf ~/.local/dotfiles/.docker/config.json
@@ -100,7 +103,10 @@ fetch-dotfiles() {
       WSL | WSL2)
         cp -pr .win32/MyDocuments/WindowsPowerShell/* "$(wslpath $(powershell.exe -Command "[Environment]::GetFolderPath('MyDocuments')" | sed 's/\r//'))/WindowsPowerShell/"
         cp -pr .win32/AppData/Roaming/.* "$(wslpath $(wslvar AppData))/"
-        cp -pr .win32/AppData/Local/Packages/Microsoft.WindowsTerminal/LocalState/profiles.json "$(wslpath $(wslvar LocalAppData))"/Packages/Microsoft.WindowsTerminal_*/LocalState/
+        (
+          cd "$(wslpath $(wslvar LocalAppData))"/Packages/Microsoft.WindowsTerminal_*/LocalState/
+          cp -pr $DOTFILES_PATH/.win32/AppData/Local/Packages/Microsoft.WindowsTerminal/LocalState/profiles.json .
+        )
         ;;
     esac
 
