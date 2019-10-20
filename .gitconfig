@@ -68,5 +68,7 @@
 	autosetupmerge = always
 [push]
 	default = simple
+[url "git@github.com:"]
+	insteadOf = https://github.com/
 [ghq]
 	root = ~/.ghq.d/src
