@@ -12,6 +12,10 @@ get-pyenv() {
 
 # ----------------------------------------------------------------------
 # ### installation ###
+get-python() {
+  get-python-by-anyenv
+}
+
 get-python-by-asdf() {
   case "${OSTYPE}" in
     cygwin)
@@ -28,7 +32,7 @@ get-python-by-asdf() {
   esac
 }
 
-get-python() {
+get-python-by-anyenv() {
   case "${OSTYPE}" in
     cygwin)
       apt-cyg install \
@@ -36,6 +40,7 @@ get-python() {
       python-setuptools
       ;;
     freebsd* | darwin* | linux*)
+      if ! type pyenv >/dev/null; then get-pyenv; fi
       case $DIST in
         RedHat | Redhat | Debian)
           if ! type -p pyenv >/dev/null; then get-pyenv; fi
@@ -71,7 +76,7 @@ get-python() {
       ;;
   esac
 }
-if ! type -p python >/dev/null; then get-python; fi
+if ! type -p pip >/dev/null; then get-python; fi
 
 # ----------------------------------------------------------------------
 # Pip
