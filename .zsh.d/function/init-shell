@@ -13,11 +13,12 @@ get-shellcheck() {
 get-shfmt() {
   case $OSTYPE in
     linux*)
-      local current_pwd=$(pwd)
-      cd $(mktemp -d)
-      go mod init tmp
-      go get mvdan.cc/sh/cmd/shfmt
-      cd $current_pwd
+      (
+        cd $(mktemp -d)
+        go mod init tmp
+        go get mvdan.cc/sh/cmd/shfmt
+      )
       ;;
   esac
 }
+if ! type -p shfmt >/dev/null; then get-shfmt; fi
