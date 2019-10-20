@@ -31,9 +31,9 @@ require_other() {
 
 # Base
 require init-os-detect
-(require init-os-update 2 &)
+require init-os-update
 require init-environmental-variable
-(require init-base-installation 2 &)
+require init-base-installation
 (require init-shell 2 &)
 (require init-windows-management-framework 2 &)
 (require init-chocolatey 2 &)
@@ -75,7 +75,7 @@ require init-rust
 require init-dns
 
 # IntegratedDevelopmentEnvironment
-(require init-emacs 2 &)
+require init-emacs
 (require init-file-system 2 &)
 (require init-git 2 &)
 require init-git--util
