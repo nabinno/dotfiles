@@ -25,9 +25,12 @@ Set-Alias fpkg Find-Package
 
 
 # PackageManagement::WindowsPackageManagement::Chocolatey
+if (!(Get-Command -ErrorAction Ignore choco)) {
+    Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+}
 $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 if (Test-Path($ChocolateyProfile)) {
-  Import-Module "$ChocolateyProfile"
+    Import-Module "$ChocolateyProfile"
 }
 
 
@@ -70,7 +73,7 @@ Set-PSReadlineOption -EditMode Emacs
 
 
 # IntegratedDevelopmentEnvironment::Editor::Vi
-$Vim = "C:\Program Files (x86)\vim\vim80\vim.exe"
+$Vim = "C:\tools\vim\vim81\vim.exe"
 Set-Alias vim $Vim
 Set-Alias e $Vim
 if (!(Get-Command -ErrorAction Ignore $Vim)) { choco install vim }
@@ -121,6 +124,9 @@ Set-Alias shw Sync-HostsToWslIp
 # IntegratedDevelopmentEnvironment::OsLevelVirtualization::WSL
 if ((Get-WindowsOptionalFeature -Online -ErrorAction Ignore -FeatureName VirtualMachinePlatform).State -ne "Enabled") {
     Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform
+}
+if ((Get-WindowsOptionalFeature -Online -ErrorAction Ignore -FeatureName Microsoft-Windows-Subsystem-Linux).State -ne "Enabled") {
+    Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
 }
 
 
