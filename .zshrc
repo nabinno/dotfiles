@@ -36,70 +36,70 @@ require init-os-update
 require init-environmental-variable
 require init-base-installation
 require init-shell
-(require init-windows-management-framework 2 &)
-(require init-chocolatey 2 &)
-# require init-nix
+require init-windows-management-framework
+require init-chocolatey
+require init-nix
 # require init-chef
 require init-anyenv
 require init-asdf
-(require init-docker 2 &)
+require init-docker
 require init-docker--util
 require init-homebrew
-# (require init-autoparts 2 &)
+# require init-autoparts
 
 # ProgrammingLanguage
 require init-go
-(require_other 2 &)
+require_other
 require init-ruby
 require init-ruby--util
 require init-elixir
-(require init-crystal 2 &)
-(require init-ocaml 2 &)
-(require init-haskell 2 &)
-# (require init-dotnet 2&)
+require init-crystal
+require init-ocaml
+require init-haskell
+# require init-dotnet
 require init-java
-(require init-php 2 &)
+require init-php
 require init-php--util
-(require init-python 2 &)
-(require init-perl 2 &)
-(require init-javascript 2 &)
+require init-python
+require init-perl
+require init-javascript
 require init-rust
-(require init-red 2 &)
-# (require init-remote-procedure-call 2 &)
+require init-red
+# require init-remote-procedure-call
 
 # Daemon
-# (require init-postgresql 2 &)
-# (require init-mysql 2 &)
-# (require init-redis 2 &)
-# (require init-memcached 2 &)
-# (require init-nginx 2 &)
+# require init-postgresql
+# require init-mysql
+# require init-redis
+# require init-memcached
+# require init-nginx
 require init-dns
 
 # IntegratedDevelopmentEnvironment
 require init-emacs
-(require init-file-system 2 &)
-(require init-git 2 &)
+require init-file-system
+require init-git
 require init-git--util
-# (require init-plantuml 2 &)
-# (require init-imagemagick 2 &)
-(require init-benchmark 2 &)
-(require init-vagrant 2 &)
-(require init-wercker 2 &)
-(require init-ansible 2 &)
+# require init-plantuml
+# require init-imagemagick
+require init-benchmark
+require init-vagrant
+require init-wercker
+require init-ansible
 require init-terraform
 require init-terraform--util
 require init-zsh
-(require init-powershell 2 &)
+require init-powershell
 require init-screen
-# (require init-asciinema 2 &)
-# (require init-slack 2 &)
+# require init-asciinema
+# require init-slack
 # require init-hatena-bookmark
 
 # Platform
-(require init-heroku 2 &)
+require init-heroku
 require init-google-cloud-platform
-# (require init-kubernetes 2 &)
-(require init-amazon-web-services 2 &)
+# require init-kubernetes
+require init-amazon-web-services
 
 # Other
 require init-customize
