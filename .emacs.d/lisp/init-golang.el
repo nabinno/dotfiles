@@ -4,6 +4,8 @@
 (use-package go-mode
   :mode "\\.go$"
   :straight (el-patch :type git :host github :repo "dominikh/go-mode.el")
+  :commands go-mode
+  :defer t
   :init (if (executable-find "goimports")
             (setq gofmt-command "goimports")
           (message "Goimports not found; using default `gofmt-command'"))
@@ -12,6 +14,11 @@
   (add-hook 'go-mode-hook
             (lambda ()
               (setq tab-width 4))))
+
+(use-package company-go
+  :straight t
+  :config
+  (define-key go-mode-map (kbd "M-N") 'company-go))
 
 (use-package eglot
   :straight t
