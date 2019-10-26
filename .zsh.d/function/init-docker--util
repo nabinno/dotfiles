@@ -13,6 +13,9 @@ set-docker-as-app-group() {
           sudo usermod -aG docker app
           echo "app ALL=(ALL) NOPASSWD: ALL" | sudo tee -a /etc/sudoers
           ;;
+        Ubuntu)
+          sudo gpasswd -a app docker
+          ;;
       esac
       ;;
   esac
