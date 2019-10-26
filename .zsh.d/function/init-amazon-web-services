@@ -17,6 +17,16 @@ get-aws-cdk() {
 }
 if ! type -p cdk >/dev/null; then get-aws-cdk; fi
 
+get-aws-sam() {
+  case "${OSTYPE}" in
+    darwin* | linux*)
+      brew tap aws/tap
+      brew install aws-sam-cli
+      ;;
+  esac
+}
+if ! type -p sam >/dev/null; then get-aws-sam; fi
+
 fix-compdef-problem() {
   touch ~/.zshenv
   echo 'autoload -Uz compinit
