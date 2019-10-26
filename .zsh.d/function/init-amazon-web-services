@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 
+export SAM_CLI_TELEMETRY=0
+
 get-aws() {
   if ! type -p pip >/dev/null; then get-pip; fi
   case "${OSTYPE}" in
