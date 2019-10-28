@@ -382,7 +382,11 @@ get-make() {
       ;;
   esac
 }
-if ! type -p make >/dev/null; then get-make; fi
+if (
+  ! type -p make >/dev/null ||
+    ! type -p automake >/dev/null ||
+    ! type -p cmake >/dev/null
+); then get-make; fi
 
 get-autoconf() {
   if ! type -p wget >/dev/null; then get-wget; fi
