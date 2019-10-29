@@ -21,7 +21,7 @@ if ! type -p tfswitch >/dev/null; then get-terraform-switcher; fi
 set-terraform-switcher() {
   local tfswitchrc_path=".tfswitchrc"
   if [ -f "$tfswitchrc_path" ]; then
-    rm ~/.local/bin/terraform
+    if [ -f ~/.local/bin/terraform ]; then rm ~/.local/bin/terraform; fi
     tfswitch -b ~/.local/bin/terraform $REQUIRED_TERRAFORM_VERSION
   fi
 }
