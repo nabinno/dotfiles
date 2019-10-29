@@ -35,7 +35,6 @@ require init-os-detect
 require init-os-update
 require init-environmental-variable
 require init-base-installation
-require init-shell
 require init-windows-management-framework
 require init-chocolatey
 require init-nix
@@ -50,6 +49,7 @@ require init-homebrew
 # ProgrammingLanguage
 require init-go
 require_other
+require init-shell
 require init-ruby
 require init-ruby--util
 require init-elixir
