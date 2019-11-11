@@ -97,6 +97,7 @@ get-pip() {
       ;;
   esac
 }
+if ! type -p pip >/dev/null; then get-pip; fi
 
 get-global-pip-packages() {
   case "$OSTYPE" in
@@ -133,7 +134,6 @@ get-global-pip-packages() {
       ;;
   esac
 }
-if ! type -p pip >/dev/null; then get-pip; fi
 
 get-keras-rl() {
   (
