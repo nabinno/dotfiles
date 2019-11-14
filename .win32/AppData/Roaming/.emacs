@@ -27,6 +27,19 @@
 (add-to-list 'default-frame-alist '(font . "MS Gothic"))
 (set-face-attribute 'default nil :font "MS Gothic" :height 120)
 (set-frame-font "MS Gothic" nil t)
+(global-set-key (kbd "M-0") '(lambda () (interactive) (progn (find-file "~/.emacs") (delete-other-windows))))
+(global-set-key (kbd "C-x k") 'kill-this-buffer)
+(global-set-key (kbd "C-h") 'delete-backward-char)
+(global-set-key (kbd "C-t") 'quoted-insert)
+
+
+;;; display-time-mode
+(display-time-mode t)
+(setq display-time-24hr-format t)
+(setq display-time-string-forms
+      '((let
+            ((system-time-locale "C"))
+          (format-time-string " [%R %d %b %a] " now))))
 
 
 ;;; MELPA - Standard package repositories
@@ -102,6 +115,40 @@ re-downloaded in order to locate PACKAGE."
 (global-set-key (kbd "C-c c c") 'mc/edit-lines)
 (global-set-key (kbd "C-c c e") 'mc/edit-ends-of-lines)
 (global-set-key (kbd "C-c c a") 'mc/edit-beginnings-of-lines)
+;; To be able to M-x without meta
+(global-set-key (kbd "C-x C-m") 'execute-extended-command)
+;; Vimmy alternatives to M-^ and C-u M-^
+(global-set-key (kbd "C-c j") 'join-line)
+(global-set-key (kbd "C-c J") (lambda () (interactive) (join-line 1)))
+
+
+;;; whole-line-or-region-mode
+(require-package 'whole-line-or-region)
+(whole-line-or-region-mode t)
+(diminish 'whole-line-or-region-mode)
+(make-variable-buffer-local 'whole-line-or-region-mode)
+(defun suspend-mode-during-cua-rect-selection (mode-name)
+  "Add an advice to suspend `MODE-NAME' while selecting a CUA rectangle."
+  (let ((flagvar (intern (format "%s-was-active-before-cua-rectangle" mode-name)))
+        (advice-name (intern (format "suspend-%s" mode-name))))
+    (eval-after-load 'cua-rect
+      `(progn
+         (defvar ,flagvar nil)
+         (make-variable-buffer-local ',flagvar)
+         (defadvice cua--activate-rectangle (after ,advice-name activate)
+           (setq ,flagvar (and (boundp ',mode-name) ,mode-name))
+           (when ,flagvar
+             (,mode-name 0)))
+         (defadvice cua--deactivate-rectangle (after ,advice-name activate)
+           (when ,flagvar
+             (,mode-name 1)))))))
+(suspend-mode-during-cua-rect-selection 'whole-line-or-region-mode)
+
+
+;;; visual-regex
+(require-package 'visual-regexp)
+(define-key global-map (kbd "M-r") 'vr/replace)
+(define-key global-map (kbd "C-M-m") 'vr/mc-mark)
 
 
 ;;; elscreen
