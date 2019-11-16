@@ -130,7 +130,8 @@ get-global-pip-packages() {
         scikit-learn
       # benchmark
       pip install -U \
-        line_profiler
+        line_profiler \
+        memory_profiler
       # other
       pip install -U \
         q
