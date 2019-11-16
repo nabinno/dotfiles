@@ -128,6 +128,9 @@ get-global-pip-packages() {
         Theano \
         keras \
         scikit-learn
+      # benchmark
+      pip install -U \
+        line_profiler
       # other
       pip install -U \
         q
