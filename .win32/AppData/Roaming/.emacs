@@ -13,6 +13,9 @@
  '(blink-cursor-mode nil)
  '(inhibit-startup-screen t)
  '(menu-bar-mode nil)
+ '(package-selected-packages
+   (quote
+    (undo-tree whole-line-or-region visual-regexp scratch page-break-lines multiple-cursors markdown-mode exec-path-from-shell elscreen el-get diminish)))
  '(scroll-bar-mode nil)
  '(tool-bar-mode nil)
  '(truncate-lines t))
@@ -40,6 +43,21 @@
       '((let
             ((system-time-locale "C"))
           (format-time-string " [%R %d %b %a] " now))))
+
+
+;;; auto-save-mode
+(setq make-backup-files nil)
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+
+
+;;; undo-tree
+(require-package 'undo-tree)
+(global-undo-tree-mode)
+(diminish 'undo-tree-mode)
+(global-set-key (kbd "M-/") 'undo-tree-undo)
 
 
 ;;; MELPA - Standard package repositories
