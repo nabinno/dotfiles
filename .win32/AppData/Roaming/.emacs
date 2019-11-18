@@ -194,6 +194,12 @@ re-downloaded in order to locate PACKAGE."
 	    ;; (hide-sublevels 2)
 	    ))
 
+
+(require 'server)
+(unless (server-running-p)
+  (server-start))
+
+
 
 (provide '.emacs)
 ;;; .emacs ends here
