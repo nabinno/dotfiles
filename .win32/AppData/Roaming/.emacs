@@ -53,13 +53,6 @@
       `((".*" ,temporary-file-directory t)))
 
 
-;;; undo-tree
-(require-package 'undo-tree)
-(global-undo-tree-mode)
-(diminish 'undo-tree-mode)
-(global-set-key (kbd "M-/") 'undo-tree-undo)
-
-
 ;;; MELPA - Standard package repositories
 (when (< emacs-major-version 24)
   ;; Mainly for ruby-mode
@@ -102,6 +95,13 @@ re-downloaded in order to locate PACKAGE."
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
 (setenv "PATH" (concat "C:\\Program Files\\Git\\cmd;" (getenv "PATH")))
+
+
+;;; undo-tree
+(require-package 'undo-tree)
+(global-undo-tree-mode)
+(diminish 'undo-tree-mode)
+(global-set-key (kbd "M-/") 'undo-tree-undo)
 
 
 ;;; page-break-lines-char
