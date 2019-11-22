@@ -7,15 +7,15 @@
               auto-mode-alist))
 
 
-;;; IPython
-(setq python-shell-interpreter "ipython")
-(let* ((profile-name "profile_for_emacs")
-       (folder-name-getter `(substring (shell-command-to-string (concat "ipython locate profile " ,profile-name)) 0 -1)))
-    (unless (file-directory-p (eval folder-name-getter))
-      (shell-command (concat "ipython profile create " profile-name))
-      (let ((ipython-config-folder (eval folder-name-getter)))
-        (shell-command (concat "echo \"\n\nc.InteractiveShellApp.extensions.append(\\\"autoreload\\\")\nc.InteractiveShellApp.exec_lines.append(\\\"%autoreload 2\\\")\" >> " ipython-config-folder "/ipython_config.py"))))
-    (set-variable 'python-shell-interpreter-args (concat "--profile=" profile-name " " python-shell-interpreter-args)))
+;; ;;; IPython
+;; (setq python-shell-interpreter "ipython")
+;; (let* ((profile-name "profile_for_emacs")
+;;        (folder-name-getter `(substring (shell-command-to-string (concat "ipython locate profile " ,profile-name)) 0 -1)))
+;;     (unless (file-directory-p (eval folder-name-getter))
+;;       (shell-command (concat "ipython profile create " profile-name))
+;;       (let ((ipython-config-folder (eval folder-name-getter)))
+;;         (shell-command (concat "echo \"\n\nc.InteractiveShellApp.extensions.append(\\\"autoreload\\\")\nc.InteractiveShellApp.exec_lines.append(\\\"%autoreload 2\\\")\" >> " ipython-config-folder "/ipython_config.py"))))
+;;     (set-variable 'python-shell-interpreter-args (concat "--profile=" profile-name " " python-shell-interpreter-args)))
 
 
 ;;; Language Server Protocol
