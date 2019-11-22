@@ -36,6 +36,10 @@
 (global-set-key (kbd "C-t") 'quoted-insert)
 
 
+;;; background
+(set-frame-parameter (selected-frame) 'alpha '(80 80))
+
+
 ;;; display-time-mode
 (display-time-mode t)
 (setq display-time-24hr-format t)
