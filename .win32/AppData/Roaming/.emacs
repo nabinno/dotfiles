@@ -11,11 +11,13 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(blink-cursor-mode nil)
+ '(google-translate-default-source-language "en")
+ '(google-translate-default-target-language "ja")
  '(inhibit-startup-screen t)
  '(menu-bar-mode nil)
  '(package-selected-packages
    (quote
-    (undo-tree whole-line-or-region visual-regexp scratch page-break-lines multiple-cursors markdown-mode exec-path-from-shell elscreen el-get diminish)))
+    (move-dup expand-region highlight-symbol unfill google-translate undo-tree whole-line-or-region visual-regexp scratch page-break-lines multiple-cursors markdown-mode exec-path-from-shell elscreen el-get diminish)))
  '(scroll-bar-mode nil)
  '(tool-bar-mode nil)
  '(truncate-lines t))
@@ -55,6 +57,23 @@
       `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
+
+
+;;; Rename the current file
+(defun rename-this-file-and-buffer (new-name)
+  "Renames both current buffer and file it's visiting to NEW-NAME."
+  (interactive "sNew name: ")
+  (let ((name (buffer-name))
+        (filename (buffer-file-name)))
+    (unless filename
+      (error "Buffer '%s' is not visiting a file!" name))
+    (if (get-buffer new-name)
+        (message "A buffer named '%s' already exists!" new-name)
+      (progn
+        (when (file-exists-p filename)
+         (rename-file filename new-name 1))
+        (rename-buffer new-name)
+        (set-visited-file-name new-name)))))
 
 
 ;;; MELPA - Standard package repositories
@@ -116,6 +135,17 @@ re-downloaded in order to locate PACKAGE."
 (diminish 'page-break-lines-mode)
 (add-hook 'prog-mode-hook 'page-break-lines-mode)
 (setq page-break-lines-char ?-)
+
+
+;;; unfill and whole-line-or-region
+(require-package 'unfill)
+(require-package 'whole-line-or-region)
+(when (fboundp 'electric-pair-mode)
+  (electric-pair-mode))
+
+
+;;; Show matching parens
+(show-paren-mode 1)
 
 
 ;;; multiple-cursors
@@ -206,6 +236,30 @@ re-downloaded in order to locate PACKAGE."
 (elscreen-start)
 
 
+;;; highlight-symbol
+(require-package 'highlight-symbol)
+(dolist (hook '(prog-mode-hook html-mode-hook))
+  (add-hook hook 'highlight-symbol-mode)
+  (add-hook hook 'highlight-symbol-nav-mode))
+(eval-after-load 'highlight-symbol
+  '(diminish 'highlight-symbol-mode))
+
+
+;;; Expand region
+(require-package 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
+(global-set-key (kbd "M-=") 'er/expand-region)
+
+
+;;; move-dup
+(require-package 'move-dup)
+(global-set-key [M-up]              'md-move-lines-up)
+(global-set-key [M-down]            'md-move-lines-down)
+(global-set-key [M-S-up]            'md-move-lines-up)
+(global-set-key [M-S-down]          'md-move-lines-down)
+(global-set-key (kbd "C-c p") 'md-duplicate-down)
+
+
 ;;; markdown-mode
 (require-package 'markdown-mode)
 (setq auto-mode-alist
@@ -215,6 +269,14 @@ re-downloaded in order to locate PACKAGE."
 	    (define-key markdown-mode-map (kbd "M-e") 'markdown-cycle)
 	    ;; (hide-sublevels 2)
 	    ))
+
+
+;;; translation
+(require-package 'google-translate)
+(require 'google-translate-default-ui)
+(global-set-key "\C-ct" 'google-translate-at-point)
+(global-set-key "\C-cT" 'google-translate-query-translate)
+
 
 
 (require 'server)
