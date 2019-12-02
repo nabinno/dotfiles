@@ -17,7 +17,7 @@
  '(menu-bar-mode nil)
  '(package-selected-packages
    (quote
-    (move-dup expand-region highlight-symbol unfill google-translate undo-tree whole-line-or-region visual-regexp scratch page-break-lines multiple-cursors markdown-mode exec-path-from-shell elscreen el-get diminish)))
+    (ruby-hash-syntax move-dup expand-region highlight-symbol unfill google-translate undo-tree whole-line-or-region visual-regexp scratch page-break-lines multiple-cursors markdown-mode exec-path-from-shell elscreen el-get diminish)))
  '(scroll-bar-mode nil)
  '(tool-bar-mode nil)
  '(truncate-lines t))
@@ -260,6 +260,25 @@ re-downloaded in order to locate PACKAGE."
 (global-set-key (kbd "C-c p") 'md-duplicate-down)
 
 
+;;; Ruby
+(require-package 'ruby-mode)
+(require-package 'ruby-hash-syntax)
+(setq ruby-use-encoding-map nil)
+(after-load 'ruby-mode
+  (define-key ruby-mode-map (kbd "RET") 'reindent-then-newline-and-indent)
+  (define-key ruby-mode-map (kbd "TAB") 'indent-for-tab-command)
+  ;; Stupidly the non-bundled ruby-mode isn't a derived mode of
+  ;; prog-mode: we run the latter's hooks anyway in that case.
+  (add-hook 'ruby-mode-hook
+            (lambda ()
+              (unless (derived-mode-p 'prog-mode)
+                (run-hooks 'prog-mode-hook)))))
+(add-hook 'ruby-mode-hook 'subword-mode)
+(unless (require 'rufo nil 'noerror)
+  (el-get-bundle danielma/rufo.el))
+(add-hook 'ruby-mode-hook 'rufo-minor-mode)
+
+
 ;;; markdown-mode
 (require-package 'markdown-mode)
 (setq auto-mode-alist
@@ -269,6 +288,38 @@ re-downloaded in order to locate PACKAGE."
 	    (define-key markdown-mode-map (kbd "M-e") 'markdown-cycle)
 	    ;; (hide-sublevels 2)
 	    ))
+
+
+;;; org-mode
+(when (< emacs-major-version 24)
+  (require-package 'org))
+;; (require-package 'org-fstree) ;;; TODO
+
+(define-key global-map (kbd "C-c l") 'org-store-link)
+(define-key global-map (kbd "C-c a") 'org-agenda)
+
+;; Various preferences
+(setq org-log-done t
+      org-completion-use-ido t
+      org-edit-timestamp-down-means-later t
+      org-agenda-start-on-weekday nil
+      org-agenda-span 14
+      org-agenda-include-diary t
+      org-agenda-window-setup 'current-window
+      org-fast-tag-selection-single-key 'expert
+      org-export-kill-product-buffer-when-displayed t
+      org-tags-column 80)
+
+; Refile targets include this file and any file contributing to the agenda - up to 5 levels deep
+(setq org-refile-targets (quote ((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5))))
+; Targets start with the file name - allows creating level 1 tasks
+(setq org-refile-use-outline-path (quote file))
+; Targets complete in steps so we start with filename, TAB shows the next level of targets etc
+(setq org-outline-path-complete-in-steps t)
+
+(setq org-todo-keywords
+      (quote ((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d!/!)")
+              (sequence "WAITING(w@/!)" "SOMEDAY(S)" "|" "CANCELLED(c@/!)"))))
 
 
 ;;; translation
