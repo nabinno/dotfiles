@@ -105,7 +105,7 @@ set-javahome() {
 set-javahome-by-asdf() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
-      export JAVA_HOME=$(asdf where java)$REQUIRED_OPENJDK_VERSION
+      export JAVA_HOME=$(asdf where java)
       ;;
   esac
 }
