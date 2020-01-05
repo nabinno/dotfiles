@@ -168,7 +168,7 @@ get-poetry() {
 }
 if ! type -p poetry >/dev/null; then get-poetry; fi
 
-set-poetry() {
-  eval "$(poetry completions zsh)"
-}
-if type -p poetry >/dev/null; then set-poetry; fi
+# set-poetry() {
+#   eval "$(poetry completions zsh)"
+# }
+# if type -p poetry >/dev/null; then set-poetry; fi

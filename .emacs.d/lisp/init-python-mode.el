@@ -23,22 +23,27 @@
   (el-get-bundle emacs-lsp/lsp-python))
 
 
-;;; Jedi
-(require-package 'jedi)
-(add-hook 'python-mode-hook 'jedi:setup)
-(setq jedi:complete-on-dot t)
-;; (setq ac-sources
-;;       (delete 'ac-source-words-in-same-mode-buffers ac-sources))
-;; (add-to-list 'ac-sources 'ac-source-filename)
-;; (add-to-list 'ac-sources 'ac-source-jedi-direct)
-;; (define-key jedi-mode-map (kbd "<C-tab>") nil)
+;; ;;; Jedi
+;; (require-package 'jedi)
+;; (add-hook 'python-mode-hook 'jedi:setup)
+;; (setq jedi:complete-on-dot t)
+;; ;; (setq ac-sources
+;; ;;       (delete 'ac-source-words-in-same-mode-buffers ac-sources))
+;; ;; (add-to-list 'ac-sources 'ac-source-filename)
+;; ;; (add-to-list 'ac-sources 'ac-source-jedi-direct)
+;; ;; (define-key jedi-mode-map (kbd "<C-tab>") nil)
 
 
 ;;; Py-Autopep8
-(require-package 'py-autopep8)
-(setq py-autopep8-options '("--max-line-length=200"))
-(setq flycheck-flake8-maximum-line-length 200)
-(add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
+(require-package 'py-autopep8;; )
+;; (setq py-autopep8-options '("--max-line-length=200"))
+;; (setq flycheck-flake8-maximum-line-length 200)
+;; (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
+
+;;; Balcken
+(use-package blacken
+  :after python
+  :straight t)
 
 
 ;;; PyFlakes
