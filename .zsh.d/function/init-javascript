@@ -75,7 +75,15 @@ get-global-npm-packages-old() {
 }
 
 # ----------------------------------------------------------------------
-# ReasonML
+# ### React ###
+get-react() {
+  npm install -g \
+    create-react-app
+}
+if ! type -p get-react >/dev/null; then get-react; fi
+
+# ----------------------------------------------------------------------
+# ### ReasonML ###
 get-revery() {
   case $OSTYPE in
     linux*)
