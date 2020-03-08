@@ -80,7 +80,7 @@ get-react() {
   npm install -g \
     create-react-app
 }
-if ! type -p get-react >/dev/null; then get-react; fi
+if ! type -p create-react-app >/dev/null; then get-react; fi
 
 # ----------------------------------------------------------------------
 # ### ReasonML ###
