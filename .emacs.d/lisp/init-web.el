@@ -35,6 +35,12 @@
                                  )))
 (add-hook 'web-mode-hook  'web-mode-hook)
 
+;;; emmet
+(use-package emmet-mode
+  :after web-mode
+  :straight t
+  :config (add-hook 'web-mode-hook 'emmet-mode))
+
 
 ;; prettier
 (defun enable-minor-mode (my-pair)
