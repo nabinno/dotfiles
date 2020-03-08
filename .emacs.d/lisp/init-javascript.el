@@ -9,11 +9,11 @@
 (require-package 'js-comint)
 
 (defcustom preferred-javascript-mode
-  (first (remove-if-not #'fboundp '(js-mode js2-mode)))
+  (first (remove-if-not #'fboundp '(js-mode js2-mode rjsx-mode)))
   "Javascript mode to use for .js files."
   :type 'symbol
   :group 'programming
-  :options '(js-mode js2-mode))
+  :options '(js-mode js2-mode rjsx-mode))
 (defvar preferred-javascript-indent-level 2)
 
 ;; Need to first remove from list if present, since elpa adds entries too, which
@@ -49,6 +49,10 @@
   '(progn
      (add-hook 'js2-mode-hook #'add-node-modules-path)
      (add-hook 'js2-mode-hook #'prettier-js-mode)))
+(eval-after-load 'rjsx-mode
+  '(progn
+     (add-hook 'rjsx-mode-hook #'add-node-modules-path)
+     (add-hook 'rjsx-mode-hook #'prettier-js-mode)))
 
 
 ;;; Js-mode
@@ -202,6 +206,16 @@ been saved."
               (define-key js-mode-map (kbd "C-c i") 'js-doc-insert-function-doc)
               ;; (define-key js-mode-map (kbd "@") 'js-doc-insert-tag)
               ))
+
+
+;;; React
+(use-package rjsx-mode
+  :straight t
+  :config (with-eval-after-load 'rjsx-mode
+            (define-key rjsx-mode-map "<" nil)
+            (define-key rjsx-mode-map (kbd "C-d") nil)
+            (define-key rjsx-mode-map ">" nil))
+  )
 
 
 
