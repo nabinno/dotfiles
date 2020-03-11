@@ -9,18 +9,18 @@
 (require-package 'js-comint)
 
 (defcustom preferred-javascript-mode
-  (first (remove-if-not #'fboundp '(js-mode js2-mode rjsx-mode)))
+  (first (remove-if-not #'fboundp '(rjsx-mode js-mode js2-mode)))
   "Javascript mode to use for .js files."
   :type 'symbol
   :group 'programming
-  :options '(js-mode js2-mode rjsx-mode))
+  :options '(rjsx-mode js-mode js2-mode))
 (defvar preferred-javascript-indent-level 2)
 
 ;; Need to first remove from list if present, since elpa adds entries too, which
 ;; may be in an arbitrary order
 (eval-when-compile (require 'cl))
 (setq auto-mode-alist
-      (append '(("\\.js\\(\\.erb\\)?\\'" . js-mode))
+      (append '(("\\.js\\(\\.erb\\)?\\'" . rjsx-mode))
               auto-mode-alist))
 ;; (setq auto-mode-alist (cons `("\\.js\\(\\.erb\\)?\\'" . ,preferred-javascript-mode)
 ;;                             (loop for entry in auto-mode-alist
