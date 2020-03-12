@@ -214,7 +214,10 @@ been saved."
   :config (with-eval-after-load 'rjsx-mode
             (define-key rjsx-mode-map "<" nil)
             (define-key rjsx-mode-map (kbd "C-d") nil)
-            (define-key rjsx-mode-map ">" nil))
+            (define-key rjsx-mode-map ">" nil)
+            (define-key rjsx-mode-map "C" nil)
+            (define-key rjsx-mode-map (kbd "C-c / .") 'sgml-tag)
+            )
   )
 
 
