@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+
+set-asdf-completion() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      source ~/.asdf/completions/asdf.bash
+      ;;
+  esac
+}
+if [ -f ~/.asdf/asdf.sh ]; then set-asdf-completion; fi

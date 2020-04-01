@@ -13,7 +13,6 @@ set-asdf() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       source ~/.asdf/asdf.sh
-      source ~/.asdf/completions/asdf.bash
       ;;
   esac
 }
