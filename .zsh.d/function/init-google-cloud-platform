@@ -89,4 +89,4 @@ alias gcpp=gcloud-pubsub-status
 get-firebase-tools() {
   npm install -g firebase-tools
 }
-if ! type -p firebase >/dev/null; then get-firebase; fi
+if ! type -p firebase >/dev/null; then get-firebase-tools; fi
