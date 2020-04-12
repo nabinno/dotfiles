@@ -17,7 +17,7 @@
  '(menu-bar-mode nil)
  '(package-selected-packages
    (quote
-    (ruby-hash-syntax move-dup expand-region highlight-symbol unfill google-translate undo-tree whole-line-or-region visual-regexp scratch page-break-lines multiple-cursors markdown-mode exec-path-from-shell elscreen el-get diminish)))
+    (powershell ruby-hash-syntax move-dup expand-region highlight-symbol unfill google-translate undo-tree whole-line-or-region visual-regexp scratch page-break-lines multiple-cursors markdown-mode exec-path-from-shell elscreen el-get diminish)))
  '(scroll-bar-mode nil)
  '(tool-bar-mode nil)
  '(truncate-lines t))
@@ -100,7 +100,7 @@ re-downloaded in order to locate PACKAGE."
         (require-package package min-version t)))))
 
 
-;;; el-get
+;;; El-Get
 (require-package 'el-get)
 (add-to-list 'load-path (expand-file-name "el-get" user-emacs-directory))
 
@@ -330,9 +330,9 @@ re-downloaded in order to locate PACKAGE."
 
 
 
-(require 'server)
-(unless (server-running-p)
-  (server-start))
+;; (require 'server)
+;; (unless (server-running-p)
+;;   (server-start))
 
 
 

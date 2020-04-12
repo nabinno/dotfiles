@@ -5,7 +5,8 @@
 # PackageManagement::Docker
 # ProgrammingLanguage::DotNet
 # ProgrammingLanguage::DotNet::UniversalWindowsPlatform
-# IntegratedDevelopmentEnvironment::Shell
+# ProgrammingLanguage::Shell
+# ProgrammingLanguage::Go
 # IntegratedDevelopmentEnvironment::Editor::Emacs
 # IntegratedDevelopmentEnvironment::Editor::Vi
 # IntegratedDevelopmentEnvironment::ResourceManagement::Git
@@ -62,8 +63,22 @@ function Set-AppXPackages {
 }
 
 
-# IntegratedDevelopmentEnvironment::Shell
+# ProgrammingLanguage::Shell
 Set-Alias bash 'C:\Windows\System32\bash.exe'
+
+
+# ProgrammingLanguage::Go
+$env:GOROOT ='C:\Go'
+$env:GOPATH = "$([Environment]::GetFolderPath('UserProfile'))\.ghq.d"
+$env:GO111MODULE = 'on'
+$env:PATH = "$($env:GOROOT)\bin;$($env:PATH)"
+$env:PATH = "$($env:GOPATH)\bin;$($env:PATH)"
+function Get-Go {
+    choco install golang
+    go get -u github.com/peco/peco/cmd/peco
+    go get -u github.com/x-motemen/ghq
+}
+if (!(Get-Command -ErrorAction Ignore "$($env:GOROOT)\bin\go.exe")) { Get-Go }
 
 
 # IntegratedDevelopmentEnvironment::Editor::Emacs
@@ -73,7 +88,7 @@ Set-PSReadlineOption -EditMode Emacs
 
 
 # IntegratedDevelopmentEnvironment::Editor::Vi
-$Vim = "C:\tools\vim\vim81\vim.exe"
+$Vim = "C:\tools\vim\vim82\vim.exe"
 Set-Alias vim $Vim
 Set-Alias e $Vim
 if (!(Get-Command -ErrorAction Ignore $Vim)) { choco install vim }
