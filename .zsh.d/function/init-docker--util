@@ -83,6 +83,7 @@ alias dn='docker network'
 alias dp='docker ps -a --format "table {{.Names}}\t{{.Command}}\t{{.Status}}\t{{.Ports}}"'  # | less -S
 alias dps='docker ps -a --format "table {{.Names}}\t{{.Command}}\t{{.Status}}\t{{.Ports}}"' # | less -S
 alias dr='docker restart'
+alias dra='docker restart $(docker ps -a --format "{{.Names}}")'
 alias dt='docker tag'
 alias dtop='docker top'
 alias dv='docker version'

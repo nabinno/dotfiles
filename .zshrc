@@ -84,10 +84,10 @@ require init-git--util
 # require init-imagemagick
 require init-benchmark
 require init-vagrant
-require init-wercker
-require init-ansible
-require init-terraform
-require init-terraform--util
+# require init-wercker
+# require init-ansible
+# require init-terraform
+# require init-terraform--util
 require init-zsh
 require init-powershell
 require init-screen
@@ -96,11 +96,12 @@ require init-screen
 # require init-hatena-bookmark
 
 # Platform
-require init-heroku
+# require init-heroku
 require init-google-cloud-platform
 # require init-kubernetes
 require init-amazon-web-services
 
 # Other
+require init-asdf--util
 require init-customize
 if [ -f ~/.zsh.d/init.zsh ]; then source ~/.zsh.d/init.zsh; fi

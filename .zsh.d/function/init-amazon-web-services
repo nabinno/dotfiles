@@ -14,6 +14,31 @@ get-aws() {
 }
 if ! type -p aws >/dev/null; then get-aws; fi
 
+get-awslogs() {
+  if ! type -p pip >/dev/null; then get-pip; fi
+  case "${OSTYPE}" in
+    freebsd*) ;;
+    darwin* | linux*)
+      pip install -U awslogs
+      ;;
+  esac
+}
+if ! type -p awslogs >/dev/null; then get-awslogs; fi
+
+get-ecs-cli() {
+  if ! type -p pip >/dev/null; then get-pip; fi
+  case "${OSTYPE}" in
+    freebsd*) ;;
+    darwin*)
+      sudo curl -o /usr/local/bin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-darwin-amd64-latest
+      ;;
+    linux*)
+      sudo curl -o /usr/local/bin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-latest
+      ;;
+  esac
+}
+# if ! type -p ecs-cli >/dev/null; then get-ecs-cli; fi
+
 get-aws-cdk() {
   npm i -g aws-cdk
 }

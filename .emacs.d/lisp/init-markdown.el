@@ -10,6 +10,8 @@
 (add-hook 'markdown-mode-hook
           (lambda ()
             (define-key markdown-mode-map (kbd "M-e") 'markdown-cycle)
+            (define-key markdown-mode-map (kbd "C-c C-c") 'restclient-http-send-current)
+            (define-key markdown-mode-map (kbd "C-c C-v") 'restclient-http-send-current-stay-in-window)
             ;; (hide-sublevels 2)
             ))
 
