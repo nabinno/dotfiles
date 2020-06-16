@@ -16,7 +16,7 @@ get-redis() {
         Ubuntu)
           case $DIST_VERSION in
             12.04) parts install redis ;;
-            16.04) ;;
+            16.04 | 18.04) brew install redis ;;
           esac
           ;;
       esac
