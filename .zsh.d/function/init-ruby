@@ -62,7 +62,6 @@ get-global-gem-packages() {
     stackprof \
     unicorn \
     gem install rufo -v 0.1.0
-  gem install aws-rails-provisioner --pre
 }
 
 case ${RUBY_PACKAGE_MANAGER} in
