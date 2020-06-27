@@ -116,6 +116,7 @@ get-nix-packages() {
       nix-install perf
       nix-install uuid
       nix-install jq
+      nix-install fd
       ;;
   esac
 }
