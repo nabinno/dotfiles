@@ -57,7 +57,8 @@ get-global-npm-packages() {
     http-server \
     node-plantuml \
     npm2dot \
-    tern
+    tern \
+    tldr
 }
 if ! type -p npm >/dev/null; then get-node; fi
 
