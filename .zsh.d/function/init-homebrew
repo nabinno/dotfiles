@@ -27,7 +27,8 @@ get-base-brew-packages() {
         Debian | Ubuntu)
           brew install \
             jq \
-            ghq
+            ghq \
+            ripgrep
           ;;
       esac
       ;;

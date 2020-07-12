@@ -17,7 +17,6 @@ get-rust() {
 
 get-global-cargo-packages() {
   cargo install \
-    ripgrep \
     fselect
 }
 if ! type rustc >/dev/null; then get-rust; fi
