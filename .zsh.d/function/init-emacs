@@ -26,7 +26,7 @@ get-emacs() {
           ;;
         Debian | Ubuntu)
           case $DIST_VERSION in
-            16.04 | 18.04)
+            16.04 | 18.04 | 20.04)
               sudo add-apt-repository ppa:kelleyk/emacs
               sudo apt update
               sudo apt install emacs26
