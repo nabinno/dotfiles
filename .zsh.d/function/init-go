@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-export REQUIRED_GO_VERSION=1.12.1
+export REQUIRED_GO_VERSION=1.14.4
 export GOPATH=~/.ghq.d
 export GO111MODULE=on
 
@@ -85,7 +85,6 @@ get-global-go-packages() {
       go get -u github.com/mattn/qq/cmd/qq
       go get -u github.com/mattn/git-fixauthor
       go get -u github.com/shenwei356/csvtk/csvtk
-      go get -u github.com/x-motemen/ghq
       go get -u github.com/k0kubun/pp
       GO111MODULE=off go get -u github.com/motemen/gore/cmd/gore # REPL
       go get -u github.com/rogpeppe/godef                        # 関数定義等の参照パッケージ
