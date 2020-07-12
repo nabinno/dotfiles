@@ -51,7 +51,7 @@ get-python-by-anyenv() {
           ;;
         Ubuntu)
           case $DIST_VERSION in
-            12.04 | 14.04 | 18.04)
+            12.04 | 14.04 | 18.04 | 20.04)
               if ! type -p pyenv >/dev/null; then get-pyenv; fi
               pyenv install $REQUIRED_ANACONDA_VERSION
               git clone https://github.com/yyuu/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv
@@ -63,7 +63,7 @@ get-python-by-anyenv() {
                 python \
                 python-setuptools
               ;;
-            18.04)
+            18.04 | 20.04)
               if ! type -p pyenv >/dev/null; then get-pyenv; fi
               pyenv install $REQUIRED_PYTHON_VERSION
               git clone https://github.com/yyuu/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv
