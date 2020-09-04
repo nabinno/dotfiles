@@ -28,7 +28,8 @@ get-base-brew-packages() {
           brew install \
             jq \
             ghq \
-            ripgrep
+            ripgrep \
+            aws-vault
           ;;
       esac
       ;;
