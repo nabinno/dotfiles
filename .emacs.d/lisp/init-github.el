@@ -15,11 +15,6 @@
 (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
 
 
-;;; helm-ghq
-(unless (require 'helm-ghq nil 'noerror)
-  (el-get-bundle masutaka/emacs-helm-ghq))
-
-
 ;;; magithub
 ;; (require-package 'magithub)
 ;; (defun require-magithub ()
