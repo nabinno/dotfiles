@@ -2,7 +2,16 @@
 ;;; Commentary:
 ;;; Code:
 (use-package ivy
-  :straight t)
+  :straight t
+  :config
+  (setq ivy-initial-inputs-alist
+        '((org-agenda-refile . "^")
+          (org-capture-refile . "^")
+          ;; (counsel-M-x . "^")
+          (counsel-describe-function . "^")
+          (counsel-describe-variable . "^")
+          (Man-completion-table . "^")
+          (woman . "^"))))
 
 
 ;; swiper
@@ -79,7 +88,7 @@
     (setq projectile-completion-system 'ivy)
     (setq counsel-projectile-sort-files t)
     (setq counsel-projectile-sort-projects t)
-    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    (define-key projectile-mode-map (kbd "C-c ; p") 'projectile-command-map)
     (counsel-projectile-mode 1)))
 
 
