@@ -19,8 +19,9 @@
 
 
 ;;; Language Server Protocol
-(unless (require 'lsp-python nil 'noerror)
-  (el-get-bundle emacs-lsp/lsp-python))
+(use-package lsp-python
+  :after python
+  :straight t)
 
 
 ;; ;;; Jedi
@@ -35,7 +36,7 @@
 
 
 ;;; Py-Autopep8
-(require-package 'py-autopep8;; )
+;; (require-package 'py-autopep8)
 ;; (setq py-autopep8-options '("--max-line-length=200"))
 ;; (setq flycheck-flake8-maximum-line-length 200)
 ;; (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
