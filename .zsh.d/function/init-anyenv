@@ -1,6 +1,11 @@
 #!/usr/bin/env zsh
 
 export PATH="$HOME/.anyenv/bin:$PATH"
+export PATH="$HOME/.anyenv/envs/goenv/bin:$PATH"
+export PATH="$HOME/.anyenv/envs/nodenv/bin:$PATH"
+export PATH="$HOME/.anyenv/envs/plenv/bin:$PATH"
+export PATH="$HOME/.anyenv/envs/pyenv/bin:$PATH"
+export PATH="$HOME/.anyenv/envs/rbenv/bin:$PATH"
 
 get-anyenv() {
   case "${OSTYPE}" in
