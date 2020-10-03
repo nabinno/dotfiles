@@ -8,8 +8,8 @@
         '((org-agenda-refile . "^")
           (org-capture-refile . "^")
           ;; (counsel-M-x . "^")
-          (counsel-describe-function . "^")
-          (counsel-describe-variable . "^")
+          ;; (counsel-describe-function . "^")
+          ;; (counsel-describe-variable . "^")
           (Man-completion-table . "^")
           (woman . "^"))))
 
@@ -21,7 +21,7 @@
   (global-set-key (kbd "M-s M-s") 'swiper-thing-at-point))
 
 
-;; ;; consel
+;; ;; counsel
 ;; (use-package counsel
 ;;   :straight t
 ;;   :config
@@ -71,25 +71,25 @@
     (setq magit-completing-read-function 'ivy-completing-read))
 
 
-;; projectile
-(unless (require 'counsel-projectile nil 'noerror)
-  (el-get-bundle ericdanan/counsel-projectile))
-(defun my-counsel-ag-in-default-dir (_arg)
-  "Search the current directory with ag."
-  (counsel-ag ivy-text default-directory))
-(with-eval-after-load "projectile"
-  (when (require 'counsel-projectile nil t)
-    (add-to-list 'counsel-projectile-switch-project-action
-                 '("z" my-counsel-ag-in-default-dir
-                   "switch to ag") t)
-    (add-to-list 'counsel-projectile-find-file-action
-                 '("z" my-counsel-ag-in-default-dir
-                   "switch to ag") t)
-    (setq projectile-completion-system 'ivy)
-    (setq counsel-projectile-sort-files t)
-    (setq counsel-projectile-sort-projects t)
-    (define-key projectile-mode-map (kbd "C-c ; p") 'projectile-command-map)
-    (counsel-projectile-mode 1)))
+;; ;; projectile
+;; (unless (require 'counsel-projectile nil 'noerror)
+;;   (el-get-bundle ericdanan/counsel-projectile))
+;; (defun my-counsel-ag-in-default-dir (_arg)
+;;   "Search the current directory with ag."
+;;   (counsel-ag ivy-text default-directory))
+;; (with-eval-after-load "projectile"
+;;   (when (require 'counsel-projectile nil t)
+;;     (add-to-list 'counsel-projectile-switch-project-action
+;;                  '("z" my-counsel-ag-in-default-dir
+;;                    "switch to ag") t)
+;;     (add-to-list 'counsel-projectile-find-file-action
+;;                  '("z" my-counsel-ag-in-default-dir
+;;                    "switch to ag") t)
+;;     (setq projectile-completion-system 'ivy)
+;;     (setq counsel-projectile-sort-files t)
+;;     (setq counsel-projectile-sort-projects t)
+;;     (define-key projectile-mode-map (kbd "C-c ; p") 'projectile-command-map)
+;;     (counsel-projectile-mode 1)))
 
 
 
