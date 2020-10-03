@@ -8,11 +8,8 @@ get-ghc() {
     freebsd* | darwin*) nix-install ghc ;;
     linux*)
       case $DIST in
-        Redhat* | RedHat* | Debian) nix-install ghc ;;
-        Ubuntu*)
-          case $DIST_VERSION in
-            14.04) ;;
-          esac
+        Redhat* | RedHat* | Debian | Ubuntu*)
+          nix-install ghc
           ;;
       esac
       ;;
