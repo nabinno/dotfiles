@@ -21,43 +21,43 @@
   (global-set-key (kbd "M-s M-s") 'swiper-thing-at-point))
 
 
-;; consel
-(use-package counsel
-  :straight t
-  :config
-  (defun counsel-rg-dot-emacs (word)
-    "Search .emacs.d directory."
-    (interactive "srg: ")
-    (progn (counsel-rg word (concat (getenv "DOTFILES_PATH") "/.emacs.d/"))))
-  (defun counsel-rg-dot-zsh (word)
-    "Search .zsh.d directory."
-    (interactive "srg: ")
-    (progn (counsel-rg word (concat (getenv "DOTFILES_PATH") "/.zsh.d/"))))
-  (defun counsel-rg-dot-ghq (word)
-    "Search .ghq.d directory."
-    (interactive "srg: ")
-    (progn (counsel-rg word "~/.ghq.d/")))
-  (defun counsel-rg-dot-ghq-win32 (word)
-    "Search .ghq.d directory on win32."
-    (interactive "srg: ")
-    (progn (counsel-rg word (concat (getenv "USER_PROFILE") "/.ghq.d/"))))
-  (defun counsel-rg-projectile (word)
-    "Connect to projectile."
-    (interactive "srg: ")
-    (counsel-rg word (projectile-project-root)))
+;; ;; consel
+;; (use-package counsel
+;;   :straight t
+;;   :config
+;;   (defun counsel-rg-dot-emacs (word)
+;;     "Search .emacs.d directory."
+;;     (interactive "srg: ")
+;;     (progn (counsel-rg word (concat (getenv "DOTFILES_PATH") "/.emacs.d/"))))
+;;   (defun counsel-rg-dot-zsh (word)
+;;     "Search .zsh.d directory."
+;;     (interactive "srg: ")
+;;     (progn (counsel-rg word (concat (getenv "DOTFILES_PATH") "/.zsh.d/"))))
+;;   (defun counsel-rg-dot-ghq (word)
+;;     "Search .ghq.d directory."
+;;     (interactive "srg: ")
+;;     (progn (counsel-rg word "~/.ghq.d/")))
+;;   (defun counsel-rg-dot-ghq-win32 (word)
+;;     "Search .ghq.d directory on win32."
+;;     (interactive "srg: ")
+;;     (progn (counsel-rg word (concat (getenv "USER_PROFILE") "/.ghq.d/"))))
+;;   (defun counsel-rg-projectile (word)
+;;     "Connect to projectile."
+;;     (interactive "srg: ")
+;;     (counsel-rg word (projectile-project-root)))
 
-  (global-set-key (kbd "M-x") 'counsel-M-x)
-  (global-set-key (kbd "M-y") 'counsel-yank-pop)
-  (global-set-key (kbd "C-x C-b") 'counsel-ibuffer)
-  (global-set-key (kbd "C-M-f") 'counsel-rg)
-  (global-set-key (kbd "C-c ; G") 'counsel-rg-projectile)
-  (global-set-key (kbd "C-c ; E") 'counsel-rg-dot-emacs)
-  (global-set-key (kbd "C-c ; H") 'counsel-rg-dot-ghq)
-  (global-set-key (kbd "C-c ; W") 'counsel-rg-dot-ghq-win32)
-  (global-set-key (kbd "C-c ; Z") 'counsel-rg-dot-zsh)
+;;   (global-set-key (kbd "M-x") 'counsel-M-x)
+;;   (global-set-key (kbd "M-y") 'counsel-yank-pop)
+;;   (global-set-key (kbd "C-x C-b") 'counsel-ibuffer)
+;;   (global-set-key (kbd "C-M-f") 'counsel-rg)
+;;   (global-set-key (kbd "C-c ; G") 'counsel-rg-projectile)
+;;   (global-set-key (kbd "C-c ; E") 'counsel-rg-dot-emacs)
+;;   (global-set-key (kbd "C-c ; H") 'counsel-rg-dot-ghq)
+;;   (global-set-key (kbd "C-c ; W") 'counsel-rg-dot-ghq-win32)
+;;   (global-set-key (kbd "C-c ; Z") 'counsel-rg-dot-zsh)
 
-  ;; activate
-  (counsel-mode 1))
+;;   ;; activate
+;;   (counsel-mode 1))
 
 
 ;; ghq
