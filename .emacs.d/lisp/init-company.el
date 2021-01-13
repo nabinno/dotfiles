@@ -9,7 +9,8 @@
   (setq company-minimum-prefix-length 1)
   (setq completion-ignore-case t)
   (setq company-dabbrev-downcase nil)
-  (setq company-selection-wrap-around t))
+  (setq company-selection-wrap-around t)
+  (setq company-global-modes '(not eshell-mode)))
 
 
 
