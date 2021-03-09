@@ -85,9 +85,8 @@ require init-git--util
 require init-benchmark
 require init-vagrant
 # require init-wercker
-# require init-ansible
-# require init-terraform
-# require init-terraform--util
+require init-ansible
+require init-terraform
 require init-zsh
 require init-powershell
 require init-screen
