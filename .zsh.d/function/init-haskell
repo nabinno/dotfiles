@@ -34,19 +34,24 @@ get-cabal() {
       ;;
     linux*)
       case $DIST in
-        Redhat* | RedHat* | Debian)
+        Redhat* | RedHat* | Debian | Ubuntu*)
           nix-install cabal-install
           cabal update
-          ;;
-        Ubuntu*)
-          case $DIST_VERSION in
-            14.04) ;;
-          esac
           ;;
       esac
       ;;
   esac
 }
 
+get-stack() {
+  curl -sSL https://get.haskellstack.org/ | sh
+}
+
 if ! type -p ghc >/dev/null; then get-ghc && get-cabal; fi
 if ! type -p cabal >/dev/null; then get-cabal; fi
+if ! type -p stack >/dev/null; then get-stack; fi
+
+get-global-cabal-packages() {
+  cabal install stack
+  cabal install hasktags
+}
