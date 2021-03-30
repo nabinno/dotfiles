@@ -37,6 +37,7 @@ get-terraform() {
 }
 if ! type -p terraform >/dev/null; then get-terraform; fi
 
+alias tfi="terraform init"
 alias tfs="terraform show"
 alias tfp="terraform plan"
 alias tfv="terraform validate"
