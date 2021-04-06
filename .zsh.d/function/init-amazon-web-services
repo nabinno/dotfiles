@@ -54,6 +54,18 @@ get-aws-sam() {
 }
 if ! type -p sam >/dev/null; then get-aws-sam; fi
 
+get-aws-rails-provisioner() {
+  case "${OSTYPE}" in
+    linux*)
+      case "${DIST}" in
+        Ubuntu) sudo apt install gnupg2 pass ;;
+      esac
+      ;;
+  esac
+  gem install aws-rails-provisioner --pre
+}
+if ! type -p aws-rails-provisioner >/dev/null; then get-aws-rails-provisioner; fi
+
 fix-compdef-problem() {
   touch ~/.zshenv
   echo 'autoload -Uz compinit

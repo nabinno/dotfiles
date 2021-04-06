@@ -74,7 +74,7 @@
 (require 'init-hippie-expand)
 (require 'init-company)
 ;; (require 'init-auto-complete)
-(require 'init-helm)
+(require 'init-ivy)
 (require 'init-windows)
 (require 'init-other-window)
 ;; (require 'init-e2wm)

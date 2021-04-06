@@ -1,50 +1,51 @@
 ;;; init-haskell --- haskell configuration
 ;;; Commentary:
 ;;; Code:
-(require-package 'haskell-mode)
-
-(custom-set-variables
- '(haskell-process-type 'cabal-repl)
- '(haskell-process-args-cabal-repl
-   '("--ghc-option=-ferror-spans" "--with-ghc=ghci-ng"))
- '(haskell-notify-p t)
- '(haskell-stylish-on-save nil)
- ;; '(haskell-stylish-on-save t)
- '(haskell-tags-on-save nil)
- '(haskell-process-suggest-remove-import-lines t)
- '(haskell-process-auto-import-loaded-modules t)
- '(haskell-process-log t)
- '(haskell-process-reload-with-fbytecode nil)
- '(haskell-process-use-presentation-mode t)
- '(haskell-interactive-mode-include-file-name nil)
- '(haskell-interactive-mode-eval-pretty nil)
- '(shm-use-presentation-mode t)
- '(shm-auto-insert-skeletons t)
- '(shm-auto-insert-bangs t)
- '(haskell-process-suggest-haskell-docs-imports t)
- '(hindent-style "chris-done")
- '(haskell-interactive-mode-eval-mode 'haskell-mode)
- '(haskell-process-path-ghci "ghci-ng")
- '(haskell-process-args-ghci '("-ferror-spans"))
- '(haskell-process-args-cabal-repl
-   '("--ghc-option=-ferror-spans" "--with-ghc=ghci-ng"))
- '(haskell-process-generate-tags nil)
- '(haskell-complete-module-preferred
-   '("Data.ByteString"
-     "Data.ByteString.Lazy"
-     "Data.Conduit"
-     "Data.Function"
-     "Data.List"
-     "Data.Map"
-     "Data.Maybe"
-     "Data.Monoid"
-     "Data.Ord")))
+(use-package haskell-mode
+  :straight t
+  :config
+  (custom-set-variables
+   '(haskell-process-type 'cabal-repl)
+   '(haskell-process-args-cabal-repl
+     '("--ghc-option=-ferror-spans" "--with-ghc=ghci-ng"))
+   '(haskell-notify-p t)
+   '(haskell-stylish-on-save nil)
+   ;; '(haskell-stylish-on-save t)
+   '(haskell-tags-on-save nil)
+   '(haskell-process-suggest-remove-import-lines t)
+   '(haskell-process-auto-import-loaded-modules t)
+   '(haskell-process-log t)
+   '(haskell-process-reload-with-fbytecode nil)
+   '(haskell-process-use-presentation-mode t)
+   '(haskell-interactive-mode-include-file-name nil)
+   '(haskell-interactive-mode-eval-pretty nil)
+   '(shm-use-presentation-mode t)
+   '(shm-auto-insert-skeletons t)
+   '(shm-auto-insert-bangs t)
+   '(haskell-process-suggest-haskell-docs-imports t)
+   '(hindent-style "chris-done")
+   '(haskell-interactive-mode-eval-mode 'haskell-mode)
+   '(haskell-process-path-ghci "ghci-ng")
+   '(haskell-process-args-ghci '("-ferror-spans"))
+   '(haskell-process-args-cabal-repl
+     '("--ghc-option=-ferror-spans" "--with-ghc=ghci-ng"))
+   '(haskell-process-generate-tags nil)
+   '(haskell-complete-module-preferred
+     '("Data.ByteString"
+       "Data.ByteString.Lazy"
+       "Data.Conduit"
+       "Data.Function"
+       "Data.List"
+       "Data.Map"
+       "Data.Maybe"
+       "Data.Monoid"
+       "Data.Ord"))))
 
 
 ;; Flycheck specifics
 (when (> emacs-major-version 23)
-  (require-package 'flycheck-hdevtools)
-  (require-package 'flycheck-haskell)
+  (use-package flycheck-hdevtools :straight t)
+  (use-package flycheck-haskell :straight t)
   (after-load 'flycheck
     (add-hook 'haskell-mode-hook #'flycheck-haskell-setup)
 
@@ -69,8 +70,7 @@ been saved."
 
 
 ;; Language Server Protocol
-(unless (require 'lsp-haskell nil 'noerror)
-  (el-get-bundle emacs-lsp/lsp-haskell))
+(use-package lsp-haskell :straight t)
 
 
 ;; Interactive hasskell mode
@@ -87,17 +87,21 @@ been saved."
 
 
 ;;; Hi2
-(require-package 'hi2)
-(add-hook 'haskell-mode-hook 'turn-on-hi2)
+(use-package hi2
+  :straight t
+  :config
+  (add-hook 'haskell-mode-hook 'turn-on-hi2))
 
 
 ;;; Structured haskell mode (like Paredit)
-(require-package 'structured-haskell-mode)
+(unless (require 'structured-haskell-mode nil 'noerror)
+  (el-get-bundle projectional-haskell/structured-haskell-mode))
 (add-hook 'haskell-interactive-mode-hook 'structured-haskell-repl-mode)
 
 
 ;;; Stack IDE
-(require-package 'stack-ide)
+(unless (require 'stack-ide nil 'noerror)
+  (el-get-bundle commercialhaskell/stack-ide))
 (add-hook 'haskell-mode-hook 'stack-mode)
 
 
@@ -198,7 +202,7 @@ been saved."
 
 ;;; Compilation
 (when (eval-when-compile (>= emacs-major-version 24))
-  (require-package 'ghci-completion)
+  (use-package ghci-completion :straight t)
   (add-hook 'inferior-haskell-mode-hook 'turn-on-ghci-completion))
 
 ;; Make compilation-mode understand "at blah.hs:11:34-50" lines output by GHC

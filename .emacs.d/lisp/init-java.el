@@ -48,14 +48,10 @@
 ;;; Ant
 (require-package 'ant)
 
-
-;;; Kotlin
-(require-package 'kotlin-mode)
-
-
-;;; Groovy
-(require-package 'groovy-mode)
-(add-auto-mode 'groovy-mode "\\.gradle\\'")
+;; 
+;; ;;; Groovy
+;; (require-package 'groovy-mode)
+;; (add-auto-mode 'groovy-mode "\\.gradle\\'")
 
 
 ;;; Other

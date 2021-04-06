@@ -49,6 +49,9 @@
 (set-face-attribute 'default nil :height 100)
 (set-default 'truncate-lines t)
 (set-default 'fill-column 120)
+(setq backup-inhibited t)
+(setq auto-save-default nil)
+(setq create-lockfiles nil)
 
 ;; display-time-mode
 (display-time-mode t)
