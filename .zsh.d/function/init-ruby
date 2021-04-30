@@ -57,11 +57,12 @@ get-global-gem-packages() {
     rails \
     rblineprof \
     rubygems-bundler \
+    serverspec \
     sidekiq \
     slim \
     stackprof \
-    unicorn \
-    gem install rufo -v 0.1.0
+    unicorn
+  gem install rufo -v 0.1.0
 }
 
 case ${RUBY_PACKAGE_MANAGER} in
