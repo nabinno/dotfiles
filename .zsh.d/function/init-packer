@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+
+export REQUIRED_PACKER_VERSION=1.7.2
+
+get-packer() {
+  wget https://releases.hashicorp.com/packer/${REQUIRED_PACKER_VERSION}/packer_${REQUIRED_PACKER_VERSION}_linux_amd64.zip
+  unzip packer_${REQUIRED_PACKER_VERSION}_linux_amd64.zip -d ~/.local/bin/
+  rm -f packer_${REQUIRED_PACKER_VERSION}_linux_amd64.zip
+}
+if ! type -p packer >/dev/null; then get-packer; fi

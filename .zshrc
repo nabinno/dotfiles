@@ -87,6 +87,7 @@ require init-vagrant
 # require init-wercker
 require init-ansible
 require init-terraform
+require init-packer
 require init-zsh
 require init-powershell
 require init-screen
