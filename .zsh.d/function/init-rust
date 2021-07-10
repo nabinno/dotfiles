@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-export REQUIRED_RUST_VERSION=1.33.0
+export REQUIRED_RUST_VERSION=1.53.0
 export PATH=$PATH:~/.cargo/bin
 export PATH=$PATH:~/.asdf/installs/rust/$REQUIRED_RUST_VERSION/bin
 
