@@ -67,9 +67,12 @@
 
 
 ;; ghq
-(unless (require 'ivy-ghq nil 'noerror)
-  (el-get-bundle analyticd/ivy-ghq))
-(setq ivy-ghq-short-list t)
+(use-package ivy-ghq
+  :straight (:host github :repo "analyticd/ivy-ghq")
+  :if (executable-find "ghq")
+  :commands (ivy-ghq-open)
+  :custom
+  (ivy-ghq-short-list nil))
 
 
 ;; magit

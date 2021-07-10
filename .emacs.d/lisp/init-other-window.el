@@ -1,5 +1,5 @@
 ;;; Win switch
-(require-package 'win-switch)
+(use-package win-switch :straight t)
 
 (setq win-switch-idle-time 0.75)
 ;; change window
@@ -39,14 +39,14 @@
 
 
 ;;; Switch window
-(require-package 'switch-window)
+(use-package switch-window :straight t)
 (setq switch-window-shortcut-style 'qwerty)
 ;; (global-set-key (kbd "M-[ 1 ; 6 i") 'switch-window)
 (global-set-key (kbd "M-i") 'switch-window)
 
 
 ;;; OWDriver
-(require-package 'owdriver)
+(use-package owdriver :straight t)
 
 (require 'owdriver)
 (global-unset-key (kbd "M-o"))

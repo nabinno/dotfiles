@@ -1,12 +1,12 @@
 ;;; init-javascript -- javascript configuration
 ;;; Commentary:
 ;;; Code:
-(require-package 'json-mode)
+(use-package json-mode :straight t)
 (when (>= emacs-major-version 24)
-  (require-package 'js2-mode)
-  (require-package 'ac-js2)
-  (require-package 'coffee-mode))
-(require-package 'js-comint)
+  (use-package js2-mode :straight t)
+  (use-package ac-js2 :straight t)
+  (use-package coffee-mode :straight t))
+(use-package js-comint :straight t)
 
 (defcustom preferred-javascript-mode
   (first (remove-if-not #'fboundp '(rjsx-mode js-mode js2-mode)))
@@ -33,10 +33,10 @@
 
 
 ;;; Prettier
-(unless (require 'prettier-js nil 'noerror)
-  (el-get-bundle prettier/prettier-emacs))
-(unless (require 'add-node-modules-path nil 'noerror)
-  (el-get-bundle codesuki/add-node-modules-path))
+(use-package prettier-js
+  :straight (:host github :repo "prettier/prettier-emacs"))
+(use-package add-node-modules-path
+  :straight (:host github :repo "codesuki/add-node-modules-path"))
 (eval-after-load 'typescript-mode
   '(progn
      (add-hook 'typescript-mode-hook #'add-node-modules-path)
@@ -75,19 +75,21 @@
 (after-load 'js2-mode (js2-imenu-extras-setup))
 
 
-;; Language Server Protocol
-(unless (require 'lsp-javascript nil 'noerror)
-  (el-get-bundle emacs-lsp/lsp-javascript))
+;; ;; Language Server Protocol
+;; (use-package lsp-javascript
+;;   :straight (:host github :repo "emacs-lsp/lsp-javascript"))
 
 
 ;; ;;; Repl: Babel, Node.js
-;; (require-package 'babel-repl)
-;; (require-package 'nodejs-repl)
+;; (use-package babel-repl :straight t)
+;; (use-package nodejs-repl :straight t)
 
 
 ;;; Company-tern
-(require-package 'company-tern)
-(setq company-tern-property-marker "")
+(use-package company-tern
+  :straight t
+  :config
+  (setq company-tern-property-marker ""))
 
 (defun company-tern-depth (candidate)
   "Return depth attribute for CANDIDATE, 'nil' entries are treated as 0."
@@ -105,9 +107,11 @@
 
 
 ;; Javascript nests {} and () a lot, so I find this helpful
-(require-package 'rainbow-delimiters)
-(dolist (hook '(js2-mode-hook js-mode-hook json-mode-hook))
-  (add-hook hook 'rainbow-delimiters-mode))
+(use-package rainbow-delimiters
+  :straight t
+  :config
+  (dolist (hook '(js2-mode-hook js-mode-hook json-mode-hook))
+    (add-hook hook 'rainbow-delimiters-mode)))
 
 
 ;;; CoffeeScript
@@ -120,32 +124,39 @@
 
 
 ;;; TypeScript
-(require-package 'typescript-mode)
-(setq typescript-indent-level 2)
+(use-package typescript-mode
+  :straight t
+  :config
+  (setq typescript-indent-level 2))
 
 ;; Tide (npm i -g typescript)
-(require-package 'tide)
-(setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil))
-(add-hook 'typescript-mode-hook #'tide-setup)
-(with-eval-after-load 'tide
-  (define-key tide-mode-map (kbd "M-o M-,") 'tide-jump-to-definition)
-  (define-key tide-mode-map (kbd "M-o M-.") 'tide-jump-back)
-  (define-key tide-mode-map (kbd "C-c C-d") 'tide-restart-server)
-  (define-key tide-mode-map (kbd "M-,")   'mc/mark-previous-like-this)
-  (define-key tide-mode-map (kbd "M-.")   'mc/mark-next-like-this))
+(use-package tide
+  :straight t
+  :config
+  (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil))
+  (add-hook 'typescript-mode-hook #'tide-setup)
+  (with-eval-after-load 'tide
+    (define-key tide-mode-map (kbd "M-o M-,") 'tide-jump-to-definition)
+    (define-key tide-mode-map (kbd "M-o M-.") 'tide-jump-back)
+    (define-key tide-mode-map (kbd "C-c C-d") 'tide-restart-server)
+    (define-key tide-mode-map (kbd "M-,")   'mc/mark-previous-like-this)
+    (define-key tide-mode-map (kbd "M-.")   'mc/mark-next-like-this)))
 
-;; ;; Tss (npm i -g typescript-tools)
-;; (require-package 'tss)
-;; (setq tss-popup-help-key "C-:")
-;; (setq tss-jump-to-definition-key "C->")
-;; (setq tss-implement-definition-key "C-c i")
-;; (add-hook 'typescript-mode-hook #'tss-setup-current-buffer)
-;; ;; (add-hook 'kill-buffer-hook 'tss--delete-process t)
+;; Tss (npm i -g typescript-tools)
+(use-package tss
+  :straight t
+  :config
+  (setq tss-popup-help-key "C-:")
+  (setq tss-jump-to-definition-key "C->")
+  (setq tss-implement-definition-key "C-c i")
+  (add-hook 'typescript-mode-hook #'tss-setup-current-buffer)
+  ;; (add-hook 'kill-buffer-hook 'tss--delete-process t)
+  )
 
 ;; Flycheck specifics
 (when (> emacs-major-version 23)
-  (unless (require 'flycheck-typescript-tslint nil 'noerror)
-    (el-get-bundle Simplify/flycheck-typescript-tslint))
+  (use-package flycheck-typescript-tslint
+    :straight (:host github :repo "Simplify/flycheck-typescript-tslint"))
   (after-load 'flycheck
     (add-hook 'typescript-mode-hook #'flycheck-typescript-tslint-setup)
     (defun sanityinc/flycheck-typescript-reconfigure ()
@@ -189,36 +200,37 @@ been saved."
 
 ;;; Alternatively, use skewer-mode
 (when (and (>= emacs-major-version 24) (featurep 'js2-mode))
-  (require-package 'skewer-mode)
+  (use-package skewer-mode :straight t)
   (after-load 'skewer-mode
     (add-hook 'skewer-mode-hook
               (lambda () (inferior-js-keys-mode -1)))))
 
 
 ;;; JSDoc
-(require-package 'js-doc)
-(setq js-doc-mail-address "your email address"
-      js-doc-author (format "your name <%s>" js-doc-mail-address)
-      js-doc-url "url of your website"
-      js-doc-license "license name")
-(add-hook 'js-mode-hook
-          #'(lambda ()
-              (define-key js-mode-map (kbd "C-c i") 'js-doc-insert-function-doc)
-              ;; (define-key js-mode-map (kbd "@") 'js-doc-insert-tag)
-              ))
+(use-package js-doc
+  :straight t
+  :config
+  (setq js-doc-mail-address "your email address"
+        js-doc-author (format "your name <%s>" js-doc-mail-address)
+        js-doc-url "url of your website"
+        js-doc-license "license name")
+  (add-hook 'js-mode-hook
+            #'(lambda ()
+                (define-key js-mode-map (kbd "C-c i") 'js-doc-insert-function-doc)
+                ;; (define-key js-mode-map (kbd "@") 'js-doc-insert-tag)
+                )))
 
 
 ;;; React
 (use-package rjsx-mode
   :straight t
-  :config (with-eval-after-load 'rjsx-mode
-            (define-key rjsx-mode-map "<" nil)
-            (define-key rjsx-mode-map (kbd "C-d") nil)
-            (define-key rjsx-mode-map ">" nil)
-            (define-key rjsx-mode-map "C" nil)
-            (define-key rjsx-mode-map (kbd "C-c / .") 'sgml-tag)
-            )
-  )
+  :config
+  (with-eval-after-load 'rjsx-mode
+    (define-key rjsx-mode-map "<" nil)
+    (define-key rjsx-mode-map (kbd "C-d") nil)
+    (define-key rjsx-mode-map ">" nil)
+    (define-key rjsx-mode-map "C" nil)
+    (define-key rjsx-mode-map (kbd "C-c / .") 'sgml-tag)))
 
 
 

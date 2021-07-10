@@ -1,7 +1,7 @@
 ;;; init-translation --- basic translation configuration
 ;;; Commentary:
 ;;; Code:
-(require-package 'google-translate)
+(use-package google-translate :straight t)
 (require 'google-translate-default-ui)
 
 (global-set-key "\C-ct" 'google-translate-at-point)
@@ -13,23 +13,23 @@
 
 
 ;;; popwin.el
-(require-package 'popwin)
+(use-package popwin :straight t)
 (setq display-buffer-function 'popwin:display-buffer)
 (setq popwin:popup-window-position 'bottom)
 (push '("*Google Translate*") popwin:special-display-config)
 
 
 ;;; google
-(require-package 'google-this)
+(use-package google-this :straight t)
 (google-this-mode 1)
 
 
 ;;; eijiro
-(require-package 'search-web)
+(use-package search-web :straight t)
 
 
 ;;; codic
-(require-package 'codic)
+(use-package codic :straight t)
 
 
 (provide 'init-translation)

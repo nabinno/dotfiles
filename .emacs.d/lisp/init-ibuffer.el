@@ -1,7 +1,7 @@
-(require-package 'fullframe)
+(use-package fullframe :straight t)
 (after-load 'ibuffer
  (fullframe ibuffer ibuffer-quit))
-(require-package 'ibuffer-vc)
+(use-package ibuffer-vc :straight t)
 
 (defun ibuffer-set-up-preferred-filters ()
   (ibuffer-vc-set-filter-groups-by-vc-root)

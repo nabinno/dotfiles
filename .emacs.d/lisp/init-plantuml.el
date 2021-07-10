@@ -1,13 +1,13 @@
 ;;; init-plantuml --- plantuml configuration
 ;;; Commentary:
 ;;; Code:
-(unless (require 'puml-mode nil 'noerror)
-  (el-get-bundle skuro/puml-mode))
-(add-to-list 'auto-mode-alist '("\\.uml$" . puml-mode))
-
-(setq puml-plantuml-jar-path "~/.local/bin/plantuml.jar")
-(setq puml-java-options "")
-(setq puml-java-options "-charset UTF-8")
+(use-package puml-mode
+  :straight (:host github :repo "skuro/puml-mode")
+  :config
+  (add-to-list 'auto-mode-alist '("\\.uml$" . puml-mode))
+  (setq puml-plantuml-jar-path "~/.local/bin/plantuml.jar")
+  (setq puml-java-options "")
+  (setq puml-java-options "-charset UTF-8"))
 
 (defun puml-java-execute ()
   "In puml-mode, execute PlanUML."
@@ -58,7 +58,7 @@
         map))
 
 
-;; (require-package 'plantuml-mode)
+;; (use-package plantuml-mode :straight t)
 ;; (setq plantuml-jar-path "~/.local/bin/plantuml.jar")
 
 

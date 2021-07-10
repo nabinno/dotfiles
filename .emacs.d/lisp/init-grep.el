@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 ;;; Ag / The Silver Searcher
-(require-package 'ag)
+(use-package ag :straight t)
 (setq ag-highlight-search t)
 (setq ag-reuse-window 'nil)
 (setq ag-reuse-buffers 'nil)

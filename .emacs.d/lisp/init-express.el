@@ -1,8 +1,8 @@
 ;;; init-express --- express configuration
 ;;; Commentary:
 ;;; Code:
-(unless (require 'jinari nil 'noerror)
-  (el-get-bundle nabinno/jinari))
+(use-package jinari
+  :straight (:host github :repo "nabinno/jinari"))
 
 (after-load 'jinari
   (diminish 'jinari-minor-mode " JIN"))
@@ -88,7 +88,8 @@
 
 
 ;;; GulpJs
-(el-get-bundle stevenremot/emacs-gulpjs)
+(use-package gulpjs
+  :straight (:host github :repo "stevenremot/emacs-gulpjs"))
 
 (fset 'gulp-save-buffer-and-protractor "xsave-bufferxgulpprotractor")
 (fset 'gulp-protractor    "xgulpprotractor")
@@ -166,26 +167,26 @@
 ;;; Jade-mode
 (eval-after-load 'jade-mode
   (add-hook 'jade-mode-hook 'page-break-lines-mode))
-(require-package 'jade-mode)
+(use-package jade-mode :straight t)
 (add-auto-mode 'jade-mode "\\.tag\\'")
 
 
 ;;; AngularJS
-(require-package 'angular-mode)
-(require-package 'angular-snippets)
+(use-package angular-mode :straight t)
+(use-package angular-snippets :straight t)
 
 
 ;; ;;; Unit Testing
 ;; ;; Karma
-;; (require-package 'karma)
+;; (use-package karma :straight t)
 
 ;; ;; Jasmine-mode
 ;; (eval-after-load 'jasminejs-mode
 ;;   '(jasminejs-install-snippets))
-;; (require-package 'jasminejs-mode)
+;; (use-package jasminejs-mode :straight t)
 
 ;; ;; Unit testing: Jst/Mocha
-;; (require-package 'jst)
+;; (use-package jst :straight t)
 ;; ;; (add-hook 'js2-mode-hook 'jst-enable-appropriate-mode)
 ;; ;; (add-hook 'coffee-mode-hook 'jst-enable-appropriate-mode)
 ;; ;; (add-hook 'what-ever-js-mode-hook 'jst-enable-appropriate-mode)
@@ -206,7 +207,7 @@
 
 
 ;;; E2E Testing
-(require-package 'livid-mode)
+(use-package livid-mode :straight t)
 
 
 (provide 'init-express)

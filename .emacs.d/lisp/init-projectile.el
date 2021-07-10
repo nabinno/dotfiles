@@ -2,9 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 ;;; Exlixr
-(unless (require 'projectile nil 'noerror)
-  (el-get-bundle bbatsov/projectile)
-  (require 'projectile))
+(use-package projectile
+  :straight (:host github :repo "bbatsov/projectile"))
 ;; (define-key projectile-mode-map projectile-keymap-prefix nil) ;;; TODO
 (define-key projectile-mode-map (kbd "C-c ; p") #'projectile-command-map)
 (projectile-global-mode)

@@ -1,8 +1,8 @@
 ;;; init-ruby-mode -- basic ruby configuration
 ;;; Commentary:
 ;;; Code:
-(require-package 'ruby-mode)
-(require-package 'ruby-hash-syntax)
+(use-package ruby-mode :straight t)
+(use-package ruby-hash-syntax :straight t)
 
 (add-auto-mode 'ruby-mode
                "Rakefile\\'" "\\.rake\\'" "\\.rxml\\'"
@@ -31,16 +31,17 @@
 
 
 ;;; Rufo
-(unless (require 'rufo nil 'noerror)
-  (el-get-bundle danielma/rufo.el))
-(add-hook 'ruby-mode-hook 'rufo-minor-mode)
+(use-package rufo
+  :straight (:host github :repo "danielma/rufo.el")
+  :config
+  (add-hook 'ruby-mode-hook 'rufo-minor-mode))
 
 
 ;;; Inferior ruby
 (use-package inf-ruby
   :straight t
   :config
-  ;; (require-package 'ac-inf-ruby)
+  ;; (use-package ac-inf-ruby :straight t)
   ;; (after-load 'auto-complete
   ;;   (add-to-list 'ac-modes 'inf-ruby-mode))
   ;; (add-hook 'inf-ruby-mode-hook 'ac-inf-ruby-enable)
@@ -61,7 +62,7 @@
 
 
 ;; ;;; Robe
-;; (require-package 'robe)
+;; (use-package robe :straight t)
 ;; (after-load 'ruby-mode
 ;;   (add-hook 'ruby-mode-hook 'robe-mode))
 ;; (after-load 'robe
@@ -72,20 +73,20 @@
 
 
 ;;; ri support
-(require-package 'yari)
+(use-package yari :straight t)
 (defalias 'ri 'yari)
 
 
 ;;; YAML
-(require-package 'yaml-mode)
+(use-package yaml-mode :straight t)
 
 
 ;;; Slim
-(require-package 'slim-mode)
+(use-package slim-mode :straight t)
 
 
 ;; ;;; ERB
-;; (require-package 'mmm-mode)
+;; (use-package mmm-mode :straight t)
 ;; (defun sanityinc/ensure-mmm-erb-loaded ()
 ;;   (require 'mmm-erb))
 ;;
@@ -117,7 +118,7 @@
 ;;; My convention for heredocs containing SQL
 
 ;; Needs to run after rinari to avoid clobbering font-lock-keywords?
-;; (require-package 'mmm-mode)
+;; (use-package mmm-mode :straight t)
 ;; (eval-after-load 'mmm-mode
 ;;   '(progn
 ;;      (mmm-add-classes

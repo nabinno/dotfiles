@@ -1,7 +1,7 @@
 ;;; init-csharp -- basic csharp configuration
 ;;; Commentary:
 ;;; Code:
-(require-package 'csharp-mode)
+(use-package csharp-mode :straight t)
 
 (add-hook 'csharp-mode-hook
           '(lambda()
@@ -15,7 +15,7 @@
 
 
 ;;; OmniSharp
-(require-package 'omnisharp)
+(use-package omnisharp :straight t)
 
 ;; (add-hook 'csharp-mode-hook 'omnisharp-mode)
 (setq omnisharp-server-executable-path "~/.local/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe")

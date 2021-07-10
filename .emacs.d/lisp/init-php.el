@@ -2,12 +2,12 @@
 ;;; Commentary:
 ;;; Code:
 (straight-use-package 'php-mode)
-(require-package 'smarty-mode)
+(use-package smarty-mode :straight t)
 
 
-;; Language Server Protocol
-(unless (require 'lsp-php nil 'noerror)
-  (el-get-bundle emacs-lsp/lsp-php))
+;; ;; Language Server Protocol
+;; (use-package lsp-php
+;;   :straight (:host github :repo "emacs-lsp/lsp-php"))
 
 
 

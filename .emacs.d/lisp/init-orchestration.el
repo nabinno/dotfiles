@@ -4,17 +4,17 @@
 
 ;;; OS level virtualization
 ;; vagrant
-(require-package 'vagrant)
+(use-package vagrant :straight t)
 
 ;; docker
-(require-package 'docker)
-(require-package 'docker-tramp)
-(require-package 'dockerfile-mode)
-(require-package 'marcopolo)
+(use-package docker :straight t)
+(use-package docker-tramp :straight t)
+(use-package dockerfile-mode :straight t)
+(use-package marcopolo :straight t)
 
 
 ;;; Terraform
-(require-package 'terraform-mode)
+(use-package terraform-mode :straight t)
 (setq terraform-indent-level 2)
 
 ;; terraform command interpreter in a buffer
@@ -42,7 +42,7 @@
 
 
 ;;; AWS
-(require-package 'helm-aws)
+(use-package helm-aws :straight t)
 
 ;; aws command interpreter in a buffer
 (defun aws-ec2 (arg)
@@ -72,7 +72,7 @@
 
 
 ;;; Heroku
-(require-package 'heroku)
+(use-package heroku :straight t)
 
 
 

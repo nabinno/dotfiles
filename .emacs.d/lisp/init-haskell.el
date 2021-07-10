@@ -94,9 +94,11 @@ been saved."
 
 
 ;;; Structured haskell mode (like Paredit)
-(unless (require 'structured-haskell-mode nil 'noerror)
-  (el-get-bundle projectional-haskell/structured-haskell-mode))
-(add-hook 'haskell-interactive-mode-hook 'structured-haskell-repl-mode)
+(use-package structured-haskell-mode
+  :straight (:host github :repo "projectional-haskell/structured-haskell-mode")
+  :config
+  (add-hook 'haskell-interactive-mode-hook 'structured-haskell-repl-mode))
+
 
 
 ;;; Stack IDE

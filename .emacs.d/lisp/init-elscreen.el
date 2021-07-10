@@ -1,7 +1,7 @@
 ;;; init-elscreen -- elscreen configuration
 ;;; Commentary:
 ;;; Code:
-(require-package 'elscreen)
+(use-package elscreen :straight t)
 
 ;; (setq elscreen-prefix-key (kbd "M-[ 1 ; 5 q"))
 
@@ -79,7 +79,7 @@
 
 
 ;;; Elscreen separate buffer list
-(require-package 'elscreen-separate-buffer-list)
+(use-package elscreen-separate-buffer-list :straight t)
 (elscreen-separate-buffer-list-mode)
 
 

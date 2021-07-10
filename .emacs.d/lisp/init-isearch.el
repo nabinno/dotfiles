@@ -1,6 +1,6 @@
 ;; Show number of matches while searching
 (when (>= emacs-major-version 24)
-  (require-package 'anzu)
+  (use-package anzu :straight t)
   (global-anzu-mode t)
   (diminish 'anzu-mode)
   (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)

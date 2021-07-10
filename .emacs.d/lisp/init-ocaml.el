@@ -3,16 +3,15 @@
 ;;; Code:
 
 ;; Tuareg
-(unless (require 'tuareg nil 'noerror)
-  (el-get-bundle ocaml/tuareg))
+(use-package tuareg
+  :straight (:host github :repo "ocaml/tuareg"))
 
 
 ;; Language Server Protocol and Merlin as IDE
-;; (unless (require 'lsp-ocaml nil 'noerror)
-;;   (el-get-bundle emacs-lsp/lsp-ocaml)
-;;   (require 'lsp-ocaml))
-(unless (require 'merlin nil 'noerror)
-  (el-get-bundle ocaml/merlin))
+;; (use-package lsp-ocaml
+;;   :straight (:host github :repo "emacs-lsp/lsp-ocaml"))
+(use-package merlin
+  :straight (:host github :repo "ocaml/merlin"))
 
 (let ((opam-share (ignore-errors (car (process-lines "opam" "config" "var" "share")))))
   (when (and opam-share (file-directory-p opam-share))
@@ -141,8 +140,8 @@ But return nil unless the process returned 0 (`shell-command-to-string' ignore r
 
 
 ;; ReasonML as AltJS
-(unless (require 'reason-mode nil 'noerror)
-  (el-get-bundle reasonml-editor/reason-mode))
+(use-package reason-mode
+  :straight (:host github :repo "reasonml-editor/reason-mode"))
 
 (setq refmt-width-mode 'fill)
 

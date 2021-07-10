@@ -25,7 +25,7 @@
 
 
 ;; ;;; Jedi
-;; (require-package 'jedi)
+;; (use-package jedi :straight t)
 ;; (add-hook 'python-mode-hook 'jedi:setup)
 ;; (setq jedi:complete-on-dot t)
 ;; ;; (setq ac-sources
@@ -36,7 +36,7 @@
 
 
 ;;; Py-Autopep8
-;; (require-package 'py-autopep8)
+;; (use-package py-autopep8 :straight t)
 ;; (setq py-autopep8-options '("--max-line-length=200"))
 ;; (setq flycheck-flake8-maximum-line-length 200)
 ;; (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
@@ -48,8 +48,8 @@
 
 
 ;;; PyFlakes
-(unless (require 'flymake-python-pyflakes nil 'noerror)
-  (el-get-bundle purcell/flymake-python-pyflakes))
+(use-package flymake-python-pyflakes
+  :straight (:host github :repo "purcell/flymake-python-pyflakes"))
 (after-load 'flymake-python-pyflakes
   (flymake-python-pyflakes-load))
 

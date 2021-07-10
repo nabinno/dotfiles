@@ -21,12 +21,12 @@
 
 
 ;;; Japanese input mode
-(require-package 'mozc)
-;; Mozc
-;; (set-language-environment "Japanese")
-(setq default-input-method "japanese-mozc")
-(setq mozc-candidate-style 'echo-area)
-;; Other
+(use-package mozc
+  :straight t
+  :config
+  ;; (set-language-environment "Japanese")
+  (setq default-input-method "japanese-mozc")
+  (setq mozc-candidate-style 'echo-area))
 (setq quail-japanese-use-double-n t)
 
 

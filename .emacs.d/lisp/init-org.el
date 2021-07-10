@@ -1,13 +1,15 @@
 ;;; init-org --- org configuration
 ;;; Commentary:
 ;;; Code:
-(when (< emacs-major-version 24)
-  (require-package 'org))
-;; (require-package 'org-fstree) ;;; TODO
+(require 'org)
+
+(use-package org-fstree :straight t)
 (when *is-a-mac*
-  (require-package 'org-mac-link)
-  (autoload 'org-mac-grab-link "org-mac-link" nil t)
-  (require-package 'org-mac-iCal))
+  (use-package org-mac-link
+    :straight t
+    :config
+    (autoload 'org-mac-grab-link "org-mac-link" nil t))
+  (use-package org-mac-iCal :straight t))
 
 (define-key global-map (kbd "C-c l") 'org-store-link)
 (define-key global-map (kbd "C-c a") 'org-agenda)
@@ -79,47 +81,49 @@
 
 
 ;;; OX
-(require-package 'ox-gfm)
-
-(unless (require 'ox-qmd nil 'noerror)
-  (el-get-bundle 0x60df/ox-qmd))
+(use-package ox-gfm :straight t)
+(use-package ox-qmd
+  :straight (:host github :repo "0x60df/ox-qmd"))
 
 
-;;; Org clock
-;; Save the running clock and all clock history when exiting Emacs, load it on startup
-(setq org-clock-persistence-insinuate t)
-(setq org-clock-persist t)
-(setq org-clock-in-resume t)
+;; ;;; Org clock
+;; ;; Save the running clock and all clock history when exiting Emacs, load it on startup
+;; (setq org-clock-persistence-insinuate t)
+;; (setq org-clock-persist t)
+;; (setq org-clock-in-resume t)
 
-;; Change task state to STARTED when clocking in
-(setq org-clock-in-switch-to-state "STARTED")
-;; Save clock data and notes in the LOGBOOK drawer
-(setq org-clock-into-drawer t)
-;; Removes clocked tasks with 0:00 duration
-(setq org-clock-out-remove-zero-time-clocks t)
+;; ;; Change task state to STARTED when clocking in
+;; (setq org-clock-in-switch-to-state "STARTED")
+;; ;; Save clock data and notes in the LOGBOOK drawer
+;; (setq org-clock-into-drawer t)
+;; ;; Removes clocked tasks with 0:00 duration
+;; (setq org-clock-out-remove-zero-time-clocks t)
 
-;; Show clock sums as hours and minutes, not "n days" etc.
-(setq org-time-clocksum-format
-      '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))
+;; ;; Show clock sums as hours and minutes, not "n days" etc.
+;; (setq org-time-clocksum-format
+;;       '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))
 
-;; Show the clocked-in task - if any - in the header line
-(defun sanityinc/show-org-clock-in-header-line ()
-  (setq-default header-line-format '((" " org-mode-line-string " "))))
+;; ;; Show the clocked-in task - if any - in the header line
+;; (defun sanityinc/show-org-clock-in-header-line ()
+;;   (setq-default header-line-format '((" " org-mode-line-string " "))))
 
-(defun sanityinc/hide-org-clock-from-header-line ()
-  (setq-default header-line-format nil))
+;; (defun sanityinc/hide-org-clock-from-header-line ()
+;;   (setq-default header-line-format nil))
 
-(add-hook 'org-clock-in-hook 'sanityinc/show-org-clock-in-header-line)
-(add-hook 'org-clock-out-hook 'sanityinc/hide-org-clock-from-header-line)
-(add-hook 'org-clock-cancel-hook 'sanityinc/hide-org-clock-from-header-line)
+;; (add-hook 'org-clock-in-hook 'sanityinc/show-org-clock-in-header-line)
+;; (add-hook 'org-clock-out-hook 'sanityinc/hide-org-clock-from-header-line)
+;; (add-hook 'org-clock-cancel-hook 'sanityinc/hide-org-clock-from-header-line)
 
-(after-load 'org-clock
-  (define-key org-clock-mode-line-map [header-line mouse-2] 'org-clock-goto)
-  (define-key org-clock-mode-line-map [header-line mouse-1] 'org-clock-menu))
+;; (after-load 'org-clock
+;;   (define-key org-clock-mode-line-map [header-line mouse-2] 'org-clock-goto)
+;;   (define-key org-clock-mode-line-map [header-line mouse-1] 'org-clock-menu))
 
-(require-package 'org-pomodoro)
-(after-load 'org-agenda
-  (define-key org-agenda-mode-map (kbd "P") 'org-pomodoro))
+
+(use-package org-pomodoro
+  :straight t
+  :config
+  (after-load 'org-agenda
+    (define-key org-agenda-mode-map (kbd "P") 'org-pomodoro)))
 
 ;; ;; Show iCal calendars in the org agenda
 ;; (when (and *is-a-mac* (require 'org-mac-iCal nil t))
@@ -171,25 +175,26 @@
 
 
 ;;; org-trello
-(require-package 'org-trello)
+(use-package org-trello :straight t)
 
 
 ;;; Blog engine
 ;; org-page
-(require-package 'org-page)
+(use-package org-page :straight t)
 (require 'org-page)
 (setq op/repository-directory "~/nabinno.github.io")
 (setq op/site-domain "https://nabinno.github.io/")
 
 ;; blog-admin
-(require-package 'blog-admin)
-(require 'blog-admin)
-;; (setq blog-admin-backend-type 'org-page)
-(setq blog-admin-backend-path "~/nabinno.github.io/org")
-(setq blog-admin-backend-new-post-in-drafts t)
-(setq blog-admin-backend-new-post-with-same-name-dir t)
-(setq blog-admin-backend-org-page-drafts nil)
-(setq blog-admin-backend-org-page-config-file "~/nabinno.github.io/config.el")
+(use-package blog-admin
+  :straight t
+  :config
+  ;; (setq blog-admin-backend-type 'org-page)
+  (setq blog-admin-backend-path "~/nabinno.github.io/org")
+  (setq blog-admin-backend-new-post-in-drafts t)
+  (setq blog-admin-backend-new-post-with-same-name-dir t)
+  (setq blog-admin-backend-org-page-drafts nil)
+  (setq blog-admin-backend-org-page-config-file "~/nabinno.github.io/config.el"))
 
 ;; ox-publish
 (require 'ox-publish)
@@ -217,7 +222,7 @@
 
 
 ;;; org-tree-slide
-(require-package 'org-tree-slide)
+(use-package org-tree-slide :straight t)
 
 
 ;;; Temporary setting
@@ -234,8 +239,7 @@
 (setq org-tag-alist
       '(
         ("Heroku" . ?k)
-        ("Rails" . ?r)
-        ))
+        ("Rails" . ?r)))
 
 ;; html
 (setq org-export-html-validation-link nil)

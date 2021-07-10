@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (ignore-errors
-  (require-package 'erlang))
+  (use-package erlang :straight t))
 
 (when (package-installed-p 'erlang)
   (require 'erlang-start))
@@ -11,12 +11,13 @@
 
 
 ;;; Exlixr
-(require-package 'elixir-mode)
+(use-package elixir-mode :straight t)
 (setq auto-mode-alist
       (cons '("\\.\\(po\\|pot\\)\\'" . elixir-mode) auto-mode-alist))
 
 ;; alchemist
-(el-get-bundle tonini/alchemist.el)
+(use-package alchemist-mode
+  :straight (:host github :repo "tonini/alchemist.el"))
 (setq alchemist-key-command-prefix (kbd "C-c ,")) ;; default: (kbd "C-c a")
 (setq alchemist-goto-erlang-source-dir "~/.local/erlang/")
 (setq alchemist-goto-elixir-source-dir "~/.local/elixir/")
@@ -50,8 +51,8 @@
 
 
 ;;; Phoenix
-(unless (require 'xinari nil 'noerror)
-  (el-get-bundle nabinno/xinari))
+(use-package xinari
+  :straight (:host github :repo "nabinno/xinari"))
 
 (after-load 'xinari
   (diminish 'xinari-minor-mode "Xin"))

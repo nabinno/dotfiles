@@ -1,6 +1,6 @@
-(require-package 'csv-mode)
-(unless (require 'csv-nav nil 'noerror)
-  (el-get-bundle emacsmirror/csv-nav))
+(use-package csv-mode :straight t)
+(use-package csv-nav
+  :straight (:host github :repo "emacsmirror/csv-nav"))
 
 (add-auto-mode 'csv-mode "\\.[Cc][Ss][Vv]\\'")
 

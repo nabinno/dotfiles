@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(require-package 'markdown-mode)
+(use-package markdown-mode :straight t)
 
 (setq auto-mode-alist
       (cons '("\\.\\(md\\|markdown\\|apib\\)\\'" . markdown-mode) auto-mode-alist))
@@ -17,7 +17,7 @@
 
 
 ;;; Hyde (Jekyll client)
-(require-package 'adaptive-wrap)
+(use-package adaptive-wrap :straight t)
 (setq hyde-home "~/nabinno.github.io")
 (defun hyde/open-post-maybe-into-other-window (pos)
   "Opens the post under cursor in the editor (POS)."
@@ -70,7 +70,7 @@
     hyde-mode-map)
   "Keymap for Hyde")
 (global-set-key (kbd "C-c ; j") 'hyde/nabinno)
-(require-package 'hyde)
+(use-package hyde :straight t)
 (require 'hyde)
 
 

@@ -4,8 +4,8 @@
 
 ;;; IDE
 ;; malabar-mode
-(unless (require 'malabar-mode nil 'noerror)
-  (el-get-bundle m0smith/malabar-mode))
+(use-package malabar-mode
+  :straight (:host github :repo "m0smith/malabar-mode"))
 (add-auto-mode 'malabar-mode "\\.java\\'")
 ;; (when (require 'malabar-mode nil t)
 ;;   (setq malabar-groovy-lib-dir (expand-file-name "~/.emacs.d/malabar/lib"))
@@ -24,7 +24,7 @@
 (setq malabar-groovy-java-options '("-Duser.language=en"))
 
 ;; ;; jdee
-;; (require-package 'jdee)
+;; (use-package jdee :straight t)
 
 
 ;; Language Server Protocol
@@ -33,36 +33,36 @@
 
 
 ;;; Maven
-(require-package 'mvn)
+(use-package mvn :straight t)
 
 ;; javadoc
-(require-package 'javadoc-lookup)
+(use-package javadoc-lookup :straight t)
 
 ;; Add and reorder Java import statements in Maven projects
-(require-package 'javaimp)
+(use-package javaimp :straight t)
 
 ;; software testing
-(require-package 'maven-test-mode)
+(use-package maven-test-mode :straight t)
 
 
 ;;; Ant
-(require-package 'ant)
+(use-package ant :straight t)
 
 ;; 
 ;; ;;; Groovy
-;; (require-package 'groovy-mode)
+;; (use-package groovy-mode :straight t)
 ;; (add-auto-mode 'groovy-mode "\\.gradle\\'")
 
 
 ;;; Other
 ;; jtags
-(require-package 'jtags)
+(use-package jtags :straight t)
 
 ;; snipetts
-(require-package 'java-snippets)
+(use-package java-snippets :straight t)
 
 ;; thread dump
-(require-package 'thread-dump)
+(use-package thread-dump :straight t)
 
 
 

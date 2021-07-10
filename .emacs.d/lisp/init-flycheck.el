@@ -1,7 +1,9 @@
 ;;; init-flycheck.el --- flycheck configuration
 ;;; Commentary:
 ;;; Code:
-(when (maybe-require-package 'flycheck)
+(use-package flycheck
+  :straight t
+  :config
   (add-hook 'after-init-hook 'global-flycheck-mode)
   (add-hook 'flycheck-mode-hook '(lambda ()
                                    (when (and (buffer-file-name)
@@ -16,7 +18,7 @@
 
   (setq flycheck-display-errors-function #'flycheck-display-error-messages-unless-error-list))
 
-;; (require-package 'flycheck-tip)
+;; (use-package flycheck-tip :straight t)
 
 
 (provide 'init-flycheck)

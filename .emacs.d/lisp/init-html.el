@@ -1,13 +1,13 @@
 ;;; init-html --- initial html-mode configuration
 ;;; Commentary:
 ;;; Code:
-(unless (require 'tidy nil 'noerror)
-  (el-get-bundle lwiechec/tidy.el))
+(use-package tidy
+  :straight (:host github :repo "lwiechec/tidy.el"))
 
 (add-hook 'html-mode-hook (lambda () (tidy-build-menu html-mode-map)))
 
 
-(require-package 'tagedit)
+(use-package tagedit :straight t)
 (after-load 'sgml-mode
   (tagedit-add-paredit-like-keybindings)
   (add-hook 'sgml-mode-hook (lambda () (tagedit-mode 1))))

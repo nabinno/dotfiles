@@ -1,11 +1,11 @@
 ;;; init-restclient -- restclient configuration
 ;;; Commentary:
 ;;; Code:
-(require-package 'restclient)
-(require-package 'restclient-helm)
-;; (require-package 'company-restclient)
+(use-package restclient :straight t)
+(use-package restclient-helm :straight t)
+;; (use-package company-restclient :straight t)
 
-(require-package 'ob-restclient)
+(use-package ob-restclient :straight t)
 (org-babel-do-load-languages
  'org-babel-load-languages
   '((restclient . t)))

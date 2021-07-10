@@ -5,7 +5,7 @@
 
 
 ;;; Make "C-x o" prompt for a target window when there are more than 2
-(require-package 'switch-window)
+(use-package switch-window :straight t)
 (require 'switch-window)
 (setq switch-window-shortcut-style 'alphabet)
 (global-set-key (kbd "C-x o") 'switch-window)

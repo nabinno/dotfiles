@@ -3,9 +3,10 @@
 ;;; Code:
 
 ;;; Sr Speedbar
-(require-package 'sr-speedbar)
-(when (maybe-require-package 'sr-speedbar)
-  (require 'speedbar)
+(use-package sr-speedbar :straight t)
+(use-package sr-speedbar
+  :straight t
+  :config
   (global-set-key (kbd "M-3") 'sr-speedbar-toggle))
 
 (setq speedbar-hide-button-brackets-flag t
@@ -48,7 +49,7 @@
 
 
 ;; ;;; Neotree
-;; (require-package 'neotree)
+;; (use-package neotree :straight t)
 ;; (when (maybe-require-package 'neotree)
 ;;   (require 'neotree)
 ;;   (global-set-key (kbd "M-3") 'neotree-toggle))
@@ -81,9 +82,9 @@
      '((" \\(@\\(todo\\|desc\\|param\\|note\\|see\\|type\\|return\\|fixme\\|example\\|raise\\)\\)"
         1 font-lock-warning-face t)))))
 
-;; (require-package 'fic-mode)
+;; (use-package fic-mode :straight t)
 ;; (when (maybe-require-package 'fic-mode) (require 'fic-mode))
-;; ;; (require-package 'hl-todo)
+;; ;; (use-package hl-todo :straight t)
 ;; ;; (when (maybe-require-package 'hl-todo) (require 'hl-todo))
 ;; (defun insert-todo-mark () (interactive)
 ;;            (insert (shell-command-to-string "echo -n TODO: $(date +%Y-%m-%d)")))
@@ -93,7 +94,7 @@
 
 (provide 'init-project)
 
-;; (require-package 'pomodoro)
+;; (use-package pomodoro :straight t)
 
 
 

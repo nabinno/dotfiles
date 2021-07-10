@@ -2,8 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
-(require-package 'unfill)
-(require-package 'whole-line-or-region)
+(use-package unfill :straight t)
+(use-package whole-line-or-region :straight t)
 
 (when (fboundp 'electric-pair-mode)
   (electric-pair-mode))
@@ -63,7 +63,7 @@
   (add-hook hook #'sanityinc/no-trailing-whitespace))
 
 
-(require-package 'whitespace-cleanup-mode)
+(use-package whitespace-cleanup-mode :straight t)
 (global-whitespace-cleanup-mode t)
 
 
@@ -91,13 +91,13 @@
 ;;   (global-prettify-symbols-mode))
 
 
-(require-package 'undo-tree)
+(use-package undo-tree :straight t)
 (global-undo-tree-mode)
 (diminish 'undo-tree-mode)
 (global-set-key (kbd "M-/") 'undo-tree-undo)
 
 
-(require-package 'highlight-symbol)
+(use-package highlight-symbol :straight t)
 (dolist (hook '(prog-mode-hook html-mode-hook))
   (add-hook hook 'highlight-symbol-mode)
   (add-hook hook 'highlight-symbol-nav-mode))
@@ -125,10 +125,13 @@
 ;;----------------------------------------------------------------------------
 ;; Expand region
 ;;----------------------------------------------------------------------------
-(require-package 'expand-region)
-(global-set-key (kbd "C-=") 'er/expand-region)
-(global-set-key (kbd "M-=") 'er/expand-region)
-;; (global-set-key (kbd "M-[ 1 ; 5 k") 'er/expand-region)
+(use-package expand-region
+  :straight t
+  :config
+  (global-set-key (kbd "C-=") 'er/expand-region)
+  (global-set-key (kbd "M-=") 'er/expand-region)
+  ;; (global-set-key (kbd "M-[ 1 ; 5 k") 'er/expand-region)
+  )
 
 ;;----------------------------------------------------------------------------
 ;; Don't disable case-change functions
@@ -164,7 +167,7 @@
   :config
   (global-set-key (kbd "") 'ace-jump-word-mode))
 
-(require-package 'multiple-cursors)
+(use-package multiple-cursors :straight t)
 ;; multiple-cursors
 (global-set-key (kbd "M-,")             'mc/mark-previous-like-this)
 (global-set-key (kbd "C-<")             'mc/mark-previous-like-this)
@@ -201,14 +204,14 @@
 ;;----------------------------------------------------------------------------
 ;; Visual regexp
 ;;----------------------------------------------------------------------------
-(require-package 'visual-regexp)
+(use-package visual-regexp :straight t)
 (define-key global-map (kbd "M-r") 'vr/replace)
 (define-key global-map (kbd "C-M-m") 'vr/mc-mark)
 
 ;;----------------------------------------------------------------------------
 ;; Page break lines
 ;;----------------------------------------------------------------------------
-(require-package 'page-break-lines)
+(use-package page-break-lines :straight t)
 (global-page-break-lines-mode)
 (diminish 'page-break-lines-mode)
 (add-hook 'prog-mode-hook 'page-break-lines-mode)
@@ -218,7 +221,7 @@
 ;; Fill column indicator
 ;;----------------------------------------------------------------------------
 (when (eval-when-compile (> emacs-major-version 23))
-  (require-package 'fill-column-indicator)
+  (use-package fill-column-indicator :straight t)
   (defun sanityinc/prog-mode-fci-settings ()
     (turn-on-fci-mode)
     (when show-trailing-whitespace
@@ -257,17 +260,18 @@
 ;; it will use those keybindings. For this reason, you might prefer to
 ;; use M-S-up and M-S-down, which will work even in lisp modes.
 ;;----------------------------------------------------------------------------
-(require-package 'move-dup)
-(global-set-key [M-up]              'md-move-lines-up)
-;; (global-set-key (kbd "M-[ 1 ; 3 A") 'md-move-lines-up)
-(global-set-key [M-down]            'md-move-lines-down)
-;; (global-set-key (kbd "M-[ 1 ; 3 B") 'md-move-lines-down)
-(global-set-key [M-S-up]            'md-move-lines-up)
-;; (global-set-key (kbd "M-[ 1 ; 4 A") 'md-move-lines-up)
-(global-set-key [M-S-down]          'md-move-lines-down)
-;; (global-set-key (kbd "M-[ 1 ; 4 B") 'md-move-lines-down)
+(use-package move-dup
+  :straight (:host github :repo "wyuenho/move-dup"))
+(global-set-key [M-up]              'move-dup-move-lines-up)
+;; (global-set-key (kbd "M-[ 1 ; 3 A") 'move-dup-move-lines-up)
+(global-set-key [M-down]            'move-dup-move-lines-down)
+;; (global-set-key (kbd "M-[ 1 ; 3 B") 'move-dup-move-lines-down)
+(global-set-key [M-S-up]            'move-dup-move-lines-up)
+;; (global-set-key (kbd "M-[ 1 ; 4 A") 'move-dup-move-lines-up)
+(global-set-key [M-S-down]          'move-dup-move-lines-down)
+;; (global-set-key (kbd "M-[ 1 ; 4 B") 'move-dup-move-lines-down)
 
-(global-set-key (kbd "C-c p") 'md-duplicate-down)
+(global-set-key (kbd "C-c p") 'move-dup-duplicate-down)
 
 ;;----------------------------------------------------------------------------
 ;; Fix backward-up-list to understand quotes, see http://bit.ly/h7mdIL
@@ -287,7 +291,7 @@
 ;;----------------------------------------------------------------------------
 ;; Cut/copy the current line if no region is active
 ;;----------------------------------------------------------------------------
-(whole-line-or-region-mode t)
+(whole-line-or-region-global-mode t)
 (diminish 'whole-line-or-region-mode)
 (make-variable-buffer-local 'whole-line-or-region-mode)
 
@@ -361,7 +365,7 @@ With arg N, insert N newlines."
 
 ;;; Ag
 (when (executable-find "ag")
-  (require-package 'ag)
+  (use-package ag :straight t)
   (unless (require 'wgrep-ag nil 'noerror)
     (el-get-bundle mhayashi1120/Emacs-wgrep))
   (setq-default ag-highlight-search t)
@@ -370,7 +374,7 @@ With arg N, insert N newlines."
 
 
 ;; Avy
-(require-package 'avy)
+(use-package avy :straight t)
 ;; (global-set-key (kbd "M-[ 1 ; 5 n") 'avy-goto-char)
 ;; (global-set-key (kbd "M-[ 1 ; 5 l") 'avy-goto-char-2)
 (global-set-key (kbd "M-g f") 'avy-goto-line)
@@ -381,12 +385,12 @@ With arg N, insert N newlines."
 
 
 ;; ;;; Folding
-;; ;; (require-package 'fold-dwim)
+;; ;; (use-package fold-dwim :straight t)
 ;; ;; (global-set-key (kbd "<f8>")     'fold-dwim-toggle)
 ;; ;; (global-set-key (kbd "<M-f8>")   'fold-dwim-hide-all)
 ;; ;; (global-set-key (kbd "<S-M-f8>") 'fold-dwim-show-all)
 
-;; (require-package 'fold-this)
+;; (use-package fold-this :straight t)
 ;; (setq fold-this-persistent-folds t)
 ;; (defun fold-this--this-or-all (all)
 ;;   (interactive "P")
@@ -403,27 +407,27 @@ With arg N, insert N newlines."
 
 
 ;;; Lice, Lorem ipsum
-(require-package 'lice)
-(require-package 'lorem-ipsum)
+(use-package lice :straight t)
+(use-package lorem-ipsum :straight t)
 
 
 
-(require-package 'highlight-escape-sequences)
+(use-package highlight-escape-sequences :straight t)
 (hes-mode)
 
 
 
-(require-package 'guide-key)
-(setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-x 5" "C-c ;" "C-c ; f" "C-c ' f" "C-x n"))
-(guide-key-mode 1)
-(diminish 'guide-key-mode)
-
+(use-package guide-key
+  :straight t
+  :config
+  (setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-x 5" "C-c ;" "C-c ; f" "C-c ' f" "C-x n"))
+  (guide-key-mode 1)
+  (diminish 'guide-key-mode))
 
 
 ;; ;;; Time/Date
-;; (require-package 'time-ext)
-;; (require-package 'wwtime)
-
+;; (use-package time-ext :straight t)
+;; (use-package wwtime :straight t)
 
 
 ;;; Normalize

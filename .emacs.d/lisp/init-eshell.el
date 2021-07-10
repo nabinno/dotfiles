@@ -82,7 +82,7 @@
 
 ;; ;;; Eshell Z
 ;; (eval-after-load 'eshell
-;;       '(require-package 'eshell-z nil t))
+;;       '(use-package eshell-z nil t :straight t))
 
 
 ;; ;;; Eshell myparser

@@ -3,13 +3,13 @@
 ;;; Code:
 (when (eval-when-compile (>= emacs-major-version 24))
   ;; rainbow-mode needs color.el, bundled with Emacs >= 24.
-  (require-package 'rainbow-mode)
+  (use-package rainbow-mode :straight t)
   (dolist (hook '(css-mode-hook html-mode-hook sass-mode-hook))
     (add-hook hook 'rainbow-mode)))
 
 
 ;; ;;; Embedding in html
-;; (require-package 'mmm-mode)
+;; (use-package mmm-mode :straight t)
 ;; (after-load 'mmm-vars
 ;;   (mmm-add-group
 ;;    'html-css
@@ -37,8 +37,8 @@
 
 
 ;;; SASS and SCSS
-(require-package 'sass-mode)
-(require-package 'scss-mode)
+(use-package sass-mode :straight t)
+(use-package scss-mode :straight t)
 (setq-default scss-compile-at-save nil)
 (defun scss-custom ()
   "scss-mode-hook"
@@ -49,9 +49,9 @@
 
 
 ;;; LESS
-(require-package 'less-css-mode)
+(use-package less-css-mode :straight t)
 (when (featurep 'js2-mode)
-  (require-package 'skewer-less))
+  (use-package skewer-less :straight t))
 
 
 
@@ -62,7 +62,7 @@
 
 
 ;;; Use eldoc for syntax hints
-(require-package 'css-eldoc)
+(use-package css-eldoc :straight t)
 (autoload 'turn-on-css-eldoc "css-eldoc")
 (add-hook 'css-mode-hook 'turn-on-css-eldoc)
 

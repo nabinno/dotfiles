@@ -1,7 +1,7 @@
 ;;; init-yasnippet --- yasnippet configuration
 ;;; Commentary:
 ;;; COde:
-(require-package 'yasnippet)
+(use-package yasnippet :straight t)
 
 (yas-global-mode 1)
 ;; (yas-load-directory "~/.emacs.d/site-lisp/yasnippets-rails/rails-snippets")
@@ -10,7 +10,7 @@
 ;; (define-key yas-minor-mode-map (kbd "M-B") 'yas-insert-snippet)
 
 (unless (require 'dropdown-list nil 'noerror)
-  (el-get-bundle emacsmirror/dropdown-list))
+  (use-package dropdown-list :straight t))
 ;; (setq yas-prompt-functions '(yas-dropdown-prompt
 ;;                              yas-ido-prompt
 ;;                              yas-completing-prompt))

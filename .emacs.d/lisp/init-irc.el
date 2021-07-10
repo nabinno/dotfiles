@@ -3,15 +3,15 @@
 ;;; Code:
 
 ;; ;;; IRC
-;; (require-package 'circe)
+;; (use-package circe :straight t)
 
 
 ;;; Twitter
-(require-package 'twittering-mode)
+(use-package twittering-mode :straight t)
 
 
 ;;; Chatwork
-;; (require-package 'chatwork)
+;; (use-package chatwork :straight t)
 ;; (setq chatwork-token "YOUR CHATWORK API TOKEN")
 
 

@@ -120,6 +120,7 @@
 (global-set-key (kbd "M-]") 'forward-paragraph)
 (global-set-key (kbd "C-c [") 'backward-paragraph)
 (global-set-key (kbd "C-c ]") 'forward-paragraph)
+(global-set-key (kbd "C-x C-c") 'kill-emacs)
 (global-unset-key (kbd "C-z"))
 (global-unset-key (kbd "<f2>"))
 

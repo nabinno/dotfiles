@@ -1,11 +1,11 @@
 ;;; init-git --- git configuration
 ;;; Commentary:
 ;;; Code:
-(require-package 'magit)
-(require-package 'gitignore-mode)
-(require-package 'gitconfig-mode)
-(require-package 'git-messenger) ;; Though see also vc-annotate's "n" & "p" bindings
-(require-package 'git-timemachine)
+(use-package magit :straight t)
+(use-package gitignore-mode :straight t)
+(use-package gitconfig-mode :straight t)
+(use-package git-messenger :straight t) ;; Though see also vc-annotate's "n" & "p" bindings
+(use-package git-timemachine :straight t)
 
 (setq-default
  magit-save-some-buffers nil
@@ -27,7 +27,9 @@
 ;; Hint: customize `magit-repo-dirs' so that you can use C-u M-F12 to
 ;; quickly open magit on any one of your projects.
 
-(when (maybe-require-package 'magit)
+(use-package magit
+  :straight t
+  :config
   (setq-default
    magit-process-popup-time 10
    magit-diff-refine-hunk t
@@ -38,7 +40,7 @@
 (after-load 'magit
   (define-key magit-status-mode-map (kbd "C-M-<up>") 'magit-goto-parent-section))
 
-;; (require-package 'fullframe)
+;; (use-package fullframe :straight t)
 ;; (after-load 'magit
 ;;   (fullframe magit-status magit-mode-quit-window))
 
@@ -59,19 +61,19 @@
 
 
 ;; ;;; Git blame
-;; (require-package 'git-blame)
+;; (use-package git-blame :straight t)
 ;; (autoload 'git-blame-mode "git-blame"
 ;;   "Minor mode for incremental blame for Git." t)
 
 
 ;;; Git flow
-(require-package 'magit-gitflow)
+(use-package magit-gitflow :straight t)
 (require 'magit-gitflow)
 (add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
 
 
 ;;; Git gutter
-(require-package 'git-gutter+)
+(use-package git-gutter+ :straight t)
 (global-git-gutter+-mode)
 
 (eval-after-load 'git-gutter+
@@ -96,7 +98,7 @@
 
 ;; ;;; git-svn support
 ;;
-;; (require-package 'magit-svn)
+;; (use-package magit-svn :straight t)
 ;; (autoload 'magit-svn-enabled "magit-svn")
 ;; (defun sanityinc/maybe-enable-magit-svn-mode ()
 ;;   (when (magit-svn-enabled)
@@ -125,7 +127,7 @@
 ;;                      (ido-completing-read "git-svn command: " git-svn--available-commands nil t)))))
 
 
-(require-package 'git-messenger)
+(use-package git-messenger :straight t)
 (global-set-key (kbd "C-x v p") #'git-messenger:popup-message)
 
 

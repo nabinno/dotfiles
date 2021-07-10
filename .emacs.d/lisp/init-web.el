@@ -1,8 +1,8 @@
 ;;; init-web --- initial web-mode configuration
 ;;; Commentary:
 ;;; Code:
-(unless (require 'web-mode nil 'noerror)
-  (el-get-bundle fxbois/web-mode))
+(use-package web-mode
+  :straight (:host github :repo "fxbois/web-mode"))
 
 (add-to-list 'auto-mode-alist '("\\.ctp\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))

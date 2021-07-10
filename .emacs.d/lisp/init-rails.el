@@ -1,7 +1,7 @@
 ;;; init-rails --- rails configuration
 ;;; Commentary:
 ;;; Code:
-(require-package 'rinari)
+(use-package rinari :straight t)
 (after-load 'rinari
   (diminish 'rinari-minor-mode "Rin"))
 (global-rinari-mode)
@@ -15,12 +15,12 @@
 ;; rspec-mode
 (eval-after-load 'rspec-mode
   '(rspec-install-snippets))
-(require-package 'rspec-mode)
+(use-package rspec-mode :straight t)
 
 ;; minitest-emacs
 (eval-after-load 'minitest
   '(add-hook 'ruby-mode-hook 'minitest-mode))
-(require-package 'minitest)
+(use-package minitest :straight t)
 
 ;; rinari-rgrep
 (setq rinari-rgrep-file-endings "*.rb *.erb *.yml *.coffee *.js *.scss *.rake")
