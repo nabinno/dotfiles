@@ -68,7 +68,7 @@ Set-Alias bash 'C:\Windows\System32\bash.exe'
 
 
 # ProgrammingLanguage::Go
-$env:GOROOT ='C:\Go'
+$env:GOROOT ='C:\Program Files\Go'
 $env:GOPATH = "$([Environment]::GetFolderPath('UserProfile'))\.ghq.d"
 $env:GO111MODULE = 'on'
 $env:PATH = "$($env:GOROOT)\bin;$($env:PATH)"
@@ -95,6 +95,12 @@ if (!(Get-Command -ErrorAction Ignore $Vim)) { choco install vim }
 
 
 # IntegratedDevelopmentEnvironment::ResourceManagement::Git
+$env:GITROOT ='C:\Program Files\Git'
+$env:PATH = "$($env:GITPATH)\bin;$($env:PATH)"
+function Get-Git {
+    choco install git
+}
+if (!(Get-Command -ErrorAction Ignore "$($env:GITROOT)\bin\git.exe")) { Get-Git }
 function ga($path) { git add $path }
 function gaa { git add . }
 function gct($comment) { git commit -m "$comment" }
