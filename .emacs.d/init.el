@@ -139,6 +139,7 @@
 
 (require 'init-shell)
 (require 'init-eshell)
+(require 'init-powershell)
 (require 'init-marmalade)
 (require 'init-translation)
 (require 'init-misc)
