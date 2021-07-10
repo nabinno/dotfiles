@@ -81,7 +81,6 @@ get-global-go-packages() {
       # utility
       go get -u github.com/Arkweid/lefthook
       go get -u github.com/github/hub
-      go get -u github.com/peco/peco/cmd/peco
       go get -u github.com/mattn/qq/cmd/qq
       go get -u github.com/mattn/git-fixauthor
       go get -u github.com/shenwei356/csvtk/csvtk
