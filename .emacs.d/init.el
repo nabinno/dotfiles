@@ -28,8 +28,8 @@
 (require 'init-compat)
 (require 'init-utils)
 (require 'init-site-lisp) ;; Must come before elpa, as it may provide package.el
-(require 'init-elpa)      ;; Machinery for installing required packages
-(require 'init-el-get)    ;; Machinery for installing required packages
+;; (require 'init-elpa)      ;; Machinery for installing required packages
+;; (require 'init-el-get)    ;; Machinery for installing required packages
 (require 'init-straight)  ;; Machinery for installing required packages
 (require 'init-exec-path) ;; Set up $PATH
 
@@ -44,11 +44,11 @@
 
 (require 'init-dired)
 
-(require-package 'wgrep)
+(use-package wgrep :straight t)
 (unless (require 'project-local-variables nil 'noerror)
   (el-get-bundle emacsmirror/project-local-variables))
-(require-package 'diminish)
-(require-package 'scratch)
+(use-package diminish :straight t)
+(use-package scratch :straight t)
 (unless (require 'mwe-log-commands nil 'noerror)
   (el-get-bundle tshemeng/mwe-log-commands))
 
@@ -148,13 +148,13 @@
 ;; Extra packages which don't require any configuration
 
 ;; (require 'init-diagram)
-(require-package 'gnuplot)
-(require-package 'lua-mode)
-(require-package 'htmlize)
-(require-package 'dsvn)
+(use-package gnuplot :straight t)
+(use-package lua-mode :straight t)
+(use-package htmlize :straight t)
+(use-package dsvn :straight t)
 (when *is-a-mac*
-  (require-package 'osx-location))
-(require-package 'regex-tool)
+  (use-package osx-location :straight t))
+(use-package regex-tool :straight t)
 
 (require 'init-irc)
 (require 'init-esa)
