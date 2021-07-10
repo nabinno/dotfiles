@@ -96,7 +96,7 @@ if (!(Get-Command -ErrorAction Ignore $Vim)) { choco install vim }
 
 # IntegratedDevelopmentEnvironment::ResourceManagement::Git
 $env:GITROOT ='C:\Program Files\Git'
-$env:PATH = "$($env:GITPATH)\bin;$($env:PATH)"
+$env:PATH = "$($env:GITROOT)\bin;$($env:PATH)"
 function Get-Git {
     choco install git
 }
