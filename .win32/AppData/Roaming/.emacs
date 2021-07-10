@@ -17,21 +17,26 @@
  '(menu-bar-mode nil)
  '(package-selected-packages
    (quote
-    (powershell ruby-hash-syntax move-dup expand-region highlight-symbol unfill google-translate undo-tree whole-line-or-region visual-regexp scratch page-break-lines multiple-cursors markdown-mode exec-path-from-shell elscreen el-get diminish)))
+    (csv-mode ruby-hash-syntax move-dup expand-region highlight-symbol unfill google-translate undo-tree whole-line-or-region visual-regexp scratch page-break-lines multiple-cursors markdown-mode exec-path-from-shell elscreen el-get diminish)))
  '(scroll-bar-mode nil)
  '(tool-bar-mode nil)
  '(truncate-lines t))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "Black" :foreground "White" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 102 :width normal :foundry "outline" :family "MS Gothic"))))
- '(cursor ((t (:background "green"))))
- '(fixed-pitch ((t (:family "MS Gothic")))))
-(add-to-list 'default-frame-alist '(font . "MS Gothic"))
-(set-face-attribute 'default nil :font "MS Gothic" :height 120)
-(set-frame-font "MS Gothic" nil t)
+ '(cursor ((t (:background "green" :type "box"))))
+ '(default ((t (:inherit nil :stipple nil :background "Black" :foreground "White" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 102 :width normal :foundry "outline" :family "Source Han Mono"))))
+ '(fixed-pitch ((t (:family "Source Han Mono")))))
+
+(add-to-list 'default-frame-alist '(font . "Source Han Mono"))
+(add-to-list 'default-frame-alist '(cursor-type . box))
+(add-to-list 'default-frame-alist '(cursor-color . "green"))
+(set-face-attribute 'default nil :font "Source Han Mono" :height 110)
+(set-frame-font "Source Han Mono" nil t)
+
 (global-set-key (kbd "M-0") '(lambda () (interactive) (progn (find-file "~/.emacs") (delete-other-windows))))
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
 (global-set-key (kbd "C-h") 'delete-backward-char)
@@ -76,33 +81,65 @@
         (set-visited-file-name new-name)))))
 
 
-;;; MELPA - Standard package repositories
-(when (< emacs-major-version 24)
-  ;; Mainly for ruby-mode
-  (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/")))
-;; We include the org repository for completeness, but don't normally use it.
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
-(when (< emacs-major-version 24)
-  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
-;;; Also use Melpa for most packages
-(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
-;;; On-demand installation of packages
-(defun require-package (package &optional min-version no-refresh)
-  "Install given PACKAGE, optionally requiring MIN-VERSION.
-If NO-REFRESH is non-nil, the available package lists will not be
-re-downloaded in order to locate PACKAGE."
-  (if (package-installed-p package min-version)
-      t
-    (if (or (assoc package package-archive-contents) no-refresh)
-        (package-install package)
-      (progn
-        (package-refresh-contents)
-        (require-package package min-version t)))))
+;; ;;; MELPA - Standard package repositories
+;; (when (< emacs-major-version 24)
+;;   ;; Mainly for ruby-mode
+;;   (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/")))
+;; ;; We include the org repository for completeness, but don't normally use it.
+;; (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
+;; (when (< emacs-major-version 24)
+;;   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+;; ;;; Also use Melpa for most packages
+;; (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
+;; ;;; On-demand installation of packages
+;; (defun require-package (package &optional min-version no-refresh)
+;;   "Install given PACKAGE, optionally requiring MIN-VERSION.
+;; If NO-REFRESH is non-nil, the available package lists will not be
+;; re-downloaded in order to locate PACKAGE."
+;;   (if (package-installed-p package min-version)
+;;       t
+;;     (if (or (assoc package package-archive-contents) no-refresh)
+;;         (package-install package)
+;;       (progn
+;;         (package-refresh-contents)
+;;         (require-package package min-version t)))))
 
 
-;;; El-Get
-(require-package 'el-get)
-(add-to-list 'load-path (expand-file-name "el-get" user-emacs-directory))
+;; ;;; el-get
+;; (require-package 'el-get)
+;; (add-to-list 'load-path (expand-file-name "el-get" user-emacs-directory))
+
+
+;;; straight.el
+(defvar bootstrap-version)
+  (let ((bootstrap-file
+             (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+            (bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+          (with-current-buffer
+                  (url-retrieve-synchronously
+                   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+                   'silent 'inhibit-cookies)
+            (goto-char (point-max))
+            (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+
+;; use-package
+(straight-use-package 'use-package)
+(use-package use-package-ensure-system-package :straight t)
+
+;; base
+(defun jjin/use-package-if-prehook (name _keyword pred rest state)...)
+(advice-add 'use-package-handler/:if :before 'jjin/use-package-if-prehook)
+
+(use-package diminish :straight t)
+(use-package names :straight t)
+(use-package system-packages
+	     :straight t
+	     :init
+	     (setq system-packages-use-sudo nil)
+	     (when (eq system-type 'darwin)
+	       (setq system-packages-package-manager 'brew)))
 
 
 ;;; exec-path-from-shell
@@ -328,11 +365,14 @@ re-downloaded in order to locate PACKAGE."
 (global-set-key "\C-ct" 'google-translate-at-point)
 (global-set-key "\C-cT" 'google-translate-query-translate)
 
+
+;; ;; markdown-mode
+;; (set-face-attribute 'markdown-code-face nil :inherit 'default :foreground "light green")
 
 
-;; (require 'server)
-;; (unless (server-running-p)
-;;   (server-start))
+(require 'server)
+(unless (server-running-p)
+  (server-start))
 
 
 
