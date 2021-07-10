@@ -33,7 +33,8 @@ get-base-brew-packages() {
             ghq \
             ripgrep \
             aws-vault \
-            hadolint
+            hadolint \
+            peco
           ;;
       esac
       ;;
