@@ -81,40 +81,31 @@
         (set-visited-file-name new-name)))))
 
 
-;;; straight.el
-(defvar bootstrap-version)
-  (let ((bootstrap-file
-             (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-            (bootstrap-version 5))
-    (unless (file-exists-p bootstrap-file)
-          (with-current-buffer
-                  (url-retrieve-synchronously
-                   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-                   'silent 'inhibit-cookies)
-            (goto-char (point-max))
-            (eval-print-last-sexp)))
-    (load bootstrap-file nil 'nomessage))
+;;; leaf.el
+(eval-and-compile
+  (customize-set-variable
+   'package-archives '(("org" . "https://orgmode.org/elpa/")
+                       ("melpa" . "https://melpa.org/packages/")
+                       ("gnu" . "https://elpa.gnu.org/packages/")))
+  (package-initialize)
+  (unless (package-installed-p 'leaf)
+    (package-refresh-contents)
+    (package-install 'leaf))
+  (leaf leaf-keywords
+        :ensure t
+        :init
+        ;; optional packages if you want to use :hydra, :el-get, :blackout,,,
+        (leaf hydra :ensure t)
+        (leaf el-get :ensure t)
+        (leaf blackout :ensure t)
 
-;; use-package
-(straight-use-package 'use-package)
-(use-package use-package-ensure-system-package :straight t)
-
-;; base
-(defun jjin/use-package-if-prehook (name _keyword pred rest state)...)
-(advice-add 'use-package-handler/:if :before 'jjin/use-package-if-prehook)
-
-(use-package diminish :straight t)
-(use-package names :straight t)
-(use-package system-packages
-  :straight t
-  :init
-  (setq system-packages-use-sudo nil)
-  (when (eq system-type 'darwin)
-    (setq system-packages-package-manager 'brew)))
+        :config
+        ;; initialize leaf-keywords.el
+        (leaf-keywords-init)))
 
 
 ;;; exec-path-from-shell
-(use-package exec-path-from-shell :straight t)
+(leaf exec-path-from-shell :ensure t)
 (defmacro after-load (feature &rest body)
   "After FEATURE is loaded, evaluate BODY."
   (declare (indent defun))
@@ -129,8 +120,8 @@
 
 
 ;;; undo-tree
-(use-package undo-tree
-  :straight t
+(leaf undo-tree
+  :ensure t
   :config
   (global-undo-tree-mode)
   (diminish 'undo-tree-mode)
@@ -138,10 +129,10 @@
 
 
 ;;; page-break-lines-char
-(use-package diminish :straight t)
-(use-package scratch :straight t)
-(use-package page-break-lines
-  :straight t
+(leaf diminish :ensure t)
+(leaf scratch :ensure t)
+(leaf page-break-lines
+  :ensure t
   :config
   (global-page-break-lines-mode)
   (diminish 'page-break-lines-mode)
@@ -150,8 +141,8 @@
 
 
 ;;; unfill and whole-line-or-region
-(use-package unfill :straight t)
-(use-package whole-line-or-region :straight t)
+(leaf unfill :ensure t)
+(leaf whole-line-or-region :ensure t)
 (when (fboundp 'electric-pair-mode)
   (electric-pair-mode))
 
@@ -161,8 +152,8 @@
 
 
 ;;; multiple-cursors
-(use-package multiple-cursors
-  :straight t
+(leaf multiple-cursors
+  :ensure t
   :config
   ;; multiple-cursors
   (global-set-key (kbd "M-,")             'mc/mark-previous-like-this)
@@ -189,39 +180,41 @@
 
 
 ;;; whole-line-or-region-mode
-(use-package whole-line-or-region :straight t)
-(whole-line-or-region-mode t)
-(diminish 'whole-line-or-region-mode)
-(make-variable-buffer-local 'whole-line-or-region-mode)
-(defun suspend-mode-during-cua-rect-selection (mode-name)
-  "Add an advice to suspend `MODE-NAME' while selecting a CUA rectangle."
-  (let ((flagvar (intern (format "%s-was-active-before-cua-rectangle" mode-name)))
-        (advice-name (intern (format "suspend-%s" mode-name))))
-    (eval-after-load 'cua-rect
-      `(progn
-         (defvar ,flagvar nil)
-         (make-variable-buffer-local ',flagvar)
-         (defadvice cua--activate-rectangle (after ,advice-name activate)
-           (setq ,flagvar (and (boundp ',mode-name) ,mode-name))
-           (when ,flagvar
-             (,mode-name 0)))
-         (defadvice cua--deactivate-rectangle (after ,advice-name activate)
-           (when ,flagvar
-             (,mode-name 1)))))))
-(suspend-mode-during-cua-rect-selection 'whole-line-or-region-mode)
+(leaf whole-line-or-region
+  :ensure t
+  :config
+  (whole-line-or-region-mode t)
+  (diminish 'whole-line-or-region-mode)
+  (make-variable-buffer-local 'whole-line-or-region-mode)
+  (defun suspend-mode-during-cua-rect-selection (mode-name)
+    "Add an advice to suspend `MODE-NAME' while selecting a CUA rectangle."
+    (let ((flagvar (intern (format "%s-was-active-before-cua-rectangle" mode-name)))
+          (advice-name (intern (format "suspend-%s" mode-name))))
+      (eval-after-load 'cua-rect
+	`(progn
+           (defvar ,flagvar nil)
+           (make-variable-buffer-local ',flagvar)
+           (defadvice cua--activate-rectangle (after ,advice-name activate)
+             (setq ,flagvar (and (boundp ',mode-name) ,mode-name))
+             (when ,flagvar
+               (,mode-name 0)))
+           (defadvice cua--deactivate-rectangle (after ,advice-name activate)
+             (when ,flagvar
+               (,mode-name 1)))))))
+  (suspend-mode-during-cua-rect-selection 'whole-line-or-region-mode))
 
 
 ;;; visual-regex
-(use-package visual-regexp
-  :straight t
+(leaf visual-regexp
+  :ensure t
   :config
   (define-key global-map (kbd "M-r") 'vr/replace)
   (define-key global-map (kbd "C-M-m") 'vr/mc-mark))
 
 
 ;;; elscreen
-(use-package elscreen
-  :straight t
+(leaf elscreen
+  :ensure t
   :config
   (setq elscreen-display-tab nil)
   (setq elscreen-tab-display-kill-screen nil)
@@ -255,8 +248,8 @@
 
 
 ;;; highlight-symbol
-(use-package highlight-symbol
-  :straight t
+(leaf highlight-symbol
+  :ensure t
   :config
   (dolist (hook '(prog-mode-hook html-mode-hook))
     (add-hook hook 'highlight-symbol-mode)
@@ -266,16 +259,16 @@
 
 
 ;;; Expand region
-(use-package expand-region
-  :straight t
+(leaf expand-region
+  :ensure t
   :config
   (global-set-key (kbd "C-=") 'er/expand-region)
   (global-set-key (kbd "M-=") 'er/expand-region))
 
 
 ;;; move-dup
-(use-package move-dup
-  :straight t
+(leaf move-dup
+  :ensure t
   :config
   (global-set-key [M-up]        'move-dup-move-lines-up)
   (global-set-key [M-down]      'move-dup-move-lines-down)
@@ -285,8 +278,8 @@
 
 
 ;;; Ruby
-(use-package ruby-mode :straight t)
-(use-package ruby-hash-syntax :straight t)
+(leaf ruby-mode :ensure t)
+(leaf ruby-hash-syntax :ensure t)
 (setq ruby-use-encoding-map nil)
 (after-load 'ruby-mode
   (define-key ruby-mode-map (kbd "RET") 'reindent-then-newline-and-indent)
@@ -298,15 +291,15 @@
               (unless (derived-mode-p 'prog-mode)
                 (run-hooks 'prog-mode-hook)))))
 (add-hook 'ruby-mode-hook 'subword-mode)
-(use-package rufo
-  :straight (:host github :repo "danielma/rufo.el")
+(leaf rufo
+  :el-get danielma/rufo.el
   :config
   (add-hook 'ruby-mode-hook 'rufo-minor-mode))
 
 
 ;;; markdown-mode
-(use-package markdown-mode
-  :straight t
+(leaf markdown-mode
+  :ensure t
   :config
   (setq auto-mode-alist
 	(cons '("\\.\\(md\\|markdown\\|apib\\)\\'" . markdown-mode) auto-mode-alist))
@@ -319,8 +312,8 @@
 
 
 ;;; org-mode
-(use-package org :straight t)
-(use-package org-fstree :straight t)
+(leaf org :ensure t)
+(leaf org-fstree :ensure t)
 
 (define-key global-map (kbd "C-c l") 'org-store-link)
 (define-key global-map (kbd "C-c a") 'org-agenda)
@@ -350,8 +343,8 @@
 
 
 ;;; translation
-(use-package google-translate
-  :straight t
+(leaf google-translate
+  :ensure t
   :config
   (require 'google-translate-default-ui)
   (global-set-key "\C-ct" 'google-translate-at-point)
