@@ -1,18 +1,20 @@
 ;;; init-origami -- origami configuration
 ;;; Commentary:
 ;;; Code:
-(leaf origami :ensure t)
+(leaf origami
+  :ensure t
+  :config
+  (dolist (mode '(caml clojure crontab css emacs-lisp haskell-interactive haskell
+                       haskell inferior-haskell lisp nxml perl
+                       php python scheme tcl))
+    (add-hook (intern (format "%s-mode-hook" mode))
+              '(lambda ()
+                 (origami-mode)
+                 (origami-wrap-mode)
+                 (origami-cycle 1))))
 
-(dolist (mode '(caml clojure crontab css emacs-lisp haskell-interactive haskell
-                     haskell inferior-haskell lisp nxml perl
-                     php python scheme tcl))
-  (add-hook (intern (format "%s-mode-hook" mode))
-            '(lambda ()
-               (origami-mode)
-               (origami-wrap-mode)
-               (origami-cycle 1))))
-
-;; (add-hook 'view-mode-hook 'view-mode-hook--origami)
+  ;; (add-hook 'view-mode-hook 'view-mode-hook--origami)
+  )
 
 
 ;;; Functions

@@ -9,7 +9,7 @@
   (setq dired-listing-switches "-AFl --group-directories-first")
   (setq dired-recursive-deletes 'top)
   (put 'dired-find-alternate-file 'disabled nil)
-  
+
   ;; defuns
   (defun dired-find-file-x (&optional arg)
     "Open each of the marked files, or the file under the point, or
@@ -104,8 +104,8 @@ other window."
 	      (define-key dired-mode-map "m"    'dired-move-to-other-window)
 	      (define-key dired-mode-map "c"    'dired-copy-to-other-window)
 	      (define-key dired-mode-map "s"    'dired-make-symlinks-to-other-window)
-	      (define-key dired-mode-map "j"    'diredp-next-line)
-	      (define-key dired-mode-map "k"    'diredp-previous-line)
+	      (define-key dired-mode-map "j"    'dired-next-line)
+	      (define-key dired-mode-map "k"    'dired-previous-line)
 	      (define-key dired-mode-map "p"    'dired-beginning-of-lines)
 	      (define-key dired-mode-map "n"    'dired-end-of-lines)
 	      (define-key dired-mode-map "K"    'dired-create-directory)
@@ -179,7 +179,6 @@ other window."
 	      ;; (define-key dired-mode-map (kbd "M-[ 1 ; 3 D") 'dired-previous-buffer)
 	      ))
   )
-	    
 
 
 ;;; ls for darwin

@@ -66,7 +66,7 @@
 (require 'init-uniquify)
 (require 'init-ibuffer)
 (require 'init-flycheck)
-;; (require 'init-yasnippet) ;; TODO
+(require 'init-yasnippet)
 
 ;; (require 'init-recentf)
 (require 'init-ido)
@@ -98,7 +98,7 @@
 (require 'init-golang)
 (require 'init-erlang)
 (require 'init-ocaml)
-;; (require 'init-javascript) ;; TODO
+(require 'init-javascript)
 (require 'init-express)
 (require 'init-php)
 (require 'init-org)

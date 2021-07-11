@@ -84,23 +84,23 @@
 
 ;;; Company-tern
 (leaf company-tern
-  :ensure t
+  :el-get kevinushey/company-tern
   :config
-  (setq company-tern-property-marker ""))
+  (setq company-tern-property-marker "")
 
-(defun company-tern-depth (candidate)
-  "Return depth attribute for CANDIDATE, 'nil' entries are treated as 0."
-  (let ((depth (get-text-property 0 'depth candidate)))
-    (if (eq depth nil) 0 depth)))
+  (defun company-tern-depth (candidate)
+    "Return depth attribute for CANDIDATE, 'nil' entries are treated as 0."
+    (let ((depth (get-text-property 0 'depth candidate)))
+      (if (eq depth nil) 0 depth)))
 
-(dolist (hook '(js-mode-hook js2-mode))
-  (add-hook hook '(lambda ()
-                    (tern-mode)
-                    (add-to-list 'company-backends '(company-tern :with company-dabbrev-code)))))
-(eval-after-load 'tern
-  '(progn
-     (define-key tern-mode-keymap (kbd "M-,") 'mc/mark-previous-like-this)
-     (define-key tern-mode-keymap (kbd "M-.") 'mc/mark-next-like-this)))
+  (dolist (hook '(js-mode-hook js2-mode))
+    (add-hook hook '(lambda ()
+                      (tern-mode)
+                      (add-to-list 'company-backends '(company-tern :with company-dabbrev-code)))))
+  (eval-after-load 'tern
+    '(progn
+       (define-key tern-mode-keymap (kbd "M-,") 'mc/mark-previous-like-this)
+       (define-key tern-mode-keymap (kbd "M-.") 'mc/mark-next-like-this))))
 
 
 ;; Javascript nests {} and () a lot, so I find this helpful
@@ -154,28 +154,28 @@
 (leaf flycheck-typescript-tslint
   :el-get Simplify/flycheck-typescript-tslint
   :emacs> 23
+  :after flycheck
   :config
-  (after-load 'flycheck
-    (add-hook 'typescript-mode-hook #'flycheck-typescript-tslint-setup)
-    (defun sanityinc/flycheck-typescript-reconfigure ()
-      "Reconfigure flycheck typescript settings, e.g. after changing cabal file."
-      (interactive)
-      (unless (eq major-mode 'typescript-mode)
-        (error "Expected to be in typescript-mode"))
-      ;; (setq flycheck-check-syntax-automatically '(save mode-enabled))
-      (eldoc-mode +1)
-      (company-mode +1)
-      (flycheck-typescript-clear-config-cache)
-      (flycheck-typescript-configure)
-      (flycheck-mode -1)
-      (flycheck-mode))
-    (defadvice typescript-mode-stylish-buffer (around skip-if-flycheck-errors activate)
-      "Don't run stylish-buffer if the buffer appears to have a syntax error.
+  (add-hook 'typescript-mode-hook #'flycheck-typescript-tslint-setup)
+  (defun sanityinc/flycheck-typescript-reconfigure ()
+    "Reconfigure flycheck typescript settings, e.g. after changing cabal file."
+    (interactive)
+    (unless (eq major-mode 'typescript-mode)
+      (error "Expected to be in typescript-mode"))
+    ;; (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
+    (company-mode +1)
+    (flycheck-typescript-clear-config-cache)
+    (flycheck-typescript-configure)
+    (flycheck-mode -1)
+    (flycheck-mode))
+  (defadvice typescript-mode-stylish-buffer (around skip-if-flycheck-errors activate)
+    "Don't run stylish-buffer if the buffer appears to have a syntax error.
 This isn't a hard guarantee, since flycheck might sometimes not run until the file has
 been saved."
-      (unless (flycheck-has-current-errors-p 'error)
-        ad-do-it))
-    (require 'flycheck-typescript-tslint)))
+    (unless (flycheck-has-current-errors-p 'error)
+      ad-do-it))
+  (require 'flycheck-typescript-tslint))
 
 
 ;;; Run and interact with an inferior JS via js-comint.el
@@ -201,10 +201,10 @@ been saved."
   :ensure t
   :emacs>= 24
   :if (featurep 'js2-mode)
+  :after skewer-mode
   :config
-  (after-load 'skewer-mode
-    (add-hook 'skewer-mode-hook
-              (lambda () (inferior-js-keys-mode -1)))))
+  (add-hook 'skewer-mode-hook
+            (lambda () (inferior-js-keys-mode -1))))
 
 
 ;;; JSDoc

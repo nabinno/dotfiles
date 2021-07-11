@@ -1,8 +1,8 @@
 ;;; init-yasnippet --- yasnippet configuration
 ;;; Commentary:
-;;; COde:
+;;; Code:
 (leaf yasnippet
-  :ensure t
+  :el-get joaotavora/yasnippet
   :config
   (yas-global-mode 1)
   ;; (yas-load-directory "~/.emacs.d/site-lisp/yasnippets-rails/rails-snippets")
@@ -11,10 +11,14 @@
   ;; (define-key yas-minor-mode-map (kbd "M-B") 'yas-insert-snippet)
   )
 
-(leaf dropdown-list :ensure t)
-;; (setq yas-prompt-functions '(yas-dropdown-prompt
-;;                              yas-ido-prompt
-;;                              yas-completing-prompt))
+(leaf dropdown-list
+  :ensure t
+  :el-get emacsmirror/dropdown-list
+  :config
+  ;; (setq yas-prompt-functions '(yas-dropdown-prompt
+  ;;                              yas-ido-prompt
+  ;;                              yas-completing-prompt))
+  )
 
 ;; Keybind
 (global-set-key (kbd "\C-c y") 'yas-insert-snippet)
