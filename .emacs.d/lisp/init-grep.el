@@ -2,10 +2,12 @@
 ;;; Commentary:
 ;;; Code:
 ;;; Ag / The Silver Searcher
-(use-package ag :straight t)
-(setq ag-highlight-search t)
-(setq ag-reuse-window 'nil)
-(setq ag-reuse-buffers 'nil)
+(leaf ag
+  :ensure t
+  :config
+  (setq ag-highlight-search t)
+  (setq ag-reuse-window 'nil)
+  (setq ag-reuse-buffers 'nil))
 
 (defun ag-visit-buffer-other-window (&optional event noselect)
   "Visit ag result in another window with EVENT and NOSELECT."

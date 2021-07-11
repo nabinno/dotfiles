@@ -1,6 +1,7 @@
-;;----------------------------------------------------------------------------
-;; Nicer naming of buffers for files with identical names
-;;----------------------------------------------------------------------------
+;;; init-uniquify -- uniquify configuration
+;;; Commentary:
+;;;   Nicer naming of buffers for files with identical names
+;;; Code:
 (require 'uniquify)
 
 (setq uniquify-buffer-name-style 'reverse)
@@ -10,3 +11,4 @@
 
 
 (provide 'init-uniquify)
+;;; init-uniquify.el ends here

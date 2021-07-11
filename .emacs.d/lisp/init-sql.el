@@ -7,7 +7,7 @@
 ;;;   C-c C-b : 'sql-send-buffer
 ;;;
 ;;; Code:
-(use-package sql-indent :straight t)
+(leaf sql-indent :ensure t)
 (after-load 'sql
   (require 'sql-indent))
 
@@ -45,7 +45,7 @@
 
 
 ;;; Redis
-(use-package redis :straight t)
+(leaf redis :ensure t)
 
 
 (provide 'init-sql)

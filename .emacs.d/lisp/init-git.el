@@ -1,11 +1,11 @@
 ;;; init-git --- git configuration
 ;;; Commentary:
 ;;; Code:
-(use-package magit :straight t)
-(use-package gitignore-mode :straight t)
-(use-package gitconfig-mode :straight t)
-(use-package git-messenger :straight t) ;; Though see also vc-annotate's "n" & "p" bindings
-(use-package git-timemachine :straight t)
+(leaf magit :ensure t)
+(leaf gitignore-mode :ensure t)
+(leaf gitconfig-mode :ensure t)
+(leaf git-messenger :ensure t) ;; Though see also vc-annotate's "n" & "p" bindings
+(leaf git-timemachine :ensure t)
 
 (setq-default
  magit-save-some-buffers nil
@@ -27,22 +27,23 @@
 ;; Hint: customize `magit-repo-dirs' so that you can use C-u M-F12 to
 ;; quickly open magit on any one of your projects.
 
-(use-package magit
-  :straight t
+(leaf magit
+  :ensure t
   :config
   (setq-default
    magit-process-popup-time 10
    magit-diff-refine-hunk t
    magit-completing-read-function 'magit-ido-completing-read)
   (global-set-key (kbd "C-x g") 'magit-status)
-  (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup))
-
-(after-load 'magit
+  (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
   (define-key magit-status-mode-map (kbd "C-M-<up>") 'magit-goto-parent-section))
 
-;; (use-package fullframe :straight t)
-;; (after-load 'magit
-;;   (fullframe magit-status magit-mode-quit-window))
+;; (leaf fullframe
+;;   :ensure t
+;;   :after magit
+;;   :config
+;;   (fullframe magit-status magit-mode-quit-window)
+;;   )
 
 
 ;; ;;; When we start working on git-backed files, use git-wip if available
@@ -61,44 +62,46 @@
 
 
 ;; ;;; Git blame
-;; (use-package git-blame :straight t)
+;; (leaf git-blame :ensure t)
 ;; (autoload 'git-blame-mode "git-blame"
 ;;   "Minor mode for incremental blame for Git." t)
 
 
 ;;; Git flow
-(use-package magit-gitflow :straight t)
-(require 'magit-gitflow)
-(add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
+(leaf magit-gitflow
+  :ensure t
+  :config
+  (add-hook 'magit-mode-hook 'turn-on-magit-gitflow))
 
 
 ;;; Git gutter
-(use-package git-gutter+ :straight t)
-(global-git-gutter+-mode)
-
-(eval-after-load 'git-gutter+
- '(progn
-    (define-key git-gutter+-mode-map (kbd "C-x n h")     'git-gutter+-next-hunk)
-    (define-key git-gutter+-mode-map (kbd "C-x n p")   'git-gutter+-previous-hunk)
-    (define-key git-gutter+-mode-map (kbd "C-x n v =") 'git-gutter+-show-hunk)
-    (define-key git-gutter+-mode-map (kbd "C-x n r")   'git-gutter+-revert-hunks)
-    (define-key git-gutter+-mode-map (kbd "C-x n t")   'git-gutter+-stage-hunks)
-    (define-key git-gutter+-mode-map (kbd "C-x n c")   'git-gutter+-commit)
-    (define-key git-gutter+-mode-map (kbd "C-x n C")   'git-gutter+-stage-and-commit)
-    (define-key git-gutter+-mode-map (kbd "C-x n C-y") 'git-gutter+-stage-and-commit-whole-buffer)
-    (define-key git-gutter+-mode-map (kbd "C-x n U")   'git-gutter+-unstage-whole-buffer)
-    (setq git-gutter+-modified-sign "  ")
-    (setq git-gutter+-added-sign "++")
-    (setq git-gutter+-deleted-sign "--")
-    (set-face-background 'git-gutter+-modified "purple")
-    (set-face-foreground 'git-gutter+-added "green")
-    (set-face-foreground 'git-gutter+-deleted "red")
-    ))
+(leaf git-gutter+
+  :ensure t
+  :config
+  (global-git-gutter+-mode)
+  (eval-after-load 'git-gutter+
+    '(progn
+       (define-key git-gutter+-mode-map (kbd "C-x n h")     'git-gutter+-next-hunk)
+       (define-key git-gutter+-mode-map (kbd "C-x n p")   'git-gutter+-previous-hunk)
+       (define-key git-gutter+-mode-map (kbd "C-x n v =") 'git-gutter+-show-hunk)
+       (define-key git-gutter+-mode-map (kbd "C-x n r")   'git-gutter+-revert-hunks)
+       (define-key git-gutter+-mode-map (kbd "C-x n t")   'git-gutter+-stage-hunks)
+       (define-key git-gutter+-mode-map (kbd "C-x n c")   'git-gutter+-commit)
+       (define-key git-gutter+-mode-map (kbd "C-x n C")   'git-gutter+-stage-and-commit)
+       (define-key git-gutter+-mode-map (kbd "C-x n C-y") 'git-gutter+-stage-and-commit-whole-buffer)
+       (define-key git-gutter+-mode-map (kbd "C-x n U")   'git-gutter+-unstage-whole-buffer)
+       (setq git-gutter+-modified-sign "  ")
+       (setq git-gutter+-added-sign "++")
+       (setq git-gutter+-deleted-sign "--")
+       (set-face-background 'git-gutter+-modified "purple")
+       (set-face-foreground 'git-gutter+-added "green")
+       (set-face-foreground 'git-gutter+-deleted "red")
+       )))
 
 
 ;; ;;; git-svn support
 ;;
-;; (use-package magit-svn :straight t)
+;; (leaf magit-svn :ensure t)
 ;; (autoload 'magit-svn-enabled "magit-svn")
 ;; (defun sanityinc/maybe-enable-magit-svn-mode ()
 ;;   (when (magit-svn-enabled)
@@ -127,8 +130,11 @@
 ;;                      (ido-completing-read "git-svn command: " git-svn--available-commands nil t)))))
 
 
-(use-package git-messenger :straight t)
-(global-set-key (kbd "C-x v p") #'git-messenger:popup-message)
+(leaf git-messenger
+  :ensure t
+  :config
+  (global-set-key (kbd "C-x v p") #'git-messenger:popup-message))
+
 
 
 (provide 'init-git)

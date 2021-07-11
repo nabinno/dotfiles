@@ -1,7 +1,7 @@
 ;;; init-analytics.el -- analytics configuration
 ;;; Commentary:
 ;;; Code:
-(use-package es-mode :straight t) ;; Elasticsearch
+(leaf es-mode :ensure t) ;; Elasticsearch
 
 
 (provide 'init-analytics)

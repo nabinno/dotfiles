@@ -1,13 +1,13 @@
 ;;; init-php --- php configuration
 ;;; Commentary:
 ;;; Code:
-(straight-use-package 'php-mode)
-(use-package smarty-mode :straight t)
+(leaf php-mode :ensure t)
+(leaf smarty-mode :ensure t)
 
 
 ;; ;; Language Server Protocol
-;; (use-package lsp-php
-;;   :straight (:host github :repo "emacs-lsp/lsp-php"))
+;; (leaf lsp-php
+;;   :el-get emacs-lsp/lsp-php)
 
 
 

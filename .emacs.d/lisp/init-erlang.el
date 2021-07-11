@@ -1,44 +1,46 @@
 ;;; init-erlang --- erlang configuration
 ;;; Commentary:
 ;;; Code:
-(ignore-errors
-  (use-package erlang :straight t))
-
-(when (package-installed-p 'erlang)
-  (require 'erlang-start))
-
-;; (add-to-list 'ac-modes 'erlang-mode)
+(leaf erlang
+  :ensure t
+  :if (package-installed-p 'erlang)
+  :config
+  ;; (add-to-list 'ac-modes 'erlang-mode)
+  )
 
 
 ;;; Exlixr
-(use-package elixir-mode :straight t)
-(setq auto-mode-alist
-      (cons '("\\.\\(po\\|pot\\)\\'" . elixir-mode) auto-mode-alist))
+(leaf elixir-mode
+  :ensure t
+  :config
+  (setq auto-mode-alist
+        (cons '("\\.\\(po\\|pot\\)\\'" . elixir-mode) auto-mode-alist)))
 
 ;; alchemist
-(use-package alchemist-mode
-  :straight (:host github :repo "tonini/alchemist.el"))
-(setq alchemist-key-command-prefix (kbd "C-c ,")) ;; default: (kbd "C-c a")
-(setq alchemist-goto-erlang-source-dir "~/.local/erlang/")
-(setq alchemist-goto-elixir-source-dir "~/.local/elixir/")
-(defun custom-erlang-mode-hook ()
-  "Define key to erlang-mode-map."
-  (define-key erlang-mode-map (kbd "M-,") 'alchemist-goto-jump-back))
-(defun custom-alchemist-mode-hook ()
-  "Define key to alchemist-mode-map."
-  (define-key alchemist-mode-map (kbd "M-,") 'mc/mark-previous-like-this)
-  (define-key alchemist-mode-map (kbd "M-.") 'mc/mark-next-like-this))
-(defadvice alchemist-project-root (around seancribbs/alchemist-project-root activate)
-  "Advice alchemist-project-mix-project-indicator."
-  (let ((alchemist-project-mix-project-indicator ".git"))
-    ad-do-it))
-(defun seancribbs/activate-alchemist-root-advice ()
-  "Activates advice to override alchemist's root-finding logic."
-  (ad-activate 'alchemist-project-root))
-(add-hook 'erlang-mode-hook 'custom-erlang-mode-hook)
-(add-hook 'alchemist-mode-hook 'custom-alchemist-mode-hook)
-(add-hook 'elixir-mode-hook 'alchemist-mode)
-(add-hook 'elixir-mode-hook 'seancribbs/activate-alchemist-root-advice)
+(leaf alchemist-mode
+  :el-get tonini/alchemist.el
+  :config
+  (setq alchemist-key-command-prefix (kbd "C-c ,")) ;; default: (kbd "C-c a")
+  (setq alchemist-goto-erlang-source-dir "~/.local/erlang/")
+  (setq alchemist-goto-elixir-source-dir "~/.local/elixir/")
+  (defun custom-erlang-mode-hook ()
+    "Define key to erlang-mode-map."
+    (define-key erlang-mode-map (kbd "M-,") 'alchemist-goto-jump-back))
+  (defun custom-alchemist-mode-hook ()
+    "Define key to alchemist-mode-map."
+    (define-key alchemist-mode-map (kbd "M-,") 'mc/mark-previous-like-this)
+    (define-key alchemist-mode-map (kbd "M-.") 'mc/mark-next-like-this))
+  (defadvice alchemist-project-root (around seancribbs/alchemist-project-root activate)
+    "Advice alchemist-project-mix-project-indicator."
+    (let ((alchemist-project-mix-project-indicator ".git"))
+      ad-do-it))
+  (defun seancribbs/activate-alchemist-root-advice ()
+    "Activates advice to override alchemist's root-finding logic."
+    (ad-activate 'alchemist-project-root))
+  (add-hook 'erlang-mode-hook 'custom-erlang-mode-hook)
+  (add-hook 'alchemist-mode-hook 'custom-alchemist-mode-hook)
+  (add-hook 'elixir-mode-hook 'alchemist-mode)
+  (add-hook 'elixir-mode-hook 'seancribbs/activate-alchemist-root-advice))
 
 ;; mix-format
 (defun mix-format-after-save ()
@@ -51,13 +53,12 @@
 
 
 ;;; Phoenix
-(use-package xinari
-  :straight (:host github :repo "nabinno/xinari"))
-
-(after-load 'xinari
-  (diminish 'xinari-minor-mode "Xin"))
-(global-xinari-mode)
-
+(leaf xinari
+  :el-get nabinno/xinari
+  :config
+  (after-load 'xinari
+    (diminish 'xinari-minor-mode "Xin"))
+  (global-xinari-mode))
 (defun update-express-ctags ()
   (interactive)
   (let ((default-directory (or (xinari-root) default-directory)))

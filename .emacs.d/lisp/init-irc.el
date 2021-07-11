@@ -1,17 +1,16 @@
 ;;; init-irc -- irc configuration
 ;;; Commentary:
 ;;; Code:
-
 ;; ;;; IRC
-;; (use-package circe :straight t)
+;; (leaf circe :ensure t)
 
 
 ;;; Twitter
-(use-package twittering-mode :straight t)
+(leaf twittering-mode :ensure t)
 
 
 ;;; Chatwork
-;; (use-package chatwork :straight t)
+;; (leaf chatwork :ensure t)
 ;; (setq chatwork-token "YOUR CHATWORK API TOKEN")
 
 

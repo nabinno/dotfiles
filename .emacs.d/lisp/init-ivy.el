@@ -1,8 +1,8 @@
 ;;; init-ivy --- ivy configuration
 ;;; Commentary:
 ;;; Code:
-(use-package ivy
-  :straight t
+(leaf ivy
+  :ensure t
   :config
   (setq ivy-initial-inputs-alist
         '((org-agenda-refile . "^")
@@ -15,15 +15,15 @@
 
 
 ;; swiper
-(use-package swiper
-  :straight t
+(leaf swiper
+  :ensure t
   :config
   (global-set-key (kbd "M-s M-s") 'swiper-thing-at-point))
 
 
 ;; consel
-(use-package counsel
-  :straight t
+(leaf counsel
+  :ensure t
   :config
   (defun counsel-rg-dot-emacs (word)
     "Search .emacs.d directory."
@@ -67,8 +67,8 @@
 
 
 ;; ghq
-(use-package ivy-ghq
-  :straight (:host github :repo "analyticd/ivy-ghq")
+(leaf ivy-ghq
+  :el-get analyticd/ivy-ghq
   :if (executable-find "ghq")
   :commands (ivy-ghq-open)
   :custom

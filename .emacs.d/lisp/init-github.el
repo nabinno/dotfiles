@@ -3,31 +3,33 @@
 ;;; Code:
 (require 'init-git)
 
-(use-package yagist :straight t)
-(use-package github-browse-file :straight t)
-(use-package bug-reference-github
-  :straight t
+(leaf yagist :ensure t)
+(leaf github-browse-file :ensure t)
+(leaf bug-reference-github
+  :ensure t
   :config
   (add-hook 'prog-mode-hook 'bug-reference-prog-mode))
 
-(use-package ido-completing-read+ :straight t)
-;; (use-package github-clone :straight t)
-(use-package magit-gh-pulls
-  :straight t
+(leaf ido-completing-read+ :ensure t)
+;; (leaf github-clone :ensure t)
+(leaf magit-gh-pulls
+  :ensure t
   :config
   (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
 
 
-;;; magithub
-;; (use-package magithub :straight t)
-;; (defun require-magithub ()
-;;   "Requre magithub."
-;;   (require 'magithub))
-;; (add-hook 'magit-mode-hook 'require-magithub)
+;; ;;; magithub
+;; (leaf magithub
+;;   :ensure t
+;;   :config
+;;   (defun require-magithub ()
+;;     "Requre magithub."
+;;     (require 'magithub))
+;;   (add-hook 'magit-mode-hook 'require-magithub))
 
 
 ;;; git-link
-(straight-use-package 'git-link)
+(leaf git-link :ensure t)
 
 
 

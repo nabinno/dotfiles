@@ -1,8 +1,8 @@
 ;;; init-flycheck.el --- flycheck configuration
 ;;; Commentary:
 ;;; Code:
-(use-package flycheck
-  :straight t
+(leaf flycheck
+  :ensure t
   :config
   (add-hook 'after-init-hook 'global-flycheck-mode)
   (add-hook 'flycheck-mode-hook '(lambda ()
@@ -18,7 +18,7 @@
 
   (setq flycheck-display-errors-function #'flycheck-display-error-messages-unless-error-list))
 
-;; (use-package flycheck-tip :straight t)
+;; (leaf flycheck-tip :ensure t)
 
 
 (provide 'init-flycheck)

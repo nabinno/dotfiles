@@ -1,8 +1,7 @@
 ;;; init-marmalade --- ...
 ;;; Commentary:
 ;;; Code:
-(use-package marmalade
-  :straight (:host github :repo "nicferrier/emacs-marmalade-upload"))
+(leaf marmalade :el-get nicferrier/emacs-marmalade-upload)
 
 ;;; Handy code for uploading new versions of my own packages to marmalade
 

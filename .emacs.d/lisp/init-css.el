@@ -1,15 +1,16 @@
 ;;; init-css --- Colourise CSS colour literals
 ;;; Commentary:
 ;;; Code:
-(when (eval-when-compile (>= emacs-major-version 24))
-  ;; rainbow-mode needs color.el, bundled with Emacs >= 24.
-  (use-package rainbow-mode :straight t)
+(leaf rainbow-mode
+  :ensure t
+  :emacs>= 24
+  :config
   (dolist (hook '(css-mode-hook html-mode-hook sass-mode-hook))
     (add-hook hook 'rainbow-mode)))
 
 
 ;; ;;; Embedding in html
-;; (use-package mmm-mode :straight t)
+;; (leaf mmm-mode :ensure t)
 ;; (after-load 'mmm-vars
 ;;   (mmm-add-group
 ;;    'html-css
@@ -37,22 +38,24 @@
 
 
 ;;; SASS and SCSS
-(use-package sass-mode :straight t)
-(use-package scss-mode :straight t)
-(setq-default scss-compile-at-save nil)
-(defun scss-custom ()
-  "scss-mode-hook"
-  (and
-   (set (make-local-variable 'css-indent-offset) 2)
-   (set (make-local-variable 'scss-compile-at-save) nil)))
-(add-hook 'scss-mode-hook '(lambda() (scss-custom)))
+(leaf sass-mode :ensure t)
+(leaf scss-mode
+  :ensure t
+  :config
+  (setq-default scss-compile-at-save nil)
+  (defun scss-custom ()
+    "scss-mode-hook"
+    (and
+     (set (make-local-variable 'css-indent-offset) 2)
+     (set (make-local-variable 'scss-compile-at-save) nil)))
+  (add-hook 'scss-mode-hook '(lambda() (scss-custom))))
 
 
 ;;; LESS
-(use-package less-css-mode :straight t)
-(when (featurep 'js2-mode)
-  (use-package skewer-less :straight t))
-
+(leaf less-css-mode :ensure t)
+(leaf skewer-less
+  :ensure t
+  :if (featurep 'js2-mode))
 
 
 ;;; Auto-complete CSS keywords
@@ -62,9 +65,11 @@
 
 
 ;;; Use eldoc for syntax hints
-(use-package css-eldoc :straight t)
-(autoload 'turn-on-css-eldoc "css-eldoc")
-(add-hook 'css-mode-hook 'turn-on-css-eldoc)
+(leaf css-eldoc
+  :ensure t
+  :config
+  (autoload 'turn-on-css-eldoc "css-eldoc")
+  (add-hook 'css-mode-hook 'turn-on-css-eldoc))
 
 
 (provide 'init-css)

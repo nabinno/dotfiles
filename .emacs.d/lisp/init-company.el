@@ -1,8 +1,8 @@
 ;;; init-company -- company configuration
 ;;; Commentary:
 ;;; Code:
-(use-package company
-  :straight t
+(leaf company
+  :ensure t
   :config
   (add-hook 'after-init-hook 'global-company-mode)
   (setq company-idle-delay 0)

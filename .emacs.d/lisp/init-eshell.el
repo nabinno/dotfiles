@@ -65,8 +65,8 @@
 
 
 ;;; Multi eshell
-(use-package multi-eshell
-  :straight t
+(leaf multi-eshell
+  :el-get emacsmirror/multi-eshell
   :config
   (setq multi-eshell-shell-function '(eshell))
   (setq multi-eshell-name "*eshell*")
@@ -82,22 +82,23 @@
 
 ;; ;;; Eshell Z
 ;; (eval-after-load 'eshell
-;;       '(use-package eshell-z nil t :straight t))
+;;       '(leaf eshell-z nil t :ensure t))
 
 
 ;; ;;; Eshell myparser
-;; (unless (require 'esh-myparser nil 'noerror)
-;;   (el-get-bundle! esh-myparser
-;;     :url "http://www.emacswiki.org/emacs/download/esh-myparser.el"))
+;; (leaf esh-myparser
+;;   :url "http://www.emacswiki.org/emacs/download/esh-myparser.el")
 
 
 ;; ;;; Eshell pop
-;; (use-package eshell-pop
+;; (leaf eshell-pop
+;;   :ensure t
 ;;   :config (setq shell-pop-window-height 30))
 
 
 ;;; Tramp
-(use-package tramp
+(leaf tramp
+  :ensure t
   :config
   (setq tramp-default-method "ssh")
   (setq tramp-debug-buffer t)

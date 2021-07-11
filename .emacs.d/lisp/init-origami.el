@@ -1,7 +1,7 @@
 ;;; init-origami -- origami configuration
 ;;; Commentary:
 ;;; Code:
-(use-package origami :straight t)
+(leaf origami :ensure t)
 
 (dolist (mode '(caml clojure crontab css emacs-lisp haskell-interactive haskell
                      haskell inferior-haskell lisp nxml perl

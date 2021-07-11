@@ -1,12 +1,11 @@
 ;;; init-javascript -- javascript configuration
 ;;; Commentary:
 ;;; Code:
-(use-package json-mode :straight t)
-(when (>= emacs-major-version 24)
-  (use-package js2-mode :straight t)
-  (use-package ac-js2 :straight t)
-  (use-package coffee-mode :straight t))
-(use-package js-comint :straight t)
+(leaf json-mode :ensure t)
+(leaf js2-mode :ensure t :emacs>= 24)
+(leaf ac-js2 :ensure t :emacs>= 24)
+(leaf coffee-mode :ensure t :emacs>= 24)
+(leaf js-comint :ensure t)
 
 (defcustom preferred-javascript-mode
   (first (remove-if-not #'fboundp '(rjsx-mode js-mode js2-mode)))
@@ -33,10 +32,8 @@
 
 
 ;;; Prettier
-(use-package prettier-js
-  :straight (:host github :repo "prettier/prettier-emacs"))
-(use-package add-node-modules-path
-  :straight (:host github :repo "codesuki/add-node-modules-path"))
+(leaf prettier-js :el-get prettier/prettier-emacs)
+(leaf add-node-modules-path :el-get codesuki/add-node-modules-path)
 (eval-after-load 'typescript-mode
   '(progn
      (add-hook 'typescript-mode-hook #'add-node-modules-path)
@@ -76,18 +73,18 @@
 
 
 ;; ;; Language Server Protocol
-;; (use-package lsp-javascript
-;;   :straight (:host github :repo "emacs-lsp/lsp-javascript"))
+;; (leaf lsp-javascript
+;;   : "emacs-lsp/lsp-javascript"))
 
 
 ;; ;;; Repl: Babel, Node.js
-;; (use-package babel-repl :straight t)
-;; (use-package nodejs-repl :straight t)
+;; (leaf babel-repl :ensure t)
+;; (leaf nodejs-repl :ensure t)
 
 
 ;;; Company-tern
-(use-package company-tern
-  :straight t
+(leaf company-tern
+  :ensure t
   :config
   (setq company-tern-property-marker ""))
 
@@ -107,8 +104,8 @@
 
 
 ;; Javascript nests {} and () a lot, so I find this helpful
-(use-package rainbow-delimiters
-  :straight t
+(leaf rainbow-delimiters
+  :ensure t
   :config
   (dolist (hook '(js2-mode-hook js-mode-hook json-mode-hook))
     (add-hook hook 'rainbow-delimiters-mode)))
@@ -124,14 +121,14 @@
 
 
 ;;; TypeScript
-(use-package typescript-mode
-  :straight t
+(leaf typescript-mode
+  :ensure t
   :config
   (setq typescript-indent-level 2))
 
 ;; Tide (npm i -g typescript)
-(use-package tide
-  :straight t
+(leaf tide
+  :ensure t
   :config
   (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil))
   (add-hook 'typescript-mode-hook #'tide-setup)
@@ -143,8 +140,8 @@
     (define-key tide-mode-map (kbd "M-.")   'mc/mark-next-like-this)))
 
 ;; Tss (npm i -g typescript-tools)
-(use-package tss
-  :straight t
+(leaf tss
+  :ensure t
   :config
   (setq tss-popup-help-key "C-:")
   (setq tss-jump-to-definition-key "C->")
@@ -154,9 +151,10 @@
   )
 
 ;; Flycheck specifics
-(when (> emacs-major-version 23)
-  (use-package flycheck-typescript-tslint
-    :straight (:host github :repo "Simplify/flycheck-typescript-tslint"))
+(leaf flycheck-typescript-tslint
+  :el-get Simplify/flycheck-typescript-tslint
+  :emacs> 23
+  :config
   (after-load 'flycheck
     (add-hook 'typescript-mode-hook #'flycheck-typescript-tslint-setup)
     (defun sanityinc/flycheck-typescript-reconfigure ()
@@ -199,16 +197,19 @@ been saved."
 
 
 ;;; Alternatively, use skewer-mode
-(when (and (>= emacs-major-version 24) (featurep 'js2-mode))
-  (use-package skewer-mode :straight t)
+(leaf skewer-mode
+  :ensure t
+  :emacs>= 24
+  :if (featurep 'js2-mode)
+  :config
   (after-load 'skewer-mode
     (add-hook 'skewer-mode-hook
               (lambda () (inferior-js-keys-mode -1)))))
 
 
 ;;; JSDoc
-(use-package js-doc
-  :straight t
+(leaf js-doc
+  :ensure t
   :config
   (setq js-doc-mail-address "your email address"
         js-doc-author (format "your name <%s>" js-doc-mail-address)
@@ -222,8 +223,8 @@ been saved."
 
 
 ;;; React
-(use-package rjsx-mode
-  :straight t
+(leaf rjsx-mode
+  :ensure t
   :config
   (with-eval-after-load 'rjsx-mode
     (define-key rjsx-mode-map "<" nil)

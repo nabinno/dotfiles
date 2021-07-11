@@ -1,7 +1,7 @@
 ;;; init-esa --- esa configuration
 ;;; Commentary:
 ;;; Code:
-(use-package esa :straight t)
+(leaf esa :ensure t)
 
 (global-set-key (kbd "C-c ; e l") 'esa-list)
 (global-set-key (kbd "C-c ; e b") 'esa-buffer-wip)

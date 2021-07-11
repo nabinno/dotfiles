@@ -1,6 +1,9 @@
+;;; init-isearch -- isearch configuration
+;;; Commentary:
+;;; Code:
 ;; Show number of matches while searching
 (when (>= emacs-major-version 24)
-  (use-package anzu :straight t)
+  (leaf anzu :ensure t)
   (global-anzu-mode t)
   (diminish 'anzu-mode)
   (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
@@ -73,3 +76,4 @@ This is useful when followed by an immediate kill."
 
 
 (provide 'init-isearch)
+;;; init-isearch.el ends here

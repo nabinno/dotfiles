@@ -3,53 +3,54 @@
 ;;; Code:
 
 ;;; Sr Speedbar
-(use-package sr-speedbar :straight t)
-(use-package sr-speedbar
-  :straight t
+(leaf sr-speedbar :ensure t)
+(leaf sr-speedbar
+  :ensure t
   :config
-  (global-set-key (kbd "M-3") 'sr-speedbar-toggle))
+  (global-set-key (kbd "M-3") 'sr-speedbar-toggle)
+  (setq speedbar-hide-button-brackets-flag t
+        speedbar-show-unknown-files t
+        speedbar-smart-directory-expand-flag t
+        speedbar-use-images nil
+        speedbar-indentation-width 1
+        speedbar-update-flag t
+        sr-speedbar-width 20
+        sr-speedbar-width-x 20
+        sr-speedbar-auto-refresh t
+        sr-speedbar-skip-other-window-p t
+        sr-speedbar-right-side t)
 
-(setq speedbar-hide-button-brackets-flag t
-      speedbar-show-unknown-files t
-      speedbar-smart-directory-expand-flag t
-      speedbar-use-images nil
-      speedbar-indentation-width 1
-      speedbar-update-flag t
-      sr-speedbar-width 20
-      sr-speedbar-width-x 20
-      sr-speedbar-auto-refresh t
-      sr-speedbar-skip-other-window-p t
-      sr-speedbar-right-side t)
+  ;; keybind
+  (define-key speedbar-mode-map (kbd "p")  'speedbar-backward-list)
+  (define-key speedbar-mode-map (kbd "o")  'speedbar-toggle-line-expansion)
+  (define-key speedbar-mode-map (kbd "+")  'speedbar-create-directory)
+  (define-key speedbar-mode-map (kbd "i")  'speedbar-expand-line-descendants)
+  (define-key speedbar-mode-map (kbd "c")  'speedbar-item-copy)
+  (define-key speedbar-mode-map (kbd "d")  'speedbar-item-delete)
+  (define-key speedbar-mode-map (kbd "?")  'speedbar-item-info)
+  (define-key speedbar-mode-map (kbd "r")  'speedbar-item-rename)
+  (define-key speedbar-mode-map (kbd "j")  'speedbar-next)
+  (define-key speedbar-mode-map (kbd "k")  'speedbar-prev)
+  (define-key speedbar-mode-map (kbd "g")  'speedbar-refresh)
+  (define-key speedbar-mode-map (kbd "J")  'speedbar-restricted-next)
+  (define-key speedbar-mode-map (kbd "K")  'speedbar-restricted-prev)
+  (define-key speedbar-mode-map (kbd "u")  'speedbar-scroll-down)
+  (define-key speedbar-mode-map (kbd "b")  'speedbar-scroll-up)
+  (define-key speedbar-mode-map (kbd "s")  'speedbar-toggle-sorting)
+  (define-key speedbar-mode-map (kbd "") 'speedbar-up-directory)
+  (define-key speedbar-mode-map (kbd "f")  'isearch-forward)
+  (define-key speedbar-mode-map (kbd "l")  'recenter)
+  (define-key speedbar-mode-map (kbd "h")   (lambda () (interactive) (progn (speedbar-edit-line))))
+  (define-key speedbar-mode-map (kbd "m")   (lambda () (interactive) (progn (speedbar-next 1) (speedbar-edit-line))))
+  (define-key speedbar-mode-map (kbd "SPC") (lambda () (interactive) (progn (speedbar-next 1) (speedbar-edit-line))))
+  (define-key speedbar-mode-map (kbd "p")   (lambda () (interactive) (progn (goto-char (point-min)) (speedbar-next 1))))
+  (define-key speedbar-mode-map (kbd "n")   (lambda () (interactive) (progn (goto-char (point-max)) (speedbar-prev 1))))
+  )
 
-;; keybind
-(define-key speedbar-mode-map (kbd "p")  'speedbar-backward-list)
-(define-key speedbar-mode-map (kbd "o")  'speedbar-toggle-line-expansion)
-(define-key speedbar-mode-map (kbd "+")  'speedbar-create-directory)
-(define-key speedbar-mode-map (kbd "i")  'speedbar-expand-line-descendants)
-(define-key speedbar-mode-map (kbd "c")  'speedbar-item-copy)
-(define-key speedbar-mode-map (kbd "d")  'speedbar-item-delete)
-(define-key speedbar-mode-map (kbd "?")  'speedbar-item-info)
-(define-key speedbar-mode-map (kbd "r")  'speedbar-item-rename)
-(define-key speedbar-mode-map (kbd "j")  'speedbar-next)
-(define-key speedbar-mode-map (kbd "k")  'speedbar-prev)
-(define-key speedbar-mode-map (kbd "g")  'speedbar-refresh)
-(define-key speedbar-mode-map (kbd "J")  'speedbar-restricted-next)
-(define-key speedbar-mode-map (kbd "K")  'speedbar-restricted-prev)
-(define-key speedbar-mode-map (kbd "u")  'speedbar-scroll-down)
-(define-key speedbar-mode-map (kbd "b")  'speedbar-scroll-up)
-(define-key speedbar-mode-map (kbd "s")  'speedbar-toggle-sorting)
-(define-key speedbar-mode-map (kbd "") 'speedbar-up-directory)
-(define-key speedbar-mode-map (kbd "f")  'isearch-forward)
-(define-key speedbar-mode-map (kbd "l")  'recenter)
-(define-key speedbar-mode-map (kbd "h")   (lambda () (interactive) (progn (speedbar-edit-line))))
-(define-key speedbar-mode-map (kbd "m")   (lambda () (interactive) (progn (speedbar-next 1) (speedbar-edit-line))))
-(define-key speedbar-mode-map (kbd "SPC") (lambda () (interactive) (progn (speedbar-next 1) (speedbar-edit-line))))
-(define-key speedbar-mode-map (kbd "p")   (lambda () (interactive) (progn (goto-char (point-min)) (speedbar-next 1))))
-(define-key speedbar-mode-map (kbd "n")   (lambda () (interactive) (progn (goto-char (point-max)) (speedbar-prev 1))))
 
 
 ;; ;;; Neotree
-;; (use-package neotree :straight t)
+;; (leaf neotree :ensure t)
 ;; (when (maybe-require-package 'neotree)
 ;;   (require 'neotree)
 ;;   (global-set-key (kbd "M-3") 'neotree-toggle))
@@ -82,9 +83,9 @@
      '((" \\(@\\(todo\\|desc\\|param\\|note\\|see\\|type\\|return\\|fixme\\|example\\|raise\\)\\)"
         1 font-lock-warning-face t)))))
 
-;; (use-package fic-mode :straight t)
+;; (leaf fic-mode :ensure t)
 ;; (when (maybe-require-package 'fic-mode) (require 'fic-mode))
-;; ;; (use-package hl-todo :straight t)
+;; ;; (leaf hl-todo :ensure t)
 ;; ;; (when (maybe-require-package 'hl-todo) (require 'hl-todo))
 ;; (defun insert-todo-mark () (interactive)
 ;;            (insert (shell-command-to-string "echo -n TODO: $(date +%Y-%m-%d)")))
@@ -94,7 +95,7 @@
 
 (provide 'init-project)
 
-;; (use-package pomodoro :straight t)
+;; (leaf pomodoro :ensure t)
 
 
 

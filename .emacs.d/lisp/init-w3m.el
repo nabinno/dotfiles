@@ -1,7 +1,7 @@
 ;;; init-w3m --- w3m configuraiton
 ;;; Commentary:
 ;;; Code:
-(use-package w3m :straight t)
+(leaf w3m :ensure t)
 
 (setq browse-url-browser-function 'w3m-goto-url
       browse-url-generic-program "")

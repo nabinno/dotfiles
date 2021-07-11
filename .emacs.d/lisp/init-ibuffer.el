@@ -1,7 +1,10 @@
-(use-package fullframe :straight t)
+;;; init-ibuffer --- ibuffer configuration
+;;; Commentary:
+;;; Code:
+(leaf fullframe :ensure t)
 (after-load 'ibuffer
  (fullframe ibuffer ibuffer-quit))
-(use-package ibuffer-vc :straight t)
+(leaf ibuffer-vc :ensure t)
 
 (defun ibuffer-set-up-preferred-filters ()
   (ibuffer-vc-set-filter-groups-by-vc-root)
@@ -62,3 +65,4 @@
 
 
 (provide 'init-ibuffer)
+;;; init-ibuffer.el ends here

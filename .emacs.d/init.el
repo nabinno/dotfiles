@@ -28,9 +28,10 @@
 (require 'init-compat)
 (require 'init-utils)
 (require 'init-site-lisp) ;; Must come before elpa, as it may provide package.el
-;; (require 'init-elpa)      ;; Machinery for installing required packages
-;; (require 'init-el-get)    ;; Machinery for installing required packages
-(require 'init-straight)  ;; Machinery for installing required packages
+;; (require 'init-elpa)      ;; Machinery for installing required packages (DEPRECATED)
+;; (require 'init-el-get)    ;; Machinery for installing required packages (DEPRECATED)
+;; (require 'init-straight)  ;; Machinery for installing required packages (DEPRECATED)
+(require 'init-leaf)  ;; Machinery for installing required packages
 (require 'init-exec-path) ;; Set up $PATH
 
 ;;----------------------------------------------------------------------------
@@ -44,13 +45,11 @@
 
 (require 'init-dired)
 
-(use-package wgrep :straight t)
-(unless (require 'project-local-variables nil 'noerror)
-  (el-get-bundle emacsmirror/project-local-variables))
-(use-package diminish :straight t)
-(use-package scratch :straight t)
-(unless (require 'mwe-log-commands nil 'noerror)
-  (el-get-bundle tshemeng/mwe-log-commands))
+(leaf wgrep :ensure t)
+(leaf project-local-variables :el-get emacsmirror/project-local-variables)
+(leaf diminish :ensure t)
+(leaf scratch :ensure t)
+(leaf mwe-log-commands :el-get tshemeng/mwe-log-commands)
 
 ;; (require 'init-frame-hooks)
 ;; (require 'init-xterm)
@@ -67,13 +66,14 @@
 (require 'init-uniquify)
 (require 'init-ibuffer)
 (require 'init-flycheck)
-(require 'init-yasnippet)
+;; (require 'init-yasnippet) ;; TODO
 
 ;; (require 'init-recentf)
 (require 'init-ido)
 (require 'init-hippie-expand)
 (require 'init-company)
 ;; (require 'init-auto-complete)
+;; (require 'init-helm) ;; DEPRECATED
 (require 'init-ivy)
 (require 'init-windows)
 (require 'init-other-window)
@@ -98,11 +98,11 @@
 (require 'init-golang)
 (require 'init-erlang)
 (require 'init-ocaml)
-(require 'init-javascript)
+;; (require 'init-javascript) ;; TODO
 (require 'init-express)
 (require 'init-php)
 (require 'init-org)
-(require 'init-plantuml)
+;; (require 'init-plantuml)
 ;; (require 'init-nxml)
 (require 'init-html)
 (require 'init-css)
@@ -149,13 +149,12 @@
 ;; Extra packages which don't require any configuration
 
 ;; (require 'init-diagram)
-(use-package gnuplot :straight t)
-(use-package lua-mode :straight t)
-(use-package htmlize :straight t)
-(use-package dsvn :straight t)
-(when *is-a-mac*
-  (use-package osx-location :straight t))
-(use-package regex-tool :straight t)
+(leaf gnuplot :ensure t)
+(leaf lua-mode :ensure t)
+(leaf htmlize :ensure t)
+(leaf dsvn :ensure t)
+(leaf osx-location :ensure t :if *is-a-mac*)
+(leaf regex-tool :ensure t)
 
 (require 'init-irc)
 (require 'init-esa)
@@ -168,7 +167,6 @@
 (unless (server-running-p)
   (server-start))
 
-
 ;;----------------------------------------------------------------------------
 ;; Variables configured via the interactive 'customize' interface
 ;;----------------------------------------------------------------------------
@@ -176,14 +174,12 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
-
 ;;----------------------------------------------------------------------------
 ;; Allow users to provide an optional "init-local" containing personal settings
 ;;----------------------------------------------------------------------------
 (when (file-exists-p (expand-file-name "init-local.el" user-emacs-directory))
   (error "Please move init-local.el to ~/.emacs.d/lisp"))
 (require 'init-local nil t)
-
 
 ;;----------------------------------------------------------------------------
 ;; Locales (setting them earlier in this file doesn't work in X)

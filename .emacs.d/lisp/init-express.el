@@ -1,12 +1,13 @@
 ;;; init-express --- express configuration
 ;;; Commentary:
 ;;; Code:
-(use-package jinari
-  :straight (:host github :repo "nabinno/jinari"))
-
-(after-load 'jinari
-  (diminish 'jinari-minor-mode " JIN"))
-(global-jinari-mode)
+(leaf jinari
+  :el-get nabinno/jinari
+  :config
+  (after-load 'jinari
+    (diminish 'jinari-minor-mode " JIN"))
+  (global-jinari-mode)
+  )
 
 (defun update-express-ctags ()
   (interactive)
@@ -88,8 +89,8 @@
 
 
 ;;; GulpJs
-(use-package gulpjs
-  :straight (:host github :repo "stevenremot/emacs-gulpjs"))
+(leaf gulpjs
+  :el-get stevenremot/emacs-gulpjs)
 
 (fset 'gulp-save-buffer-and-protractor "xsave-bufferxgulpprotractor")
 (fset 'gulp-protractor    "xgulpprotractor")
@@ -167,26 +168,28 @@
 ;;; Jade-mode
 (eval-after-load 'jade-mode
   (add-hook 'jade-mode-hook 'page-break-lines-mode))
-(use-package jade-mode :straight t)
-(add-auto-mode 'jade-mode "\\.tag\\'")
+(leaf jade-mode
+  :ensure t
+  :config
+  (add-auto-mode 'jade-mode "\\.tag\\'"))
 
 
 ;;; AngularJS
-(use-package angular-mode :straight t)
-(use-package angular-snippets :straight t)
+(leaf angular-mode :ensure t)
+(leaf angular-snippets :ensure t)
 
 
 ;; ;;; Unit Testing
 ;; ;; Karma
-;; (use-package karma :straight t)
+;; (leaf karma :ensure t)
 
 ;; ;; Jasmine-mode
 ;; (eval-after-load 'jasminejs-mode
 ;;   '(jasminejs-install-snippets))
-;; (use-package jasminejs-mode :straight t)
+;; (leaf jasminejs-mode :ensure t)
 
 ;; ;; Unit testing: Jst/Mocha
-;; (use-package jst :straight t)
+;; (leaf jst :ensure t)
 ;; ;; (add-hook 'js2-mode-hook 'jst-enable-appropriate-mode)
 ;; ;; (add-hook 'coffee-mode-hook 'jst-enable-appropriate-mode)
 ;; ;; (add-hook 'what-ever-js-mode-hook 'jst-enable-appropriate-mode)
@@ -207,7 +210,7 @@
 
 
 ;;; E2E Testing
-(use-package livid-mode :straight t)
+(leaf livid-mode :ensure t)
 
 
 (provide 'init-express)

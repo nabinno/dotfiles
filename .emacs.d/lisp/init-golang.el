@@ -1,49 +1,49 @@
 ;;; init-golang -- basic golang configuration
 ;;; Commentary:
 ;;; Code:
-(use-package go-mode
+(leaf go-mode
   :mode "\\.go$"
-  :straight (el-patch :type git :host github :repo "dominikh/go-mode.el")
+  :el-get dominikh/go-mode.el
   :commands go-mode
-  :defer t
-  :init (if (executable-find "goimports")
-            (setq gofmt-command "goimports")
-          (message "Goimports not found; using default `gofmt-command'"))
+  :defer-config
+  (if (executable-find "goimports")
+      (setq gofmt-command "goimports")
+    (message "Goimports not found; using default `gofmt-command'"))
   :config
   (add-hook 'before-save-hook 'gofmt-before-save)
   (add-hook 'go-mode-hook
             (lambda ()
               (setq tab-width 4))))
 
-(use-package company-go
-  :straight t
+(leaf company-go
+  :ensure t
   :config
   (define-key go-mode-map (kbd "M-N") 'company-go))
 
-(use-package eglot
-  :straight t
+(leaf eglot
+  :ensure t
   :config
   (define-key eglot-mode-map (kbd "C-c ; g .") 'xref-find-definitions)
   (define-key eglot-mode-map (kbd "C-c ; g ,") 'pop-tag-mark)
   (add-to-list 'eglot-server-programs '(go-mode . ("gopls")))
   (add-hook 'go-mode-hook 'eglot-ensure))
 
-(use-package go-guru
+(leaf go-guru
   :after go
-  :straight t
+  :ensure t
   :config (add-hook 'go-mode-hook #'go-guru-hl-identifier-mode))
 
-(use-package golint
+(leaf golint
   :after go
-  :straight t)
+  :ensure t)
 
-(use-package go-eldoc
+(leaf go-eldoc
   :after go
-  :straight t
+  :ensure t
   :config (add-hook 'go-mode-hook 'go-eldoc-setup))
 
-(use-package ginkgo-mode
-  :straight (el-patch :type git :host github :repo "garslo/ginkgo-mode"))
+(leaf ginkgo-mode
+  :el-get garslo/ginkgo-mode)
 
 
 

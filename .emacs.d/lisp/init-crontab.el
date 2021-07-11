@@ -1,7 +1,7 @@
 ;;; init-crontab --- configuration of crontab-mode
 ;;; Commentary:
 ;;; Code:
-(use-package crontab-mode :straight t)
+(leaf crontab-mode :ensure t)
 (add-auto-mode 'crontab-mode "\\.?cron\\(tab\\)?\\'")
 
 

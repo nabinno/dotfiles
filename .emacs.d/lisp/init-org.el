@@ -3,13 +3,15 @@
 ;;; Code:
 (require 'org)
 
-(use-package org-fstree :straight t)
-(when *is-a-mac*
-  (use-package org-mac-link
-    :straight t
-    :config
-    (autoload 'org-mac-grab-link "org-mac-link" nil t))
-  (use-package org-mac-iCal :straight t))
+;; (leaf org-fstree :ensure t)
+(leaf org-mac-link
+  :straight t
+  :if *is-a-mac*
+  :config
+  (autoload 'org-mac-grab-link "org-mac-link" nil t))
+(leaf org-mac-iCal
+  :ensure t
+  :if *is-a-mac*)
 
 (define-key global-map (kbd "C-c l") 'org-store-link)
 (define-key global-map (kbd "C-c a") 'org-agenda)
@@ -81,9 +83,8 @@
 
 
 ;;; OX
-(use-package ox-gfm :straight t)
-(use-package ox-qmd
-  :straight (:host github :repo "0x60df/ox-qmd"))
+(leaf ox-gfm :ensure t)
+(leaf ox-qmd :el-get 0x60df/ox-qmd)
 
 
 ;; ;;; Org clock
@@ -119,11 +120,11 @@
 ;;   (define-key org-clock-mode-line-map [header-line mouse-1] 'org-clock-menu))
 
 
-(use-package org-pomodoro
-  :straight t
+(leaf org-pomodoro
+  :ensure t
+  :after org-agenda
   :config
-  (after-load 'org-agenda
-    (define-key org-agenda-mode-map (kbd "P") 'org-pomodoro)))
+  (define-key org-agenda-mode-map (kbd "P") 'org-pomodoro))
 
 ;; ;; Show iCal calendars in the org agenda
 ;; (when (and *is-a-mac* (require 'org-mac-iCal nil t))
@@ -175,19 +176,20 @@
 
 
 ;;; org-trello
-(use-package org-trello :straight t)
+(leaf org-trello :ensure t)
 
 
 ;;; Blog engine
 ;; org-page
-(use-package org-page :straight t)
-(require 'org-page)
-(setq op/repository-directory "~/nabinno.github.io")
-(setq op/site-domain "https://nabinno.github.io/")
+(leaf org-page
+  :ensure t
+  :config
+  (setq op/repository-directory "~/nabinno.github.io")
+  (setq op/site-domain "https://nabinno.github.io/"))
 
 ;; blog-admin
-(use-package blog-admin
-  :straight t
+(leaf blog-admin
+  :ensure t
   :config
   ;; (setq blog-admin-backend-type 'org-page)
   (setq blog-admin-backend-path "~/nabinno.github.io/org")
@@ -222,7 +224,7 @@
 
 
 ;;; org-tree-slide
-(use-package org-tree-slide :straight t)
+(leaf org-tree-slide :ensure t)
 
 
 ;;; Temporary setting

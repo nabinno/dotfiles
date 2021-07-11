@@ -19,13 +19,13 @@
 
 
 ;;; Language Server Protocol
-(use-package lsp-python
+(leaf lsp-python
   :after python
-  :straight t)
+  :el-get emacs-lsp/lsp-python-ms)
 
 
 ;; ;;; Jedi
-;; (use-package jedi :straight t)
+;; (leaf jedi :ensure t)
 ;; (add-hook 'python-mode-hook 'jedi:setup)
 ;; (setq jedi:complete-on-dot t)
 ;; ;; (setq ac-sources
@@ -36,22 +36,23 @@
 
 
 ;;; Py-Autopep8
-;; (use-package py-autopep8 :straight t)
+;; (leaf py-autopep8 :ensure t)
 ;; (setq py-autopep8-options '("--max-line-length=200"))
 ;; (setq flycheck-flake8-maximum-line-length 200)
 ;; (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
 
 ;;; Balcken
-(use-package blacken
+(leaf blacken
   :after python
-  :straight t)
+  :ensure t)
 
 
 ;;; PyFlakes
-(use-package flymake-python-pyflakes
-  :straight (:host github :repo "purcell/flymake-python-pyflakes"))
-(after-load 'flymake-python-pyflakes
-  (flymake-python-pyflakes-load))
+(leaf flymake-python-pyflakes
+  :el-get purcell/flymake-python-pyflakes
+  :config
+  (after-load 'flymake-python-pyflakes
+    (flymake-python-pyflakes-load)))
 
 
 (provide 'init-python-mode)

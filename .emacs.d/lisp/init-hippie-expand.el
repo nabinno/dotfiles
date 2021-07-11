@@ -1,3 +1,6 @@
+;;; init-hippie-expand --- hippie-expand configuraiton
+;;; Commentary:
+;;; Code:
 (global-set-key (kbd "M-/") 'hippie-expand)
 
 (setq hippie-expand-try-functions-list
@@ -8,3 +11,4 @@
         try-expand-dabbrev-from-kill))
 
 (provide 'init-hippie-expand)
+;;; init-hippie-expand.el ends here

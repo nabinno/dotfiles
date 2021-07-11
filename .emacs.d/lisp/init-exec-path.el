@@ -1,4 +1,4 @@
-(use-package exec-path-from-shell :straight t)
+(leaf exec-path-from-shell :ensure t)
 
 (after-load 'exec-path-from-shell
   (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG" "LC_CTYPE"))

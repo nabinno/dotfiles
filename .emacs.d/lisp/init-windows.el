@@ -1,3 +1,6 @@
+;;; init-windows --- windows configuraiton
+;;; Commentary:
+;;; Code:
 ;;; Navigate window layouts with "C-c <left>" and "C-c <right>"
 (winner-mode 1)
 
@@ -5,10 +8,11 @@
 
 
 ;;; Make "C-x o" prompt for a target window when there are more than 2
-(use-package switch-window :straight t)
-(require 'switch-window)
-(setq switch-window-shortcut-style 'alphabet)
-(global-set-key (kbd "C-x o") 'switch-window)
+(leaf switch-window
+  :ensure t
+  :config
+  (setq switch-window-shortcut-style 'alphabet)
+  (global-set-key (kbd "C-x o") 'switch-window))
 
 ;; When splitting window, show (other-buffer) in the new window
 (defun split-window-func-with-other-buffer (split-function)
@@ -133,3 +137,4 @@ Call a second time to restore the original window configuration."
 
 
 (provide 'init-windows)
+;;; init-windows.el ends here

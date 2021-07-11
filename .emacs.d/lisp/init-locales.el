@@ -1,3 +1,6 @@
+;;; init-locales --- locales configuration
+;;; Commentary:
+;;; Code:
 (defun sanityinc/utf8-locale-p (v)
   "Return whether locale string V relates to a UTF-8 locale."
   (and v (string-match "UTF-8" v)))
@@ -21,8 +24,8 @@
 
 
 ;;; Japanese input mode
-(use-package mozc
-  :straight t
+(leaf mozc
+  :ensure t
   :config
   ;; (set-language-environment "Japanese")
   (setq default-input-method "japanese-mozc")
@@ -32,3 +35,4 @@
 
 
 (provide 'init-locales)
+;;; init-locales.el ends here

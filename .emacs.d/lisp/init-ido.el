@@ -1,3 +1,6 @@
+;;; init-ido --- ido configuration
+;;; Commentary:
+;;; Code:
 ;; Use C-f during file selection to switch to regular find-file
 (require 'ido)
 (ido-mode t)
@@ -13,12 +16,12 @@
 
 ;; Use smex to handle M-x
 (when (eval-when-compile (>= emacs-major-version 24))
-  (use-package smex :straight t)
+  (leaf smex :ensure t)
   ;; Change path for ~/.smex-items
   (setq smex-save-file (expand-file-name ".smex-items" user-emacs-directory))
   (global-set-key [remap execute-extended-command] 'smex))
 
-(use-package idomenu :straight t)
+(leaf idomenu :ensure t)
 
 ;; Allow the same buffer to be open in different frames
 (setq ido-default-buffer-method 'selected-window)
@@ -54,3 +57,4 @@
 
 
 (provide 'init-ido)
+;;; init-ido.el ends here

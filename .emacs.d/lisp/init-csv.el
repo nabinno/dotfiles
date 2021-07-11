@@ -1,9 +1,14 @@
-(use-package csv-mode :straight t)
-(use-package csv-nav
-  :straight (:host github :repo "emacsmirror/csv-nav"))
+;;; init-csv --- CSV configuraiton
+;;; Commentary:
+;;; Code:
+(leaf csv-mode :ensure t)
+(leaf csv-nav
+  :el-get emacsmirror/csv-nav)
 
 (add-auto-mode 'csv-mode "\\.[Cc][Ss][Vv]\\'")
 
 (setq csv-separators '("," ";" "|" " "))
 
+
 (provide 'init-csv)
+;;; init-csv.el ends here

@@ -1,9 +1,8 @@
 ;;; init-editing ---  editing configuration
 ;;; Commentary:
 ;;; Code:
-
-(use-package unfill :straight t)
-(use-package whole-line-or-region :straight t)
+(leaf unfill :ensure t)
+(leaf whole-line-or-region :ensure t)
 
 (when (fboundp 'electric-pair-mode)
   (electric-pair-mode))
@@ -47,7 +46,6 @@
 
 
 ;;; Whitespace
-
 (defun sanityinc/no-trailing-whitespace ()
   "Turn off display of trailing whitespace in this buffer."
   (setq show-trailing-whitespace nil))
@@ -62,47 +60,48 @@
                 minibuffer-setup-hook))
   (add-hook hook #'sanityinc/no-trailing-whitespace))
 
-
-(use-package whitespace-cleanup-mode :straight t)
-(global-whitespace-cleanup-mode t)
+(leaf whitespace-cleanup-mode
+  :ensure t
+  :config
+  (global-whitespace-cleanup-mode t))
 
 
 ;;; Newline behaviour
-
 (global-set-key (kbd "RET") 'newline-and-indent)
 (defun sanityinc/newline-at-end-of-line ()
   "Move to end of line, enter a newline, and reindent."
   (interactive)
   (move-end-of-line 1)
   (newline-and-indent))
-
 (global-set-key (kbd "S-<return>") 'sanityinc/newline-at-end-of-line)
 
 
-
 (when (eval-when-compile (string< "24.3.1" emacs-version))
   ;; https://github.com/purcell/emacs.d/issues/138
   (after-load 'subword
     (diminish 'subword-mode)))
 
 
-
 ;; (when (fboundp 'global-prettify-symbols-mode)
 ;;   (global-prettify-symbols-mode))
 
 
-(use-package undo-tree :straight t)
-(global-undo-tree-mode)
-(diminish 'undo-tree-mode)
-(global-set-key (kbd "M-/") 'undo-tree-undo)
+(leaf undo-tree
+  :ensure t
+  :config
+  (global-undo-tree-mode)
+  (diminish 'undo-tree-mode)
+  (global-set-key (kbd "M-/") 'undo-tree-undo))
 
 
-(use-package highlight-symbol :straight t)
-(dolist (hook '(prog-mode-hook html-mode-hook))
-  (add-hook hook 'highlight-symbol-mode)
-  (add-hook hook 'highlight-symbol-nav-mode))
-(eval-after-load 'highlight-symbol
-  '(diminish 'highlight-symbol-mode))
+(leaf highlight-symbol
+  :ensure t
+  :config
+  (dolist (hook '(prog-mode-hook html-mode-hook))
+    (add-hook hook 'highlight-symbol-mode)
+    (add-hook hook 'highlight-symbol-nav-mode))
+  (eval-after-load 'highlight-symbol
+    '(diminish 'highlight-symbol-mode)))
 
 ;;----------------------------------------------------------------------------
 ;; Zap *up* to char is a handy pair for zap-to-char
@@ -125,8 +124,8 @@
 ;;----------------------------------------------------------------------------
 ;; Expand region
 ;;----------------------------------------------------------------------------
-(use-package expand-region
-  :straight t
+(leaf expand-region
+  :ensure t
   :config
   (global-set-key (kbd "C-=") 'er/expand-region)
   (global-set-key (kbd "M-=") 'er/expand-region)
@@ -162,35 +161,36 @@
 (global-set-key (kbd "C-x C-.")         'pop-global-mark)
 ;; (global-set-key (kbd "C-x M-[ 1 ; 5 n") 'pop-global-mark)
 
-(use-package ace-jump-mode
-  :straight t
+(leaf ace-jump-mode
+  :ensure t
   :config
   (global-set-key (kbd "") 'ace-jump-word-mode))
 
-(use-package multiple-cursors :straight t)
-;; multiple-cursors
-(global-set-key (kbd "M-,")             'mc/mark-previous-like-this)
-(global-set-key (kbd "C-<")             'mc/mark-previous-like-this)
-;; (global-set-key (kbd "M-[ 1 ; 6 l")     'mc/mark-previous-like-this)
-(global-set-key (kbd "M-.")             'mc/mark-next-like-this)
-(global-set-key (kbd "C->")             'mc/mark-next-like-this)
-;; (global-set-key (kbd "M-[ 1 ; 6 n")     'mc/mark-next-like-this)
-(global-set-key (kbd "C-+")             'mc/mark-next-like-this)
-(global-set-key (kbd "M-+")             'mc/mark-next-like-this)
-;; (global-set-key (kbd "M-[ 1 ; 6 k")     'mc/mark-next-like-this)
-(global-set-key (kbd "C-c C-<")         'mc/mark-all-like-this)
-;; (global-set-key (kbd "C-c M-[ 1 ; 6 l") 'mc/mark-all-like-this)
-;; From active region to multiple cursors:
-(global-set-key (kbd "C-c c r") 'set-rectangular-region-anchor)
-(global-set-key (kbd "C-c c c") 'mc/edit-lines)
-(global-set-key (kbd "C-c c e") 'mc/edit-ends-of-lines)
-(global-set-key (kbd "C-c c a") 'mc/edit-beginnings-of-lines)
-
+(leaf multiple-cursors
+  :ensure t
+  :config
+  ;; multiple-cursors
+  (global-set-key (kbd "M-,")             'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-<")             'mc/mark-previous-like-this)
+  ;; (global-set-key (kbd "M-[ 1 ; 6 l")     'mc/mark-previous-like-this)
+  (global-set-key (kbd "M-.")             'mc/mark-next-like-this)
+  (global-set-key (kbd "C->")             'mc/mark-next-like-this)
+  ;; (global-set-key (kbd "M-[ 1 ; 6 n")     'mc/mark-next-like-this)
+  (global-set-key (kbd "C-+")             'mc/mark-next-like-this)
+  (global-set-key (kbd "M-+")             'mc/mark-next-like-this)
+  ;; (global-set-key (kbd "M-[ 1 ; 6 k")     'mc/mark-next-like-this)
+  (global-set-key (kbd "C-c C-<")         'mc/mark-all-like-this)
+  ;; (global-set-key (kbd "C-c M-[ 1 ; 6 l") 'mc/mark-all-like-this)
+  ;; From active region to multiple cursors:
+  (global-set-key (kbd "C-c c r") 'set-rectangular-region-anchor)
+  (global-set-key (kbd "C-c c c") 'mc/edit-lines)
+  (global-set-key (kbd "C-c c e") 'mc/edit-ends-of-lines)
+  (global-set-key (kbd "C-c c a") 'mc/edit-beginnings-of-lines)
+  )
 
 ;; ;; Train myself to use M-f and M-b instead
 ;; (global-unset-key [M-left])
 ;; (global-unset-key [M-right])
-
 
 (defun kill-back-to-indentation ()
   "Kill from point back to the first non-whitespace character on the line."
@@ -204,24 +204,28 @@
 ;;----------------------------------------------------------------------------
 ;; Visual regexp
 ;;----------------------------------------------------------------------------
-(use-package visual-regexp :straight t)
-(define-key global-map (kbd "M-r") 'vr/replace)
-(define-key global-map (kbd "C-M-m") 'vr/mc-mark)
+(leaf visual-regexp
+  :ensure t
+  :config
+  (define-key global-map (kbd "M-r") 'vr/replace)
+  (define-key global-map (kbd "C-M-m") 'vr/mc-mark))
 
 ;;----------------------------------------------------------------------------
 ;; Page break lines
 ;;----------------------------------------------------------------------------
-(use-package page-break-lines :straight t)
-(global-page-break-lines-mode)
-(diminish 'page-break-lines-mode)
-(add-hook 'prog-mode-hook 'page-break-lines-mode)
-(setq page-break-lines-char ?-)
+(leaf page-break-lines
+  :ensure t
+  :config
+  (global-page-break-lines-mode)
+  (diminish 'page-break-lines-mode)
+  (add-hook 'prog-mode-hook 'page-break-lines-mode)
+  (setq page-break-lines-char ?-))
 
 ;;----------------------------------------------------------------------------
 ;; Fill column indicator
 ;;----------------------------------------------------------------------------
 (when (eval-when-compile (> emacs-major-version 23))
-  (use-package fill-column-indicator :straight t)
+  (leaf fill-column-indicator :ensure t)
   (defun sanityinc/prog-mode-fci-settings ()
     (turn-on-fci-mode)
     (when show-trailing-whitespace
@@ -260,18 +264,18 @@
 ;; it will use those keybindings. For this reason, you might prefer to
 ;; use M-S-up and M-S-down, which will work even in lisp modes.
 ;;----------------------------------------------------------------------------
-(use-package move-dup
-  :straight (:host github :repo "wyuenho/move-dup"))
-(global-set-key [M-up]              'move-dup-move-lines-up)
-;; (global-set-key (kbd "M-[ 1 ; 3 A") 'move-dup-move-lines-up)
-(global-set-key [M-down]            'move-dup-move-lines-down)
-;; (global-set-key (kbd "M-[ 1 ; 3 B") 'move-dup-move-lines-down)
-(global-set-key [M-S-up]            'move-dup-move-lines-up)
-;; (global-set-key (kbd "M-[ 1 ; 4 A") 'move-dup-move-lines-up)
-(global-set-key [M-S-down]          'move-dup-move-lines-down)
-;; (global-set-key (kbd "M-[ 1 ; 4 B") 'move-dup-move-lines-down)
-
-(global-set-key (kbd "C-c p") 'move-dup-duplicate-down)
+(leaf move-dup
+  :el-get wyuenho/move-dup
+  :config
+  (global-set-key [M-up]              'move-dup-move-lines-up)
+  ;; (global-set-key (kbd "M-[ 1 ; 3 A") 'move-dup-move-lines-up)
+  (global-set-key [M-down]            'move-dup-move-lines-down)
+  ;; (global-set-key (kbd "M-[ 1 ; 3 B") 'move-dup-move-lines-down)
+  (global-set-key [M-S-up]            'move-dup-move-lines-up)
+  ;; (global-set-key (kbd "M-[ 1 ; 4 A") 'move-dup-move-lines-up)
+  (global-set-key [M-S-down]          'move-dup-move-lines-down)
+  ;; (global-set-key (kbd "M-[ 1 ; 4 B") 'move-dup-move-lines-down)
+  (global-set-key (kbd "C-c p") 'move-dup-duplicate-down))
 
 ;;----------------------------------------------------------------------------
 ;; Fix backward-up-list to understand quotes, see http://bit.ly/h7mdIL
@@ -286,7 +290,6 @@
           ((backward-up-list arg)))))
 
 (global-set-key [remap backward-up-list] 'backward-up-sexp) ; C-M-u, C-M-up
-
 
 ;;----------------------------------------------------------------------------
 ;; Cut/copy the current line if no region is active
@@ -313,9 +316,7 @@
 
 (suspend-mode-during-cua-rect-selection 'whole-line-or-region-mode)
 
-
 
-
 (defun sanityinc/open-line-with-reindent (n)
   "A version of `open-line' which reindents the start and end positions.
 If there is a fill prefix and/or a `left-margin', insert them
@@ -345,7 +346,6 @@ With arg N, insert N newlines."
 
 (global-set-key (kbd "C-o") 'sanityinc/open-line-with-reindent)
 
-
 ;;----------------------------------------------------------------------------
 ;; Random line sorting
 ;;----------------------------------------------------------------------------
@@ -361,36 +361,34 @@ With arg N, insert N newlines."
         (sort-subr nil 'forward-line 'end-of-line nil nil
                    (lambda (s1 s2) (eq (random 2) 0)))))))
 
-
 
 ;;; Ag
 (when (executable-find "ag")
-  (use-package ag :straight t)
-  (unless (require 'wgrep-ag nil 'noerror)
-    (el-get-bundle mhayashi1120/Emacs-wgrep))
+  (leaf ag :ensure t)
+  (leaf wgrep-ag :el-get mhayashi1120/Emacs-wgrep)
   (setq-default ag-highlight-search t)
   (global-set-key (kbd "M-?") 'ag-project))
 
-
 
 ;; Avy
-(use-package avy :straight t)
-;; (global-set-key (kbd "M-[ 1 ; 5 n") 'avy-goto-char)
-;; (global-set-key (kbd "M-[ 1 ; 5 l") 'avy-goto-char-2)
-(global-set-key (kbd "M-g f") 'avy-goto-line)
-(global-set-key (kbd "M-g w") 'avy-goto-word-1)
-(global-set-key (kbd "M-g e") 'avy-goto-word-0)
-(avy-setup-default)
-
+(leaf avy
+  :ensure t
+  :config
+  ;; (global-set-key (kbd "M-[ 1 ; 5 n") 'avy-goto-char)
+  ;; (global-set-key (kbd "M-[ 1 ; 5 l") 'avy-goto-char-2)
+  (global-set-key (kbd "M-g f") 'avy-goto-line)
+  (global-set-key (kbd "M-g w") 'avy-goto-word-1)
+  (global-set-key (kbd "M-g e") 'avy-goto-word-0)
+  (avy-setup-default))
 
 
-;; ;;; Folding
-;; ;; (use-package fold-dwim :straight t)
-;; ;; (global-set-key (kbd "<f8>")     'fold-dwim-toggle)
-;; ;; (global-set-key (kbd "<M-f8>")   'fold-dwim-hide-all)
-;; ;; (global-set-key (kbd "<S-M-f8>") 'fold-dwim-show-all)
+;;; Folding
+;; (leaf fold-dwim :ensure t)
+;; (global-set-key (kbd "<f8>")     'fold-dwim-toggle)
+;; (global-set-key (kbd "<M-f8>")   'fold-dwim-hide-all)
+;; (global-set-key (kbd "<S-M-f8>") 'fold-dwim-show-all)
 
-;; (use-package fold-this :straight t)
+;; (leaf fold-this :ensure t)
 ;; (setq fold-this-persistent-folds t)
 ;; (defun fold-this--this-or-all (all)
 ;;   (interactive "P")
@@ -407,18 +405,16 @@ With arg N, insert N newlines."
 
 
 ;;; Lice, Lorem ipsum
-(use-package lice :straight t)
-(use-package lorem-ipsum :straight t)
-
+(leaf lice :ensure t)
+(leaf lorem-ipsum :ensure t)
 
 
-(use-package highlight-escape-sequences :straight t)
+(leaf highlight-escape-sequences :ensure t)
 (hes-mode)
 
-
 
-(use-package guide-key
-  :straight t
+(leaf guide-key
+  :ensure t
   :config
   (setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-x 5" "C-c ;" "C-c ; f" "C-c ' f" "C-x n"))
   (guide-key-mode 1)
@@ -426,8 +422,8 @@ With arg N, insert N newlines."
 
 
 ;; ;;; Time/Date
-;; (use-package time-ext :straight t)
-;; (use-package wwtime :straight t)
+;; (leaf time-ext :ensure t)
+;; (leaf wwtime :ensure t)
 
 
 ;;; Normalize
@@ -462,4 +458,4 @@ With arg N, insert N newlines."
 
 
 (provide 'init-editing-utils)
-;;; init-editing.el ends here
+;;; init-editing-utils.el ends here

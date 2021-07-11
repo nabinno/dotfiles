@@ -1,21 +1,22 @@
 ;;; init-orchestration --- orchestration configuration
 ;;; Commentary:
 ;;; Code:
-
 ;;; OS level virtualization
 ;; vagrant
-(use-package vagrant :straight t)
+(leaf vagrant :ensure t)
 
 ;; docker
-(use-package docker :straight t)
-(use-package docker-tramp :straight t)
-(use-package dockerfile-mode :straight t)
-(use-package marcopolo :straight t)
+(leaf docker :ensure t)
+(leaf docker-tramp :ensure t)
+(leaf dockerfile-mode :ensure t)
+(leaf marcopolo :ensure t)
 
 
 ;;; Terraform
-(use-package terraform-mode :straight t)
-(setq terraform-indent-level 2)
+(leaf terraform-mode
+  :ensure t
+  :config
+  (setq terraform-indent-level 2))
 
 ;; terraform command interpreter in a buffer
 (defun terraform (arg)
@@ -42,7 +43,7 @@
 
 
 ;;; AWS
-(use-package helm-aws :straight t)
+(leaf helm-aws :ensure t)
 
 ;; aws command interpreter in a buffer
 (defun aws-ec2 (arg)
@@ -72,7 +73,7 @@
 
 
 ;;; Heroku
-(use-package heroku :straight t)
+(leaf heroku :ensure t)
 
 
 

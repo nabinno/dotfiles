@@ -1,8 +1,7 @@
 ;;; init-digdag --- digdag configuration
 ;;; Commentary:
 ;;; Code:
-(use-package digdag
-  :straight (:host github :repo "syohex/emacs-digdag-mode"))
+(leaf digdag :el-get syohex/emacs-digdag-mode)
 
 
 (provide 'init-digdag)

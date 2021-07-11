@@ -1,26 +1,27 @@
 ;;; init-rails --- rails configuration
 ;;; Commentary:
 ;;; Code:
-(use-package rinari :straight t)
-(after-load 'rinari
-  (diminish 'rinari-minor-mode "Rin"))
-(global-rinari-mode)
+(leaf rinari
+  :ensure t
+  :config
+  (after-load 'rinari
+    (diminish 'rinari-minor-mode "Rin"))
+  (global-rinari-mode))
 
 (defun update-rails-ctags ()
   (interactive)
   (let ((default-directory (or (rinari-root) default-directory)))
     (shell-command (concat "ctags -a -e -f " rinari-tags-file-name " --tag-relative -R app lib vendor test"))))
 
-
 ;; rspec-mode
 (eval-after-load 'rspec-mode
   '(rspec-install-snippets))
-(use-package rspec-mode :straight t)
+(leaf rspec-mode :ensure t)
 
 ;; minitest-emacs
 (eval-after-load 'minitest
   '(add-hook 'ruby-mode-hook 'minitest-mode))
-(use-package minitest :straight t)
+(leaf minitest :ensure t)
 
 ;; rinari-rgrep
 (setq rinari-rgrep-file-endings "*.rb *.erb *.yml *.coffee *.js *.scss *.rake")
@@ -38,6 +39,7 @@
      (add-to-list 'grep-find-ignored-directories "node_modules")
      (add-to-list 'grep-find-ignored-directories "tmp")
      (add-to-list 'grep-find-ignored-directories "vendor")))
+
 
 (provide 'init-rails)
 ;;; init-rails.el ends here
