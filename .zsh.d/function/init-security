@@ -1,0 +1,45 @@
+#!/usr/bin/env zsh
+
+export PATH="$HOME/.local/john/run/:$PATH"
+
+get-zip2john() {
+  case "${OSTYPE}" in
+    darwin*) ;;
+    linux*)
+      git clone https://github.com/openwall/john.git ~/.local/john
+      (
+        cd ~/.local/john/src
+        ./configure
+        make -s clean && make -sj$(grep processor /proc/cpuinfo | wc -l)
+        sudo make install
+      )
+      ;;
+  esac
+}
+
+get-hashcat() {
+  case "${OSTYPE}" in
+    darwin*) ;;
+    linux*)
+      case "${DIST}" in
+        Ubuntu)
+          case $DIST_VERSION in
+            18.04 | 20.04)
+              # CUDA
+              wget https://developer.download.nvidia.com/compute/cuda/11.4.0/local_installers/cuda_11.4.0_470.42.01_linux.run
+              sudo sh cuda_11.4.0_470.42.01_linux.run
+
+              # hashcat
+              brew install hashcat
+              ;;
+          esac
+          ;;
+      esac
+      ;;
+  esac
+}
+
+get-global-security-stack() {
+  get-zip2john
+  get-hashcat
+}
