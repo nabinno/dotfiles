@@ -67,11 +67,14 @@ require init-rust
 require init-red
 # require init-remote-procedure-call
 
-# Daemon
+# Storage
+require init-csv
 # require init-postgresql
 # require init-mysql
 # require init-redis
 # require init-memcached
+
+# Daemon
 # require init-nginx
 require init-dns
 
