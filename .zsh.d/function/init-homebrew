@@ -29,12 +29,12 @@ get-base-brew-packages() {
           ;;
         Debian | Ubuntu)
           brew install \
-            jq \
-            ghq \
-            ripgrep \
             aws-vault \
+            ghq \
             hadolint \
-            peco
+            jq \
+            peco \
+            ripgrep
           ;;
       esac
       ;;
