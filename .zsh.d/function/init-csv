@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+
+# ----------------------------------------------------------------------
+# ### installation ###
+get-trdsql() {
+  case "${OSTYPE}" in
+    darwin*) brew install noborus/tap/trdsql ;;
+    linux*) brew install noborus/tap/trdsql ;;
+  esac
+}
+if ! type -p trdsql >/dev/null; then get-trdsql; fi
