@@ -86,6 +86,7 @@ require init-git--util
 # require init-plantuml
 # require init-imagemagick
 require init-benchmark
+require init-security
 require init-vagrant
 # require init-wercker
 require init-ansible
