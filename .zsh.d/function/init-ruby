@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-export REQUIRED_RUBY_VERSION=2.5.3
+export REQUIRED_RUBY_VERSION=2.6.8
 export RUBY_PACKAGE_MANAGER=anyenv
 
 # ### version control ###
