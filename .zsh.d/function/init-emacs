@@ -1,8 +1,7 @@
 #!/usr/bin/env zsh
 
 # Emacs
-export REQUIRED_EMACS_VERSION=26.3
-export UNREQUIRED_EMACS_VERSION=25.3
+export REQUIRED_EMACS_VERSION=27.1
 
 # ----------------------------------------------------------------------
 # ### installation ###
@@ -29,7 +28,7 @@ get-emacs() {
             16.04 | 18.04 | 20.04)
               sudo add-apt-repository ppa:kelleyk/emacs
               sudo apt update
-              sudo apt install emacs26
+              sudo apt install emacs27-nox
               ;;
             *)
               sudo apt-get install build-essential checkinstall
@@ -66,15 +65,8 @@ remove-emacs() {
     linux*)
       case $DIST in
         Ubuntu)
-          sudo apt remove emacs24
-          wget https://ftp.gnu.org/gnu/emacs/emacs-$UNREQUIRED_EMACS_VERSION.tar.gz
-          tar zxf emacs-$UNREQUIRED_EMACS_VERSION.tar.gz
-          cd emacs-$UNREQUIRED_EMACS_VERSION
-          ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no --with-jpeg=no --with-png=no
-          make
-          yes | sudo make uninstall
-          cd $current_pwd
-          rm -fr emacs-$UNREQUIRED_EMACS_VERSION*
+          sudo apt remove emacs26
+          sudo apt autoremove
           ;;
       esac
       ;;
