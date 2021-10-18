@@ -39,6 +39,11 @@ get-ecs-cli() {
 }
 # if ! type -p ecs-cli >/dev/null; then get-ecs-cli; fi
 
+get-aws2-wrap() {
+  pip3 install aws2-wrap==1.1.9
+}
+if ! type -p aws2-wrap >/dev/null; then get-aws2-wrap; fi
+
 get-aws-cdk() {
   npm i -g aws-cdk
 }
