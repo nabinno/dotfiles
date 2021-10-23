@@ -41,8 +41,14 @@ if ! type -p wrk >/dev/null; then get-wrk; fi
 # Phoronix Test Suite
 function get-phoronix-test-suite() {
   case "${OSTYPE}" in
-    freebsd*) ;;
-    darwin* | linux*) brew install phoronix-test-suite ;;
+    freebsd* | darwin*) ;;
+    linux*)
+      brew install phoronix-test-suite
+      case "${DIST}" in
+        Redhat | RedHat) sudo yum install php-gd php-xml php-curl ;;
+        Ubuntu) sudo apt install php-gd php-xml php-curl ;;
+      esac
+      ;;
   esac
 }
 if ! type -p phoronix-test-suite >/dev/null; then get-phoronix-test-suite; fi
