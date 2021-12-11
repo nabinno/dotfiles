@@ -3,7 +3,7 @@
 export JAVA_PACKAGE_MANAGER=asdf
 case "${JAVA_PACKAGE_MANAGER}" in
   asdf)
-    export REQUIRED_OPENJDK_VERSION=adoptopenjdk-11.0.7+10.1
+    export REQUIRED_OPENJDK_VERSION=adoptopenjdk-16.0.2+7
     ;;
   anyenv)
     export REQUIRED_OPENJDK_VERSION=openjdk-11.0.1
@@ -19,6 +19,8 @@ case "${JAVA_PACKAGE_MANAGER}" in
     esac
     ;;
 esac
+export REQUIRED_SCALA_VERSION=3.0.2
+export REQUIRED_SBT_VERSION=1.5.6
 export REQUIRED_PLAY_VERSION=2.2.3
 export PLAY_HOME=/usr/local/play-$REQUIRED_PLAY_VERSION
 export PATH="$PLAY_HOME:$PATH"
@@ -143,6 +145,28 @@ if ! type -p java >/dev/null; then get-java && set-javahome; fi
 if type -p java >/dev/null; then set-javahome; fi
 
 # ----------------------------------------------------------------------
+get-scala() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      case $(asdf plugin-list) in scala) ;; *) asdf plugin-add scala ;; esac
+      asdf install scala $REQUIRED_SCALA_VERSION
+      asdf global scala $REQUIRED_SCALA_VERSION
+      ;;
+  esac
+}
+if ! type -p scala >/dev/null; then get-scala; fi
+
+get-sbt() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      case $(asdf plugin-list) in *sbt*) ;; *) asdf plugin-add sbt ;; esac
+      asdf install sbt $REQUIRED_SBT_VERSION
+      asdf global sbt $REQUIRED_SBT_VERSION
+      ;;
+  esac
+}
+if ! type -p sbt >/dev/null; then get-sbt; fi
+
 get-play() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
@@ -150,26 +174,6 @@ get-play() {
       unzip play-$REQUIRED_PLAY_VERSION.zip
       mv play-$REQUIRED_PLAY_VERSION ~/.local/
       rm -fr play-$REQUIRED_PLAY_VERSION.zip
-      ;;
-  esac
-}
-
-get-sbt() {
-  case "${OSTYPE}" in
-    freebsd* | darwin*) sudo port install sbt ;;
-    linux*)
-      case "${DIST}" in
-        Redhat | RedHat)
-          curl https://bintray.com/sbt/rpm/rpm | sudo tee /etc/yum.repos.d/bintray-sbt-rpm.repo
-          sudo yum install -y sbt
-          ;;
-        Debian | Ubuntu)
-          echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
-          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823
-          sudo apt-get update
-          sudo apt-get install -y sbt
-          ;;
-      esac
       ;;
   esac
 }

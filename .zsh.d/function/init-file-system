@@ -102,6 +102,6 @@ samba-stop() {
   esac
 }
 
-alias sbr=samba-restart
-alias sbt=samba-stop
-alias sbs=testparm
+alias smbr=samba-restart
+alias smbt=samba-stop
+alias smbs=testparm
