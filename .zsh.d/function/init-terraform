@@ -4,6 +4,11 @@ export REQUIRED_TERRAFORM_VERSION=0.14.6
 export REQUIRED_TERRAFORM_SWITCHER_VERSION=0.7.737
 export PATH=~/.$PATH
 
+get-tfenv() {
+  anyenv install tfenv
+}
+if ! type -p tfenv >/dev/null; then get-tfenv; fi
+
 get-terraform-switcher() {
   (
     cd ~/.local/bin
@@ -16,7 +21,6 @@ get-terraform-switcher() {
     esac
   )
 }
-if ! type -p tfswitch >/dev/null; then get-terraform-switcher; fi
 
 set-terraform-switcher() {
   local tfswitchrc_path=".tfswitchrc"
@@ -25,15 +29,16 @@ set-terraform-switcher() {
     tfswitch -b ~/.local/bin/terraform $REQUIRED_TERRAFORM_VERSION
   fi
 }
-if type -p tfswitch >/dev/null; then
-  # @todo
-  # add-zsh-hook chpwd set-terraform-switcher
-  set-terraform-switcher
-fi
+# if type -p tfswitch >/dev/null; then
+#   # @todo
+#   # add-zsh-hook chpwd set-terraform-switcher
+#   set-terraform-switcher
+# fi
 
 get-terraform() {
-  tfswitch -b ~/.local/bin/terraform $REQUIRED_TERRAFORM_VERSION
-  echo $REQUIRED_TERRAFORM_VERSION >~/.tfswitchrc
+  tfenv install $REQUIRED_TERRAFORM_VERSION
+  # tfswitch -b ~/.local/bin/terraform $REQUIRED_TERRAFORM_VERSION
+  # echo $REQUIRED_TERRAFORM_VERSION >~/.tfswitchrc
 }
 if ! type -p terraform >/dev/null; then get-terraform; fi
 
