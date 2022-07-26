@@ -28,6 +28,7 @@
 # ssh -f -nNT -L 8080:127.0.0.1:8080 core@<master-public-ip>
 #
 export REQUIRED_KUBERNETES_HELM=2.6.2
+export REQUIRED_KUBRENETES_KOMPOSE=1.26.1
 export MINIKUBE_WANTUPDATENOTIFICATION=false
 export MINIKUBE_WANTREPORTERRORPROMPT=false
 export MINIKUBE_HOME=$HOME
@@ -100,30 +101,13 @@ minikube-stop() {
 get-kubernetes-helm() {
   case $OSTYPE in
     darwin*)
-      brew install kubernetes-helm
+      brew install helm
       ;;
     linux*)
-      curl -O https://kubernetes-helm.storage.googleapis.com/helm-v${REQUIRED_KUBERNETES_HELM}-linux-amd64.tar.gz
-      tar -zxvf helm-v${REQUIRED_KUBERNETES_HELM}-linux-amd64.tar.gz
-      chmod +x linux-amd64/helm
-      sudo mv linux-amd64/helm /usr/local/bin/helm
-      rm -rf helm-v${REQUIRED_KUBERNETES_HELM}-linux-amd64.tar.gz linux-amd64
-      case "${DIST}" in
-        Redhat | RedHat | Debian) ;;
-        Ubuntu)
-          sudo apt-get install \
-            socat \
-            autopoint
-          git clone git://git.kernel.org/pub/scm/utils/util-linux/util-linux.git util-linux
-          (
-            cd util-linux
-            sh -c ./autogen.sh
-            ./configure --without-python --disable-all-programs --enable-nsenter && make
-            sudo cp ./nsenter /usr/bin
-          )
-          rm -rf util-linux
-          ;;
-      esac
+      curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+      chmod 700 get_helm.sh
+      bash get_helm.sh
+      rm -rf get_helm.sh
       ;;
   esac
 }
@@ -144,7 +128,10 @@ get-global-helm-packages() {
 # ### kompose ###
 get-kubernetes-kompose() {
   case $OSTYPE in
-    darwin* | linux*) go get -u github.com/kubernetes/kompose ;;
+    linux*)
+      curl -L https://github.com/kubernetes/kompose/releases/download/v${REQUIRED_KUBRENETES_KOMPOSE}/kompose-linux-amd64 -o ~/.local/bin/kompose
+      chmod +x ~/.local/bin/kompose
+      ;;
   esac
 }
 if ! type kompose >/dev/null; then get-kubernetes-kompose; fi
@@ -162,12 +149,27 @@ get-kubetail() {
 if ! type kubetail >/dev/null; then get-kubetail; fi
 
 # ----------------------------------------------------------------------
+# ### eksctl ###
+get-eksctl() {
+  case $OSTYPE in
+    linux*)
+      curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+      mv /tmp/eksctl ~/.local/bin
+      ;;
+  esac
+}
+if ! type eksctl >/dev/null; then get-eksctl; fi
+
+# ----------------------------------------------------------------------
 # ### other ###
 set-kubernetes() {
   case $OSTYPE in
     linux*)
       if ! [ -d ~/.kube ]; then mkdir ~/.kube; fi
-      if ! [ -f ~/.kube/config ]; then touch ~/.kube/config; fi
+      if ! [ -f ~/.kube/config ]; then
+        touch ~/.kube/config
+        chmod 600 ~/.kube/config
+      fi
       if ! [ -d ~/.minikube ]; then mkdir ~/.minikube; fi
       sudo chown -R $USER ~/.kube
       sudo chgrp -R $USER ~/.kube
