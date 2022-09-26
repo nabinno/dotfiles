@@ -34,6 +34,7 @@ export MINIKUBE_WANTREPORTERRORPROMPT=false
 export MINIKUBE_HOME=$HOME
 export CHANGE_MINIKUBE_NONE_USER=true
 export KUBECONFIG=$HOME/.kube/config
+export REQUIRED_KUBERNETES_KUBECTL=1.23.7
 
 get-kubectl() {
   case $OSTYPE in
@@ -42,7 +43,7 @@ get-kubectl() {
       chmod +x ~/.local/bin/kubectl
       ;;
     linux*)
-      wget https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl -O ~/.local/bin/kubectl
+      curl -O ~/.local/bin/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/${REQUIRED_KUBERNETES_KUBECTL}/2022-06-29/bin/linux/amd64/kubectl
       chmod +x ~/.local/bin/kubectl
       ;;
   esac
