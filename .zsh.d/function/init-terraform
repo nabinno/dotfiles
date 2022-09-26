@@ -42,6 +42,11 @@ get-terraform() {
 }
 if ! type -p terraform >/dev/null; then get-terraform; fi
 
+get-terraform-by-tfswitch() {
+  tfswitch -b ~/.local/bin/terraform $REQUIRED_TERRAFORM_VERSION
+  echo $REQUIRED_TERRAFORM_VERSION >~/.tfswitchrc
+}
+
 alias tf="terraform"
 alias tfi="terraform init"
 alias tfs="terraform show"
