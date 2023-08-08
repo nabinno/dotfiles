@@ -358,6 +358,27 @@ get-unzip() {
 }
 if ! type -p unzip >/dev/null; then get-unzip; fi
 
+get-snappy() {
+  case $OSTYPE in
+    linux*)
+      case "${DIST}" in
+        Redhat | RedHat | Debian | Ubuntu)
+          wget https://github.com/kubo/snzip/releases/download/v1.0.5/snzip-1.0.5.tar.gz .
+          tar xvfz snzip-1.0.5.tar.gz
+          (
+            cd snzip-1.0.5
+            ./configure
+            make
+            sudo make install
+          )
+          rm -rf snzip-1.0.5*
+          ;;
+      esac
+      ;;
+  esac
+}
+if ! type -p snzip >/dev/null; then get-snappy; fi
+
 # ### build ###
 get-make() {
   case $OSTYPE in
