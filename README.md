@@ -1,4 +1,4 @@
-# Nab's dotfiles
+# nabinno's dotfiles
 This is a repository with my configuration files, those that in *nix normally are these files under the $HOME directory.
 
 <img src=dotfiles.jpg width=400 /> <sup id="a1">[[1]](#f1)</sup>
