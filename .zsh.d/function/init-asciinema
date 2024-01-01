@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '=============='
+echo 'init-asciinema'
+echo '=============='
 
 get-asciinema() {
   case $OSTYPE in

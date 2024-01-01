@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '=============='
+echo 'init-memcached'
+echo '=============='
 
 get-memcached() {
   case "${OSTYPE}" in

@@ -1,7 +1,11 @@
 #!/usr/bin/env zsh
+echo
+echo '=========='
+echo 'init-emacs'
+echo '=========='
 
 # Emacs
-export REQUIRED_EMACS_VERSION=27.1
+export REQUIRED_EMACS_VERSION=29.1
 
 # ----------------------------------------------------------------------
 # ### installation ###

@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '========='
+echo 'init-rust'
+echo '========='
 
 export REQUIRED_RUST_VERSION=1.53.0
 export PATH=$PATH:~/.cargo/bin

@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '==========='
+echo 'init-anyenv'
+echo '==========='
 
 export PATH="$HOME/.anyenv/bin:$PATH"
 export PATH="$HOME/.anyenv/envs/goenv/bin:$PATH"

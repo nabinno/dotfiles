@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '======='
+echo 'init-go'
+echo '======='
 
 export REQUIRED_GO_VERSION=1.14.4
 export GOPATH=~/.ghq.d

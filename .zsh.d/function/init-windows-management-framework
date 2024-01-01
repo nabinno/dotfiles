@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '================================='
+echo 'init-windows-management-framework'
+echo '================================='
 
 abstract-powershell() {
   case "$OSTYPE" in

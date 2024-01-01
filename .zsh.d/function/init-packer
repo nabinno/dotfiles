@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '==========='
+echo 'init-packer'
+echo '==========='
 
 export REQUIRED_PACKER_VERSION=1.7.2
 

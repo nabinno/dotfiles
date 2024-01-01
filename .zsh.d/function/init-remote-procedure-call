@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '=========================='
+echo 'init-remote-procedure-call'
+echo '=========================='
 
 # Protobuf
 get-protobuf() {

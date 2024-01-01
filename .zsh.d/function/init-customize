@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '=============='
+echo 'init-customize'
+echo '=============='
 
 # ### dove ###
 export PATH="$HOME/.local/dove/bin:$PATH"

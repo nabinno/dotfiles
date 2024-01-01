@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '==============='
+echo 'init-postgresql'
+echo '==============='
 
 export REQUIRED_POSTGRESQL_VERSION=9.2.15
 export PSQL_PAGER='less -S'

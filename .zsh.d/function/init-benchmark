@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '=============='
+echo 'init-benchmark'
+echo '=============='
 
 # Ab
 function get-ab() {

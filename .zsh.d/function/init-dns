@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '========'
+echo 'init-dns'
+echo '========'
 
 get-dnsmasq() {
   case $OSTYPE in

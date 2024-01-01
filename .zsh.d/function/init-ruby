@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '========='
+echo 'init-ruby'
+echo '========='
 
 export REQUIRED_RUBY_VERSION=2.6.8
 export RUBY_PACKAGE_MANAGER=anyenv

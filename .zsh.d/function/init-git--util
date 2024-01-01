@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '=============='
+echo 'init-git--util'
+echo '=============='
 
 # ### alias ###
 alias g='git'

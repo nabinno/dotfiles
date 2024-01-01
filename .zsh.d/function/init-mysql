@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '=========='
+echo 'init-mysql'
+echo '=========='
 
 export REQUIRED_MYSQL_VERSION=5.6
 

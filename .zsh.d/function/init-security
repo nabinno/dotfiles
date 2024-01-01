@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '============='
+echo 'init-security'
+echo '============='
 
 export PATH="$HOME/.local/john/run/:$PATH"
 

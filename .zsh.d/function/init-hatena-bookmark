@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '===================='
+echo 'init-hatena-bookmark'
+echo '===================='
 # init-hatena-bookmark --- hatena bookmark configuration
 # Commentary:
 #   environmental variables

@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '==============='
+echo 'init-asdf--util'
+echo '==============='
 
 set-asdf-completion() {
   case "${OSTYPE}" in

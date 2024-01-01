@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '========================'
+echo 'init-amazon-web-services'
+echo '========================'
 
 export SAM_CLI_TELEMETRY=0
 
@@ -72,7 +76,7 @@ get-aws-sam() {
       ;;
   esac
 }
-if ! type -p sam >/dev/null; then get-aws-sam; fi
+# if ! type -p sam >/dev/null; then get-aws-sam; fi
 
 get-aws-rails-provisioner() {
   case "${OSTYPE}" in

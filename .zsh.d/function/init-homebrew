@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '============='
+echo 'init-homebrew'
+echo '============='
 
 get-brew() {
   case "${OSTYPE}" in

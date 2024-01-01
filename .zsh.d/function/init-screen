@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '==========='
+echo 'init-screen'
+echo '==========='
 
 export REQUIRED_SCREEN_VERSION=4.0.3
 

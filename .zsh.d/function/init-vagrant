@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '============'
+echo 'init-vagrant'
+echo '============'
 
 alias vu='vagrant up'
 alias vt='vagrant halt'

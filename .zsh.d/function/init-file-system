@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '================'
+echo 'init-file-system'
+echo '================'
 
 # Inotify
 export REQUIRED_INOTIFY_VERSION=3.14

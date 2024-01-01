@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '============='
+echo 'init-plantuml'
+echo '============='
 
 export REQUIRED_GRAPHVIZ_VERSION=2.38
 case $OSTYPE in

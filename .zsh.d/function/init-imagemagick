@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '================'
+echo 'init-imagemagick'
+echo '================'
 
 export REQUIRED_IMAGEMAGICK_VERSION=6.9.7-6
 

@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '=========================='
+echo 'init-google-cloud-platform'
+echo '=========================='
 
 # #
 # # CHEATSHEET
@@ -12,9 +16,9 @@
 # # 3. Setup project_id
 # gcloud config set project $project_id
 #
-GCLOUD_PROJECT_ID='utagaki-v2'
+# GCLOUD_PROJECT_ID=$project_id
 PATH="$HOME/google-cloud-sdk/bin:$PATH"
-export CLOUDSDK_PYTHON=/usr/bin/python
+export CLOUDSDK_PYTHON=$(which python)
 
 get-gcloud() {
   case "${OSTYPE}" in

@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '========'
+echo 'init-zsh'
+echo '========'
 
 autoload colors
 colors

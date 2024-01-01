@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '=========='
+echo 'init-redis'
+echo '=========='
 
 # ### installation ###
 get-redis() {

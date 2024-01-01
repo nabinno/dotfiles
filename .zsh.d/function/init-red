@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '========'
+echo 'init-red'
+echo '========'
 
 export REQUIRED_RED_VERSION=064
 

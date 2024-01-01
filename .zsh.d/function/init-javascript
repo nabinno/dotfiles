@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '==============='
+echo 'init-javascript'
+echo '==============='
 
 export REQUIRED_NODE_VERSION='14.16.0'
 export node='NODE_NO_READLINE=1 node'

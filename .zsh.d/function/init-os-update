@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '=============='
+echo 'init-os-update'
+echo '=============='
 
 update-ubuntu-from-12.04-to-14.04() {
   case $OSTYPE in

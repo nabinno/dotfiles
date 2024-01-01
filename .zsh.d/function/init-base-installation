@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '======================'
+echo 'init-base-installation'
+echo '======================'
 
 export REQUIRED_MACPORT_VERSION=2.3.3
 
@@ -377,7 +381,7 @@ get-snappy() {
       ;;
   esac
 }
-if ! type -p snzip >/dev/null; then get-snappy; fi
+# if ! type -p snzip >/dev/null; then get-snappy; fi
 
 # ### build ###
 get-make() {

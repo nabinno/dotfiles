@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '=============='
+echo 'init-terraform'
+echo '=============='
 
 export REQUIRED_TERRAFORM_VERSION=0.14.6
 export REQUIRED_TERRAFORM_SWITCHER_VERSION=0.7.737
