@@ -3,6 +3,7 @@ echo
 echo '========'
 echo 'init-php'
 echo '========'
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_PHP_VERSION=7.2.19
 
@@ -21,10 +22,13 @@ get-php() {
     linux*)
       case $DIST_VERSION in
         14.04) sudo apt-get install -y php-$REQUIRED_PHP_VERSION ;;
-        16.04 | 18.04 | 20.04) sudo apt install -y php ;;
+        16.04 | 18.04 | 20.04 | 22.04) sudo apt install -y php ;;
         *) nix-install php ;;
       esac
       ;;
   esac
 }
 if ! type -p php >/dev/null; then get-php; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

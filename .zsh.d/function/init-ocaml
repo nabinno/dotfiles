@@ -3,6 +3,7 @@ echo
 echo '=========='
 echo 'init-ocaml'
 echo '=========='
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_OCAML_VERSION=4.05.0
 export REQUIRED_COQ_VERSION=8.7.2
@@ -72,3 +73,6 @@ get-coq-by-asdf() {
   asdf install coq $REQUIRED_COQ_VERSION
   asdf global coq $REQUIRED_COQ_VERSION
 }
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

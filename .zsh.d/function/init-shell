@@ -3,6 +3,7 @@ echo
 echo '=========='
 echo 'init-shell'
 echo '=========='
+_start_time=$(date +"%s.%3N")
 
 get-shellcheck() {
   case $OSTYPE in
@@ -26,3 +27,6 @@ get-shfmt() {
   esac
 }
 if ! type -p shfmt >/dev/null; then get-shfmt; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

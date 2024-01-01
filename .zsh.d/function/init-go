@@ -3,6 +3,7 @@ echo
 echo '======='
 echo 'init-go'
 echo '======='
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_GO_VERSION=1.14.4
 export GOPATH=~/.ghq.d
@@ -105,3 +106,6 @@ get-mage() {
     go run bootstrap.go
   )
 }
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

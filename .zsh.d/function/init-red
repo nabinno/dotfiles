@@ -3,6 +3,7 @@ echo
 echo '========'
 echo 'init-red'
 echo '========'
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_RED_VERSION=064
 
@@ -23,3 +24,6 @@ get-red() {
       ;;
   esac
 }
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

@@ -1,4 +1,9 @@
 #!/usr/bin/env zsh
+echo
+echo '========='
+echo 'init-chef'
+echo '========='
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_CHEF_VERSION=0.17.9
 
@@ -51,3 +56,6 @@ set-chef() {
 
 if ! type -p chef >/dev/null; then get-chef; fi
 if type -p chef >/dev/null; then set-chef; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

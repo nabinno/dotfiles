@@ -3,6 +3,7 @@ echo
 echo '==========='
 echo 'init-anyenv'
 echo '==========='
+_start_time=$(date +"%s.%3N")
 
 export PATH="$HOME/.anyenv/bin:$PATH"
 export PATH="$HOME/.anyenv/envs/goenv/bin:$PATH"
@@ -23,3 +24,6 @@ get-anyenv() {
 
 if ! type -p anyenv >/dev/null; then get-anyenv; fi
 if type -p anyenv >/dev/null; then eval "$(anyenv init - zsh)"; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

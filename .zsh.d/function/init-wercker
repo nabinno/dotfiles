@@ -3,9 +3,13 @@ echo
 echo '============'
 echo 'init-wercker'
 echo '============'
+_start_time=$(date +"%s.%3N")
 
 get-wercker() {
   curl -L https://s3.amazonaws.com/downloads.wercker.com/cli/stable/linux_amd64/wercker -o ~/.local/bin/wercker
   chmod u+x ~/.local/bin/wercker
 }
 if ! type -p wercker >/dev/null; then get-wercker; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

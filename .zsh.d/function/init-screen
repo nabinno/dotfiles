@@ -3,6 +3,7 @@ echo
 echo '==========='
 echo 'init-screen'
 echo '==========='
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_SCREEN_VERSION=4.0.3
 
@@ -79,3 +80,6 @@ if [ "$TERM" = "screen" ]; then
   }
   chpwd
 fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

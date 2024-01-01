@@ -3,6 +3,7 @@ echo
 echo '================'
 echo 'init-file-system'
 echo '================'
+_start_time=$(date +"%s.%3N")
 
 # Inotify
 export REQUIRED_INOTIFY_VERSION=3.14
@@ -109,3 +110,6 @@ samba-stop() {
 alias smbr=samba-restart
 alias smbt=samba-stop
 alias smbs=testparm
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

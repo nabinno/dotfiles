@@ -3,6 +3,7 @@ echo
 echo '=========='
 echo 'init-slack'
 echo '=========='
+_start_time=$(date +"%s.%3N")
 
 get-slackchat() {
   case "${OSTYPE}" in
@@ -12,3 +13,6 @@ get-slackchat() {
       ;;
   esac
 }
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

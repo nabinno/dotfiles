@@ -3,6 +3,7 @@ echo
 echo '========='
 echo 'init-java'
 echo '========='
+_start_time=$(date +"%s.%3N")
 
 export JAVA_PACKAGE_MANAGER=asdf
 case "${JAVA_PACKAGE_MANAGER}" in
@@ -182,3 +183,6 @@ get-play() {
   esac
 }
 if [ -d ~/.local/play-$REQUIRED_PLAY_VERSION ]; then get-play && get-sbt; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

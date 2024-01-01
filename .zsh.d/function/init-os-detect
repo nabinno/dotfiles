@@ -3,6 +3,7 @@ echo
 echo '=============='
 echo 'init-os-detect'
 echo '=============='
+_start_time=$(date +"%s.%3N")
 
 export OS=
 export KERNEL=
@@ -96,3 +97,6 @@ case $OSTYPE in
     }
     ;;
 esac
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

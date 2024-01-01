@@ -3,6 +3,7 @@ echo
 echo '============'
 echo 'init-ansible'
 echo '============'
+_start_time=$(date +"%s.%3N")
 
 get-ansible() {
   pip install \
@@ -24,3 +25,6 @@ get-ans() {
 }
 if ! type -p ans >/dev/null; then get-ans; fi
 if type -p ans >/dev/null; then eval "$(ans init -)"; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

@@ -3,6 +3,7 @@ echo
 echo '==========='
 echo 'init-packer'
 echo '==========='
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_PACKER_VERSION=1.7.2
 
@@ -12,3 +13,6 @@ get-packer() {
   rm -f packer_${REQUIRED_PACKER_VERSION}_linux_amd64.zip
 }
 if ! type -p packer >/dev/null; then get-packer; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

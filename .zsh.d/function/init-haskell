@@ -1,4 +1,9 @@
 #!/usr/bin/env zsh
+echo
+echo '============'
+echo 'init-haskell'
+echo '============'
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_GHC_VERSION=8.4.3
 # export REQUIRED_CABAL_VERSION=1.22.9.0
@@ -55,3 +60,6 @@ get-global-cabal-packages() {
   cabal install stack
   cabal install hasktags
 }
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

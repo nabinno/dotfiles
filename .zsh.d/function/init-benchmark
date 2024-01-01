@@ -3,6 +3,7 @@ echo
 echo '=============='
 echo 'init-benchmark'
 echo '=============='
+_start_time=$(date +"%s.%3N")
 
 # Ab
 function get-ab() {
@@ -66,3 +67,6 @@ curlb() {
     curl $* -s -w '%{time_total}\n' -o /dev/null
   done >&2 | awk '{t+=$0}END{print "AVG: " t/NR}'
 }
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

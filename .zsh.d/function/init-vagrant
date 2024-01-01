@@ -3,6 +3,7 @@ echo
 echo '============'
 echo 'init-vagrant'
 echo '============'
+_start_time=$(date +"%s.%3N")
 
 alias vu='vagrant up'
 alias vt='vagrant halt'
@@ -71,3 +72,6 @@ vbm-scaleup() {
 }
 
 alias vbm='VBoxManage'
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

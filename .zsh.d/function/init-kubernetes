@@ -3,6 +3,7 @@ echo
 echo '==============='
 echo 'init-kubernetes'
 echo '==============='
+_start_time=$(date +"%s.%3N")
 
 # #
 # # CHEATSHEET
@@ -200,3 +201,6 @@ alias kcru='kubectl rollout undo'
 alias hm=helm
 alias hml='helm list'
 alias hmd='helm delete'
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

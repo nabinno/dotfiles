@@ -3,6 +3,7 @@ echo
 echo '=============='
 echo 'init-terraform'
 echo '=============='
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_TERRAFORM_VERSION=0.14.6
 export REQUIRED_TERRAFORM_SWITCHER_VERSION=0.7.737
@@ -58,3 +59,6 @@ alias tfp="terraform plan"
 alias tfv="terraform validate"
 alias tfa="terraform apply"
 alias tfd="terraform destroy"
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

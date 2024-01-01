@@ -3,6 +3,8 @@ echo
 echo '===================='
 echo 'init-hatena-bookmark'
 echo '===================='
+_start_time=$(date +"%s.%3N")
+
 # init-hatena-bookmark --- hatena bookmark configuration
 # Commentary:
 #   environmental variables
@@ -139,3 +141,6 @@ search-hb-entries() {
 urlencode() {
   ruby -r cgi -e "p CGI.escape('$1')"
 }
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

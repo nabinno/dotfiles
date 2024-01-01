@@ -3,6 +3,7 @@ echo
 echo '==========================='
 echo 'init-environmental-variable'
 echo '==========================='
+_start_time=$(date +"%s.%3N")
 
 # export EDITOR=/usr/local/bin/vi
 # export LANG=ja_JP.UTF-8
@@ -103,3 +104,6 @@ set-locale() {
 }
 
 if [ ! -d ~/.local/bin ]; then mkdir -p ~/.local/bin; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

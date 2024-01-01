@@ -3,6 +3,7 @@ echo
 echo '======================'
 echo 'init-base-installation'
 echo '======================'
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_MACPORT_VERSION=2.3.3
 
@@ -138,7 +139,7 @@ get-base() {
                 telnet \
                 util-linux \
                 whiptail \
-		wslu \
+                wslu \
                 xz-utils \
                 zlib1g-dev
               ;;
@@ -210,7 +211,7 @@ get-base() {
                 telnet \
                 util-linux \
                 whiptail \
-		wslu \
+                wslu \
                 xz-utils \
                 zlib1g-dev
               ;;
@@ -278,16 +279,16 @@ get-base() {
                 telnet \
                 util-linux \
                 whiptail \
-		wslu \
+                wslu \
                 xz-utils \
                 zlib1g-dev
               ;;
-	    22.04)
+            22.04)
               sudo apt install -y \
                 libncurses5-dev \
                 libssl-dev \
                 ruby \
-		wslu
+                wslu
               ;;
           esac
           ;;
@@ -526,3 +527,6 @@ get-rlwrap() {
 #         done
 #     fi
 # }
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

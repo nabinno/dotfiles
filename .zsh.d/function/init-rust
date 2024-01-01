@@ -3,6 +3,7 @@ echo
 echo '========='
 echo 'init-rust'
 echo '========='
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_RUST_VERSION=1.53.0
 export PATH=$PATH:~/.cargo/bin
@@ -24,3 +25,6 @@ get-global-cargo-packages() {
     fselect
 }
 if ! type rustc >/dev/null; then get-rust; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

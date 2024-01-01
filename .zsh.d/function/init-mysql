@@ -3,6 +3,7 @@ echo
 echo '=========='
 echo 'init-mysql'
 echo '=========='
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_MYSQL_VERSION=5.6
 
@@ -176,3 +177,6 @@ alias mp="ps aux | \grep -G 'mysql.*'"
 alias ms="mysql-status"
 alias mt="mysql-stop"
 # alias mysql="rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus mysql -uroot --pager='less -S'"
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

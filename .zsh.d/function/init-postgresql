@@ -3,6 +3,7 @@ echo
 echo '==============='
 echo 'init-postgresql'
 echo '==============='
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_POSTGRESQL_VERSION=9.2.15
 export PSQL_PAGER='less -S'
@@ -92,3 +93,6 @@ alias pgs="pg-status"
 alias pgt="pg-stop"
 alias pgk="pg-stop"
 # alias psql='rlwrap -a -pCYAN -if ~/.local/rlwrap/sqlplus psql'
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

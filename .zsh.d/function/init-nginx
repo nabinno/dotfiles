@@ -1,4 +1,9 @@
 #!/usr/bin/env zsh
+echo
+echo '=========='
+echo 'init-nginx'
+echo '=========='
+_start_time=$(date +"%s.%3N")
 
 get-nginx() {
   case "${OSTYPE}" in
@@ -84,3 +89,6 @@ alias nt="nginx-stop"
 alias nr="nginx-restart"
 alias np="ps aux | grep '[n]ginx'"
 alias ns="nginx-status"
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

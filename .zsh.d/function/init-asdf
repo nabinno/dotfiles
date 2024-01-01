@@ -3,6 +3,7 @@ echo
 echo '========='
 echo 'init-asdf'
 echo '========='
+_start_time=$(date +"%s.%3N")
 
 get-asdf() {
   case "${OSTYPE}" in
@@ -47,3 +48,6 @@ get-global-asdf-packages() {
   asdf plugin-add minikube
   asdf reshim
 }
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

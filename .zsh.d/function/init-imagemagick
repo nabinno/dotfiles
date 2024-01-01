@@ -3,6 +3,7 @@ echo
 echo '================'
 echo 'init-imagemagick'
 echo '================'
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_IMAGEMAGICK_VERSION=6.9.7-6
 
@@ -30,3 +31,6 @@ function get-imagemagick() {
       ;;
   esac
 }
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

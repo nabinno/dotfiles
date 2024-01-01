@@ -112,3 +112,6 @@ get-bfg() {
 }
 if [ ! -f ~/.local/bin/bfg.jar ]; then get-bfg; fi
 if [ -f ~/.local/bin/bfg.jar ]; then alias bfg='java -jar ~/.local/bin/bfg.jar'; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

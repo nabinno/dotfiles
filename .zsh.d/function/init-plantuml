@@ -3,6 +3,7 @@ echo
 echo '============='
 echo 'init-plantuml'
 echo '============='
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_GRAPHVIZ_VERSION=2.38
 case $OSTYPE in
@@ -44,3 +45,6 @@ if ! type -p puml >/dev/null; then get-puml; fi
 if [ ! -f ~/.local/bin/plantuml.jar ]; then get-plantuml; fi
 if [ -f ~/.local/bin/plantuml.jar ]; then alias plantuml='java -jar ~/.local/bin/plantuml.jar -tpng'; fi
 if ! type -p dot >/dev/null; then get-graphviz; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

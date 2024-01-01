@@ -3,6 +3,7 @@ echo
 echo '=========='
 echo 'init-redis'
 echo '=========='
+_start_time=$(date +"%s.%3N")
 
 # ### installation ###
 get-redis() {
@@ -65,3 +66,6 @@ alias rds="redis-status"
 alias rdi="redis-cli-info"
 alias rdm="redis-cli-monitor"
 alias rdk="redis-stop"
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

@@ -3,6 +3,7 @@ echo
 echo '=========================='
 echo 'init-google-cloud-platform'
 echo '=========================='
+_start_time=$(date +"%s.%3N")
 
 # #
 # # CHEATSHEET
@@ -94,3 +95,6 @@ get-firebase-tools() {
   npm install -g firebase-tools
 }
 if ! type -p firebase >/dev/null; then get-firebase-tools; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

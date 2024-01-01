@@ -1,4 +1,9 @@
 #!/usr/bin/env zsh
+echo
+echo '==============='
+echo 'init-chocolatey'
+echo '==============='
+_start_time=$(date +"%s.%3N")
 
 # Chocolatey
 case $OSTYPE in
@@ -106,3 +111,6 @@ case $OSTYPE in
     if ! apt-cyg >/dev/null; then get-aptcyg && get-base-aptcyg-packages; fi
     ;;
 esac
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

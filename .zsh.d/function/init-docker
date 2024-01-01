@@ -1,4 +1,9 @@
 #!/usr/bin/env zsh
+echo
+echo '==========='
+echo 'init-docker'
+echo '==========='
+_start_time=$(date +"%s.%3N")
 
 get-docker() {
   case "${OSTYPE}" in
@@ -60,3 +65,6 @@ get-docker() {
   esac
 }
 case $OSTYPE in linux) if ! type -p docker >/dev/null; then get-docker; fi ;; esac
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

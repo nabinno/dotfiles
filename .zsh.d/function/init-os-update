@@ -3,6 +3,7 @@ echo
 echo '=============='
 echo 'init-os-update'
 echo '=============='
+_start_time=$(date +"%s.%3N")
 
 update-ubuntu-from-12.04-to-14.04() {
   case $OSTYPE in
@@ -19,3 +20,6 @@ update-ubuntu-from-12.04-to-14.04() {
       ;;
   esac
 }
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

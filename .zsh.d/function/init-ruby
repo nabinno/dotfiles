@@ -3,6 +3,7 @@ echo
 echo '========='
 echo 'init-ruby'
 echo '========='
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_RUBY_VERSION=2.6.8
 export RUBY_PACKAGE_MANAGER=anyenv
@@ -79,3 +80,6 @@ case ${RUBY_PACKAGE_MANAGER} in
     fi
     ;;
 esac
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

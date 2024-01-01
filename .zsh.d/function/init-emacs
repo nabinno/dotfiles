@@ -3,6 +3,7 @@ echo
 echo '=========='
 echo 'init-emacs'
 echo '=========='
+_start_time=$(date +"%s.%3N")
 
 # Emacs
 export REQUIRED_EMACS_VERSION=29.1
@@ -200,3 +201,6 @@ get-pandoc() {
 
 alias pandocpdf="pandoc -V documentclass=ltjarticle --latex-engine=lualatex -t pdf"
 alias pandocslide="pandoc -t slidy -s"
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

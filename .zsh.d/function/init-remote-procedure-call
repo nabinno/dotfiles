@@ -3,6 +3,7 @@ echo
 echo '=========================='
 echo 'init-remote-procedure-call'
 echo '=========================='
+_start_time=$(date +"%s.%3N")
 
 # Protobuf
 get-protobuf() {
@@ -32,3 +33,6 @@ get-thrift() {
   esac
 }
 if ! type -p thrift >/dev/null; then get-thrift; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

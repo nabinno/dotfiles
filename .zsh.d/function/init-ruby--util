@@ -1,4 +1,9 @@
 #!/usr/bin/env zsh
+echo
+echo '==============='
+echo 'init-ruby--util'
+echo '==============='
+_start_time=$(date +"%s.%3N")
 
 upgrade-rbenv-by-ruby-build() {
   case "${OSTYPE}" in
@@ -8,3 +13,6 @@ upgrade-rbenv-by-ruby-build() {
       ;;
   esac
 }
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

@@ -3,6 +3,7 @@ echo
 echo '=============='
 echo 'init-git--util'
 echo '=============='
+_start_time=$(date +"%s.%3N")
 
 # ### alias ###
 alias g='git'
@@ -129,3 +130,6 @@ parse-git-branch() {
 #     echo "Usage: github-pull-repositories -r user1,repository1,branch1 -r user2,repository2,branch2 -n dirname .." 1>&2
 #   fi
 # }
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

@@ -3,6 +3,7 @@ echo
 echo '==============='
 echo 'init-javascript'
 echo '==============='
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_NODE_VERSION='14.16.0'
 export node='NODE_NO_READLINE=1 node'
@@ -153,3 +154,6 @@ get-google-chrome() {
       ;;
   esac
 }
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

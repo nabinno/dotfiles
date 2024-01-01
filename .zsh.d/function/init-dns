@@ -3,6 +3,7 @@ echo
 echo '========'
 echo 'init-dns'
 echo '========'
+_start_time=$(date +"%s.%3N")
 
 get-dnsmasq() {
   case $OSTYPE in
@@ -56,3 +57,6 @@ dnsmasq-restart() {
 }
 
 alias dmr=dnsmasq-restart
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

@@ -3,6 +3,7 @@ echo
 echo '=============='
 echo 'init-customize'
 echo '=============='
+_start_time=$(date +"%s.%3N")
 
 # ### dove ###
 export PATH="$HOME/.local/dove/bin:$PATH"
@@ -246,3 +247,6 @@ case "${OSTYPE}" in
     esac
     ;;
 esac
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

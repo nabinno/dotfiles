@@ -3,6 +3,7 @@ echo
 echo '==========='
 echo 'init-python'
 echo '==========='
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_ANACONDA_VERSION=anaconda3-2023.09-0
 export REQUIRED_PYTHON_VERSION=3.7.3
@@ -175,3 +176,6 @@ if ! type -p poetry >/dev/null; then get-poetry; fi
 #   eval "$(poetry completions zsh)"
 # }
 # if type -p poetry >/dev/null; then set-poetry; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

@@ -3,6 +3,7 @@ echo
 echo '=============='
 echo 'init-memcached'
 echo '=============='
+_start_time=$(date +"%s.%3N")
 
 get-memcached() {
   case "${OSTYPE}" in
@@ -64,3 +65,6 @@ alias mcp="memcached-status"
 alias mci="memcached-info"
 alias mcm="memcached-monitor"
 alias mck="memcached-stop"
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

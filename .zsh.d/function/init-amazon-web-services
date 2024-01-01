@@ -3,6 +3,7 @@ echo
 echo '========================'
 echo 'init-amazon-web-services'
 echo '========================'
+_start_time=$(date +"%s.%3N")
 
 export SAM_CLI_TELEMETRY=0
 
@@ -95,3 +96,6 @@ fix-compdef-problem() {
   echo 'autoload -Uz compinit
 compinit' >>~/.zshenv
 }
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

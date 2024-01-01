@@ -1,4 +1,9 @@
 #!/usr/bin/env zsh
+echo
+echo '==========='
+echo 'init-dotnet'
+echo '==========='
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_DOTNETFRAMEWORK_VERSION=4.0.30319
 export REQUIRED_MONO_VERSION=4.0.4.1
@@ -266,3 +271,6 @@ case "${OSTYPE}" in
     if [ -f ~/.local/NUnit/bin/nunit3-console.exe ]; then set-nunit; fi
     ;;
 esac
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

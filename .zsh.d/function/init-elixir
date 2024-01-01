@@ -3,6 +3,7 @@ echo
 echo '==========='
 echo 'init-elixir'
 echo '==========='
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_ERLANG_VERSION=25.1.2
 export REQUIRED_REBAR_VERSION=3.9.0
@@ -167,3 +168,6 @@ get-global-mix-packages() {
 }
 
 if ! type -p iex >/dev/null; then get-elixir; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

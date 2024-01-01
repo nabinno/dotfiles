@@ -3,6 +3,7 @@ echo
 echo '=============='
 echo 'init-php--util'
 echo '=============='
+_start_time=$(date +"%s.%3N")
 
 # FastCGI
 get-fastcgi() {
@@ -161,3 +162,6 @@ alias fr="fastcgi-restart"
 alias fp="ps aux | \grep -G 'php.*'"
 alias fs="php-fastcgid status"
 alias fk="php-fastcgid stop"
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

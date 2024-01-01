@@ -3,6 +3,7 @@ echo
 echo '==============='
 echo 'init-powershell'
 echo '==============='
+_start_time=$(date +"%s.%3N")
 
 get-powershell() {
   case "${OSTYPE}" in
@@ -32,3 +33,6 @@ get-powershell() {
   esac
 }
 if ! type -p powershell >/dev/null; then get-powershell; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

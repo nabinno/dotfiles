@@ -3,6 +3,7 @@ echo
 echo '=============='
 echo 'init-asciinema'
 echo '=============='
+_start_time=$(date +"%s.%3N")
 
 get-asciinema() {
   case $OSTYPE in
@@ -24,3 +25,6 @@ get-asciinema() {
   esac
 }
 if ! type -p asciinema >/dev/null; then get-asciinema; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

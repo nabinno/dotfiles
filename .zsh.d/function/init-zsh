@@ -3,6 +3,7 @@ echo
 echo '========'
 echo 'init-zsh'
 echo '========'
+_start_time=$(date +"%s.%3N")
 
 autoload colors
 colors
@@ -274,3 +275,6 @@ case "${OSTYPE}" in
     esac
     ;;
 esac
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

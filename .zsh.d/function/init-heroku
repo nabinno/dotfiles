@@ -3,6 +3,7 @@ echo
 echo '==========='
 echo 'init-heroku'
 echo '==========='
+_start_time=$(date +"%s.%3N")
 
 function get-heroku() {
   case "${OSTYPE}" in
@@ -11,3 +12,6 @@ function get-heroku() {
   esac
 }
 if ! type -p heroku >/dev/null; then get-heroku; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec

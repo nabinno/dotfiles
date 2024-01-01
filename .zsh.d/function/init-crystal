@@ -3,6 +3,7 @@ echo
 echo '============'
 echo 'init-crystal'
 echo '============'
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_CRYSTAL_VERSION=0.25.0
 
@@ -17,3 +18,6 @@ get-crystal() {
 }
 
 if ! type -p crystal >/dev/null; then get-crystal; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec
