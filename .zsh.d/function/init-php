@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '========'
+echo 'init-php'
+echo '========'
 
 export REQUIRED_PHP_VERSION=7.2.19
 

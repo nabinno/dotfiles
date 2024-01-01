@@ -58,6 +58,7 @@ get-nix() {
       ;;
   esac
 }
+if ! type -p nix >/dev/null; then get-nix; fi
 
 set-nix() {
   case "${OSTYPE}" in
@@ -74,6 +75,7 @@ set-nix() {
       ;;
   esac
 }
+if type -p nix >/dev/null; then set-nix; fi
 
 nix-install() {
   case "${OSTYPE}" in

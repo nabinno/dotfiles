@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '=============='
+echo 'init-php--util'
+echo '=============='
 
 # FastCGI
 get-fastcgi() {

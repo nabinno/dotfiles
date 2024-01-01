@@ -14,6 +14,7 @@ export LANGUAGE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export LC_CTYPE=UTF-8
 export LC_MESSAGES=C
+if [[ "$(locale | grep LANG= | sed 's/\.//g')" -ne "LANG=en_USUTF-8" ]]; then; sudo locale-gen en_US.UTF-8; fi
 export MAILPATH=$HOME/MailBox/postmaster/maildir
 export PATH=/usr/sbin:/sbin:$PATH
 export PATH=/usr/local/bin:$PATH
