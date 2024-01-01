@@ -29,10 +29,10 @@ get-emacs() {
           ;;
         Debian | Ubuntu)
           case $DIST_VERSION in
-            16.04 | 18.04 | 20.04)
+            16.04 | 18.04 | 20.04 | 22.04)
               sudo add-apt-repository ppa:kelleyk/emacs
               sudo apt update
-              sudo apt install emacs27-nox
+              sudo apt install emacs-nox
               ;;
             *)
               sudo apt-get install build-essential checkinstall
