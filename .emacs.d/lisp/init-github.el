@@ -12,13 +12,7 @@
 
 (leaf ido-completing-read+ :ensure t)
 ;; (leaf github-clone :ensure t)
-(leaf magit-gh-pulls
-  :ensure t
-  :config
-  (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
-
-
-;; ;;; magithub
+;; (leaf forge :ensure t :after magit)
 ;; (leaf magithub
 ;;   :ensure t
 ;;   :config

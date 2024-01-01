@@ -75,7 +75,7 @@ set-ntp() {
               sudo ntpdate ntp.ubuntu.com
               sudo service ntp start
               ;;
-            16.04 | 18.04)
+            16.04 | 18.04 | 22.04)
               sudo service ntp stop
               sudo service ntp start
               ;;
