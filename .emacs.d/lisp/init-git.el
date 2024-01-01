@@ -1,49 +1,39 @@
 ;;; init-git --- git configuration
 ;;; Commentary:
 ;;; Code:
-(leaf magit :ensure t)
 (leaf gitignore-mode :ensure t)
 (leaf gitconfig-mode :ensure t)
 (leaf git-messenger :ensure t) ;; Though see also vc-annotate's "n" & "p" bindings
 (leaf git-timemachine :ensure t)
 
-(setq-default
- magit-save-some-buffers nil
- magit-process-popup-time 10
- magit-diff-refine-hunk t
- magit-completing-read-function 'magit-ido-completing-read)
-
-;; coloration
-;; (custom-set-faces
-;;  '(diff-added ((t (:foreground "#149914" :background nil :inherit nil))))
-;;  '(diff-removed ((t (:foreground "#991414" :background nil :inherit nil)))))
-(custom-set-faces
- '(magit-diff-added ((t (:background "black" :foreground "green"))))
- '(magit-diff-added-highlight ((t (:background "black" :foreground "green"))))
- '(magit-diff-removed ((t (:background "black" :foreground "pink"))))
- '(magit-diff-removed-highlight ((t (:background "black" :foreground "pink"))))
- '(magit-hash ((t (:foreground "red")))))
-
-;; Hint: customize `magit-repo-dirs' so that you can use C-u M-F12 to
-;; quickly open magit on any one of your projects.
-
-(leaf magit
-  :ensure t
+(leaf magit :ensure t
   :config
   (setq-default
+   magit-save-some-buffers nil
    magit-process-popup-time 10
    magit-diff-refine-hunk t
    magit-completing-read-function 'magit-ido-completing-read)
+  ;; Hint: customize `magit-repo-dirs' so that you can use C-u M-F12 to
+  ;; quickly open magit on any one of your projects.
+  ;; coloration
+  (custom-set-faces
+   '(magit-section-highlight ((t (:background "transparent" :foreground "green"))))
+   '(magit-diff-added ((t (:background "black" :foreground "green"))))
+   '(magit-diff-added-highlight ((t (:background "black" :foreground "green"))))
+   '(magit-diff-removed ((t (:background "black" :foreground "pink"))))
+   '(magit-diff-removed-highlight ((t (:background "black" :foreground "pink"))))
+   '(magit-diff-context-highlight ((t (:background "transparent" :foreground "green"))))
+   '(magit-hash ((t (:foreground "red")))))
   (global-set-key (kbd "C-x g") 'magit-status)
   (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
-  (define-key magit-status-mode-map (kbd "C-M-<up>") 'magit-goto-parent-section))
+  (define-key magit-status-mode-map (kbd "C-M-<up>") 'magit-goto-parent-section)
+  )
 
 ;; (leaf fullframe
 ;;   :ensure t
 ;;   :after magit
 ;;   :config
-;;   (fullframe magit-status magit-mode-quit-window)
-;;   )
+;;   (fullframe magit-status magit-mode-quit-window))
 
 
 ;; ;;; When we start working on git-backed files, use git-wip if available
