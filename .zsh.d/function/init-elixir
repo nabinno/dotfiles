@@ -1,4 +1,8 @@
 #!/usr/bin/env zsh
+echo
+echo '==========='
+echo 'init-elixir'
+echo '==========='
 
 export REQUIRED_ERLANG_VERSION=25.1.2
 export REQUIRED_REBAR_VERSION=3.9.0
