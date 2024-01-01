@@ -17,12 +17,12 @@
   ;; quickly open magit on any one of your projects.
   ;; coloration
   (custom-set-faces
-   '(magit-section-highlight ((t (:background "transparent" :foreground "green"))))
+   '(magit-section-highlight ((t (:background "transparent"))))
    '(magit-diff-added ((t (:background "black" :foreground "green"))))
    '(magit-diff-added-highlight ((t (:background "black" :foreground "green"))))
    '(magit-diff-removed ((t (:background "black" :foreground "pink"))))
    '(magit-diff-removed-highlight ((t (:background "black" :foreground "pink"))))
-   '(magit-diff-context-highlight ((t (:background "transparent" :foreground "green"))))
+   '(magit-diff-context-highlight ((t (:background "transparent"))))
    '(magit-hash ((t (:foreground "red")))))
   (global-set-key (kbd "C-x g") 'magit-status)
   (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
