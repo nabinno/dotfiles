@@ -73,8 +73,9 @@
 (require 'init-hippie-expand)
 (require 'init-company)
 ;; (require 'init-auto-complete)
-;; (require 'init-helm) ;; DEPRECATED
-(require 'init-ivy)
+(require 'init-vertico)
+;; (require 'init-ivy)
+(require 'init-helm)
 (require 'init-windows)
 (require 'init-other-window)
 ;; (require 'init-e2wm)
