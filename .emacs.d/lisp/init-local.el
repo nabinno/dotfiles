@@ -105,6 +105,7 @@
 (global-set-key (kbd "C-S-i") 'indent-region)
 ;; (global-set-key (kbd "M-TAB") 'indent-region)
 ;; (global-set-key [f1] 'help-for-help)
+(global-set-key (kbd "M-8") '(lambda () (interactive) (progn (find-file (getenv "PSEXE_PROFILE")) (delete-other-windows))))
 (global-set-key (kbd "M-9") '(lambda () (interactive) (progn (find-file "~/.zshrc") (delete-other-windows))))
 (global-set-key (kbd "M-0") '(lambda () (interactive) (progn (find-file "~/.emacs.d/init.el") (delete-other-windows))))
 ;; (keyboard-translate ?\C-h ?\C-?) (global-set-key (kbd "C-h") nil)
