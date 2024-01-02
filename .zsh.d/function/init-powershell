@@ -32,5 +32,10 @@ get-powershell() {
 }
 if ! type -p powershell >/dev/null; then get-powershell; fi
 
+set-psexe() {
+  export PSEXE_PROFILE=$(wslpath -u $(powershell.exe -Command "echo \$PROFILE"))
+}
+if type -p powershell.exe >/dev/null; then set-psexe; fi
+
 _end_time=$(date +"%s.%3N")
 echo time: $(echo "$_end_time - $_start_time" | bc) sec
