@@ -5,16 +5,21 @@
   :ensure t
   :init (projectile-global-mode)
   :config
-  (define-key projectile-mode-map (kbd "C-c ; p") #'projectile-command-map)
-  (define-key projectile-mode-map (kbd "C-c ; G") 'projectile-grep)
-  (define-key projectile-mode-map (kbd "C-c ; s r") 'counsel-projectile-rg))
+  (defun helm-projectile-ag ()
+    "Connect to projectile."
+    (interactive)
+    (progn (helm-ag (projectile-project-root)) (delete-other-windows)))
+  (define-key projectile-mode-map (kbd "C-c ; G") 'helm-projectile-ag)         ;; helm
+  (define-key projectile-mode-map (kbd "C-c ; p") #'projectile-command-map)    ;; counsel
+  (define-key projectile-mode-map (kbd "C-c ; p s r") 'counsel-projectile-rg)) ;; counsel
 
 
 ;; counsel-projectile
 (leaf counsel-projectile
   :ensure t
   :after projectile ivy
-  :config (defun counsel-rg-projectile (word)
+  :config
+  (defun counsel-rg-projectile (word)
     "Search WORD in projectile root directory."
     (interactive "srg: ")
     (progn (counsel-rg ivy-text default-directory))))
