@@ -14,6 +14,7 @@
 # IntegratedDevelopmentEnvironment::OsLevelVirtualization::WSL
 # IntegratedDevelopmentEnvironment::OsLevelVirtualization::HyperV
 # IntegratedDevelopmentEnvironment::IoT
+# Platform::AWS
 # Other
 
 
@@ -207,6 +208,15 @@ Set-Alias gvmn Get-VMNetworkAdapter
 
 # IntegratedDevelopmentEnvironment::IoT
 if (!(Get-Command -ErrorAction Ignore fwup)) { choco install fwup }
+
+
+# Platform::AWS
+$env:AWSROOT ='C:\Program Files\Amazon\AWSCLIV2'
+$env:PATH = "$($env:AWSROOT)\bin;$($env:PATH)"
+function Get-Aws {
+    choco install awscli
+}
+if (!(Get-Command -ErrorAction Ignore "$($env:AWSROOT)\bin\aws.exe")) { Get-Aws }
 
 
 # Other
