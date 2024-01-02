@@ -31,7 +31,7 @@ get-emacs() {
             16.04 | 18.04 | 20.04 | 22.04)
               sudo add-apt-repository ppa:kelleyk/emacs
               sudo apt update
-              sudo apt install emacs-nox
+              sudo apt install emacs28-nativecomp
               ;;
             *)
               sudo apt-get install build-essential checkinstall
