@@ -1,8 +1,6 @@
 #!/usr/bin/env zsh
 echo
-echo '==========='
-echo 'init-packer'
-echo '==========='
+echo '[init-packer]'
 _start_time=$(date +"%s.%3N")
 
 export REQUIRED_PACKER_VERSION=1.7.2

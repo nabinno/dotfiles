@@ -1,8 +1,6 @@
 #!/usr/bin/env zsh
 echo
-echo '==============='
-echo 'init-postgresql'
-echo '==============='
+echo '[init-postgresql]'
 _start_time=$(date +"%s.%3N")
 
 export REQUIRED_POSTGRESQL_VERSION=9.2.15

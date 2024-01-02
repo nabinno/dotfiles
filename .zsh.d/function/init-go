@@ -1,8 +1,6 @@
 #!/usr/bin/env zsh
 echo
-echo '======='
-echo 'init-go'
-echo '======='
+echo '[init-go]'
 _start_time=$(date +"%s.%3N")
 
 export REQUIRED_GO_VERSION=1.14.4

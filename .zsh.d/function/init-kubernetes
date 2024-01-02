@@ -1,8 +1,6 @@
 #!/usr/bin/env zsh
 echo
-echo '==============='
-echo 'init-kubernetes'
-echo '==============='
+echo '[init-kubernetes]'
 _start_time=$(date +"%s.%3N")
 
 # #

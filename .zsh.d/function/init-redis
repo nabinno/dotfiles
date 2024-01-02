@@ -1,8 +1,6 @@
 #!/usr/bin/env zsh
 echo
-echo '=========='
-echo 'init-redis'
-echo '=========='
+echo '[init-redis]'
 _start_time=$(date +"%s.%3N")
 
 # ### installation ###

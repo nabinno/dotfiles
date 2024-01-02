@@ -1,8 +1,6 @@
 #!/usr/bin/env zsh
 echo
-echo '================='
-echo 'init-docker--util'
-echo '================='
+echo '[init-docker--util]'
 _start_time=$(date +"%s.%3N")
 
 case $DIST_VERSION in 16.04) export DOCKER_HOST=tcp://:2375 ;; esac

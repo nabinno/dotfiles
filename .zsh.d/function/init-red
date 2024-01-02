@@ -1,8 +1,6 @@
 #!/usr/bin/env zsh
 echo
-echo '========'
-echo 'init-red'
-echo '========'
+echo '[init-red]'
 _start_time=$(date +"%s.%3N")
 
 export REQUIRED_RED_VERSION=064

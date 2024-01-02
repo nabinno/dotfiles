@@ -1,8 +1,6 @@
 #!/usr/bin/env zsh
 echo
-echo '==========='
-echo 'init-heroku'
-echo '==========='
+echo '[init-heroku]'
 _start_time=$(date +"%s.%3N")
 
 function get-heroku() {

@@ -1,8 +1,7 @@
 #!/usr/bin/env zsh
 echo
-echo '========'
-echo 'init-git'
-echo '========'
+echo '[init-git]'
+_start_time=$(date +"%s.%3N")
 
 export REQUIRED_GIT_VERSION=2.11.0
 
