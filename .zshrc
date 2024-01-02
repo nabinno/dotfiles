@@ -1,5 +1,13 @@
 #!/usr/bin/env zsh
 
+# == INDEX ==
+# Base
+# ProgrammingLanguage
+# Daemon
+# IntegratedDevelopmentEnvironment
+# Platform
+# Other
+
 if type -p ghq >/dev/null; then
   export DOTFILES_PATH=$(ghq root)/github.com/nabinno/dotfiles
   if [ ! -d $DOTFILES_PATH ]; then
