@@ -6,7 +6,8 @@
   :init (projectile-global-mode)
   :config
   (define-key projectile-mode-map (kbd "C-c ; p") #'projectile-command-map)
-  (define-key projectile-mode-map (kbd "C-c ; G") 'projectile-grep))
+  (define-key projectile-mode-map (kbd "C-c ; G") 'projectile-grep)
+  (define-key projectile-mode-map (kbd "C-c ; s r") 'counsel-projectile-rg))
 
 
 ;; counsel-projectile
