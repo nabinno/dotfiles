@@ -77,15 +77,7 @@ set-nix() {
 if type -p nix >/dev/null; then set-nix; fi
 
 nix-install() {
-  case "${OSTYPE}" in
-    darwin*) nix-env --install $1 ;;
-    linux*)
-      case $DIST in
-        Redhat | RedHat | Debian) nix-env --install $1 ;;
-        Ubuntu) nix-env --install $1 ;;
-      esac
-      ;;
-  esac
+  nix-env --install $1
 }
 
 nix-uninstall() {
@@ -116,7 +108,7 @@ get-nix-packages() {
   case "${OSTYPE}" in
     darwin* | linux*)
       nix-install phantomjs
-      nix-install the_silver_searcher
+      nix-install silver-searcher
       nix-install tree
       nix-install perf
       nix-install uuid
@@ -136,7 +128,7 @@ case "${OSTYPE}" in
     case $DIST in
       Ubuntu)
         case $DIST_VERSION in
-          12.04 | 16.04 | 18.04 | 20.04)
+          12.04 | 16.04 | 18.04 | 20.04 | 22.04)
             if [ ! -f ~/.nix-profile/bin/nix-env ]; then get-nix; fi
             if [ -f ~/.nix-profile/bin/nix-env ]; then set-nix; fi
             ;;
