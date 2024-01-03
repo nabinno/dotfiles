@@ -164,6 +164,7 @@ get-base() {
                 libevent-dev \
                 libevent-extra-1.4-2 \
                 libffi-dev \
+                libgccjit-7-dev \
                 libgdbm-dev \
                 libglib2.0-dev \
                 libicu-dev \
