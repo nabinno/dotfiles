@@ -288,6 +288,7 @@ get-base() {
                 libgccjit-9-dev \
                 libssl-dev \
                 ruby \
+                software-properties-common \
                 wslu
               ;;
           esac
