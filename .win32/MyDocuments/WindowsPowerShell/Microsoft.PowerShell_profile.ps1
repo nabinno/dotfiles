@@ -1,4 +1,5 @@
 ﻿# == INDEX
+# Base::DigitalSignature
 # Base::EnvironmentVariable
 # PackageManagement::WindowsPackageManagement
 # PackageManagement::WindowsPackageManagement::Chocolatey
@@ -18,7 +19,19 @@
 # Other
 
 
-# Base::EnvironmentVariable
+# Base::DigitalSignature
+function Set-AuthenticodeSignatureToPSProfile {
+    $cert = New-SelfSignedCertificate `
+              -Subject "CN=PowerShellスクリプト署名用証明書" `
+              -KeyAlgorithm RSA `
+              -KeyLength 2048 `
+              -Type CodeSigningCert `
+      -CertStoreLocation Cert:\CurrentUser\My\ `
+      -NotAfter ([datetime]"2099/01/01")
+    Move-Item "Cert:\CurrentUser\My\$($cert.Thumbprint)" Cert:\CurrentUser\Root
+    $rootcert = @(Get-ChildItem cert:\CurrentUser\Root -CodeSigningCert)[0]
+    Set-AuthenticodeSignature $PROFILE $rootcert
+}
 
 
 # PackageManagement::WindowsPackageManagement
