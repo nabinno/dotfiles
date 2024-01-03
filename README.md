@@ -8,21 +8,24 @@ This is a repository with my configuration files, those that in *nix normally ar
 - Emacs lisp
 
 ## Installation
-```
-sh -c "$(curl -fsSL https://raw.github.com/nabinno/dotfiles/master/install.sh)"
-```
+1. Install Zsh
+2. [Connect to GitHub with SSH](https://docs.github.com/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent?platform=linux)
+3. Download dotfiles
+    ```sh
+    sh -c "$(curl -fsSL https://raw.github.com/nabinno/dotfiles/master/install.sh)"
+    ```
 
 ## Provision
 ### Zsh
 Launch zsh or run zsh resource.
-```
+```sh
 exec zsh -l
 ```
 
 ### Emacs
 Launch Emacs.
-```
-emacs
+```sh
+emacs --debug-init -nw
 ```
 
 ---
