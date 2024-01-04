@@ -54,7 +54,7 @@ function get-phoronix-test-suite() {
       ;;
   esac
 }
-if ! type -p phoronix-test-suite >/dev/null; then get-phoronix-test-suite; fi
+# if ! type -p phoronix-test-suite >/dev/null; then get-phoronix-test-suite; fi
 
 # ----------------------------------------------------------------------
 # curlb
