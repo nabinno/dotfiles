@@ -91,7 +91,8 @@
   :config
   (global-undo-tree-mode)
   (diminish 'undo-tree-mode)
-  (global-set-key (kbd "M-/") 'undo-tree-undo))
+  (global-set-key (kbd "M-/") 'undo-tree-undo)
+  (setq undo-tree-auto-save-history nil))
 
 
 (leaf highlight-symbol
