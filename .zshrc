@@ -115,5 +115,6 @@ require init-amazon-web-services
 
 # Other
 require init-asdf--util
+require init-jobcan
 require init-customize
 if [ -f ~/.zsh.d/init.zsh ]; then source ~/.zsh.d/init.zsh; fi
