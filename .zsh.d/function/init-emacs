@@ -32,8 +32,6 @@ get-emacs() {
               sudo add-apt-repository ppa:kelleyk/emacs
               sudo apt update
               sudo apt install emacs28-nativecomp
-              ;;
-            *)
               sudo apt-get install build-essential checkinstall
               sudo apt-get build-dep
               sudo apt-get install lincurses5-dev libgnutls28-dev
@@ -46,6 +44,10 @@ get-emacs() {
                 yes | sudo make install
               )
               rm -fr emacs-$REQUIRED_EMACS_VERSION*
+              ;;
+            24.04)
+              sudo apt update
+              sudo apt install emacs
               ;;
           esac
           ;;
