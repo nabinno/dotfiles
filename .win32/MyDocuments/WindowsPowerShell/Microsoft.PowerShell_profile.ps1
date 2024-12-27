@@ -102,7 +102,7 @@ Set-PSReadlineOption -EditMode Emacs
 
 
 # IntegratedDevelopmentEnvironment::Editor::Vi
-$Vim = "C:\tools\vim\vim82\vim.exe"
+$Vim = "C:\tools\vim\vim91\vim.exe"
 Set-Alias vim $Vim
 Set-Alias e $Vim
 if (!(Get-Command -ErrorAction Ignore $Vim)) { choco install vim }
@@ -225,17 +225,18 @@ if (!(Get-Command -ErrorAction Ignore fwup)) { choco install fwup }
 
 # Platform::AWS
 $env:AWSROOT ='C:\Program Files\Amazon\AWSCLIV2'
-$env:PATH = "$($env:AWSROOT)\bin;$($env:PATH)"
+$env:PATH = "$($env:AWSROOT);$($env:PATH)"
 function Get-Aws {
     choco install awscli
 }
-if (!(Get-Command -ErrorAction Ignore "$($env:AWSROOT)\bin\aws.exe")) { Get-Aws }
+if (!(Get-Command -ErrorAction Ignore "$($env:AWSROOT)\aws.exe")) { Get-Aws }
 
 
 # Other
 function d($path) { Remove-Item $path -Recurse -Force }
 function re { vim $PROFILE }
 function ree { Start-Process -NoNewWindow emacs $PROFILE }
+function rr { . $PROFILE }
 function ll { Get-ChildItem -Exclude .* -Name }
 function lf { Get-ChildItem -Exclude .* }
 function la { Get-ChildItem -Exclude .*; Get-ChildItem -Hidden }
