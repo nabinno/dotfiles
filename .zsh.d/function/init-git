@@ -64,23 +64,21 @@ else
 fi
 
 # ----------------------------------------------------------------------
-# ### hub ###
-export REQUIRED_HUB_VERSION=2.2.8
+# ### gh ###
+get-gh() {
+  case "${OSTYPE}" in
+    freebsd*) ;;
+    darwin* | linux*) brew install gh ;;
+  esac
+}
+if ! type -p gh >/dev/null; then get-gh; fi
 
+# ----------------------------------------------------------------------
+# ### hub ###
 get-hub() {
   case "${OSTYPE}" in
     freebsd*) ;;
-    darwin*) brew install hub ;;
-    linux*)
-      case "${DIST}" in
-        Redhat | RedHat)
-          wget https://github.com/github/hub/releases/download/v${REQUIRED_HUB_VERSION}/hub-linux-amd64-${REQUIRED_HUB_VERSION}.tgz
-          tar zxvf hub-linux-amd64-${REQUIRED_HUB_VERSION}.tgz
-          mv hub-linux-amd64-${REQUIRED_HUB_VERSION}/bin/hub ~/.local/bin/
-          rm -fr hub-linux-amd64-${REQUIRED_HUB_VERSION}*
-          ;;
-      esac
-      ;;
+    darwin* | linux*) brew install hub ;;
   esac
 }
 if ! type -p hub >/dev/null; then get-hub; fi
