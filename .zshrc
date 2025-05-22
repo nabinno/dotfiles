@@ -47,11 +47,11 @@ require init-windows-management-framework
 require init-chocolatey
 require init-nix
 # require init-chef
-require init-anyenv
-require init-asdf
 require init-docker
 require init-docker--util
 require init-homebrew
+require init-anyenv
+require init-asdf
 # require init-autoparts
 
 # ProgrammingLanguage
@@ -95,7 +95,7 @@ require init-git--util
 # require init-imagemagick
 require init-benchmark
 require init-security
-require init-vagrant
+# require init-vagrant
 # require init-wercker
 require init-ansible
 require init-terraform
