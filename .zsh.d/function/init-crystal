@@ -8,7 +8,7 @@ export REQUIRED_CRYSTAL_VERSION=0.25.0
 get-crystal() {
   case $OSTYPE in
     linux*)
-      case $(asdf plugin-list) in *crystal*) ;; *) asdf plugin-add crystal ;; esac
+      case $(asdf plugin list) in *crystal*) ;; *) asdf plugin add crystal ;; esac
       asdf install crystal $REQUIRED_CRYSTAL_VERSION
       asdf global crystal $REQUIRED_CRYSTAL_VERSION
       ;;

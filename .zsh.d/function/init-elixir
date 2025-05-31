@@ -44,7 +44,7 @@ upgrade-elixir-build() {
 get-erlang() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
-      case $(asdf plugin-list) in *erlang*) ;; *) asdf plugin-add erlang ;; esac
+      case $(asdf plugin list) in *erlang*) ;; *) asdf plugin add erlang ;; esac
       asdf install erlang $REQUIRED_ERLANG_VERSION
       asdf global erlang $REQUIRED_ERLANG_VERSION
       ;;
@@ -67,7 +67,7 @@ if ! type -p erl >/dev/null; then get-erlang; fi
 get-rebar3() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
-      case $(asdf plugin-list) in *rebar*) ;; *) asdf plugin-add rebar ;; esac
+      case $(asdf plugin list) in *rebar*) ;; *) asdf plugin add rebar ;; esac
       asdf install rebar $REQUIRED_REBAR_VERSION
       asdf global rebar $REQUIRED_REBAR_VERSION
       ;;
@@ -87,7 +87,7 @@ if ! type -p rebar3 >/dev/null; then get-rebar3; fi
 get-elixir() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
-      case $(asdf plugin-list) in *elixir*) ;; *) asdf plugin-add elixir ;; esac
+      case $(asdf plugin list) in *elixir*) ;; *) asdf plugin add elixir ;; esac
       asdf install elixir $REQUIRED_ELIXIR_VERSION
       asdf global elixir $REQUIRED_ELIXIR_VERSION
       get-global-mix-packages

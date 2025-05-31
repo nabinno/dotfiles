@@ -50,7 +50,7 @@ get-java() {
 get-java-by-asdf() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
-      case $(asdf plugin-list) in *java*) ;; *) asdf plugin-add java ;; esac
+      case $(asdf plugin list) in *java*) ;; *) asdf plugin add java ;; esac
       asdf install java $REQUIRED_OPENJDK_VERSION
       asdf global java $REQUIRED_OPENJDK_VERSION
       ;;
@@ -151,7 +151,7 @@ if type -p java >/dev/null; then set-javahome; fi
 get-scala() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
-      case $(asdf plugin-list) in scala) ;; *) asdf plugin-add scala ;; esac
+      case $(asdf plugin list) in scala) ;; *) asdf plugin add scala ;; esac
       asdf install scala $REQUIRED_SCALA_VERSION
       asdf global scala $REQUIRED_SCALA_VERSION
       ;;
@@ -162,7 +162,7 @@ if ! type -p scala >/dev/null; then get-scala; fi
 get-sbt() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
-      case $(asdf plugin-list) in *sbt*) ;; *) asdf plugin-add sbt ;; esac
+      case $(asdf plugin list) in *sbt*) ;; *) asdf plugin add sbt ;; esac
       asdf install sbt $REQUIRED_SBT_VERSION
       asdf global sbt $REQUIRED_SBT_VERSION
       ;;

@@ -10,7 +10,7 @@ export PATH=$PATH:~/.asdf/installs/rust/$REQUIRED_RUST_VERSION/bin
 get-rust() {
   case $OSTYPE in
     linux*)
-      asdf plugin-add rust
+      asdf plugin add rust
       asdf install rust $REQUIRED_RUST_VERSION
       asdf global rust $REQUIRED_RUST_VERSION
       get-global-cargo-packages

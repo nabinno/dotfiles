@@ -22,7 +22,7 @@ get-ghc() {
 get-ghc-by-asdf() {
   case $OSTYPE in
     freebsd* | darwin* | linux*)
-      case $(asdf plugin-list) in *haskell*) ;; *) asdf plugin-add haskell ;; esac
+      case $(asdf plugin list) in *haskell*) ;; *) asdf plugin add haskell ;; esac
       asdf install haskell $REQUIRED_GHC_VERSION
       asdf global haskell $REQUIRED_GHC_VERSION
       ;;
