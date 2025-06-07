@@ -46,8 +46,7 @@ get-emacs() {
               rm -fr emacs-$REQUIRED_EMACS_VERSION*
               ;;
             24.04)
-              sudo apt update
-              sudo apt install emacs
+              sudo snap install emacs --classic
               ;;
           esac
           ;;
