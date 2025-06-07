@@ -1,0 +1,19 @@
+#!/usr/bin/env zsh
+echo
+echo '[init-llm]'
+_start_time=$(date +"%s.%3N")
+
+# ----------------------------------------------------------------------
+# ### claude ###
+get-claude() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      npm install -g @anthropic-ai/claude-code
+      exec -l zsh
+      ;;
+  esac
+}
+if ! type -p claude >/dev/null; then get-claude; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec
