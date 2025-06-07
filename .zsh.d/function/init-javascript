@@ -3,7 +3,7 @@ echo
 echo '[init-javascript]'
 _start_time=$(date +"%s.%3N")
 
-export REQUIRED_NODE_VERSION='14.16.0'
+export REQUIRED_NODE_VERSION='24.0.2'
 export node='NODE_NO_READLINE=1 node'
 case $OSTYPE in msys | cygwin) export PATH=$(get-winpath "C:\Program Files\nodejs"):$PATH ;; esac
 
