@@ -457,6 +457,18 @@ With arg N, insert N newlines."
 (global-set-key (kbd "C-M-l") 'recenter-top-bottom-with-normalize-NFC-buffer-in-read-only)
 
 
+;;----------------------------------------------------------------------------
+;; Windows clipboard integration for WSL
+;;----------------------------------------------------------------------------
+(when (and (eq system-type 'gnu/linux)
+           (getenv "WSL_DISTRO_NAME"))
+  (defun copy-to-windows-clipboard (text &optional push)
+    "Copy TEXT to Windows clipboard via clip.exe."
+    (let ((process-connection-type nil))
+      (let ((proc (start-process "clip" nil "clip.exe")))
+        (process-send-string proc text)
+        (process-send-eof proc))))
+  (setq interprogram-cut-function 'copy-to-windows-clipboard))
 
 (provide 'init-editing-utils)
 ;;; init-editing-utils.el ends here
