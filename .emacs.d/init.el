@@ -128,6 +128,7 @@
 ;; (require 'init-paredit)
 (require 'init-project)
 (require 'init-projectile)
+(require 'init-llm)
 ;; (require 'init-lisp)
 ;; (require 'init-slime)
 ;; (require 'init-clojure)
