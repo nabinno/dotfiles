@@ -13,7 +13,21 @@
   (unless (window-system)
     (diff-hl-margin-mode))
   ;; Force refresh
-  (setq diff-hl-side 'left))
+  (setq diff-hl-side 'left)
+  ;; Make diff-hl more visible like git-gutter
+  (set-face-background 'diff-hl-change "purple")
+  (set-face-foreground 'diff-hl-change "purple")
+  (set-face-background 'diff-hl-insert "green")
+  (set-face-foreground 'diff-hl-insert "green")
+  (set-face-background 'diff-hl-delete "red")
+  (set-face-foreground 'diff-hl-delete "red")
+  ;; Use fringe for better visibility
+  (diff-hl-margin-mode 1)
+  ;; Key bindings similar to git-gutter
+  (global-set-key (kbd "C-x n h") 'diff-hl-next-hunk)
+  (global-set-key (kbd "C-x n p") 'diff-hl-previous-hunk)
+  (global-set-key (kbd "C-x n v =") 'diff-hl-show-hunk)
+  (global-set-key (kbd "C-x n r") 'diff-hl-revert-hunk))
 
 
 (provide 'init-vc)
