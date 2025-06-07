@@ -1,4 +1,4 @@
-;;; init-local --- Local configuraiton
+;;; init-local --- Local configuraiton -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (setq default-directory "~/")
@@ -92,7 +92,7 @@
         (string= (buffer-name buffer) "*scratch*"))
     (kill-buffer buffer)))
 (global-set-key (kbd "C-x C-k") 'my-kill-some-buffers)
-(global-set-key (kbd "C-x k") 'kill-this-buffer)
+(global-set-key (kbd "C-x k") (lambda () (interactive) (progn (kill-this-buffer))))
 (global-set-key (kbd "C-x w") 'toggle-truncate-lines)
 (global-set-key (kbd "C-c M-a") 'align-regexp)
 (global-set-key (kbd "C-r") 'replace-string)
