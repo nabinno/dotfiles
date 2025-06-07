@@ -6,7 +6,8 @@
 (leaf git-messenger :ensure t) ;; Though see also vc-annotate's "n" & "p" bindings
 (leaf git-timemachine :ensure t)
 
-(leaf magit :ensure t
+(leaf magit
+  :ensure t
   :config
   (setq-default
    magit-save-some-buffers nil
@@ -64,29 +65,24 @@
   (add-hook 'magit-mode-hook 'turn-on-magit-gitflow))
 
 
-;;; Git gutter
-(leaf git-gutter+
-  :ensure t
-  :config
-  (global-git-gutter+-mode)
-  (eval-after-load 'git-gutter+
-    '(progn
-       (define-key git-gutter+-mode-map (kbd "C-x n h")     'git-gutter+-next-hunk)
-       (define-key git-gutter+-mode-map (kbd "C-x n p")   'git-gutter+-previous-hunk)
-       (define-key git-gutter+-mode-map (kbd "C-x n v =") 'git-gutter+-show-hunk)
-       (define-key git-gutter+-mode-map (kbd "C-x n r")   'git-gutter+-revert-hunks)
-       (define-key git-gutter+-mode-map (kbd "C-x n t")   'git-gutter+-stage-hunks)
-       (define-key git-gutter+-mode-map (kbd "C-x n c")   'git-gutter+-commit)
-       (define-key git-gutter+-mode-map (kbd "C-x n C")   'git-gutter+-stage-and-commit)
-       (define-key git-gutter+-mode-map (kbd "C-x n C-y") 'git-gutter+-stage-and-commit-whole-buffer)
-       (define-key git-gutter+-mode-map (kbd "C-x n U")   'git-gutter+-unstage-whole-buffer)
-       (setq git-gutter+-modified-sign "  ")
-       (setq git-gutter+-added-sign "++")
-       (setq git-gutter+-deleted-sign "--")
-       (set-face-background 'git-gutter+-modified "purple")
-       (set-face-foreground 'git-gutter+-added "green")
-       (set-face-foreground 'git-gutter+-deleted "red")
-       )))
+;; ;;; Git gutter
+;; (leaf git-gutter-fringe
+;;   :ensure t
+;;   :config
+;;   (require 'git-gutter-fringe)
+;;   (global-git-gutter-mode +1)
+;;   (setq git-gutter-fr:side 'left-fringe)
+;;   (setq git-gutter:modified-sign "  ")
+;;   (setq git-gutter:added-sign "++")
+;;   (setq git-gutter:deleted-sign "--")
+;;   (set-face-foreground 'git-gutter-fr:modified "purple")
+;;   (set-face-foreground 'git-gutter-fr:added "green")
+;;   (set-face-foreground 'git-gutter-fr:deleted "red")
+;;   (global-set-key (kbd "C-x n h") 'git-gutter:next-hunk)
+;;   (global-set-key (kbd "C-x n p") 'git-gutter:previous-hunk)
+;;   (global-set-key (kbd "C-x n v =") 'git-gutter:popup-hunk)
+;;   (global-set-key (kbd "C-x n r") 'git-gutter:revert-hunk)
+;;   (global-set-key (kbd "C-x n t") 'git-gutter:stage-hunk))
 
 
 ;; ;;; git-svn support
