@@ -1,4 +1,4 @@
-;;; init-editing ---  editing configuration
+;;; init-editing ---  editing configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf unfill :ensure t)

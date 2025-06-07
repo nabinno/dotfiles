@@ -1,3 +1,6 @@
+;;; init-perl --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 (require-package 'cperl-mode)
 ;; (load-library "cperl-mode")
 
@@ -176,3 +179,4 @@
 
 
 (provide 'init-perl)
+;;; init-perl.el ends here

@@ -1,4 +1,4 @@
-;;; init-haml --- haml configuration
+;;; init-haml --- haml configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf haml-mode :ensure t)

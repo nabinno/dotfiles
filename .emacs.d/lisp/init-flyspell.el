@@ -1,4 +1,4 @@
-;;; init-flyspell --- basic flyspell configuration
+;;; init-flyspell --- basic flyspell configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 
@@ -63,7 +63,3 @@
 
 (provide 'init-flyspell)
 ;;; init-flyspell.el ends here.
-
-
-
-

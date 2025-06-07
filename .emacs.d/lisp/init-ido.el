@@ -1,4 +1,4 @@
-;;; init-ido --- ido configuration
+;;; init-ido --- ido configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 ;; Use C-f during file selection to switch to regular find-file

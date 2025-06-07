@@ -1,4 +1,4 @@
-;;; init-yasnippet --- yasnippet configuration
+;;; init-yasnippet --- yasnippet configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf yasnippet

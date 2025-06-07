@@ -1,3 +1,6 @@
+;;; init-nxml --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 (add-auto-mode
  'nxml-mode
  (concat "\\."
@@ -34,3 +37,4 @@ indentation rules."
 
 
 (provide 'init-nxml)
+;;; init-nxml.el ends here

@@ -1,4 +1,4 @@
-;;; init-other-window --- other window configuraiton
+;;; init-other-window --- other window configuraiton -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 ;;; Win switch

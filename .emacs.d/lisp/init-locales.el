@@ -1,4 +1,4 @@
-;;; init-locales --- locales configuration
+;;; init-locales --- locales configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (defun sanityinc/utf8-locale-p (v)

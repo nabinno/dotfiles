@@ -1,4 +1,4 @@
-;;; init-csharp -- basic csharp configuration
+;;; init-csharp -- basic csharp configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf csharp-mode

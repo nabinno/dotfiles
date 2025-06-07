@@ -1,4 +1,4 @@
-;;; init-helm --- helm configuration
+;;; init-helm --- helm configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf helm :ensure t)

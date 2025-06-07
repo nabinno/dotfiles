@@ -1,3 +1,6 @@
+;;; init-exec-path --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 (leaf exec-path-from-shell :ensure t)
 
 (after-load 'exec-path-from-shell
@@ -9,3 +12,4 @@
   (exec-path-from-shell-initialize))
 
 (provide 'init-exec-path)
+;;; init-exec-path.el ends here

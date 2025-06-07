@@ -1,3 +1,6 @@
+;;; init-proxies --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 ;;----------------------------------------------------------------------------
 ;; Pick up http_proxy & https_proxy from Mac system config using proxy-config
 ;; tool available from
@@ -34,3 +37,4 @@
 
 
 (provide 'init-proxies)
+;;; init-proxies.el ends here

@@ -1,3 +1,6 @@
+;;; init-edbi --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 (require-package 'edbi)
 (require-package 'edbi-database-url)
 (require-package 'edbi-minor-mode)
@@ -6,3 +9,4 @@
 
 
 (provide 'edbi)
+;;; init-edbi.el ends here

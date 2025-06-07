@@ -1,4 +1,4 @@
-;;; init-plantuml --- plantuml configuration
+;;; init-plantuml --- plantuml configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf puml-mode

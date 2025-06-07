@@ -1,4 +1,4 @@
-;;; init-ocaml --- ocaml configuration
+;;; init-ocaml --- ocaml configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 ;; Tuareg

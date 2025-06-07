@@ -1,4 +1,4 @@
-;;; init-powershell --- PowerShell configuration
+;;; init-powershell --- PowerShell configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf powershell-mode :el-get jschaf/powershell.el)

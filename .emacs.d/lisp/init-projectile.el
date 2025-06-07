@@ -1,4 +1,4 @@
-;;; init-projectile --- projectile configuration
+;;; init-projectile --- projectile configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf projectile

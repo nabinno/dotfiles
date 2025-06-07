@@ -1,4 +1,4 @@
-;;; init-view --- Configure view mode
+;;; init-view --- Configure view mode -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 

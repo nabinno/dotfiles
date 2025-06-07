@@ -1,4 +1,4 @@
-;;; init-proced -- proced configuration
+;;; init-proced -- proced configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (add-hook 'proced-mode-hook

@@ -1,4 +1,4 @@
-;;; init-git --- git configuration
+;;; init-git --- git configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf gitignore-mode :ensure t)

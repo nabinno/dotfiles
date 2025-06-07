@@ -1,4 +1,4 @@
-;;; init-orchestration --- orchestration configuration
+;;; init-orchestration --- orchestration configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 ;;; OS level virtualization

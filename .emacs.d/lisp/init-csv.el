@@ -1,4 +1,4 @@
-;;; init-csv --- CSV configuraiton
+;;; init-csv --- CSV configuraiton -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf csv-mode :ensure t)

@@ -1,4 +1,4 @@
-;;; init-company -- company configuration
+;;; init-company -- company configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf company

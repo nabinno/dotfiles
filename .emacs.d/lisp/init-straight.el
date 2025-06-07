@@ -1,4 +1,4 @@
-;;; init-straight --- Configure straight.el
+;;; init-straight --- Configure straight.el -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (defvar bootstrap-version)

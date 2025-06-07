@@ -1,3 +1,6 @@
+;;; init-clojure --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 ;; Basic clojure support, even in Emacs 23
 ;; See also init-clojure-cider.el
 
@@ -42,3 +45,4 @@
 
 
 (provide 'init-clojure)
+;;; init-clojure.el ends here

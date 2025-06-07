@@ -1,3 +1,6 @@
+;;; init-teextile --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 (require-package 'textile-mode)
 
 (autoload 'textile-mode "textile-mode" "Mode for editing Textile documents" t)
@@ -6,3 +9,4 @@
 
 
 (provide 'init-textile)
+;;; init-textile.el ends here

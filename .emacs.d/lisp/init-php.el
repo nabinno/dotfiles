@@ -1,4 +1,4 @@
-;;; init-php --- php configuration
+;;; init-php --- php configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf php-mode :ensure t)

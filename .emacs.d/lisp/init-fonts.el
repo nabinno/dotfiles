@@ -1,3 +1,6 @@
+;;; init-fonts --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 ;;; Character sets
 
 (defcustom sanityinc/force-default-font-for-symbols nil
@@ -53,3 +56,4 @@ by the :height face attribute."
 
 
 (provide 'init-fonts)
+;;; init-fonts.el ends here

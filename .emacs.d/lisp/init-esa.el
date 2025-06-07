@@ -1,4 +1,4 @@
-;;; init-esa --- esa configuration
+;;; init-esa --- esa configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf esa :ensure t)

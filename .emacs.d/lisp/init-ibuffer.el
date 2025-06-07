@@ -1,4 +1,4 @@
-;;; init-ibuffer --- ibuffer configuration
+;;; init-ibuffer --- ibuffer configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf fullframe :ensure t)

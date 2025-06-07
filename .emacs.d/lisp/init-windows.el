@@ -1,4 +1,4 @@
-;;; init-windows --- windows configuraiton
+;;; init-windows --- windows configuraiton -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 ;;; Navigate window layouts with "C-c <left>" and "C-c <right>"

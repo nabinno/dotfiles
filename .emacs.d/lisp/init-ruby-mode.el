@@ -1,4 +1,4 @@
-;;; init-ruby-mode -- basic ruby configuration
+;;; init-ruby-mode -- basic ruby configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf ruby-mode :ensure t)

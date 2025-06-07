@@ -1,4 +1,4 @@
-;;; init-html --- initial html-mode configuration
+;;; init-html --- initial html-mode configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf tidy
@@ -19,4 +19,4 @@
 
 
 (provide 'init-html)
-;;; init-html ends here
+;;; init-html.el ends here

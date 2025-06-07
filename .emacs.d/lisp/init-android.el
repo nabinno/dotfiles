@@ -1,4 +1,4 @@
-;;; init-android -- basic android configuration
+;;; init-android -- basic android configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 

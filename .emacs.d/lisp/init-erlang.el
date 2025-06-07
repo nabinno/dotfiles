@@ -1,4 +1,4 @@
-;;; init-erlang --- erlang configuration
+;;; init-erlang --- erlang configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf erlang

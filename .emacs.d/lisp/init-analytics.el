@@ -1,4 +1,4 @@
-;;; init-analytics.el -- analytics configuration
+;;; init-analytics.el -- analytics configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf es-mode :ensure t) ;; Elasticsearch

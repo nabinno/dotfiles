@@ -1,4 +1,4 @@
-;;; init-elscreen -- elscreen configuration
+;;; init-elscreen -- elscreen configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf elscreen

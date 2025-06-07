@@ -1,4 +1,4 @@
-;;; init-red --- red configuration
+;;; init-red --- red configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (unless (require 'red nil 'noerror)

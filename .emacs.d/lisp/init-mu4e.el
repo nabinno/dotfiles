@@ -1,4 +1,4 @@
-;;; init-mu4e --- mu4e configuration
+;;; init-mu4e --- mu4e configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (add-to-list 'load-path "~/.emacs.d/site-lisp/mu4e")

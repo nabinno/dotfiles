@@ -1,4 +1,4 @@
-;;; init-editorconfig --- editorconfig configuration
+;;; init-editorconfig --- editorconfig configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (unless (require 'editorconfig nil 'noerror)

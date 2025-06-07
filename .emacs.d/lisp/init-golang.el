@@ -1,4 +1,4 @@
-;;; init-golang -- basic golang configuration
+;;; init-golang -- basic golang configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf go-mode

@@ -1,4 +1,4 @@
-;;; init-grep -- grep configuration
+;;; init-grep -- grep configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 ;;; Ag / The Silver Searcher

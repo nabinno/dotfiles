@@ -1,4 +1,4 @@
-;;; init-paredit --- basic paredit configuration
+;;; init-paredit --- basic paredit configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (require-package 'paredit)

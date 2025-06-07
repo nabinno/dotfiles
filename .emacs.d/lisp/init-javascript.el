@@ -1,4 +1,4 @@
-;;; init-javascript -- javascript configuration
+;;; init-javascript -- javascript configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf json-mode :ensure t)

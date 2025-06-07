@@ -1,4 +1,4 @@
-;;; init-e2wm.el --- e2wm configuration
+;;; init-e2wm.el --- e2wm configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (require-package 'e2wm)

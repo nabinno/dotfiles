@@ -1,4 +1,4 @@
-;;; init-hippie-expand --- hippie-expand configuraiton
+;;; init-hippie-expand --- hippie-expand configuraiton -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (global-set-key (kbd "M-/") 'hippie-expand)

@@ -1,4 +1,4 @@
-;;; init-w3m --- w3m configuraiton
+;;; init-w3m --- w3m configuraiton -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf w3m :ensure t)

@@ -1,4 +1,4 @@
-;;; init-express --- express configuration
+;;; init-express --- express configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf jinari

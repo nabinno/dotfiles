@@ -1,3 +1,6 @@
+;;; init-utils --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 (defmacro after-load (feature &rest body)
   "After FEATURE is loaded, evaluate BODY."
   (declare (indent defun))
@@ -86,3 +89,4 @@
 
 
 (provide 'init-utils)
+;;; init-utils.el ends here

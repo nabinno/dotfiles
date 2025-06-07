@@ -1,3 +1,6 @@
+;;; init-multiple --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 ;;----------------------------------------------------------------------------
 ;; Multiple major modes
 ;;----------------------------------------------------------------------------
@@ -23,3 +26,4 @@
 
 
 (provide 'init-multiple)
+;;; init-multiple.el ends here

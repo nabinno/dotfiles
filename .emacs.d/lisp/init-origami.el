@@ -1,4 +1,4 @@
-;;; init-origami -- origami configuration
+;;; init-origami -- origami configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf origami

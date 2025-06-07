@@ -1,3 +1,6 @@
+;;; init-clojure-cider --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 (require 'init-clojure)
 (require-package 'emacs '(24))
 
@@ -29,3 +32,4 @@
 
 
 (provide 'init-clojure-cider)
+;;; init-clojure-cider.el ends here

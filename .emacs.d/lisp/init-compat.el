@@ -1,3 +1,6 @@
+;;; init-compat --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 ;;----------------------------------------------------------------------------
 ;; Provide a version of Emacs 24's 'string-prefix-p in older emacsen
 ;;----------------------------------------------------------------------------
@@ -40,3 +43,4 @@ to case differences."
 
 
 (provide 'init-compat)
+;;; init-compat.el ends here

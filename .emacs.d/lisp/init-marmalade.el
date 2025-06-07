@@ -1,4 +1,4 @@
-;;; init-marmalade --- ...
+;;; init-marmalade --- -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf marmalade :el-get nicferrier/emacs-marmalade-upload)

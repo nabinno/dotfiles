@@ -1,4 +1,6 @@
-
+;;; init-scala --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 ;;; Basic scala setup
 You should have a section marked ";;; Commentary:"
 The first line should be of the form: ";;; package --- Summary"
@@ -24,3 +26,4 @@ The first line should be of the form: ";;; package --- Summary"
 
 
 (provide 'init-scala)
+;;; init-scala.el ends here

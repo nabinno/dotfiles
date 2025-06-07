@@ -1,4 +1,4 @@
-;;; init-misc --- misc configuraiton
+;;; init-misc --- misc configuraiton -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 ;;; Misc config - yet to be placed in separate files

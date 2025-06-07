@@ -1,4 +1,4 @@
-;;; init-leaf --- Configure leaf.el
+;;; init-leaf --- Configure leaf.el -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (eval-and-compile

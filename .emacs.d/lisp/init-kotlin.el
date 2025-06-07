@@ -1,4 +1,4 @@
-;;; init-kotlin.el --- basic kotlin configuration
+;;; init-kotlin.el --- basic kotlin configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (unless (require 'kotlin-mode nil 'noerror)

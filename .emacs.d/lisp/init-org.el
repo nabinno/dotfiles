@@ -1,4 +1,4 @@
-;;; init-org --- org configuration
+;;; init-org --- org configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (require 'org)

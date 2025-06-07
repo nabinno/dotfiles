@@ -1,4 +1,4 @@
-;;; init-dired --- dired configuration
+;;; init-dired --- dired configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf dired+

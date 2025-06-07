@@ -1,4 +1,4 @@
-;;; init-css --- Colourise CSS colour literals
+;;; init-css --- Colourise CSS colour literals -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf rainbow-mode

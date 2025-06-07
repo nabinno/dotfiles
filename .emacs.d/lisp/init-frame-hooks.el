@@ -1,3 +1,6 @@
+;;; init-frame-hooks --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 (defvar after-make-console-frame-hooks '()
   "Hooks to run after creating a new TTY frame")
 (defvar after-make-window-system-frame-hooks '()
@@ -16,3 +19,4 @@ Selectively runs either `after-make-console-frame-hooks' or
 
 
 (provide 'init-frame-hooks)
+;;; init-frame-hooks.el ends here

@@ -1,4 +1,4 @@
-;;; init-isearch -- isearch configuration
+;;; init-isearch -- isearch configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 ;; Show number of matches while searching

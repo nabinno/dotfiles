@@ -1,3 +1,6 @@
+;;; init-themes --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 (when (< emacs-major-version 24)
   (require-package 'color-theme))
 
@@ -70,3 +73,4 @@
 
 
 (provide 'init-themes)
+;;; init-themes.el ends here

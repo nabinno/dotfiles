@@ -1,4 +1,4 @@
-;;; init-restclient -- restclient configuration
+;;; init-restclient -- restclient configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf restclient :ensure t)

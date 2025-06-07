@@ -1,4 +1,4 @@
-;;; init-site-lisp --- site-lisp configuration
+;;; init-site-lisp --- site-lisp configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 ;;; Set load path
@@ -57,4 +57,4 @@ source file under ~/.emacs.d/site-lisp/name/"
 
 
 (provide 'init-site-lisp)
-;;; init-site-lisp ends here
+;;; init-site-lisp.el ends here

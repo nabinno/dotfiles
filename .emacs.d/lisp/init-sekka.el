@@ -1,4 +1,4 @@
-;;; init-sekka --- sekka configuration
+;;; init-sekka --- sekka configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (require-package 'sekka)
@@ -8,4 +8,4 @@
 
 
 (provide 'init-sekka)
-;;; init-sekkaael ends here.
+;;; init-sekka.el ends here.

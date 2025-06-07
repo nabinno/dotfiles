@@ -1,3 +1,6 @@
+;;; init-xterm --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 (require 'init-frame-hooks)
 
 (defun fix-up-xterm-control-arrows ()
@@ -25,3 +28,4 @@
               (mwheel-install))))
 
 (provide 'init-xterm)
+;;; init-xterm.el ends here

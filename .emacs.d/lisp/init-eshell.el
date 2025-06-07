@@ -1,4 +1,4 @@
-;;; init-eshell --- eshell configuration
+;;; init-eshell --- eshell configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (setq eshell-directory-name "~/.emacs.d/eshell/")

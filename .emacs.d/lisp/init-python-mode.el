@@ -1,4 +1,4 @@
-;;; init-python-mode --- python-mode configuration
+;;; init-python-mode --- python-mode configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (setq auto-mode-alist
@@ -47,12 +47,12 @@
   :ensure t)
 
 
-;;; PyFlakes
-(leaf flymake-python-pyflakes
-  :el-get purcell/flymake-python-pyflakes
-  :config
-  (after-load 'flymake-python-pyflakes
-    (flymake-python-pyflakes-load)))
+;; ;;; PyFlakes
+;; (leaf flymake-python-pyflakes
+;;   :el-get purcell/flymake-python-pyflakes
+;;   :config
+;;   (after-load 'flymake-python-pyflakes
+;;     (flymake-python-pyflakes-load)))
 
 
 (provide 'init-python-mode)

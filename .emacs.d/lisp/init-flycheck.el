@@ -1,4 +1,4 @@
-;;; init-flycheck.el --- flycheck configuration
+;;; init-flycheck.el --- flycheck configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf flycheck

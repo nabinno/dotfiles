@@ -1,4 +1,4 @@
-;;; init-github --- github configuration
+;;; init-github --- github configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (require 'init-git)

@@ -1,4 +1,4 @@
-;;; init-project -- project configuration
+;;; init-project -- project configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 

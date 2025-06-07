@@ -1,11 +1,9 @@
-;;; init-sql -- sql configuration
-;;;
+;;; init-sql -- sql configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;;   C-c C-c : 'sql-send-paragraph
 ;;;   C-c C-r : 'sql-send-region
 ;;;   C-c C-s : 'sql-send-string
 ;;;   C-c C-b : 'sql-send-buffer
-;;;
 ;;; Code:
 (leaf sql-indent :ensure t)
 (after-load 'sql

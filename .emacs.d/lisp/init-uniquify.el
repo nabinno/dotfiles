@@ -1,4 +1,4 @@
-;;; init-uniquify -- uniquify configuration
+;;; init-uniquify -- uniquify configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;;   Nicer naming of buffers for files with identical names
 ;;; Code:

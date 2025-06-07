@@ -1,4 +1,4 @@
-;;; init-vertico --- vertico configuration
+;;; init-vertico --- vertico configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf vertico

@@ -1,4 +1,4 @@
-;;; init-web --- initial web-mode configuration
+;;; init-web --- initial web-mode configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf web-mode

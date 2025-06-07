@@ -1,4 +1,4 @@
-;;; init-java.el --- basic java configuration
+;;; init-java.el --- basic java configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 ;;; IDE

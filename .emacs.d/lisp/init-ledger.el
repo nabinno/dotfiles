@@ -1,3 +1,6 @@
+;;; init-ledger --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 (require-package 'ledger-mode)
 
 (add-to-list 'auto-mode-alist '("\\.ledger$" . ledger-mode))
@@ -19,3 +22,4 @@
 (add-hook 'ledger-mode-hook 'goto-address-prog-mode)
 
 (provide 'init-ledger)
+;;; init-ledger.el ends here

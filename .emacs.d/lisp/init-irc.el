@@ -1,4 +1,4 @@
-;;; init-irc -- irc configuration
+;;; init-irc -- irc configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 ;; ;;; IRC

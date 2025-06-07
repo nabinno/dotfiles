@@ -1,3 +1,6 @@
+;;; init-el-get --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 ;;; Find and load the correct package.el
 
 (require-package 'el-get)
@@ -5,3 +8,4 @@
 
 
 (provide 'init-el-get)
+;;; init-el-get.el ends here

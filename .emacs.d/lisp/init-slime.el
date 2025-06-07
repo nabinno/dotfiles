@@ -1,3 +1,6 @@
+;;; init-slime --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 (require-package 'slime)
 ;; package.el compiles the contrib subdir, but the compilation order
 ;; causes problems, so we remove the .elc files there. See
@@ -49,3 +52,4 @@
 
 
 (provide 'init-slime)
+;;; init-slime.el ends here

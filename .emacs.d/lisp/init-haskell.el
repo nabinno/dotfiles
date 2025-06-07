@@ -1,4 +1,4 @@
-;;; init-haskell --- haskell configuration
+;;; init-haskell --- haskell configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (use-package haskell-mode

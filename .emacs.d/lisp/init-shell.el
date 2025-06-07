@@ -1,12 +1,12 @@
-;;; init-shell -- shell configuration
+;;; init-shell -- shell configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (setq sh-basic-offset 2)
 (setq sh-indentation 2)
 
 
-;; Shellcheck
-(add-hook 'sh-mode-hook 'flycheck-mode)
+;; Shellcheck (flycheck-mode is enabled globally)
+;; (add-hook 'sh-mode-hook 'flycheck-mode)
 
 
 ;; Shfmat

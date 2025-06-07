@@ -1,4 +1,4 @@
-;;; init-swift.el --- basic swift configuration
+;;; init-swift.el --- basic swift configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (unless (require 'swift-mode nil 'noerror)

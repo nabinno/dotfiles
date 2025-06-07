@@ -1,4 +1,4 @@
-;;; init-auto-compile -- auto-compile configuration
+;;; init-auto-compile -- auto-compile configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (require-package 'auto-complete)

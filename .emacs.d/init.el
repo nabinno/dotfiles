@@ -1,4 +1,4 @@
-;;; init.el --- This file bootstraps the configuration
+;;; init.el --- This file bootstraps the configuration -*- lexical-binding: t -*-
 ;;;
 ;;; Commentary:
 ;;; This file bootstraps the configuration, which is divided into a

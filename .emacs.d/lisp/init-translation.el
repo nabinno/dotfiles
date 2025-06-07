@@ -1,4 +1,4 @@
-;;; init-translation --- basic translation configuration
+;;; init-translation --- basic translation configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf google-translate

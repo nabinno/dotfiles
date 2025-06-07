@@ -1,4 +1,4 @@
-;;; init-spelling --- spelling configuration
+;;; init-spelling --- spelling configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (require 'ispell)

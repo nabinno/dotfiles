@@ -1,3 +1,6 @@
+;;; init-lisp --- -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 (require-package 'elisp-slime-nav)
 (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
   (add-hook hook 'elisp-slime-nav-mode))
@@ -209,3 +212,4 @@
 
 
 (provide 'init-lisp)
+;;; init-lisp.el ends here

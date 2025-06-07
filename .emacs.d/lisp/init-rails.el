@@ -1,4 +1,4 @@
-;;; init-rails --- rails configuration
+;;; init-rails --- rails configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf rinari

@@ -1,4 +1,4 @@
-;;; init-ivy --- ivy configuration
+;;; init-ivy --- ivy configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf ivy :ensure t

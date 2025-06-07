@@ -1,4 +1,4 @@
-;;; init-markdown --- Markdown configuration file
+;;; init-markdown --- Markdown configuration file -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (leaf markdown-mode
