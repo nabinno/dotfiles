@@ -78,14 +78,20 @@ get-aws-sam() {
 # if ! type -p sam >/dev/null; then get-aws-sam; fi
 
 get-aws-rails-provisioner() {
-  case "${OSTYPE}" in
-    linux*)
-      case "${DIST}" in
-        Ubuntu) sudo apt install gnupg2 pass ;;
-      esac
-      ;;
-  esac
-  gem install aws-rails-provisioner --pre
+  # Check if Ruby has OpenSSL support before attempting gem install
+  if ruby -ropenssl -e 'puts OpenSSL::OPENSSL_VERSION' >/dev/null 2>&1; then
+    case "${OSTYPE}" in
+      linux*)
+        case "${DIST}" in
+          Ubuntu) sudo apt install gnupg2 pass ;;
+        esac
+        ;;
+    esac
+    gem install aws-rails-provisioner --pre
+  else
+    echo "Warning: Ruby OpenSSL support unavailable. Skipping aws-rails-provisioner installation."
+    echo "Run 'rbenv install 3.1.0 --force' to rebuild Ruby with current OpenSSL."
+  fi
 }
 if ! type -p aws-rails-provisioner >/dev/null; then get-aws-rails-provisioner; fi
 
