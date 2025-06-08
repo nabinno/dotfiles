@@ -1,6 +1,8 @@
 ;;; init-isearch -- isearch configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 ;; Show number of matches while searching
 (when (>= emacs-major-version 24)
   (leaf anzu :ensure t)

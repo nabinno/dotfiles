@@ -1,6 +1,8 @@
 ;;; init-project -- project configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 
 ;;; Sr Speedbar
 (leaf sr-speedbar :ensure t)

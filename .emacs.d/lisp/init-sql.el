@@ -5,6 +5,8 @@
 ;;;   C-c C-s : 'sql-send-string
 ;;;   C-c C-b : 'sql-send-buffer
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf sql-indent :ensure t)
 (after-load 'sql
   (require 'sql-indent))

@@ -1,6 +1,7 @@
 ;;; init-editing ---  editing configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(require 'leaf)
 (leaf unfill :ensure t)
 (leaf whole-line-or-region :ensure t)
 

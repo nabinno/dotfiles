@@ -1,6 +1,8 @@
 ;;; init-translation --- basic translation configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf google-translate
   :ensure t
   :init

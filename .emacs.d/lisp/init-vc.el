@@ -1,6 +1,8 @@
 ;;; init-vc --- -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf diff-hl
   :ensure t
   :hook ((prog-mode-hook . turn-on-diff-hl-mode)

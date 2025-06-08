@@ -1,6 +1,8 @@
 ;;; init-javascript -- javascript configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf json-mode :ensure t)
 (leaf js2-mode :ensure t :emacs>= 24)
 (leaf ac-js2 :ensure t :emacs>= 24)

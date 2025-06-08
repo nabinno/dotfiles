@@ -1,6 +1,8 @@
 ;;; init-express --- express configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf jinari
   :el-get nabinno/jinari
   :config

@@ -1,6 +1,8 @@
 ;;; init-exec-path --- -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf exec-path-from-shell :ensure t)
 
 (after-load 'exec-path-from-shell

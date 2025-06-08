@@ -1,6 +1,8 @@
 ;;; init-haml --- haml configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf haml-mode :ensure t)
 
 (after-load 'haml-mode

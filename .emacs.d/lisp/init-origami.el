@@ -1,6 +1,8 @@
 ;;; init-origami -- origami configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf origami
   :ensure t
   :config

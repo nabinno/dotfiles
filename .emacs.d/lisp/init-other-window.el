@@ -1,6 +1,8 @@
 ;;; init-other-window --- other window configuraiton -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 ;;; Win switch
 (leaf win-switch
   :ensure t

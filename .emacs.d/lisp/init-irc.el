@@ -1,6 +1,8 @@
 ;;; init-irc -- irc configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 ;; ;;; IRC
 ;; (leaf circe :ensure t)
 

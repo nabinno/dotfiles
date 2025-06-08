@@ -1,6 +1,8 @@
 ;;; init-erlang --- erlang configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf erlang
   :ensure t
   :if (package-installed-p 'erlang)

@@ -1,6 +1,8 @@
 ;;; init-w3m --- w3m configuraiton -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf w3m :ensure t)
 
 (setq browse-url-browser-function 'w3m-goto-url

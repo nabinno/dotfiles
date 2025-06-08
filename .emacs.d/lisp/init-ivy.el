@@ -1,6 +1,8 @@
 ;;; init-ivy --- ivy configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf ivy :ensure t
   :config
   (setq ivy-initial-inputs-alist

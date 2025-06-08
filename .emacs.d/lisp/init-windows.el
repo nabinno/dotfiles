@@ -1,6 +1,8 @@
 ;;; init-windows --- windows configuraiton -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 ;;; Navigate window layouts with "C-c <left>" and "C-c <right>"
 (winner-mode 1)
 

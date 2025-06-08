@@ -1,6 +1,8 @@
 ;;; init-csharp -- basic csharp configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf csharp-mode
   :ensure t
   :config

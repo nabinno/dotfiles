@@ -1,6 +1,8 @@
 ;;; init-esa --- esa configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf esa :ensure t)
 
 (global-set-key (kbd "C-c ; e l") 'esa-list)

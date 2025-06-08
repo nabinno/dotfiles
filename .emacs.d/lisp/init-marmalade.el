@@ -1,6 +1,8 @@
 ;;; init-marmalade --- -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf marmalade :el-get nicferrier/emacs-marmalade-upload)
 
 ;;; Handy code for uploading new versions of my own packages to marmalade

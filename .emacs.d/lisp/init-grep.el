@@ -1,6 +1,8 @@
 ;;; init-grep -- grep configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 ;;; Ag / The Silver Searcher
 (leaf ag
   :ensure t

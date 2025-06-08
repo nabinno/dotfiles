@@ -1,6 +1,8 @@
 ;;; init-org --- org configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (require 'org)
 
 ;; (leaf org-fstree :ensure t)

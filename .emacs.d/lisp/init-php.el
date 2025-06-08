@@ -1,6 +1,8 @@
 ;;; init-php --- php configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf php-mode :ensure t)
 (leaf smarty-mode :ensure t)
 

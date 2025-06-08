@@ -1,6 +1,8 @@
 ;;; init-web --- initial web-mode configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf web-mode
   :el-get "fxbois/web-mode"
   :config

@@ -1,6 +1,8 @@
 ;;; init-git --- git configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf gitignore-mode :ensure t)
 (leaf gitconfig-mode :ensure t)
 (leaf git-messenger :ensure t) ;; Though see also vc-annotate's "n" & "p" bindings

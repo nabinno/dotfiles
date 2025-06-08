@@ -1,6 +1,8 @@
 ;;; init-elscreen -- elscreen configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf elscreen
   :ensure t
   :config

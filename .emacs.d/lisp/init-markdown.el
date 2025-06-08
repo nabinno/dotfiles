@@ -1,6 +1,8 @@
 ;;; init-markdown --- Markdown configuration file -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf markdown-mode
   :ensure t
   :config

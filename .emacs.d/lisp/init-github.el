@@ -1,6 +1,8 @@
 ;;; init-github --- github configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (require 'init-git)
 
 (leaf yagist :ensure t)

@@ -1,6 +1,8 @@
 ;;; init-ibuffer --- ibuffer configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf fullframe :ensure t)
 (after-load 'ibuffer
  (fullframe ibuffer ibuffer-quit))

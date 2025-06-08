@@ -1,6 +1,8 @@
 ;;; init-ocaml --- ocaml configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 ;; Tuareg
 (leaf tuareg :el-get ocaml/tuareg)
 

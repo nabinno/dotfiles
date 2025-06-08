@@ -1,6 +1,8 @@
 ;;; init-plantuml --- plantuml configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf puml-mode
   :el-get skuro/puml-mode
   :if (executable-find "plantuml.jar")

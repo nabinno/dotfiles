@@ -1,6 +1,8 @@
 ;;; init-company -- company configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf company
   :ensure t
   :config

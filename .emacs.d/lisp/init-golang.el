@@ -1,6 +1,8 @@
 ;;; init-golang -- basic golang configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf go-mode
   :mode "\\.go$"
   :el-get dominikh/go-mode.el

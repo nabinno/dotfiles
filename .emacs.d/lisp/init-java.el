@@ -1,6 +1,8 @@
 ;;; init-java.el --- basic java configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 ;;; IDE
 ;; malabar-mode
 (leaf malabar-mode

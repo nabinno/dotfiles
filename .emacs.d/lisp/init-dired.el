@@ -1,6 +1,8 @@
 ;;; init-dired --- dired configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf dired+
   :el-get emacsmirror/dired-plus
   :after dired

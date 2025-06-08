@@ -1,6 +1,8 @@
 ;;; init-projectile --- projectile configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf projectile
   :ensure t
   :init (projectile-global-mode)

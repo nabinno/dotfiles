@@ -1,6 +1,8 @@
 ;;; init-rails --- rails configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf rinari
   :ensure t
   :config

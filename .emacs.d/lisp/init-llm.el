@@ -1,6 +1,7 @@
 ;;; init-llm -- llm configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(require 'leaf)
 (leaf eat :ensure t)
 
 (leaf claude-code

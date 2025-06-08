@@ -1,6 +1,8 @@
 ;;; init-css --- Colourise CSS colour literals -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf rainbow-mode
   :ensure t
   :emacs>= 24

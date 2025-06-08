@@ -1,6 +1,8 @@
 ;;; init-eshell --- eshell configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (setq eshell-directory-name "~/.emacs.d/eshell/")
 (setq eshell-cmpl-cycle-completions nil)
 (setq eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'")

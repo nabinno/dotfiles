@@ -1,6 +1,8 @@
 ;;; init-flycheck.el --- flycheck configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 (leaf flycheck
   :ensure t
   :config

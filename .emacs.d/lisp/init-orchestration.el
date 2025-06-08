@@ -1,6 +1,8 @@
 ;;; init-orchestration --- orchestration configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+(unless (featurep 'leaf)
+  (require 'init-leaf))
 ;;; OS level virtualization
 ;; vagrant
 (leaf vagrant :ensure t)
