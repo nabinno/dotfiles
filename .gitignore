@@ -9,6 +9,7 @@
 auto-save-list
 tramp
 .\#*
+.tool-versions
 
 # Org-mode
 .org-id-locations
