@@ -16,12 +16,12 @@ get-phpenv() {
 # ### installation ###
 get-php() {
   case "${OSTYPE}" in
-    freebsd* | darwin*) nix-install php ;;
+    freebsd* | darwin*) nix-install php-with-extensions ;;
     linux*)
       case $DIST_VERSION in
         14.04) sudo apt-get install -y php-$REQUIRED_PHP_VERSION ;;
         16.04 | 18.04 | 20.04 | 22.04) sudo apt install -y php ;;
-        *) nix-install php ;;
+        *) nix-install php-with-extensions ;;
       esac
       ;;
   esac
