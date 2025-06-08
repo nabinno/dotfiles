@@ -3,7 +3,7 @@ echo
 echo '[init-ruby]'
 _start_time=$(date +"%s.%3N")
 
-export REQUIRED_RUBY_VERSION=2.6.8
+export REQUIRED_RUBY_VERSION=3.2.3
 export RUBY_PACKAGE_MANAGER=anyenv
 
 # ### version control ###
