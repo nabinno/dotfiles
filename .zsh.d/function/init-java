@@ -52,7 +52,7 @@ get-java-by-asdf() {
     freebsd* | darwin* | linux*)
       case $(asdf plugin list) in *java*) ;; *) asdf plugin add java ;; esac
       asdf install java $REQUIRED_OPENJDK_VERSION
-      asdf global java $REQUIRED_OPENJDK_VERSION
+      asdf set java $REQUIRED_OPENJDK_VERSION
       ;;
   esac
 }
@@ -153,7 +153,7 @@ get-scala() {
     freebsd* | darwin* | linux*)
       case $(asdf plugin list) in scala) ;; *) asdf plugin add scala ;; esac
       asdf install scala $REQUIRED_SCALA_VERSION
-      asdf global scala $REQUIRED_SCALA_VERSION
+      asdf set scala $REQUIRED_SCALA_VERSION
       ;;
   esac
 }
@@ -164,7 +164,7 @@ get-sbt() {
     freebsd* | darwin* | linux*)
       case $(asdf plugin list) in *sbt*) ;; *) asdf plugin add sbt ;; esac
       asdf install sbt $REQUIRED_SBT_VERSION
-      asdf global sbt $REQUIRED_SBT_VERSION
+      asdf set sbt $REQUIRED_SBT_VERSION
       ;;
   esac
 }
