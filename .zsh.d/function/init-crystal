@@ -10,12 +10,12 @@ get-crystal() {
     linux*)
       case $(asdf plugin list) in *crystal*) ;; *) asdf plugin add crystal ;; esac
       asdf install crystal $REQUIRED_CRYSTAL_VERSION
-      asdf global crystal $REQUIRED_CRYSTAL_VERSION
+      asdf set crystal $REQUIRED_CRYSTAL_VERSION
       ;;
   esac
 }
 
-if ! type -p crystal >/dev/null; then get-crystal; fi
+if ! type -p asdf exec crystal version >/dev/null; then get-crystal; fi
 
 _end_time=$(date +"%s.%3N")
 echo time: $(echo "$_end_time - $_start_time" | bc) sec
