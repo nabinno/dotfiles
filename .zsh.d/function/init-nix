@@ -44,14 +44,10 @@ get-nix() {
           sudo chown -R ${CURRENT_USER} /nix
           ;;
         Ubuntu)
-          case $DIST_VERSION in
-            14.04 | 16.04 | 18.04 | 20.04 | 22.04)
-              sudo mkdir /etc/nix
-              echo 'use-sqlite-wal = false' | sudo tee -a /etc/nix/nix.conf
-              cd ~ && curl -L https://nixos.org/nix/install | sh
-              sudo chown -R ${CURRENT_USER} /nix
-              ;;
-          esac
+          sudo mkdir /etc/nix
+          echo 'use-sqlite-wal = false' | sudo tee -a /etc/nix/nix.conf
+          cd ~ && curl -L https://nixos.org/nix/install | sh
+          sudo chown -R ${CURRENT_USER} /nix
           ;;
       esac
       ;;
