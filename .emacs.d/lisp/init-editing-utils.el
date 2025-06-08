@@ -445,7 +445,7 @@ With arg N, insert N newlines."
   "Setup recenter top-bottom with normalize-NFC-buffer."
   (interactive)
   (recenter-top-bottom)
-  (ucs-normalize-NFC-buffer))
+  (ignore-errors (ucs-normalize-NFC-buffer)))
 
 (defun recenter-top-bottom-with-normalize-NFC-buffer-in-read-only ()
   "Setup recenter top-bottom with normalize-NFC-buffer-in-read-only."
