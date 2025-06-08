@@ -27,28 +27,7 @@ get-emacs() {
           rm -fr emacs-$REQUIRED_EMACS_VERSION*
           ;;
         Debian | Ubuntu)
-          case $DIST_VERSION in
-            16.04 | 18.04 | 20.04)
-              sudo add-apt-repository ppa:kelleyk/emacs
-              sudo apt update
-              sudo apt install emacs28-nativecomp
-              sudo apt-get install build-essential checkinstall
-              sudo apt-get build-dep
-              sudo apt-get install lincurses5-dev libgnutls28-dev
-              wget https://ftp.gnu.org/gnu/emacs/emacs-$REQUIRED_EMACS_VERSION.tar.gz
-              tar zxf emacs-$REQUIRED_EMACS_VERSION.tar.gz
-              (
-                cd emacs-$REQUIRED_EMACS_VERSION
-                ./configure --with-xpm=no --with-gif=no --with-x-toolkit=no --with-tiff=no --with-jpeg=no --with-png=no
-                make
-                yes | sudo make install
-              )
-              rm -fr emacs-$REQUIRED_EMACS_VERSION*
-              ;;
-            22.04 | 24.04)
-              sudo snap install emacs --classic
-              ;;
-          esac
+          brew install emacs
           ;;
       esac
       ;;
