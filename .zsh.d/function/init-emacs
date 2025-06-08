@@ -28,7 +28,7 @@ get-emacs() {
           ;;
         Debian | Ubuntu)
           case $DIST_VERSION in
-            16.04 | 18.04 | 20.04 | 22.04)
+            16.04 | 18.04 | 20.04)
               sudo add-apt-repository ppa:kelleyk/emacs
               sudo apt update
               sudo apt install emacs28-nativecomp
@@ -45,7 +45,7 @@ get-emacs() {
               )
               rm -fr emacs-$REQUIRED_EMACS_VERSION*
               ;;
-            24.04)
+            22.04 | 24.04)
               sudo snap install emacs --classic
               ;;
           esac
