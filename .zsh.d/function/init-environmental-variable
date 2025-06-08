@@ -8,14 +8,14 @@ _start_time=$(date +"%s.%3N")
 # export LANG=ja_JP.eucJP
 export CLICOLOR=1
 # export EDITOR='emacsclient -t' # vim -f
-export LANG=en_US.UTF-8
-export LANGUAGE=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
+export LANG=C.UTF-8
+export LANGUAGE=C.UTF-8
+export LC_ALL=C.UTF-8
 export LC_CTYPE=UTF-8
 export LC_MESSAGES=C
-if [[ "$(locale | grep LANG= | sed 's/\.//g')" -ne "LANG=en_USUTF-8" ]]; then
-  sudo locale-gen en_US.UTF-8
-  sudo update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+if [[ "$(locale | grep LANG= | sed 's/\.//g')" -ne "LANG=CUTF-8" ]]; then
+  sudo locale-gen C.UTF-8
+  sudo update-locale LANG=C.UTF-8 LC_ALL=C.UTF-8
 fi
 export MAILPATH=$HOME/MailBox/postmaster/maildir
 export PATH=/usr/sbin:/sbin:$PATH
