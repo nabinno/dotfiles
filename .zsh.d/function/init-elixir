@@ -46,7 +46,7 @@ get-erlang() {
     freebsd* | darwin* | linux*)
       case $(asdf plugin list) in *erlang*) ;; *) asdf plugin add erlang ;; esac
       asdf install erlang $REQUIRED_ERLANG_VERSION
-      asdf global erlang $REQUIRED_ERLANG_VERSION
+      asdf set erlang $REQUIRED_ERLANG_VERSION
       ;;
   esac
 }
@@ -69,7 +69,7 @@ get-rebar3() {
     freebsd* | darwin* | linux*)
       case $(asdf plugin list) in *rebar*) ;; *) asdf plugin add rebar ;; esac
       asdf install rebar $REQUIRED_REBAR_VERSION
-      asdf global rebar $REQUIRED_REBAR_VERSION
+      asdf set rebar $REQUIRED_REBAR_VERSION
       ;;
   esac
 }
@@ -89,7 +89,9 @@ get-elixir() {
     freebsd* | darwin* | linux*)
       case $(asdf plugin list) in *elixir*) ;; *) asdf plugin add elixir ;; esac
       asdf install elixir $REQUIRED_ELIXIR_VERSION
-      asdf global elixir $REQUIRED_ELIXIR_VERSION
+      asdf set elixir $REQUIRED_ELIXIR_VERSION
+      # Reload asdf environment to make mix available
+      asdf reshim elixir
       get-global-mix-packages
       ;;
   esac
