@@ -3,7 +3,7 @@ echo
 echo '[init-ruby]'
 _start_time=$(date +"%s.%3N")
 
-export REQUIRED_RUBY_VERSION=3.2.3
+export REQUIRED_RUBY_VERSION=3.1.0
 export RUBY_PACKAGE_MANAGER=anyenv
 
 # ### version control ###
@@ -28,9 +28,9 @@ get-ruby-by-asdf() {
   case "${OSTYPE}" in
     cygwin) apt-cyg install ruby ;;
     freebsd* | darwin* | linux*)
-      case $(asdf plugin-list) in *ruby*) ;; *) asdf plugin-add ruby ;; esac
-      asfd install ruby $REQUIRED_RUBY_VERSION
-      asdf global ruby $REQUIRED_RUBY_VERSION
+      case $(asdf plugin list) in *ruby*) ;; *) asdf plugin add ruby ;; esac
+      asdf install ruby $REQUIRED_RUBY_VERSION
+      asdf set ruby $REQUIRED_RUBY_VERSION
       ;;
   esac
 }
