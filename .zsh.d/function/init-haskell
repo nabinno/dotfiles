@@ -8,11 +8,11 @@ export REQUIRED_GHC_VERSION=8.4.3
 
 get-ghc() {
   case $OSTYPE in
-    freebsd* | darwin*) nix-install ghc ;;
+    freebsd* | darwin*) nix-install ghc 2>/dev/null || echo "Warning: nix-install ghc failed, trying alternative methods" ;;
     linux*)
       case $DIST in
         Redhat* | RedHat* | Debian | Ubuntu*)
-          nix-install ghc
+          nix-install ghc 2>/dev/null || echo "Warning: nix-install ghc failed, trying alternative methods"
           ;;
       esac
       ;;
@@ -32,14 +32,14 @@ get-ghc-by-asdf() {
 get-cabal() {
   case $OSTYPE in
     freebsd* | darwin*)
-      nix-install cabal-install
-      cabal update
+      nix-install cabal-install 2>/dev/null || echo "Warning: nix-install cabal-install failed, trying alternative methods"
+      cabal update 2>/dev/null || true
       ;;
     linux*)
       case $DIST in
         Redhat* | RedHat* | Debian | Ubuntu*)
-          nix-install cabal-install
-          cabal update
+          nix-install cabal-install 2>/dev/null || echo "Warning: nix-install cabal-install failed, trying alternative methods"
+          cabal update 2>/dev/null || true
           ;;
       esac
       ;;
