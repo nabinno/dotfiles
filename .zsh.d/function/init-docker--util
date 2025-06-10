@@ -109,7 +109,7 @@ dsshd() {
 
 datach() {
   docker start $1
-  docker atach $1
+  docker attach $1
 }
 
 denv() {
