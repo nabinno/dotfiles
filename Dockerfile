@@ -3,4 +3,4 @@ USER action
 
 WORKDIR /home/action
 RUN sh -c "$(curl -fsSL https://raw.github.com/nabinno/dotfiles/master/install.sh)"
-RUN eval "$(exec -l zshrc)"
+RUN eval "$(exec -l zsh)"
