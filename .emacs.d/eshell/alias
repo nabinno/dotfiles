@@ -83,7 +83,7 @@ alias ddel docker rmi -f
 alias dda docker rmi -f $(docker images -q)
 alias dd docker rmi -f
 alias dc docker commit $(docker ps -l -q)
-alias datach docker start $1 ; docker atach $1
+alias datach docker start $1 ; docker attach $1
 alias docker sudo docker
 alias d rm -fr $*
 alias cs (modify-coding-system-alist processsjis-dos)
