@@ -48,7 +48,7 @@ cd .zsh.d/function && go test
 ### Emacs Configuration Architecture
 The Emacs setup uses a modular initialization system located in `.emacs.d/lisp/`:
 - `init.el`: Bootstrap file that loads all modules
-- `init-*.el` files: Feature-specific configurations (70+ modules)
+- `init-*.el` files: Feature-specific configurations (100+ modules)
 - Uses `leaf` package manager for dependency management
 - Organized by functionality: languages, tools, UI components
 
