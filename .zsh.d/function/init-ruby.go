@@ -59,7 +59,7 @@ func getRubyByAsdf() {
 		cmd("apt-cyg install ruby")
 	case t.match("freebsd.*"), t.match("darwin.*"), t.match("linux.*"):
 		if _, err := exec.Command("asdf", "plugin-add", "ruby").Output(); err == nil {
-			cmd(fmt.Sprintf("asfd install ruby %s", os.Getenv("REQUIRED_RUBY_VERSION")))
+			cmd(fmt.Sprintf("asdf install ruby %s", os.Getenv("REQUIRED_RUBY_VERSION")))
 			cmd(fmt.Sprintf("asdf global ruby %s", os.Getenv("REQUIRED_RUBY_VERSION")))
 			getGlobalGemPackages()
 		} else {
