@@ -5,6 +5,11 @@ _start_time=$(date +"%s.%3N")
 
 # ----------------------------------------------------------------------
 # ### claude ###
+# FOR USERS USING SCREEN ON UBUNTU, ADD THE FOLLOWING CODE TO /etc/sudoers:
+# # Temporary workaround for Claude Code, which attempts to run
+# # `sudo mkdir -p /run/screen` during startup or execution.
+# # This prevents repeated password prompts.
+# app ALL=(ALL) NOPASSWD: /usr/bin/mkdir -p /run/screen
 get-claude() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
