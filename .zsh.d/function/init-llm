@@ -20,5 +20,22 @@ get-claude() {
 }
 if ! type -p claude >/dev/null; then get-claude; fi
 
+# ----------------------------------------------------------------------
+# ### Q CLI ###
+get-qcli() {
+  case "${OSTYPE}" in
+    linux*)
+      case "${DIST}" in
+        Ubuntu)
+          wget https://desktop-release.q.us-east-1.amazonaws.com/latest/amazon-q.deb
+          sudo apt-get install -f
+          sudo dpkg -i amazon-q.deb
+          ;;
+      esac
+      ;;
+  esac
+}
+if ! type -p q >/dev/null; then get-qcli; fi
+
 _end_time=$(date +"%s.%3N")
 echo time: $(echo "$_end_time - $_start_time" | bc) sec
