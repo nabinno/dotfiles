@@ -10,6 +10,8 @@ _start_time=$(date +"%s.%3N")
 # # `sudo mkdir -p /run/screen` during startup or execution.
 # # This prevents repeated password prompts.
 # app ALL=(ALL) NOPASSWD: /usr/bin/mkdir -p /run/screen
+export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+
 get-claude() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
