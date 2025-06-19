@@ -22,11 +22,14 @@ get-claude() {
 }
 if ! type -p claude >/dev/null; then get-claude; fi
 
-get-claude-mcp-servers() {
-  claude mcp add my-server \
+set-claude-mcp-servers() {
+  claude mcp add atlassian \
     --scope project \
-    -e FASTMCP_LOG_LEVEL=ERROR \
-    -e AWS_DOCUMENTATION_PARTITION=aws \
+    -- npx -y mcp-remote https://mcp.atlassian.com/v1/sse
+  claude mcp add awsdocs \
+    --scope project \
+    -e FASTMCP_LOG_LEVEL ERROR \
+    -e AWS_DOCUMENTATION_PARTITION aws \
     -- uvx awslabs.aws-documentation-mcp-server@latest
 }
 
