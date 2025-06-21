@@ -26,6 +26,9 @@ set-claude-mcp-servers() {
   claude mcp add atlassian \
     --scope project \
     -- npx -y mcp-remote https://mcp.atlassian.com/v1/sse
+  claude mcp add context7 \
+    --scope project \
+    -- npx -y @upstash/context7-mcp
   claude mcp add awsdocs \
     --scope project \
     -e FASTMCP_LOG_LEVEL ERROR \
