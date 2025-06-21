@@ -28,11 +28,11 @@ set-claude-mcp-servers() {
     -- npx -y mcp-remote https://mcp.atlassian.com/v1/sse
   claude mcp add context7 \
     --scope project \
-    -- npx -y @upstash/context7-mcp
+    -- npx -y mcp-remote https://mcp.context7.com/sse
   claude mcp add awsdocs \
     --scope project \
-    -e FASTMCP_LOG_LEVEL ERROR \
-    -e AWS_DOCUMENTATION_PARTITION aws \
+    -e FASTMCP_LOG_LEVEL=ERROR \
+    -e AWS_DOCUMENTATION_PARTITION=aws \
     -- uvx awslabs.aws-documentation-mcp-server@latest
 }
 
