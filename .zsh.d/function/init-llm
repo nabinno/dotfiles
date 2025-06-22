@@ -34,6 +34,9 @@ set-claude-mcp-servers() {
     -e FASTMCP_LOG_LEVEL=ERROR \
     -e AWS_DOCUMENTATION_PARTITION=aws \
     -- uvx awslabs.aws-documentation-mcp-server@latest
+  # claude mcp add examplecom \
+  #   --scope project \
+  #   -- npx -y sitemcp https://example.com -m "/examples/**"
 }
 
 # ----------------------------------------------------------------------
