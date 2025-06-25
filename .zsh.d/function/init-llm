@@ -40,6 +40,17 @@ set-claude-mcp-servers() {
 }
 
 # ----------------------------------------------------------------------
+# ### Gemini CLI ###
+get-gemini() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      npm install -g @google/gemini-cli
+      exec -l zsh
+      ;;
+}
+if ! type -p gemini >/dev/null; then get-gemini; fi
+
+# ----------------------------------------------------------------------
 # ### Q CLI ###
 get-qcli() {
   case "${OSTYPE}" in
