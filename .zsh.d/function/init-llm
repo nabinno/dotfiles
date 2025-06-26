@@ -47,6 +47,7 @@ get-gemini() {
       npm install -g @google/gemini-cli
       exec -l zsh
       ;;
+  esac
 }
 if ! type -p gemini >/dev/null; then get-gemini; fi
 
