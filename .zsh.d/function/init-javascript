@@ -58,6 +58,7 @@ set-node-with-nodenv() {
 get-global-npm-packages() {
   npm install -g \
     @google/clasp \
+    ccmanager \
     http-server \
     node-plantuml \
     npm2dot \
