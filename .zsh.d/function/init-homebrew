@@ -49,16 +49,8 @@ case "${OSTYPE}" in
   darwin*) ;;
   linux*)
     case $DIST in
-      RedHat | Redhat | Debian)
-        if [ -d ~/.linuxbrew ]; then eval $(~/.linuxbrew/bin/brew shellenv); fi
-        ;;
-      Ubuntu)
-        case $DIST_VERSION in
-          16.04 | 18.04 | 20.04)
-            if [ -d ~/.linuxbrew ]; then eval $(~/.linuxbrew/bin/brew shellenv); fi
-            ;;
-        esac
-        ;;
+      RedHat | Redhat | Debian) if [ -d ~/.linuxbrew ]; then eval $(~/.linuxbrew/bin/brew shellenv); fi ;;
+      Ubuntu) if [ -d ~/.linuxbrew ]; then eval $(~/.linuxbrew/bin/brew shellenv); fi ;;
     esac
     ;;
 esac
