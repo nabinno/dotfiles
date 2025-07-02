@@ -285,6 +285,7 @@ get-base() {
               ;;
             22.04 | 24.04)
               sudo apt install -y \
+                dnsutils \
                 libncurses5-dev \
                 libgccjit-9-dev \
                 libssl-dev \
