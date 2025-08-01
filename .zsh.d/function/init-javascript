@@ -59,6 +59,7 @@ get-global-npm-packages() {
   npm install -g \
     @google/clasp \
     ccmanager \
+    claude-code-templates \
     http-server \
     node-plantuml \
     npm2dot \
