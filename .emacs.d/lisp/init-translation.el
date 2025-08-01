@@ -12,8 +12,8 @@
   (global-set-key "\C-cT" 'google-translate-query-translate)
 
   (custom-set-variables
-   '(google-translate-default-source-language "en")
-   '(google-translate-default-target-language "ja")))
+   '(google-translate-default-source-language "ja")
+   '(google-translate-default-target-language "en")))
 
 
 ;;; popwin.el
