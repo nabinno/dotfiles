@@ -42,8 +42,15 @@ set-claude-mcp-awsdocs() {
     -- uvx awslabs.aws-documentation-mcp-server@latest
 }
 
+set-claude-mcp-awsdiagram() {
+  claude mcp add awsdiagram \
+    --scope project \
+    -e FASTMCP_LOG_LEVEL=ERROR \
+    -- uvx awslabs.aws-diagram-mcp-server@latest
+}
+
 set-claude-mcp-awsterraform() {
-  claude mcp add awsdocs \
+  claude mcp add awsterraform \
     --scope project \
     -e FASTMCP_LOG_LEVEL=ERROR \
     -- uvx awslabs.terraform-mcp-server@latest
