@@ -22,22 +22,37 @@ get-claude() {
 }
 if ! type -p claude >/dev/null; then get-claude; fi
 
-set-claude-mcp-servers() {
+set-claude-mcp-atlassian() {
   claude mcp add atlassian \
     --scope project \
     -- npx -y mcp-remote https://mcp.atlassian.com/v1/sse
+}
+
+set-claude-mcp-context7() {
   claude mcp add context7 \
     --scope project \
     -- npx -y mcp-remote https://mcp.context7.com/sse
+}
+
+set-claude-mcp-awsdocs() {
   claude mcp add awsdocs \
     --scope project \
     -e FASTMCP_LOG_LEVEL=ERROR \
     -e AWS_DOCUMENTATION_PARTITION=aws \
     -- uvx awslabs.aws-documentation-mcp-server@latest
-  # claude mcp add examplecom \
-  #   --scope project \
-  #   -- npx -y sitemcp https://example.com -m "/examples/**"
 }
+
+set-claude-mcp-serena() {
+  claude mcp add serena \
+    --scope project \
+    -- uvx --from git+https://github.com/oraios/serena serena-mcp-server --context ide-assistant --project $(pwd)
+}
+
+# set-claude-mcp-examplecom() {
+#   claude mcp add examplecom \
+#     --scope project \
+#     -- npx -y sitemcp https://example.com -m "/examples/**"
+# }
 
 # ----------------------------------------------------------------------
 # ### Gemini CLI ###
