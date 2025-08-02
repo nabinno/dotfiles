@@ -42,10 +42,34 @@ set-claude-mcp-awsdocs() {
     -- uvx awslabs.aws-documentation-mcp-server@latest
 }
 
+set-claude-mcp-awsterraform() {
+  claude mcp add awsdocs \
+    --scope project \
+    -e FASTMCP_LOG_LEVEL=ERROR \
+    -- uvx awslabs.terraform-mcp-server@latest
+}
+
+set-claude-mcp-terraform() {
+  claude mcp add terraform-mcp-server \
+    --scope project \
+    -- docker run -i --rm hashicorp/terraform-mcp-server
+}
+
 set-claude-mcp-serena() {
   claude mcp add serena \
     --scope project \
     -- uvx --from git+https://github.com/oraios/serena serena-mcp-server --context ide-assistant --project $(pwd)
+}
+
+set-claude-mcp-n8n() {
+  claude mcp add n8n-mcp \
+    --scope project \
+    -e MCP_MODE=stdio \
+    -e LOG_LEVEL=error \
+    -e DISABLE_CONSOLE_OUTPUT=true \
+    -e N8N_API_URL=${N8N_API_URL} \
+    -e N8N_API_KEY=${N8N_API_KEY} \
+    -- npx n8n-mcp
 }
 
 # set-claude-mcp-examplecom() {
