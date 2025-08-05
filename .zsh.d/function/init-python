@@ -175,5 +175,13 @@ if ! type -p poetry >/dev/null; then get-poetry; fi
 # }
 # if type -p poetry >/dev/null; then set-poetry; fi
 
+
+# ----------------------------------------------------------------------
+# uv
+get-uv() {
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+}
+if ! type -p uv >/dev/null; then get-uv; fi
+
 _end_time=$(date +"%s.%3N")
 echo time: $(echo "$_end_time - $_start_time" | bc) sec
