@@ -98,6 +98,18 @@ get-gemini() {
 if ! type -p gemini >/dev/null; then get-gemini; fi
 
 # ----------------------------------------------------------------------
+# ### codex ###
+get-codex() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      npm install -g @openai/codex
+      exec -l zsh
+      ;;
+  esac
+}
+if ! type -p codex >/dev/null; then get-codex; fi
+
+# ----------------------------------------------------------------------
 # ### Q CLI ###
 get-qcli() {
   case "${OSTYPE}" in
