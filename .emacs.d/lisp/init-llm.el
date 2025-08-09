@@ -10,11 +10,11 @@
   (claude-code-mode)
   (define-key global-map (kbd "C-c c") claude-code-command-map))
 
-;; Auto-revert configuration for claude-code
-(setq auto-revert-interval 1)                ; Check every 1 second
-(setq auto-revert-check-vc-info t)           ; Also check version control info
-(setq global-auto-revert-non-file-buffers t) ; Revert non-file buffers too
-(setq auto-revert-verbose nil)               ; Don't show messages when reverting
+;; ;; Auto-revert configuration for claude-code
+;; (setq auto-revert-interval 1)                ; Check every 1 second
+;; (setq auto-revert-check-vc-info t)           ; Also check version control info
+;; (setq global-auto-revert-non-file-buffers t) ; Revert non-file buffers too
+;; (setq auto-revert-verbose nil)               ; Don't show messages when reverting
 
 ;; (add-hook 'claude-code-start-hook 'auto-revert-mode)
 ;; (add-hook 'claude-code-mode-hook 'auto-revert-mode)
