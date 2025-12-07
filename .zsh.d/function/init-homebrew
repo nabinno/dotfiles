@@ -3,6 +3,8 @@ echo
 echo '[init-homebrew]'
 _start_time=$(date +"%s.%3N")
 
+export LD_LIBRARY_PATH="/home/app/.linuxbrew/opt/openssl@3/lib:${LD_LIBRARY_PATH}"
+
 get-brew() {
   case "${OSTYPE}" in
     darwin*) ;;
@@ -38,7 +40,8 @@ get-base-brew-packages() {
             jq \
             jnv \
             peco \
-            ripgrep
+            ripgrep \
+            the_silver_searcher
           ;;
       esac
       ;;
