@@ -3,12 +3,13 @@
 ;;; Code:
 (unless (featurep 'leaf)
   (require 'init-leaf))
-(leaf helm :ensure t)
+(leaf helm
+  :el-get emacs-helm/helm)
 
 
 ;; RipGrep
 (leaf helm-ag
-  :ensure t
+  :el-get emacsattic/helm-ag
   :config
   (setq helm-ag-base-command "rg --vimgrep --no-heading --hidden")
   (setq helm-ag-insert-at-point 'symbol) ; set up current symbol to default query
