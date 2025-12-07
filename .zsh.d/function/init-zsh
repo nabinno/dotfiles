@@ -194,6 +194,31 @@ set-autojump() {
 # [[ ! -s /home/vagrant/.autojump/etc/profile.d/autojump.sh ]] && get-autojump
 # [[   -s /home/vagrant/.autojump/etc/profile.d/autojump.sh ]] && set-autojump
 
+get-zsh-users() {
+  case $OSTYPE in
+    linux*)
+      brew install \
+        zsh-completions \
+        zsh-history-substring-search \
+        zsh-syntax-highlighting
+      ;;
+  esac
+}
+
+set-zsh-users() {
+  case $OSTYPE in
+    linux*)
+      FPATH=~/.linuxbrew/share/zsh-completions:$FPATH
+      autoload -Uz compinit
+      compinit
+      source ~/.linuxbrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+      source ~/.linuxbrew/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+      ;;
+  esac
+}
+if [ ! -d ~/.linuxbrew/share/zsh-completions ]; then get-zsh-users; fi
+if [ -d ~/.linuxbrew/share/zsh-completions ]; then set-zsh-users; fi
+
 # ----------------------------------------------------------------------
 # Alias
 zmodload -i zsh/mathfunc
