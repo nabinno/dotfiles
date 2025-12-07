@@ -54,7 +54,7 @@ case "${OSTYPE}" in
     esac
     ;;
 esac
-if ! type -p brew >/dev/null; then get-brew && get-base-brew-packages; fi
+if ! [ -f ~/.linuxbrew/bin/brew ]; then get-brew && get-base-brew-packages; fi
 
 _end_time=$(date +"%s.%3N")
 echo time: $(echo "$_end_time - $_start_time" | bc) sec
