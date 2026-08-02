@@ -1,8 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(cclens sql *)"
     ],
     "deny": []
-  }
+  },
+  "disabledMcpjsonServers": [
+    "my-server",
+    "n8n-mcp"
+  ]
 }

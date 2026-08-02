@@ -14,18 +14,6 @@ This is nabinno's personal dotfiles repository containing configuration files fo
 sh -c "$(curl -fsSL https://raw.github.com/nabinno/dotfiles/master/install.sh)"
 ```
 
-### Provision Zsh Environment
-```bash
-# Launch zsh or reload configuration
-exec zsh -l
-```
-
-### Provision Emacs Environment
-```bash
-# Launch Emacs with debug mode
-emacs --debug-init -nw
-```
-
 ### Go Module Management
 ```bash
 # In .zsh.d/function directory - check dependencies
@@ -92,21 +80,6 @@ emacs --eval "(load-file \"~/.emacs.d/init.el\")"
 
 ### Working with Zsh Functions
 Functions are autoloaded via the `require` helper in `.zshrc`. The Go utility in `.zsh.d/function/` handles complex initialization tasks.
-
-### Testing Configuration Changes
-```bash
-# Test Zsh configuration reload
-exec zsh -l
-
-# Debug Zsh function loading
-zsh -x -c "source ~/.zshrc"
-
-# Check if specific function is loaded
-which init-ruby
-
-# Manual function reload
-unfunction init-ruby && autoload init-ruby
-```
 
 ### Environment Variables
 - `DOTFILES_PATH`: Set automatically to repository location
