@@ -72,6 +72,16 @@ set-nix() {
 }
 if type -p nix >/dev/null; then set-nix; fi
 
+## Nix Flakes
+set-nix-flakes() {
+  mkdir -p ~/.config/nix
+  printf '%s\n' \
+    'extra-experimental-features = nix-command flakes' \
+    >>~/.config/nix/nix.conf
+}
+if ! [ -f ~/.config/nix/nix.conf ]; then set-nix-flakes; fi
+
+## Alias
 nix-install() {
   nix-env --install $1
 }
@@ -100,6 +110,7 @@ nix-update-all() {
   nix-channel --update
 }
 
+## Other
 get-nix-packages() {
   case "${OSTYPE}" in
     darwin* | linux*)
