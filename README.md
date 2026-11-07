@@ -24,6 +24,43 @@ sh -c "$(curl -fsSL https://raw.github.com/nabinno/dotfiles/master/install.sh)"
 ```
 
 ### Setup
+**WSL Networking:**
+
+On WSL, `install.sh` applies `.win32/.wslconfig` to the Windows user profile
+(`%USERPROFILE%\.wslconfig`). It sets `[wsl2] networkingMode=mirrored`, preserving
+other settings and backing up an existing file before changing it. This requires
+Windows 11 22H2 or later with a supported WSL version and allows WSL to reach
+Windows services, including Chrome CDP, through `127.0.0.1`.
+
+To apply just this configuration from an existing checkout:
+
+```sh
+bash .win32/install-wsl.sh
+```
+
+Save your work, run `wsl --shutdown` in Windows PowerShell, and reopen WSL to
+activate the change. The installer does not stop WSL automatically.
+
+**Connect to your running Windows Chrome:**
+
+Requires Python 3 and `agent-browser`. In your normal Chrome (144+), open
+`chrome://inspect/#remote-debugging` and enable remote debugging. Run `cdp`
+in WSL and approve the connection in Chrome when prompted.
+
+The command reads the default Windows Chrome profile's `DevToolsActivePort`
+and connects to that browser's WebSocket endpoint. It does not launch Chrome
+or fall back to a browser on a different debugging port.
+
+```sh
+cdp          # Connect agent-browser to the running Chrome
+cdp --check  # Check TCP reachability (does not verify Chrome permission)
+cdp --url    # Print the discovered WebSocket URL
+```
+
+`CDP_CHROME_USER_DATA_DIR` overrides the profile directory (use a WSL path).
+`CDP_HOST` overrides `127.0.0.1` for an existing forwarding setup.
+`CDP_URL` explicitly overrides discovery with a full `ws://` or `wss://` URL.
+
 **Zsh Environment:**
 ```sh
 exec zsh -l

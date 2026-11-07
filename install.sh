@@ -40,6 +40,10 @@ main() {
     --exclude='Dockerfile' \
     "$INSTALL_DIR/" "$HOME/"
 
+  # WSL networking is configured in the Windows user profile, not Linux $HOME.
+  bash "$INSTALL_DIR/.win32/install-wsl.sh"
+  chmod +x "$HOME/.local/bin/cdp"
+
   # Display success message
   cat <<EOF
 ${GREEN}

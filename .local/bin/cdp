@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+"""Connect agent-browser to the currently running Windows Chrome."""
+import argparse
+import os
+from pathlib import Path
+import re
+import shutil
+import socket
+import subprocess
+import sys
+from urllib.parse import urlsplit
+
+
+def chrome_directory():
+    if os.environ.get("CDP_CHROME_USER_DATA_DIR"):
+        return Path(os.environ["CDP_CHROME_USER_DATA_DIR"])
+    if os.environ.get("USER_PROFILE"):
+        return Path(os.environ["USER_PROFILE"]) / "AppData/Local/Google/Chrome/User Data"
+    ps = shutil.which("powershell.exe") or "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
+    result = subprocess.run(
+        [ps, "-NoProfile", "-NonInteractive", "-Command", "Write-Output $env:LOCALAPPDATA"],
+        check=True, capture_output=True, text=True, timeout=15,
+    )
+    windows_path = result.stdout.strip()
+    if not windows_path:
+        raise ValueError("Windows LOCALAPPDATAを取得できません。")
+    result = subprocess.run(["wslpath", "-u", windows_path], check=True,
+                            capture_output=True, text=True, timeout=5)
+    return Path(result.stdout.strip()) / "Google/Chrome/User Data"
+
+
+def endpoint():
+    # Never probe arbitrary debugging ports: they may belong to another browser.
+    if os.environ.get("CDP_URL"):
+        url = os.environ["CDP_URL"]
+    else:
+        active_port = chrome_directory() / "DevToolsActivePort"
+        try:
+            lines = active_port.read_text().splitlines()
+        except FileNotFoundError:
+            raise ValueError(
+                "普段のChromeで chrome://inspect/#remote-debugging を開き、"
+                "リモートデバッグを有効にしてください。Chrome 144以降が必要です。"
+            ) from None
+        if (len(lines) < 2 or not lines[0].isdigit()
+                or not 0 < int(lines[0]) < 65536
+                or not re.fullmatch(r"/devtools/browser/[A-Za-z0-9-]+", lines[1])):
+            raise ValueError(f"Chromeの接続情報が不正です: {active_port}")
+        host = os.environ.get("CDP_HOST", "127.0.0.1")
+        if ":" in host and not host.startswith("["):
+            host = f"[{host}]"
+        url = f"ws://{host}:{lines[0]}{lines[1]}"
+    parsed = urlsplit(url)
+    if parsed.scheme not in ("ws", "wss") or not parsed.hostname:
+        raise ValueError("CDP_URLにはブラウザ固有のws://またはwss://接続先を指定してください。")
+    return url
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", action="store_true", help="Check TCP reachability only")
+    parser.add_argument("--url", action="store_true", help="Print the discovered WebSocket URL")
+    args = parser.parse_args()
+    url = endpoint()
+    if args.url:
+        print(url)
+        return
+    if args.check:
+        parsed = urlsplit(url)
+        with socket.create_connection((parsed.hostname, parsed.port or
+                                       (443 if parsed.scheme == "wss" else 80)), timeout=3):
+            pass
+        print("ChromeのCDPポートに到達できます（ブラウザ側の接続許可は未確認）。")
+        return
+    browser = shutil.which("agent-browser")
+    if not browser:
+        raise ValueError("agent-browserがPATHに見つかりません。")
+    os.execv(browser, [browser, "connect", url])
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (OSError, ValueError, subprocess.SubprocessError) as error:
+        sys.exit(f"{error}\nChromeは自動起動しません。WSLのmirrored設定とChromeのリモートデバッグ設定を確認してください。")
