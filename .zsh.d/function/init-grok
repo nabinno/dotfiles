@@ -20,5 +20,17 @@ get-grok() {
 }
 if ! type -p grok >/dev/null; then get-grok; fi
 
+# Grok matches the terminal's background color on startup, so it goes dark on a
+# dark terminal. Force the light theme (macOS Basic) on the bare TUI launch only;
+# `--light` is rejected alongside subcommands (e.g. `grok login`), so pass through
+# any invocation that has arguments unchanged.
+grok() {
+  if [ "$#" -eq 0 ]; then
+    command grok --light
+  else
+    command grok "$@"
+  fi
+}
+
 _end_time=$(date +"%s.%3N")
 echo time: $(echo "$_end_time - $_start_time" | bc) sec
