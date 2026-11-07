@@ -72,7 +72,7 @@ unset LSCOLORS
 unsetopt PROMPT_SP
 zstyle ':completion:*' use-cache true
 case "${TERM}" in
-  xterm | screen.xterm*) export TERM=xterm-color ;;
+  xterm | xterm-color | screen.xterm*) export TERM=xterm-256color ;;
   kterm)
     export TERM=kterm-color
     # set BackSpace control character
