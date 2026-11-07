@@ -154,6 +154,20 @@
 
 
 
+;;; Appearance / color theme
+;; Use the built-in high-contrast, legible Modus theme (no extra package needed).
+(when (fboundp 'load-theme)
+  (load-theme 'modus-vivendi t))
+
+;; Keep the terminal's transparent background: the theme paints an opaque
+;; default background, so reset it to the terminal default on TTY frames.
+(defun my-keep-transparent-background (&optional frame)
+  (unless (display-graphic-p frame)
+    (set-face-background 'default "unspecified-bg" frame)))
+(my-keep-transparent-background)
+(add-hook 'after-make-frame-functions 'my-keep-transparent-background)
+
+
 ;;; Other
 (put 'scroll-left 'disabled nil)
 
