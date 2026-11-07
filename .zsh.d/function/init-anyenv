@@ -21,7 +21,21 @@ get-anyenv() {
 }
 
 if ! type -p anyenv >/dev/null; then get-anyenv; fi
-if type -p anyenv >/dev/null; then eval "$(anyenv init - zsh)"; fi
+
+# anyenv init bakes per-env `rehash` calls into its output, which spawn every
+# env binary and rebuild shims on *every* shell start (~1.2s). Shims only change
+# when you install a language version or a gem/npm binary, so strip those lines
+# from the cached output. Run `anyenv-rehash` manually (or wait for the weekly
+# cache refresh) after installing new executables.
+_anyenv_init_src() {
+  anyenv init - zsh | sed -e '/rehash 2>\/dev\/null/d' -e '/rehash --only-manage-paths/d'
+}
+anyenv-rehash() {
+  rm -f ${XDG_CACHE_HOME:-$HOME/.cache}/zsh/anyenv-init.zsh
+  for e in goenv nodenv plenv pyenv rbenv; do type -p $e >/dev/null && $e rehash; done
+}
+
+if type -p anyenv >/dev/null; then source "$(zsh-cache anyenv-init.zsh _anyenv_init_src)"; fi
 
 _end_time=$(date +"%s.%3N")
 echo time: $(echo "$_end_time - $_start_time" | bc) sec

@@ -210,7 +210,11 @@ set-zsh-users() {
     linux*)
       FPATH=~/.linuxbrew/share/zsh-completions:$FPATH
       autoload -Uz compinit
-      compinit
+      # Rebuild the completion dump (with its security scan) at most once a day;
+      # otherwise load the existing dump directly with -C (skips the scan, ~0.4s
+      # -> ~0.05s). This is the single authoritative compinit (removed from
+      # .zshenv so non-interactive `zsh -c` no longer pays for it).
+      if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then compinit; else compinit -C; fi
       source ~/.linuxbrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
       source ~/.linuxbrew/share/zsh-history-substring-search/zsh-history-substring-search.zsh
       ;;

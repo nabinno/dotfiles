@@ -33,7 +33,8 @@ get-powershell() {
 if ! type -p powershell >/dev/null; then get-powershell; fi
 
 set-psexe() {
-  export PSEXE_PROFILE=$(wslpath -u $(powershell.exe -Command "echo \$PROFILE" | tail -1) | tr -d '\n\r')
+  local cache=$(zsh-cache powershell-profile.txt powershell.exe -Command 'echo $PROFILE')
+  export PSEXE_PROFILE=$(wslpath -u $(tail -1 "$cache") | tr -d '\n\r')
 }
 if type -p powershell.exe >/dev/null; then set-psexe; fi
 

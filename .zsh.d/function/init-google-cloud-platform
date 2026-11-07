@@ -33,8 +33,7 @@ set-gcloud() {
     cygwin | darwin* | linux*)
       source ~/google-cloud-sdk/completion.zsh.inc
       source ~/google-cloud-sdk/path.zsh.inc
-      source ~/google-cloud-sdk/completion.zsh.inc
-      gcloud config set project $GCLOUD_PROJECT_ID
+      [ -n "$GCLOUD_PROJECT_ID" ] && gcloud config set project $GCLOUD_PROJECT_ID
       ;;
   esac
 }

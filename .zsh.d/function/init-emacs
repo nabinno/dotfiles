@@ -36,7 +36,9 @@ get-emacs() {
 case $OSTYPE in msys) alias emacs='/mingw64/bin/emacs -nw' ;; esac
 if ! type emacs >/dev/null; then
   get-emacs
-else
+elif [[ -n $_REQUIRED_EMACS_VERSION ]]; then
+  # Only spawn `emacs --version` (~0.1s) when there is a required version to
+  # compare against; otherwise the reinstall check can never fire anyway.
   _CURRENT_EMACS_VERSION=$(emacs --version | head -n 1 | sed 's/GNU Emacs //' | awk '$0 = substr($0, 1, index($0, ".") + 1)')
   if [[ $_REQUIRED_EMACS_VERSION > $_CURRENT_EMACS_VERSION ]]; then get-emacs; fi
 fi

@@ -1,0 +1,27 @@
+#!/usr/bin/env zsh
+# zsh-cache <name> <command...>
+#
+# Run <command> and cache its stdout to $XDG_CACHE_HOME/zsh/<name>, printing the
+# cache file path. The command is only re-executed when the cache is missing,
+# empty, or older than 7 days (weekly auto-refresh). Callers decide whether to
+# `source "$(zsh-cache ...)"` or read the file into a variable.
+#
+# Force a rebuild any time with:  rm -f ~/.cache/zsh/*
+emulate -L zsh
+
+local name=$1
+shift
+local dir=${XDG_CACHE_HOME:-$HOME/.cache}/zsh
+local file=$dir/$name
+
+[[ -d $dir ]] || mkdir -p $dir
+
+if [[ ! -s $file ]] || (( $(date +%s) - $(stat -c %Y $file 2>/dev/null || echo 0) > 604800 )); then
+  if "$@" >$file.tmp 2>/dev/null; then
+    mv -f $file.tmp $file
+  else
+    rm -f $file.tmp
+  fi
+fi
+
+print -r -- $file
