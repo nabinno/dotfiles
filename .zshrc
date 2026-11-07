@@ -104,6 +104,7 @@ require init-zsh
 require init-powershell
 require init-screen
 require init-llm
+require init-herdr
 # require init-asciinema
 # require init-slack
 # require init-hatena-bookmark
