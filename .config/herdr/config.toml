@@ -5,11 +5,14 @@ name = "one-dark"
 auto_switch = false
 
 # herdr 0.9.5 exposes only these foreground tokens: text/accent/green/blue/red/yellow.
-# The faint menu/option gray (#5c6370) is hardcoded and NOT overridable, so we darken
-# the panel/sidebar backgrounds to pure-near-black to maximize its contrast (~2.3 -> ~3.5).
+# The faint menu gray (#5c6370) and the selected sidebar-row purple (#b1b9f9) are both
+# hardcoded in this version and NOT overridable by any token (verified by probing all six,
+# on both the stable 0.9.5 and the HEAD build). We darken panel/sidebar backgrounds to
+# raise contrast of the fixed gray and neutralize the picker selection to white.
 [theme.custom]
 text = "#ffffff"
-accent = "#61afef"
+accent = "#ffffff"
+blue = "#ffffff"
 panel_bg = "#000000"
 sidebar_bg = "#000000"
 active_row_bg = "#1a1d23"
