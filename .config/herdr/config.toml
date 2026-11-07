@@ -18,6 +18,10 @@ sidebar_bg = "#000000"
 active_row_bg = "#1a1d23"
 selection_bg = "reset"
 
+[keys]
+# Prefix key to enter prefix mode.
+prefix = "ctrl+q"
+
 [ui]
 status_indicators = "dots"
 # Fully hide the sidebar when toggled (default "compact" leaves a ~4-col rail).
