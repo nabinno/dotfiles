@@ -1,0 +1,24 @@
+#!/usr/bin/env zsh
+echo
+echo '[init-grok]'
+_start_time=$(date +"%s.%3N")
+
+# ----------------------------------------------------------------------
+# ### Grok CLI (Grok Build) ###
+# xAI's official terminal coding agent.
+# Sign in with your X / SuperGrok account:
+#   grok login               # browser (loopback) OAuth
+#   grok login --device-auth # device-code flow for headless/remote/WSL
+# Or fall back to an API key: export XAI_API_KEY="xai-..."
+get-grok() {
+  case "${OSTYPE}" in
+    freebsd* | darwin* | linux*)
+      npm install -g @xai-official/grok
+      exec -l zsh
+      ;;
+  esac
+}
+if ! type -p grok >/dev/null; then get-grok; fi
+
+_end_time=$(date +"%s.%3N")
+echo time: $(echo "$_end_time - $_start_time" | bc) sec
