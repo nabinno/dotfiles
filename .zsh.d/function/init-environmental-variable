@@ -7,6 +7,13 @@ _start_time=$(date +"%s.%3N")
 # export LANG=ja_JP.UTF-8
 # export LANG=ja_JP.eucJP
 export CLICOLOR=1
+# Truecolor: WSL/Windows Terminal often reports TERM=xterm-color (16 colors), which
+# makes multiplexers like herdr downsample 24-bit theme colors so TUIs (herdr, grok)
+# render dark/washed-out. Advertise truecolor; only upgrade the broken/empty TERM.
+export COLORTERM=truecolor
+case "$TERM" in
+  xterm-color | xterm | '') export TERM=xterm-256color ;;
+esac
 # export EDITOR='emacsclient -t' # vim -f
 export LANG=C.UTF-8
 export LANGUAGE=C.UTF-8
