@@ -20,3 +20,5 @@ selection_bg = "reset"
 
 [ui]
 status_indicators = "dots"
+# Fully hide the sidebar when toggled (default "compact" leaves a ~4-col rail).
+sidebar_collapsed_mode = "hidden"
