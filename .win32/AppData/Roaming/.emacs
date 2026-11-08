@@ -1,9 +1,15 @@
 ;;; dotemacs --- Package configuration
 ;;; Commentary:
 ;;; Code:
-(package-initialize)
 
 
+;;; Byte-compiler noise
+;; Third-party packages (popup, elscreen, undo-tree, ...) emit "Unused
+;; lexical variable/argument" warnings when byte-compiled on install.
+;; Suppress just that category so the *Warnings* buffer stays quiet.
+(setq byte-compile-warnings '(not lexical))
+
+
 ;;; Local configuration
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -87,7 +93,6 @@
    'package-archives '(("org" . "https://orgmode.org/elpa/")
                        ("melpa" . "https://melpa.org/packages/")
                        ("gnu" . "https://elpa.gnu.org/packages/")))
-  (package-initialize)
   (unless (package-installed-p 'leaf)
     (package-refresh-contents)
     (package-install 'leaf))
@@ -183,9 +188,8 @@
 (leaf whole-line-or-region
   :ensure t
   :config
-  (whole-line-or-region-mode t)
-  (diminish 'whole-line-or-region-mode)
-  (make-variable-buffer-local 'whole-line-or-region-mode)
+  (whole-line-or-region-global-mode t)
+  (diminish 'whole-line-or-region-local-mode)
   (defun suspend-mode-during-cua-rect-selection (mode-name)
     "Add an advice to suspend `MODE-NAME' while selecting a CUA rectangle."
     (let ((flagvar (intern (format "%s-was-active-before-cua-rectangle" mode-name)))
@@ -201,7 +205,7 @@
            (defadvice cua--deactivate-rectangle (after ,advice-name activate)
              (when ,flagvar
                (,mode-name 1)))))))
-  (suspend-mode-during-cua-rect-selection 'whole-line-or-region-mode))
+  (suspend-mode-during-cua-rect-selection 'whole-line-or-region-local-mode))
 
 
 ;;; visual-regex
@@ -278,7 +282,7 @@
 
 
 ;;; Ruby
-(leaf ruby-mode :ensure t)
+(leaf ruby-mode)
 (leaf ruby-hash-syntax :ensure t)
 (setq ruby-use-encoding-map nil)
 (after-load 'ruby-mode
@@ -308,12 +312,12 @@
 	      (define-key markdown-mode-map (kbd "M-e") 'markdown-cycle)
 	      ;; (hide-sublevels 2)
 	      ))
-  (set-face-attribute 'markdown-code-face nil :inherit 'default :foreground "light green"))
+  (with-eval-after-load 'markdown-mode
+    (set-face-attribute 'markdown-code-face nil :inherit 'default :foreground "light green")))
 
 
 ;;; org-mode
 (leaf org :ensure t)
-(leaf org-fstree :ensure t)
 
 (define-key global-map (kbd "C-c l") 'org-store-link)
 (define-key global-map (kbd "C-c a") 'org-agenda)
@@ -343,6 +347,7 @@
 
 
 ;;; translation
+(leaf popup :ensure t)
 (leaf google-translate
   :ensure t
   :config
