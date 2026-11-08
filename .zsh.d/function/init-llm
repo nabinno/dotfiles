@@ -31,7 +31,7 @@ set-claude-mcp-atlassian() {
 set-claude-mcp-context7() {
   claude mcp add context7 \
     --scope project \
-    -- npx -y mcp-remote https://mcp.context7.com/sse
+    -- npx -y mcp-remote https://mcp.context7.com/mcp
 }
 
 set-claude-mcp-awsdocs() {
