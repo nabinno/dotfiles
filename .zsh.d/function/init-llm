@@ -112,6 +112,9 @@ get-codex() {
 }
 if ! type -p codex >/dev/null; then get-codex; fi
 
+# Use a fresh server and allow workspace edits with approval when needed.
+alias codex='codex --no-daemon --sandbox workspace-write --ask-for-approval on-request'
+
 # ----------------------------------------------------------------------
 # ### Q CLI ###
 get-qcli() {
