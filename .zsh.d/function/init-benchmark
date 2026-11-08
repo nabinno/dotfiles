@@ -3,6 +3,9 @@ echo
 echo '[init-benchmark]'
 _start_time=$(date +"%s.%3N")
 
+# Install optional benchmark tools explicitly with get-ab, get-wrk, or
+# get-phoronix-test-suite; shell startup must not download packages.
+
 # Ab
 function get-ab() {
   case "${OSTYPE}" in
@@ -15,7 +18,6 @@ function get-ab() {
       ;;
   esac
 }
-if ! type -p ab >/dev/null; then get-ab; fi
 
 # ----------------------------------------------------------------------
 # Wrk
@@ -38,7 +40,6 @@ function get-wrk() {
       ;;
   esac
 }
-if ! type -p wrk >/dev/null; then get-wrk; fi
 
 # ----------------------------------------------------------------------
 # Phoronix Test Suite
@@ -54,7 +55,6 @@ function get-phoronix-test-suite() {
       ;;
   esac
 }
-# if ! type -p phoronix-test-suite >/dev/null; then get-phoronix-test-suite; fi
 
 # ----------------------------------------------------------------------
 # curlb

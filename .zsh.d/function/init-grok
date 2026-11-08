@@ -10,11 +10,24 @@ _start_time=$(date +"%s.%3N")
 #   grok login               # browser (loopback) OAuth
 #   grok login --device-auth # device-code flow for headless/remote/WSL
 # Or fall back to an API key: export XAI_API_KEY="xai-..."
+# Native installations keep the executable outside npm's global bin directory.
+if [[ -x "$HOME/.grok/bin/grok" && ${path[(Ie)$HOME/.grok/bin]} -eq 0 ]]; then
+  export PATH="$HOME/.grok/bin:$PATH"
+fi
+
 get-grok() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
-      npm install -g @xai-official/grok
-      exec -l zsh
+      if ! npm install -g @xai-official/grok; then
+        print -u2 '[init-grok] Installation failed; continuing shell initialization. Retry with get-grok.'
+        return 1
+      fi
+      if type -p nodenv >/dev/null; then nodenv rehash; fi
+      rehash
+      if ! type -p grok >/dev/null; then
+        print -u2 '[init-grok] grok is still missing from PATH; check the npm global bin directory.'
+        return 1
+      fi
       ;;
   esac
 }
