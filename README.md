@@ -24,6 +24,68 @@ sh -c "$(curl -fsSL https://raw.github.com/nabinno/dotfiles/master/install.sh)"
 ```
 
 ### Setup
+**Windows Claude Code (Pro / Bedrock):**
+
+The Windows CMD launchers and their shared PowerShell script are stored under
+`.win32/AppData/Roaming/`. Install them from the checkout in Windows PowerShell:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .win32\install-claude.ps1
+```
+
+Requires an existing `%APPDATA%\npm\claude.cmd` installation, Windows PowerShell,
+and `%APPDATA%\npm` on `PATH`. Existing launcher files are backed up when changed.
+In Windows CMD:
+
+```bat
+claude-pro
+claude-bedrock -Profile your-aws-profile -Region ap-northeast-1
+```
+
+Pro and Bedrock use separate configuration directories:
+`%APPDATA%\claude-profiles\pro` and `%APPDATA%\claude-profiles\bedrock`.
+Sign in to Pro and configure AWS authentication locally as needed. The launcher
+clears inherited Anthropic/provider overrides; Bedrock also clears direct AWS
+credentials and selects the supplied AWS profile and region. Additional Claude
+arguments are forwarded by `launch.ps1`. Credentials, profile settings, and
+session history are not included in this repository.
+
+**WSL Claude Code (Pro / Bedrock):**
+
+`.local/bin/claude-profile` is a standalone Bash launcher for use before wiring
+up aliases in `~/.zsh.d/init.zsh`. Run it directly from the checkout:
+
+```sh
+./.local/bin/claude-profile pro
+./.local/bin/claude-profile bedrock --profile InfrastructureLLM --region ap-northeast-1
+./.local/bin/claude-profile pro -- --resume
+```
+
+It runs the WSL `claude` executable on `PATH`, forwarding arguments and its exit
+status. `CLAUDE_PROFILE_BIN` can specify an explicit executable path. It clears
+inherited Anthropic/provider overrides and uses `~/.claude-pro` or
+`~/.claude-bedrock` as `CLAUDE_CONFIG_DIR`. Pro may require a separate login;
+existing `~/.claude` settings and sessions are not copied. Bedrock requires an
+explicit AWS profile and region, and clears direct AWS credentials in the child
+process. Optional `CLAUDE_BEDROCK_MODEL` and `CLAUDE_BEDROCK_SMALL_FAST_MODEL`
+set Bedrock model overrides after clearing inherited variables.
+
+To install just the launcher:
+
+```sh
+install -Dm755 .local/bin/claude-profile "$HOME/.local/bin/claude-profile"
+```
+
+Future `init.zsh` alias wiring (not applied automatically):
+
+```zsh
+alias claude='$HOME/.local/bin/claude-profile bedrock --profile InfrastructureLLM --region ap-northeast-1 --'
+alias ccpro='$HOME/.local/bin/claude-profile pro --'
+```
+
+The correct variable is `CLAUDE_CONFIG_DIR` (not `CLAUDE_CONFI_DIR`). The launcher
+runs as a separate process and leaves the parent shell environment unchanged.
+
 **WSL Networking:**
 
 On WSL, `install.sh` applies `.win32/.wslconfig` to the Windows user profile

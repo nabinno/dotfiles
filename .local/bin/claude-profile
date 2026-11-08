@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  claude-profile pro [--] [Claude arguments...]
+  claude-profile bedrock --profile NAME --region REGION [--] [Claude arguments...]
+
+Configurations: ~/.claude-pro and ~/.claude-bedrock (separate from ~/.claude).
+Use -- before Claude arguments to avoid interpreting them as wrapper options.
+CLAUDE_PROFILE_BIN overrides the Claude executable (default: claude on PATH).
+CLAUDE_BEDROCK_MODEL and CLAUDE_BEDROCK_SMALL_FAST_MODEL optionally select models.
+EOF
+}
+fail() { printf '%s\n' "$1" >&2; exit 2; }
+
+mode=${1:-}
+case "$mode" in
+  -h|--help) usage; exit 0 ;;
+  pro|bedrock) shift ;;
+  *) usage >&2; exit 2 ;;
+esac
+
+profile= region=
+if [[ $mode == bedrock ]]; then
+  while (( $# )); do
+    case "$1" in
+      --profile|--region)
+        (( $# >= 2 )) && [[ -n $2 && $2 != -* ]] || fail "$1 requires a value"
+        case "$1" in
+          --profile) profile=$2 ;;
+          --region) region=$2 ;;
+        esac
+        shift 2 ;;
+      --) shift; break ;;
+      *) break ;;
+    esac
+  done
+  [[ -n $profile && -n $region ]] || fail 'Bedrock requires --profile NAME --region REGION'
+elif [[ ${1:-} == -- ]]; then
+  shift
+fi
+
+# Only the child process changes; aliases and parent-shell exports are untouched.
+for name in ${!ANTHROPIC_@} ${!CLAUDE_CODE_USE_@} \
+  CLAUDE_CODE_OAUTH_TOKEN CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR \
+  CLAUDE_CODE_API_KEY_FILE_DESCRIPTOR CLAUDE_CODE_MODEL; do
+  unset "$name"
+done
+export CLAUDE_CONFIG_DIR="$HOME/.claude-$mode"
+mkdir -p -- "$CLAUDE_CONFIG_DIR"
+
+case "$mode" in
+  bedrock)
+    unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN \
+      AWS_SECURITY_TOKEN AWS_BEARER_TOKEN_BEDROCK AWS_DEFAULT_PROFILE
+    export CLAUDE_CODE_USE_BEDROCK=1
+    export AWS_PROFILE="$profile" AWS_REGION="$region" AWS_DEFAULT_REGION="$region"
+    if [[ -n ${CLAUDE_BEDROCK_MODEL:-} ]]; then
+      export ANTHROPIC_MODEL="$CLAUDE_BEDROCK_MODEL"
+    fi
+    if [[ -n ${CLAUDE_BEDROCK_SMALL_FAST_MODEL:-} ]]; then
+      export ANTHROPIC_SMALL_FAST_MODEL="$CLAUDE_BEDROCK_SMALL_FAST_MODEL"
+    fi
+    ;;
+esac
+
+# Executing an external command bypasses interactive aliases/functions.
+exec "${CLAUDE_PROFILE_BIN:-claude}" "$@"
