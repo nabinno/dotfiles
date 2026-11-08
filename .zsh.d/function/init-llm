@@ -16,6 +16,7 @@ get-claude() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       npm install -g @anthropic-ai/claude-code
+      type -p nodenv >/dev/null && nodenv rehash
       exec -l zsh
       ;;
   esac
@@ -91,6 +92,7 @@ get-gemini() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       npm install -g @google/gemini-cli
+      type -p nodenv >/dev/null && nodenv rehash
       exec -l zsh
       ;;
   esac
@@ -103,6 +105,7 @@ get-codex() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       npm install -g @openai/codex
+      type -p nodenv >/dev/null && nodenv rehash
       exec -l zsh
       ;;
   esac
@@ -124,7 +127,7 @@ get-qcli() {
       ;;
   esac
 }
-if ! type -p q >/dev/null; then get-qcli; fi
+if ! type -p q >/dev/null && sudo -n true 2>/dev/null; then get-qcli; fi
 
 _end_time=$(date +"%s.%3N")
 echo time: $(echo "$_end_time - $_start_time" | bc) sec
