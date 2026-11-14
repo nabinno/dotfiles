@@ -24,6 +24,19 @@ sh -c "$(curl -fsSL https://raw.github.com/nabinno/dotfiles/master/install.sh)"
 ```
 
 ### Setup
+**Antigravity CLI (Linux / macOS):**
+
+The Zsh `init-llm` module installs `agy` when it is missing, using the
+[official installer](https://antigravity.google/cli/install.sh), and adds
+`~/.local/bin` to `PATH`. The installer verifies the release checksum;
+Antigravity CLI manages its own updates.
+
+Run `agy` in your project directory and follow the first-run Google sign-in
+instructions. Authentication state and session history stay local and are not
+included in this repository.
+
+This setup uses Antigravity CLI in place of Gemini CLI.
+
 **Windows Claude Code (Pro / Bedrock):**
 
 The Windows CMD launchers and their shared PowerShell script are stored under

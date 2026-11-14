@@ -90,17 +90,24 @@ set-claude-mcp-n8n() {
 # }
 
 # ----------------------------------------------------------------------
-# ### Gemini CLI ###
-get-gemini() {
+# ### Antigravity CLI ###
+# The official installer places agy here. Make it available in this shell too.
+if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+  export PATH="$HOME/.local/bin:$PATH"
+fi
+
+get-antigravity() (
   case "${OSTYPE}" in
-    freebsd* | darwin* | linux*)
-      npm install -g @google/gemini-cli
-      type -p nodenv >/dev/null && nodenv rehash
-      exec -l zsh
+    darwin* | linux*)
+      local installer
+      installer=$(mktemp) || return 1
+      trap 'rm -f "$installer"' EXIT
+      curl -fsSL https://antigravity.google/cli/install.sh -o "$installer" || return 1
+      bash "$installer"
       ;;
   esac
-}
-if ! type -p gemini >/dev/null; then get-gemini; fi
+)
+if ! type -p agy >/dev/null; then get-antigravity; fi
 
 # ----------------------------------------------------------------------
 # ### codex ###
