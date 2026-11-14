@@ -164,6 +164,21 @@ exec zsh -l
 cd .zsh.d/function && go run .
 ```
 
+### Zsh Startup Diagnostics
+
+Startup messages and per-module timings are disabled by default. To show them
+for one shell, run `ZSH_INIT_VERBOSE=1 zsh -i`. Timings use Zsh's
+`zsh/datetime` module rather than spawning `date` and `bc` for each module.
+The active settings in `$HOME/.zshrc` and `$HOME/.zprofile` are copied files;
+keep them in sync with the corresponding repository settings when editing them.
+
+Optional Docker Compose/Machine, OCaml, FastCGI, legacy PowerShell, dnsmasq
+provisioning, and the Ruby provisioning helper no longer run installation
+checks on every startup. Run the corresponding `get-*` functions explicitly;
+`ZSH_AUTO_INSTALL=1 zsh -i` restores these legacy startup checks (and may install
+packages or change system configuration). Installed tools, shell functions,
+completion, and the Windows PowerShell profile setup still load normally.
+
 ### Adding New Configurations
 1. **Emacs**: Add `init-feature.el` to `.emacs.d/lisp/`
 2. **Zsh**: Add function to `.zsh.d/function/` and call via `require` in `.zshrc`

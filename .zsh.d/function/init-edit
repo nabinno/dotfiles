@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
-echo
-echo '[init-edit]'
-_start_time=$(date +"%s.%3N")
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  print
+  print -r -- '[init-edit]'
+fi
+zmodload zsh/datetime
+local -F _start_time=$EPOCHREALTIME
 
 # Edit
 export REQUIRED_EDIT_VERSION=1.0.0
@@ -20,5 +23,6 @@ get-edit() {
 }
 if ! type edit >/dev/null; then get-edit; fi
 
-_end_time=$(date +"%s.%3N")
-echo time: $(echo "$_end_time - $_start_time" | bc) sec
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"
+fi

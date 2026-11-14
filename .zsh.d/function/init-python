@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
-echo
-echo '[init-python]'
-_start_time=$(date +"%s.%3N")
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  print
+  print -r -- '[init-python]'
+fi
+zmodload zsh/datetime
+local -F _start_time=$EPOCHREALTIME
 
 export REQUIRED_ANACONDA_VERSION=anaconda3-2023.09-0
 export REQUIRED_PYTHON_VERSION=3.7.3
@@ -183,5 +186,6 @@ get-uv() {
 }
 if ! type -p uv >/dev/null; then get-uv; fi
 
-_end_time=$(date +"%s.%3N")
-echo time: $(echo "$_end_time - $_start_time" | bc) sec
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"
+fi

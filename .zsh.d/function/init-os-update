@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
-echo
-echo '[init-os-update]'
-_start_time=$(date +"%s.%3N")
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  print
+  print -r -- '[init-os-update]'
+fi
+zmodload zsh/datetime
+local -F _start_time=$EPOCHREALTIME
 
 update-ubuntu-from-12.04-to-14.04() {
   case $OSTYPE in
@@ -19,5 +22,6 @@ update-ubuntu-from-12.04-to-14.04() {
   esac
 }
 
-_end_time=$(date +"%s.%3N")
-echo time: $(echo "$_end_time - $_start_time" | bc) sec
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"
+fi

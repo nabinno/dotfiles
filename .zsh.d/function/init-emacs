@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
-echo
-echo '[init-emacs]'
-_start_time=$(date +"%s.%3N")
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  print
+  print -r -- '[init-emacs]'
+fi
+zmodload zsh/datetime
+local -F _start_time=$EPOCHREALTIME
 
 # Emacs
 export REQUIRED_EMACS_VERSION=29.1
@@ -182,5 +185,6 @@ get-pandoc() {
 alias pandocpdf="pandoc -V documentclass=ltjarticle --latex-engine=lualatex -t pdf"
 alias pandocslide="pandoc -t slidy -s"
 
-_end_time=$(date +"%s.%3N")
-echo time: $(echo "$_end_time - $_start_time" | bc) sec
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"
+fi

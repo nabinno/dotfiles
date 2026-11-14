@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
-echo
-echo '[init-os-detect]'
-_start_time=$(date +"%s.%3N")
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  print
+  print -r -- '[init-os-detect]'
+fi
+zmodload zsh/datetime
+local -F _start_time=$EPOCHREALTIME
 
 export OS=
 export KERNEL=
@@ -16,9 +19,7 @@ export CURRENT_USER=$(whoami)
 case "${OSTYPE}" in
   freebsd* | darwin* | linux*)
     [ -z "$PS1" ] && return
-    stty -ixon
-    stty start undef
-    stty stop undef
+    [[ -t 0 ]] && stty -ixon start undef stop undef
     OS=$(uname -s)
     REV=$(uname -r)
     MACH=$(uname -m)
@@ -96,5 +97,6 @@ case $OSTYPE in
     ;;
 esac
 
-_end_time=$(date +"%s.%3N")
-echo time: $(echo "$_end_time - $_start_time" | bc) sec
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"
+fi

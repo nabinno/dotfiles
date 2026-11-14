@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
-echo
-echo '[init-elixir]'
-_start_time=$(date +"%s.%3N")
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  print
+  print -r -- '[init-elixir]'
+fi
+zmodload zsh/datetime
+local -F _start_time=$EPOCHREALTIME
 
 export REQUIRED_ERLANG_VERSION=27.3.4.6
 export REQUIRED_REBAR_VERSION=3.9.0
@@ -169,5 +172,6 @@ get-global-mix-packages() {
 
 if ! type -p iex >/dev/null; then get-elixir; fi
 
-_end_time=$(date +"%s.%3N")
-echo time: $(echo "$_end_time - $_start_time" | bc) sec
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"
+fi

@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
-echo
-echo '[init-docker--util]'
-_start_time=$(date +"%s.%3N")
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  print
+  print -r -- '[init-docker--util]'
+fi
+zmodload zsh/datetime
+local -F _start_time=$EPOCHREALTIME
 
 case $DIST_VERSION in 16.04) export DOCKER_HOST=tcp://:2375 ;; esac
 
@@ -179,8 +182,8 @@ get-docker-machine() {
       ;;
   esac
 }
-if ! type -p docker-compose >/dev/null; then get-docker-compose; fi
-if ! type -p docker-machine >/dev/null; then get-docker-machine; fi
+if [[ ${ZSH_AUTO_INSTALL:-0} == 1 ]] && ! type -p docker-compose >/dev/null; then get-docker-compose; fi
+if [[ ${ZSH_AUTO_INSTALL:-0} == 1 ]] && ! type -p docker-machine >/dev/null; then get-docker-machine; fi
 
 case $OSTYPE in
   msys)
@@ -221,5 +224,6 @@ case "${OSTYPE}" in
     ;;
 esac
 
-_end_time=$(date +"%s.%3N")
-echo time: $(echo "$_end_time - $_start_time" | bc) sec
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"
+fi

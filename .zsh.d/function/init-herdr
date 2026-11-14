@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
-echo
-echo '[init-herdr]'
-_start_time=$(date +"%s.%3N")
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  print
+  print -r -- '[init-herdr]'
+fi
+zmodload zsh/datetime
+local -F _start_time=$EPOCHREALTIME
 
 get-herdr() {
   case "${OSTYPE}" in
@@ -18,5 +21,6 @@ get-herdr() {
 
 if ! type -p herdr >/dev/null; then get-herdr; fi
 
-_end_time=$(date +"%s.%3N")
-echo time: $(echo "$_end_time - $_start_time" | bc) sec
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"
+fi
