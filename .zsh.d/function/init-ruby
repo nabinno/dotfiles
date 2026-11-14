@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
-echo
-echo '[init-ruby]'
-_start_time=$(date +"%s.%3N")
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  print
+  print -r -- '[init-ruby]'
+fi
+zmodload zsh/datetime
+local -F _start_time=$EPOCHREALTIME
 
 export REQUIRED_RUBY_VERSION=3.1.0
 export RUBY_PACKAGE_MANAGER=anyenv
@@ -79,5 +82,6 @@ case ${RUBY_PACKAGE_MANAGER} in
     ;;
 esac
 
-_end_time=$(date +"%s.%3N")
-echo time: $(echo "$_end_time - $_start_time" | bc) sec
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"
+fi

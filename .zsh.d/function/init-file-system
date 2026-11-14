@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
-echo
-echo '[init-file-system]'
-_start_time=$(date +"%s.%3N")
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  print
+  print -r -- '[init-file-system]'
+fi
+zmodload zsh/datetime
+local -F _start_time=$EPOCHREALTIME
 
 # Inotify
 export REQUIRED_INOTIFY_VERSION=3.14
@@ -109,5 +112,6 @@ alias smbr=samba-restart
 alias smbt=samba-stop
 alias smbs=testparm
 
-_end_time=$(date +"%s.%3N")
-echo time: $(echo "$_end_time - $_start_time" | bc) sec
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"
+fi

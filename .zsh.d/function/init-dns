@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
-echo
-echo '[init-dns]'
-_start_time=$(date +"%s.%3N")
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  print
+  print -r -- '[init-dns]'
+fi
+zmodload zsh/datetime
+local -F _start_time=$EPOCHREALTIME
 
 get-dnsmasq() {
   case $OSTYPE in
@@ -24,7 +27,7 @@ get-dnsmasq() {
       ;;
   esac
 }
-if ! type dnsmasq >/dev/null; then get-dnsmasq; fi
+if [[ ${ZSH_AUTO_INSTALL:-0} == 1 ]] && ! type dnsmasq >/dev/null; then get-dnsmasq; fi
 
 set-dnsmasq() {
   case $OSTYPE in
@@ -41,7 +44,7 @@ set-dnsmasq() {
       ;;
   esac
 }
-if type dnsmasq >/dev/null; then set-dnsmasq; fi
+if [[ ${ZSH_AUTO_INSTALL:-0} == 1 ]] && type dnsmasq >/dev/null; then set-dnsmasq; fi
 
 dnsmasq-restart() {
   case $OSTYPE in
@@ -56,5 +59,6 @@ dnsmasq-restart() {
 
 alias dmr=dnsmasq-restart
 
-_end_time=$(date +"%s.%3N")
-echo time: $(echo "$_end_time - $_start_time" | bc) sec
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"
+fi

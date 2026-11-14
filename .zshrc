@@ -23,6 +23,9 @@ else
   fi
 fi
 
+# Keep nested shells from repeatedly growing command/completion search paths.
+typeset -gU path fpath
+zmodload zsh/datetime
 export FPATH=$DOTFILES_PATH/.zsh.d/function:$FPATH
 
 autoload -Uz zsh-cache
@@ -38,7 +41,9 @@ require_other() {
   [[ -d ${bin:h} ]] || mkdir -p ${bin:h}
   # `go run .` recompiles the helper on every shell start (~0.9s). Build it once
   # into a cached binary and only rebuild when a .go source is newer than it.
-  if [[ ! -x $bin || -n $dir/*.go(#qNe['[[ $REPLY -nt $bin ]]']) ]]; then
+  local -a newer_sources
+  newer_sources=("$dir"/*.go(N.e['[[ $REPLY -nt $bin ]]']))
+  if [[ ! -x $bin || ${#newer_sources} -gt 0 ]]; then
     (cd $dir && go build -o $bin . 2>/dev/null)
   fi
   [[ -x $bin ]] && (cd $dir && $bin)
@@ -62,7 +67,8 @@ require init-asdf
 
 # ProgrammingLanguage
 require init-go
-require_other
+# Ruby provisioning is explicit; init-ruby below configures installed Ruby.
+[[ ${ZSH_AUTO_INSTALL:-0} == 1 ]] && require_other
 require init-shell
 require init-ruby
 require init-ruby--util

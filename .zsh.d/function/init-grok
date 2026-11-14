@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
-echo
-echo '[init-grok]'
-_start_time=$(date +"%s.%3N")
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  print
+  print -r -- '[init-grok]'
+fi
+zmodload zsh/datetime
+local -F _start_time=$EPOCHREALTIME
 
 # ----------------------------------------------------------------------
 # ### Grok CLI (Grok Build) ###
@@ -36,5 +39,6 @@ if ! type -p grok >/dev/null; then get-grok; fi
 # Readability is handled by ~/.grok/config.toml (screen_mode = "minimal"), which
 # renders in the terminal's own palette, so no --light wrapper is needed here.
 
-_end_time=$(date +"%s.%3N")
-echo time: $(echo "$_end_time - $_start_time" | bc) sec
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"
+fi

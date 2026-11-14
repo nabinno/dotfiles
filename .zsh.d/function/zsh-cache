@@ -16,7 +16,9 @@ local file=$dir/$name
 
 [[ -d $dir ]] || mkdir -p $dir
 
-if [[ ! -s $file ]] || (( $(date +%s) - $(stat -c %Y $file 2>/dev/null || echo 0) > 604800 )); then
+local -a expired
+expired=("$file"(N.ms+604800))
+if [[ ! -s $file || ${#expired} -gt 0 ]]; then
   if "$@" >$file.tmp 2>/dev/null; then
     mv -f $file.tmp $file
   else

@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
-echo
-echo '[init-powershell]'
-_start_time=$(date +"%s.%3N")
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  print
+  print -r -- '[init-powershell]'
+fi
+zmodload zsh/datetime
+local -F _start_time=$EPOCHREALTIME
 
 get-powershell() {
   case "${OSTYPE}" in
@@ -30,7 +33,7 @@ get-powershell() {
       ;;
   esac
 }
-if ! type -p powershell >/dev/null; then get-powershell; fi
+if [[ ${ZSH_AUTO_INSTALL:-0} == 1 ]] && ! type -p powershell >/dev/null; then get-powershell; fi
 
 set-psexe() {
   local cache=$(zsh-cache powershell-profile.txt powershell.exe -Command 'echo $PROFILE')
@@ -38,5 +41,6 @@ set-psexe() {
 }
 if type -p powershell.exe >/dev/null; then set-psexe; fi
 
-_end_time=$(date +"%s.%3N")
-echo time: $(echo "$_end_time - $_start_time" | bc) sec
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"
+fi

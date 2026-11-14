@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
-echo
-echo '[init-anyenv]'
-_start_time=$(date +"%s.%3N")
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  print
+  print -r -- '[init-anyenv]'
+fi
+zmodload zsh/datetime
+local -F _start_time=$EPOCHREALTIME
 
 export PATH="$HOME/.anyenv/bin:$PATH"
 export PATH="$HOME/.anyenv/envs/goenv/bin:$PATH"
@@ -37,5 +40,6 @@ anyenv-rehash() {
 
 if type -p anyenv >/dev/null; then source "$(zsh-cache anyenv-init.zsh _anyenv_init_src)"; fi
 
-_end_time=$(date +"%s.%3N")
-echo time: $(echo "$_end_time - $_start_time" | bc) sec
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"
+fi

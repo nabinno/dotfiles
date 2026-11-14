@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
-echo
-echo '[init-ocaml]'
-_start_time=$(date +"%s.%3N")
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  print
+  print -r -- '[init-ocaml]'
+fi
+zmodload zsh/datetime
+local -F _start_time=$EPOCHREALTIME
 
 export REQUIRED_OCAML_VERSION=4.05.0
 export REQUIRED_COQ_VERSION=8.7.2
@@ -58,7 +61,7 @@ get-global-npm-packages-for-ocaml() {
     reason-cli@latest-linux
 }
 
-if ! type -p ocaml >/dev/null; then get-ocaml; fi
+if [[ ${ZSH_AUTO_INSTALL:-0} == 1 ]] && ! type -p ocaml >/dev/null; then get-ocaml; fi
 
 # ----------------------------------------------------------------------
 # Coq
@@ -72,5 +75,6 @@ get-coq-by-asdf() {
   asdf global coq $REQUIRED_COQ_VERSION
 }
 
-_end_time=$(date +"%s.%3N")
-echo time: $(echo "$_end_time - $_start_time" | bc) sec
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"
+fi

@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
-echo
-echo '[init-php--util]'
-_start_time=$(date +"%s.%3N")
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  print
+  print -r -- '[init-php--util]'
+fi
+zmodload zsh/datetime
+local -F _start_time=$EPOCHREALTIME
 
 # FastCGI
 get-fastcgi() {
@@ -121,10 +124,12 @@ exit $RET_VAL'
       ;;
   esac
 }
-case $DIST in
-  Redhat | RedHat) if ! type -p php-fpm >/dev/null; then get-fastcgi; fi ;;
-  Ubuntu) if ! type -p spawn-fcgi >/dev/null; then get-fastcgi; fi ;;
-esac
+if [[ ${ZSH_AUTO_INSTALL:-0} == 1 ]]; then
+  case $DIST in
+    Redhat | RedHat) if ! type -p php-fpm >/dev/null; then get-fastcgi; fi ;;
+    Ubuntu) if ! type -p spawn-fcgi >/dev/null; then get-fastcgi; fi ;;
+  esac
+fi
 
 php-fastcgid() {
   case "${OSTYPE}" in
@@ -161,5 +166,6 @@ alias fp="ps aux | \grep -G 'php.*'"
 alias fs="php-fastcgid status"
 alias fk="php-fastcgid stop"
 
-_end_time=$(date +"%s.%3N")
-echo time: $(echo "$_end_time - $_start_time" | bc) sec
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"
+fi
