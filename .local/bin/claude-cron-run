@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Run a Claude Code skill headlessly on a schedule (invoked by systemd user timers).
+#
+# This replaces the fragile in-session "durable cron" (.claude/scheduled_tasks.json),
+# which only fired when one specific interactive TUI session happened to be alive,
+# idle at the prompt, and holding scheduled_tasks.lock at the exact trigger instant.
+# systemd user timers fire independently of any session and backfill missed runs.
+#
+# Usage: claude-cron-run <skill-slug>
+set -uo pipefail
+
+SLUG="${1:?usage: claude-cron-run <skill-slug>}"
+WORKDIR="${CLAUDE_CRON_WORKDIR:-$HOME}"
+LOGDIR="$HOME/.claude/cron-logs"
+LOG="$LOGDIR/${SLUG}-$(date +%Y%m%d-%H%M%S).log"
+
+mkdir -p "$LOGDIR"
+
+# systemd user services start with a minimal PATH, so locate nodenv's claude + node.
+NODENV_ROOT="$HOME/.anyenv/envs/nodenv"
+if [ -x "$NODENV_ROOT/bin/nodenv" ]; then
+  export PATH="$NODENV_ROOT/bin:$PATH"
+  ver="$("$NODENV_ROOT/bin/nodenv" global 2>/dev/null)"
+  [ -n "$ver" ] && [ -d "$NODENV_ROOT/versions/$ver/bin" ] && export PATH="$NODENV_ROOT/versions/$ver/bin:$PATH"
+fi
+if ! command -v claude >/dev/null 2>&1; then
+  for d in "$NODENV_ROOT"/versions/*/bin; do
+    [ -x "$d/claude" ] && export PATH="$d:$PATH" && break
+  done
+fi
+export PATH="$HOME/.local/bin:$PATH"
+export TZ="Asia/Tokyo"
+
+cd "$WORKDIR" || exit 1
+
+# Keep two weeks of per-run logs.
+find "$LOGDIR" -maxdepth 1 -name "${SLUG}-*.log" -mtime +14 -delete 2>/dev/null || true
+
+{
+  echo "=== $(date -Is) start /$SLUG (host=$(hostname)) ==="
+  claude -p "/$SLUG" --dangerously-skip-permissions
+  rc=$?
+  echo "=== $(date -Is) end /$SLUG rc=$rc ==="
+  exit "$rc"
+} >>"$LOG" 2>&1

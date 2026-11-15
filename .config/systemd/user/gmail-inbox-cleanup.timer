@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily 09:30 Asia/Tokyo trigger for /gmail-inbox-cleanup
+
+[Timer]
+OnCalendar=*-*-* 09:30:00 Asia/Tokyo
+Persistent=true
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily 09:03 Asia/Tokyo trigger for /health-news-digest
+
+[Timer]
+OnCalendar=*-*-* 09:03:00 Asia/Tokyo
+Persistent=true
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

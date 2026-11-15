@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# OnFailure handler for claude-cron-* systemd user units.
+# Records the failure and raises a best-effort Windows toast (desktop is usually on).
+#
+# Usage: claude-cron-notify <failed-unit-name>
+set -u
+
+UNIT="${1:-unknown}"
+LOGDIR="$HOME/.claude/cron-logs"
+mkdir -p "$LOGDIR"
+
+echo "$(date -Is) FAILED: $UNIT" >> "$LOGDIR/FAILURES.log"
+
+# Best-effort Windows balloon notification; must never fail the handler.
+PS="$(command -v powershell.exe 2>/dev/null || true)"
+[ -z "$PS" ] && PS="/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
+if [ -x "$PS" ]; then
+  "$PS" -NoProfile -WindowStyle Hidden -Command \
+    "Add-Type -AssemblyName System.Windows.Forms; Add-Type -AssemblyName System.Drawing; \$n = New-Object System.Windows.Forms.NotifyIcon; \$n.Icon = [System.Drawing.SystemIcons]::Warning; \$n.Visible = \$true; \$n.ShowBalloonTip(15000, 'Claude scheduled job failed', '${UNIT}', [System.Windows.Forms.ToolTipIcon]::Error); Start-Sleep -Seconds 6; \$n.Dispose()" \
+    >/dev/null 2>&1 || true
+fi
+
+exit 0

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Run the Hatena bookmark skill with Codex from a systemd user timer.
+set -uo pipefail
+
+profile="${HATENA_CHROME_PROFILE:?set HATENA_CHROME_PROFILE to the Chrome profile signed in to Hatena}"
+logdir="$HOME/.codex/cron-logs"
+mkdir -p "$logdir"
+log="$logdir/hatena-hotentry-bookmark-$(date +%Y%m%d-%H%M%S).log"
+
+export PATH="$HOME/.anyenv/envs/nodenv/shims:$HOME/.anyenv/envs/nodenv/bin:$HOME/.local/bin:$PATH"
+export TZ=Asia/Tokyo
+
+find "$logdir" -maxdepth 1 -name 'hatena-hotentry-bookmark-*.log' -mtime +14 -delete 2>/dev/null || true
+
+prompt="Read and follow $HOME/.codex/skills/hatena-hotentry-bookmark/SKILL.md and $HOME/.codex/skills/agent-browser-current-browser/SKILL.md. Review the most recent five calendar days and bookmark suitable articles. Use only the Chrome profile named '$profile' through cb. If that profile, the existing Chrome browser, or its Hatena login is unavailable, stop without posting. Check each article, existing bookmark state, comment, and ten tags as the skill requires. Report the number of bookmarks and their Hatena links."
+
+{
+  printf '=== %s start /hatena-hotentry-bookmark (Chrome profile: %s) ===\n' "$(date -Is)" "$profile"
+  if ! profiles="$(cb profiles 2>&1)"; then
+    printf 'Chrome profile discovery failed: %s\n' "$profiles"
+    exit 1
+  fi
+  if ! printf '%s\n' "$profiles" | grep -Fq "● $profile <"; then
+    printf 'Chrome profile %s is unavailable or its cb-bridge is inactive.\n' "$profile"
+    exit 1
+  fi
+  printf '%s\n' "$prompt" | codex -a never -s danger-full-access exec \
+    -C "$HOME" --skip-git-repo-check --ephemeral -
+  rc=$?
+  printf '=== %s end rc=%s ===\n' "$(date -Is)" "$rc"
+  exit "$rc"
+} >>"$log" 2>&1
