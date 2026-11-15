@@ -118,9 +118,24 @@ activate the change. The installer does not stop WSL automatically.
 
 **Connect to your running Windows Chrome:**
 
-The Chrome CDP helper is no longer installed from this repository. It lives
-in [nabinno/agent-skills](https://github.com/nabinno/agent-skills) at
+Shared agent skills and the Chrome CDP helper live in the public
+[nabinno/agent-skills](https://github.com/nabinno/agent-skills) repository
+(MIT). This repository does not ship the helper. The file is
 `agent-browser-current-browser/scripts/cdp`.
+
+```sh
+ghq get nabinno/agent-skills
+~/.ghq.d/src/github.com/nabinno/agent-skills/scripts/sync.sh
+mkdir -p "$HOME/.local/bin"
+ln -sfn ~/.ghq.d/src/github.com/nabinno/agent-skills/agent-browser-current-browser/scripts/cdp "$HOME/.local/bin/cdp"
+```
+
+`sync.sh` links each skill into the Claude Code, Codex, Grok, Antigravity,
+and `.agents` skill directories. Run it again after a new skill is added.
+
+- [agent-browser-current-browser](https://github.com/nabinno/agent-skills/blob/main/agent-browser-current-browser/README.md) — drive the Chrome or Edge window already open on Windows, from WSL2
+- [herdr-reorder-tabs](https://github.com/nabinno/agent-skills/blob/main/herdr-reorder-tabs/README.md) — reorder tabs in the current Herdr session
+- [wsl-clipboard-bridge](https://github.com/nabinno/agent-skills/blob/main/wsl-clipboard-bridge/README.md) — copy and paste between WSL2 and the Windows clipboard, including Japanese text
 
 **Zsh Environment:**
 ```sh
