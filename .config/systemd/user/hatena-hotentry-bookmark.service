@@ -1,0 +1,11 @@
+[Unit]
+Description=Codex: Hatena hotentry bookmarks
+After=network-online.target
+Wants=network-online.target
+OnFailure=codex-hotentry-notify@%n.service
+
+[Service]
+Type=oneshot
+Environment=HATENA_CHROME_PROFILE=nabinno
+ExecStart=%h/.local/bin/codex-hotentry-run
+TimeoutStartSec=1800

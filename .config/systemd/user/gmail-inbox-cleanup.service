@@ -1,0 +1,11 @@
+[Unit]
+Description=Claude Code: /gmail-inbox-cleanup (daily Gmail inbox tidy)
+After=network-online.target
+Wants=network-online.target
+OnFailure=claude-cron-notify@%n.service
+
+[Service]
+Type=oneshot
+Environment=CLAUDE_CRON_WORKDIR=%h
+ExecStart=%h/.local/bin/claude-cron-run gmail-inbox-cleanup
+TimeoutStartSec=1800

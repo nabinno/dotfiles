@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Record a Codex timer failure and send a best-effort Windows notification.
+set -u
+
+unit="${1:-unknown}"
+logdir="$HOME/.codex/cron-logs"
+mkdir -p "$logdir"
+printf '%s FAILED: %s\n' "$(date -Is)" "$unit" >> "$logdir/FAILURES.log"
+
+ps="$(command -v powershell.exe 2>/dev/null || true)"
+[ -z "$ps" ] && ps=/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe
+if [ -x "$ps" ]; then
+  "$ps" -NoProfile -WindowStyle Hidden -Command \
+    "Add-Type -AssemblyName System.Windows.Forms; Add-Type -AssemblyName System.Drawing; \$n = New-Object System.Windows.Forms.NotifyIcon; \$n.Icon = [System.Drawing.SystemIcons]::Warning; \$n.Visible = \$true; \$n.ShowBalloonTip(15000, 'Codex scheduled job failed', '${unit}', [System.Windows.Forms.ToolTipIcon]::Error); Start-Sleep -Seconds 6; \$n.Dispose()" \
+    >/dev/null 2>&1 || true
+fi

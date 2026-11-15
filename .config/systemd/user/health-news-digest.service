@@ -1,0 +1,11 @@
+[Unit]
+Description=Claude Code: /health-news-digest (daily Health News -> Google Sheets)
+After=network-online.target
+Wants=network-online.target
+OnFailure=claude-cron-notify@%n.service
+
+[Service]
+Type=oneshot
+Environment=CLAUDE_CRON_WORKDIR=%h
+ExecStart=%h/.local/bin/claude-cron-run health-news-digest
+TimeoutStartSec=1800

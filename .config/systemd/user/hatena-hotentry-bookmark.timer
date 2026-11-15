@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily 09:45 Asia/Tokyo trigger for Codex Hatena bookmarks
+
+[Timer]
+OnCalendar=*-*-* 09:45:00 Asia/Tokyo
+Persistent=true
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

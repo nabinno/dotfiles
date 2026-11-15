@@ -137,6 +137,33 @@ and `.agents` skill directories. Run it again after a new skill is added.
 - [herdr-reorder-tabs](https://github.com/nabinno/agent-skills/blob/main/herdr-reorder-tabs/README.md) — reorder tabs in the current Herdr session
 - [wsl-clipboard-bridge](https://github.com/nabinno/agent-skills/blob/main/wsl-clipboard-bridge/README.md) — copy and paste between WSL2 and the Windows clipboard, including Japanese text
 
+**Scheduled agent skills (WSL systemd user timers):**
+
+The units in `.config/systemd/user/` run three daily skills independently of
+interactive sessions: Claude Code `health-news-digest` at 09:03 JST and
+`gmail-inbox-cleanup` at 09:30 JST, then Codex `hatena-hotentry-bookmark` at
+09:45 JST. They are not enabled by `install.sh`; install the files and enable
+the timers explicitly:
+
+```sh
+for file in .local/bin/claude-cron-* .local/bin/codex-hotentry-*; do
+  install -Dm755 "$file" "$HOME/$file"
+done
+for file in .config/systemd/user/*; do
+  install -Dm644 "$file" "$HOME/$file"
+done
+systemctl --user daemon-reload
+systemctl --user enable --now health-news-digest.timer gmail-inbox-cleanup.timer hatena-hotentry-bookmark.timer
+```
+
+The Hatena job requires the existing Windows Chrome profile `nabinno`, its
+cb-bridge, remote debugging, and a Hatena login. Claude and Codex CLI sign-in
+must also be valid. These unattended jobs run with broad CLI permissions; review
+their scripts and service files before enabling them. Check schedules with
+`systemctl --user list-timers --all` and logs under `~/.claude/cron-logs/` and
+`~/.codex/cron-logs/`. Run `loginctl show-user "$USER" -p Linger` to check
+whether user timers stay active after the last WSL login exits.
+
 **Zsh Environment:**
 ```sh
 exec zsh -l

@@ -1,0 +1,6 @@
+[Unit]
+Description=Notify on failure of %i
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/claude-cron-notify %i
