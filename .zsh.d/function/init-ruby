@@ -12,7 +12,13 @@ export RUBY_PACKAGE_MANAGER=anyenv
 # ### version control ###
 get-rbenv() {
   case "${OSTYPE}" in
-    freebsd* | darwin* | linux*)
+    darwin*)
+      anyenv install rbenv || return
+      export RBENV_ROOT="${ANYENV_ROOT:-$HOME/.anyenv}/envs/rbenv"
+      path=("$RBENV_ROOT/bin" "$RBENV_ROOT/shims" $path)
+      git clone https://github.com/amatsuda/gem-src.git "$RBENV_ROOT/plugins/gem-src"
+      ;;
+    freebsd* | linux*)
       anyenv install rbenv
       git clone https://github.com/amatsuda/gem-src.git "$(rbenv root)"/plugins/gem-src
       exec -l zsh
@@ -41,7 +47,17 @@ get-ruby-by-asdf() {
 get-ruby-by-anyenv() {
   case "${OSTYPE}" in
     cygwin) apt-cyg install ruby ;;
-    freebsd* | darwin* | linux*)
+    darwin*)
+      type -p rbenv >/dev/null || get-rbenv || return
+      local openssl_prefix libyaml_prefix
+      openssl_prefix=$(brew --prefix openssl@3)
+      libyaml_prefix=$(brew --prefix libyaml)
+      [[ -r "$openssl_prefix/include/openssl/ssl.h" ]] || brew install openssl@3 || return
+      [[ -r "$libyaml_prefix/include/yaml.h" ]] || brew install libyaml || return
+      RUBY_CONFIGURE_OPTS="${RUBY_CONFIGURE_OPTS:-} --with-openssl-dir=$openssl_prefix --with-libyaml-dir=$libyaml_prefix" \
+        rbenv install -s "$REQUIRED_RUBY_VERSION" && rbenv global "$REQUIRED_RUBY_VERSION"
+      ;;
+    freebsd* | linux*)
       if ! type -p rbenv >/dev/null; then get-rbenv; fi
       rbenv install $REQUIRED_RUBY_VERSION
       rbenv rehash
@@ -70,6 +86,10 @@ get-global-gem-packages() {
     unicorn
   gem install rufo -v 0.1.0
 }
+
+if [[ $OSTYPE == darwin* && $RUBY_PACKAGE_MANAGER == anyenv && "$(command -v ruby)" == /usr/bin/ruby ]]; then
+  get-ruby-by-anyenv
+fi
 
 case ${RUBY_PACKAGE_MANAGER} in
   rbenv)

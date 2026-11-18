@@ -45,11 +45,13 @@ upgrade-elixir-build() {
 # ----------------------------------------------------------------------
 # ### installation ###
 get-erlang() {
+  if [[ $OSTYPE == darwin* && ! -r "$(brew --prefix openssl@3)/include/openssl/ssl.h" ]]; then
+    brew install openssl@3 || return
+  fi
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       case $(asdf plugin list) in *erlang*) ;; *) asdf plugin add erlang ;; esac
-      asdf install erlang $REQUIRED_ERLANG_VERSION
-      asdf set erlang $REQUIRED_ERLANG_VERSION
+      asdf install erlang $REQUIRED_ERLANG_VERSION && asdf set -u erlang $REQUIRED_ERLANG_VERSION
       ;;
   esac
 }
@@ -71,8 +73,7 @@ get-rebar3() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       case $(asdf plugin list) in *rebar*) ;; *) asdf plugin add rebar ;; esac
-      asdf install rebar $REQUIRED_REBAR_VERSION
-      asdf set rebar $REQUIRED_REBAR_VERSION
+      asdf install rebar $REQUIRED_REBAR_VERSION && asdf set -u rebar $REQUIRED_REBAR_VERSION
       ;;
   esac
 }
@@ -91,8 +92,7 @@ get-elixir() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       case $(asdf plugin list) in *elixir*) ;; *) asdf plugin add elixir ;; esac
-      asdf install elixir $REQUIRED_ELIXIR_VERSION
-      asdf set elixir $REQUIRED_ELIXIR_VERSION
+      asdf install elixir $REQUIRED_ELIXIR_VERSION && asdf set -u elixir $REQUIRED_ELIXIR_VERSION || return
       # Reload asdf environment to make mix available
       asdf reshim elixir
       get-global-mix-packages
@@ -170,7 +170,7 @@ get-global-mix-packages() {
   mix archive.install https://github.com/phoenixframework/archives/raw/master/phx_new-$REQUIRED_PHOENIXFRAMEWORK_VERSION.ez
 }
 
-if ! type -p iex >/dev/null; then get-elixir; fi
+if type -p erl >/dev/null && ! type -p iex >/dev/null; then get-elixir; fi
 
 if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
   printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"

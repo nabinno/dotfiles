@@ -11,7 +11,12 @@ export REQUIRED_PHP_VERSION=7.2.19
 # ### version control ###
 get-phpenv() {
   case "${OSTYPE}" in
-    freebsd* | darwin* | linux*) anyenv install phpenv && exec -l zsh ;;
+    darwin*)
+      anyenv install phpenv || return
+      export PHPENV_ROOT="${ANYENV_ROOT:-$HOME/.anyenv}/envs/phpenv"
+      path=("$PHPENV_ROOT/bin" "$PHPENV_ROOT/shims" $path)
+      ;;
+    freebsd* | linux*) anyenv install phpenv && exec -l zsh ;;
   esac
 }
 
@@ -19,7 +24,24 @@ get-phpenv() {
 # ### installation ###
 get-php() {
   case "${OSTYPE}" in
-    freebsd* | darwin*) nix-install php-with-extensions ;;
+    darwin*) (
+      local archive_arch binary
+      case "$(uname -m)" in
+        arm64) archive_arch=arm64 ;;
+        x86_64) archive_arch=x64 ;;
+        *) return 1 ;;
+      esac
+      mkdir -p "$HOME/.local/bin" || return
+      binary=$(mktemp "$HOME/.local/bin/.php.XXXXXX") || return
+      trap 'rm -f "$binary"' EXIT
+      # php.new publishes a self-contained macOS CLI with common extensions.
+      curl -fsSL "https://download.herdphp.com/herd-lite/macos/$archive_arch/8.5/php" -o "$binary" &&
+        chmod 755 "$binary" &&
+        /usr/bin/codesign --verify --strict "$binary" &&
+        "$binary" -n -v >/dev/null &&
+        mv -n "$binary" "$HOME/.local/bin/php"
+      ) ;;
+    freebsd*) nix-install php-with-extensions ;;
     linux*)
       case $DIST_VERSION in
         14.04) sudo apt-get install -y php-$REQUIRED_PHP_VERSION ;;

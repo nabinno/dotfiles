@@ -18,9 +18,8 @@ export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 get-claude() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
-      npm install -g @anthropic-ai/claude-code
-      type -p nodenv >/dev/null && nodenv rehash
-      exec -l zsh
+      npm install -g @anthropic-ai/claude-code || return
+      if type -p nodenv >/dev/null; then nodenv rehash; fi
       ;;
   esac
 }
@@ -114,9 +113,8 @@ if ! type -p agy >/dev/null; then get-antigravity; fi
 get-codex() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
-      npm install -g @openai/codex
-      type -p nodenv >/dev/null && nodenv rehash
-      exec -l zsh
+      npm install -g @openai/codex || return
+      if type -p nodenv >/dev/null; then nodenv rehash; fi
       ;;
   esac
 }

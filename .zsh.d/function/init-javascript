@@ -14,7 +14,12 @@ case $OSTYPE in msys | cygwin) export PATH=$(get-winpath "C:\Program Files\nodej
 # ### version control ###
 get-nodenv() {
   case "${OSTYPE}" in
-    freebsd* | darwin* | linux*)
+    darwin*)
+      anyenv install nodenv || return
+      export NODENV_ROOT="${ANYENV_ROOT:-$HOME/.anyenv}/envs/nodenv"
+      path=("$NODENV_ROOT/bin" "$NODENV_ROOT/shims" $path)
+      ;;
+    freebsd* | linux*)
       anyenv install nodenv
       git clone https://github.com/pine/nodenv-yarn-install.git "$(nodenv root)/plugins/nodenv-yarn-install"
       exec -l zsh
@@ -39,6 +44,11 @@ get-node-by-asdf() {
 
 get-node() {
   case "$OSTYPE" in
+    darwin*)
+      type -p nodenv >/dev/null || get-nodenv || return
+      export NODENV_ROOT="${NODENV_ROOT:-${ANYENV_ROOT:-$HOME/.anyenv}/envs/nodenv}"
+      nodenv install -s "$REQUIRED_NODE_VERSION" && nodenv global "$REQUIRED_NODE_VERSION"
+      ;;
     msys | cygwin) choco install nodejs ;;
     linux*)
       if ! type -p nodenv >/dev/null; then get-nodenv; fi
@@ -88,9 +98,10 @@ get-global-npm-packages-old() {
 # ### React ###
 get-react() {
   npm install -g \
-    create-react-app
+    create-react-app || return
+  if type -p nodenv >/dev/null; then nodenv rehash; fi
 }
-if ! type -p create-react-app >/dev/null; then get-react; fi
+if type -p npm >/dev/null && ! type -p create-react-app >/dev/null; then get-react; fi
 
 # ----------------------------------------------------------------------
 # ### ReasonML ###

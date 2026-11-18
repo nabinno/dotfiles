@@ -37,8 +37,7 @@ get-nix() {
       # cygrunsrv --start sshd-$CYGWIN_NAME
       ;;
     darwin*)
-      cd ~ && curl https://nixos.org/nix/install | sh
-      sudo chown -R ${CURRENT_USER} /nix
+      cd ~ && curl -fsSL https://nixos.org/nix/install | sh -s -- --daemon
       ;;
     linux*)
       case $DIST in
@@ -56,7 +55,12 @@ get-nix() {
       ;;
   esac
 }
-if ! type -p nix >/dev/null; then get-nix; fi
+if [[ $OSTYPE == darwin* && -r /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
+  source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+fi
+if ! type -p nix >/dev/null; then
+  if [[ $OSTYPE != darwin* || ${ZSH_AUTO_INSTALL:-0} == 1 ]]; then get-nix; fi
+fi
 
 set-nix() {
   case "${OSTYPE}" in
@@ -64,7 +68,7 @@ set-nix() {
       export NIXPKGS=~/.local/nixpkgs
       source /usr/local/etc/profile.d/nix.sh
       ;;
-    darwin*) source ~/.nix-profile/etc/profile.d/nix.sh ;;
+    darwin*) [[ ! -r ~/.nix-profile/etc/profile.d/nix.sh ]] || source ~/.nix-profile/etc/profile.d/nix.sh ;;
     linux*)
       case $DIST in
         Redhat | RedHat | Debian) source ~/.nix-profile/etc/profile.d/nix.sh ;;

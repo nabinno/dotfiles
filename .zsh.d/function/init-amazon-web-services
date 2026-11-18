@@ -9,10 +9,32 @@ local -F _start_time=$EPOCHREALTIME
 export SAM_CLI_TELEMETRY=0
 
 get-aws() {
-  if ! type -p pip >/dev/null; then get-pip; fi
   case "${OSTYPE}" in
     freebsd*) ;;
-    darwin* | linux*)
+    darwin*) (
+      local temp_dir
+      temp_dir=$(mktemp -d) || return
+      trap 'rm -rf "$temp_dir"' EXIT
+      mkdir -p "$HOME/.local/bin" || return
+      if [[ ! -x "$HOME/.local/aws-cli/aws" ]]; then
+        python3 - "$temp_dir/choices.xml" "$HOME/.local" <<'PYTHON'
+import plistlib
+import sys
+
+with open(sys.argv[1], "wb") as choices:
+    plistlib.dump([{
+        "choiceAttribute": "customLocation",
+        "attributeSetting": sys.argv[2],
+        "choiceIdentifier": "default",
+    }], choices)
+PYTHON
+        curl -fsSL https://awscli.amazonaws.com/AWSCLIV2.pkg -o "$temp_dir/AWSCLIV2.pkg" &&
+          /usr/sbin/installer -pkg "$temp_dir/AWSCLIV2.pkg" -target CurrentUserHomeDirectory -applyChoiceChangesXML "$temp_dir/choices.xml" || return
+      fi
+      [[ -e "$HOME/.local/bin/aws" ]] || ln -s "$HOME/.local/aws-cli/aws" "$HOME/.local/bin/aws"
+      [[ -e "$HOME/.local/bin/aws_completer" ]] || ln -s "$HOME/.local/aws-cli/aws_completer" "$HOME/.local/bin/aws_completer"
+      ) ;;
+    linux*)
       (
         cd ~
         curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -36,10 +58,10 @@ get-aws() {
 if ! type -p aws >/dev/null; then get-aws; fi
 
 get-awslogs() {
-  if ! type -p pip >/dev/null; then get-pip; fi
   case "${OSTYPE}" in
     freebsd*) ;;
-    darwin* | linux*)
+    darwin*) uv tool install awslogs ;;
+    linux*)
       pip install -U awslogs
       ;;
   esac
@@ -61,12 +83,16 @@ get-ecs-cli() {
 # if ! type -p ecs-cli >/dev/null; then get-ecs-cli; fi
 
 get-aws2-wrap() {
-  pip3 install aws2-wrap==1.1.9
+  case "$OSTYPE" in
+    darwin*) uv tool install aws2-wrap==1.1.9 ;;
+    *) pip3 install aws2-wrap==1.1.9 ;;
+  esac
 }
 if ! type -p aws2-wrap >/dev/null; then get-aws2-wrap; fi
 
 get-aws-cdk() {
-  npm i -g aws-cdk
+  npm i -g aws-cdk || return
+  if type -p nodenv >/dev/null; then nodenv rehash; fi
 }
 if ! type -p cdk >/dev/null; then get-aws-cdk; fi
 
@@ -80,6 +106,10 @@ get-aws-sam() {
 }
 # if ! type -p sam >/dev/null; then get-aws-sam; fi
 
+if [[ $OSTYPE == darwin* && "$(command -v ruby)" == /usr/bin/ruby ]]; then
+  path=("$(ruby -e 'print Gem.user_dir')/bin" $path)
+fi
+
 get-aws-rails-provisioner() {
   # Check if Ruby has OpenSSL support before attempting gem install
   if ruby -ropenssl -e 'puts OpenSSL::OPENSSL_VERSION' >/dev/null 2>&1; then
@@ -90,7 +120,11 @@ get-aws-rails-provisioner() {
         esac
         ;;
     esac
-    gem install aws-rails-provisioner --pre
+    if [[ $OSTYPE == darwin* && "$(command -v ruby)" == /usr/bin/ruby ]]; then
+      gem install --user-install aws-rails-provisioner --pre
+    else
+      gem install aws-rails-provisioner --pre
+    fi
   else
     echo "Warning: Ruby OpenSSL support unavailable. Skipping aws-rails-provisioner installation."
     echo "Run 'rbenv install 3.1.0 --force' to rebuild Ruby with current OpenSSL."

@@ -110,11 +110,10 @@ esac
 
 # ----------------------------------------------------------------------
 # Z
-ZDOTDIR=~/.local
+typeset _z_data_dir="$HOME/.local"
 
 get-z() {
-  git clone https://github.com/rupa/z $ZDOTDIR/z
-  source $ZDOTDIR/.local/z/z.sh
+  git clone https://github.com/rupa/z "$_z_data_dir/z"
 }
 
 set-z() {
@@ -148,12 +147,12 @@ set-z() {
   # z - jump around {{{2
   # https://github.com/rupa/z
   _Z_CMD=z
-  _Z_DATA=$ZDOTDIR/.z
+  _Z_DATA=$_z_data_dir/.z
   if is-at-least 4.3.9; then
-    load-if-exists $ZDOTDIR/z/z.sh
+    load-if-exists "$_z_data_dir/z/z.sh"
   else
     _Z_NO_PROMPT_COMMAND=1
-    load-if-exists $ZDOTDIR/z/z.sh && {
+    load-if-exists "$_z_data_dir/z/z.sh" && {
       precmd_z() {
         _z --add "$(pwd -P)"
       }
@@ -165,8 +164,8 @@ set-z() {
 
   unsetopt BG_NICE
 }
-if [ ! -f $ZDOTDIR/z/z.sh ]; then get-z; fi
-if [ -f $ZDOTDIR/z/z.sh ]; then set-z; fi
+if [[ ! -f "$_z_data_dir/z/z.sh" ]]; then get-z; fi
+if [[ -f "$_z_data_dir/z/z.sh" ]]; then set-z; fi
 
 get-autojump() {
   case $OSTYPE in
