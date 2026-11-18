@@ -13,7 +13,12 @@ export PATH="$HOME/.cask/bin:$PATH"
 # ### version control ###
 get-plenv() {
   case "${OSTYPE}" in
-    freebsd* | darwin* | linux*) anyenv install plenv && exec -l zsh ;;
+    darwin*)
+      anyenv install plenv || return
+      export PLENV_ROOT="${ANYENV_ROOT:-$HOME/.anyenv}/envs/plenv"
+      path=("$PLENV_ROOT/bin" "$PLENV_ROOT/shims" $path)
+      ;;
+    freebsd* | linux*) anyenv install plenv && exec -l zsh ;;
   esac
 }
 if ! type -p plenv >/dev/null; then get-plenv; fi

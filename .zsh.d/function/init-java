@@ -10,6 +10,9 @@ export JAVA_PACKAGE_MANAGER=asdf
 case "${JAVA_PACKAGE_MANAGER}" in
   asdf)
     export REQUIRED_OPENJDK_VERSION=adoptopenjdk-16.0.2+7
+    if [[ $OSTYPE == darwin* && "$(uname -m)" == arm64 ]]; then
+      export REQUIRED_OPENJDK_VERSION=liberica-16.0.2+7
+    fi
     ;;
   anyenv)
     export REQUIRED_OPENJDK_VERSION=openjdk-11.0.1
@@ -40,7 +43,12 @@ esac
 # ### version control ###
 get-jenv() {
   case "${OSTYPE}" in
-    freebsd* | darwin* | linux*) anyenv install jenv && exec -l zsh ;;
+    darwin*)
+      anyenv install jenv || return
+      export JENV_ROOT="${ANYENV_ROOT:-$HOME/.anyenv}/envs/jenv"
+      path=("$JENV_ROOT/bin" "$JENV_ROOT/shims" $path)
+      ;;
+    freebsd* | linux*) anyenv install jenv && exec -l zsh ;;
   esac
 }
 
@@ -54,8 +62,7 @@ get-java-by-asdf() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       case $(asdf plugin list) in *java*) ;; *) asdf plugin add java ;; esac
-      asdf install java $REQUIRED_OPENJDK_VERSION
-      asdf set java $REQUIRED_OPENJDK_VERSION
+      asdf install java $REQUIRED_OPENJDK_VERSION && asdf set -u java $REQUIRED_OPENJDK_VERSION
       ;;
   esac
 }
@@ -147,16 +154,24 @@ set-javahome-by-anyenv() {
   esac
 }
 
-if ! type -p java >/dev/null; then get-java && set-javahome; fi
-if type -p java >/dev/null; then set-javahome; fi
+if [[ $OSTYPE == darwin* && "$(command -v java)" == /usr/bin/java ]]; then
+  if JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null); then
+    export JAVA_HOME
+  else
+    get-java && set-javahome
+  fi
+elif ! type -p java >/dev/null; then
+  get-java && set-javahome
+else
+  set-javahome
+fi
 
 # ----------------------------------------------------------------------
 get-scala() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
-      case $(asdf plugin list) in scala) ;; *) asdf plugin add scala ;; esac
-      asdf install scala $REQUIRED_SCALA_VERSION
-      asdf set scala $REQUIRED_SCALA_VERSION
+      case $(asdf plugin list) in *scala*) ;; *) asdf plugin add scala ;; esac
+      asdf install scala $REQUIRED_SCALA_VERSION && asdf set -u scala $REQUIRED_SCALA_VERSION
       ;;
   esac
 }
@@ -166,8 +181,7 @@ get-sbt() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       case $(asdf plugin list) in *sbt*) ;; *) asdf plugin add sbt ;; esac
-      asdf install sbt $REQUIRED_SBT_VERSION
-      asdf set sbt $REQUIRED_SBT_VERSION
+      asdf install sbt $REQUIRED_SBT_VERSION && asdf set -u sbt $REQUIRED_SBT_VERSION
       ;;
   esac
 }

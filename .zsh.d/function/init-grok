@@ -25,6 +25,9 @@ get-grok() {
         print -u2 '[init-grok] Installation failed; continuing shell initialization. Retry with get-grok.'
         return 1
       fi
+      if [[ -x "$HOME/.grok/bin/grok" ]]; then
+        path=("$HOME/.grok/bin" ${path:#"$HOME/.grok/bin"})
+      fi
       if type -p nodenv >/dev/null; then nodenv rehash; fi
       rehash
       if ! type -p grok >/dev/null; then

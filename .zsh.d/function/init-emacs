@@ -65,7 +65,7 @@ remove-emacs() {
 # ### aspell ###
 get-aspell() {
   case "${OSTYPE}" in
-    darwin*) brew install --with-lang-ena aspell ;;
+    darwin*) brew install aspell ;;
     freebsd*) ;;
     linux*)
       case "${DIST}" in

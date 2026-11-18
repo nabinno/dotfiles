@@ -25,11 +25,7 @@ get-anyenv() {
 
 if ! type -p anyenv >/dev/null; then get-anyenv; fi
 
-# anyenv init bakes per-env `rehash` calls into its output, which spawn every
-# env binary and rebuild shims on *every* shell start (~1.2s). Shims only change
-# when you install a language version or a gem/npm binary, so strip those lines
-# from the cached output. Run `anyenv-rehash` manually (or wait for the weekly
-# cache refresh) after installing new executables.
+# Load current shims while leaving the slower rehash to anyenv-rehash.
 _anyenv_init_src() {
   anyenv init - zsh | sed -e '/rehash 2>\/dev\/null/d' -e '/rehash --only-manage-paths/d'
 }
@@ -38,7 +34,7 @@ anyenv-rehash() {
   for e in goenv nodenv plenv pyenv rbenv; do type -p $e >/dev/null && $e rehash; done
 }
 
-if type -p anyenv >/dev/null; then source "$(zsh-cache anyenv-init.zsh _anyenv_init_src)"; fi
+if type -p anyenv >/dev/null; then eval "$(_anyenv_init_src)"; fi
 
 if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
   printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"

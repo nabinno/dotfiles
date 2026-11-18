@@ -8,10 +8,12 @@ local -F _start_time=$EPOCHREALTIME
 
 export REQUIRED_TERRAFORM_VERSION=0.14.6
 export REQUIRED_TERRAFORM_SWITCHER_VERSION=0.7.737
-export PATH=~/.$PATH
 
 get-tfenv() {
-  anyenv install tfenv
+  case "$OSTYPE" in
+    darwin*) brew install tfenv ;;
+    *) anyenv install tfenv ;;
+  esac
 }
 if ! type -p tfenv >/dev/null; then get-tfenv; fi
 
@@ -42,11 +44,17 @@ set-terraform-switcher() {
 # fi
 
 get-terraform() {
-  tfenv install $REQUIRED_TERRAFORM_VERSION
+  if [[ $OSTYPE == darwin* && $(uname -m) == arm64 ]]; then
+    # Terraform 0.14.6 predates native macOS ARM64 binaries.
+    TFENV_ARCH=amd64 tfenv install "$REQUIRED_TERRAFORM_VERSION" || return
+  else
+    tfenv install "$REQUIRED_TERRAFORM_VERSION" || return
+  fi
+  tfenv use "$REQUIRED_TERRAFORM_VERSION"
   # tfswitch -b ~/.local/bin/terraform $REQUIRED_TERRAFORM_VERSION
   # echo $REQUIRED_TERRAFORM_VERSION >~/.tfswitchrc
 }
-if ! type -p terraform >/dev/null; then get-terraform; fi
+if type -p tfenv >/dev/null && ! tfenv list >/dev/null 2>&1; then get-terraform; fi
 
 get-terraform-by-tfswitch() {
   tfswitch -b ~/.local/bin/terraform $REQUIRED_TERRAFORM_VERSION

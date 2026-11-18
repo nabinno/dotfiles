@@ -403,7 +403,13 @@ get-snappy() {
 # ### build ###
 get-make() {
   case $OSTYPE in
-    darwin*) brew install make ;;
+    darwin*)
+      local -a formulas
+      type -p make >/dev/null || formulas+=(make)
+      type -p automake >/dev/null || formulas+=(automake)
+      type -p cmake >/dev/null || formulas+=(cmake)
+      if (( ${#formulas} )); then brew install "${formulas[@]}"; fi
+      ;;
     freebsd*) port install make ;;
     linux*)
       case "${DIST}" in

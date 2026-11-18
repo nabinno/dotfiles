@@ -13,7 +13,12 @@ export GO111MODULE=on
 # ### version control ###
 get-goenv() {
   case "${OSTYPE}" in
-    freebsd* | darwin* | linux*) anyenv install goenv && exec -l zsh ;;
+    darwin*)
+      anyenv install goenv || return
+      export GOENV_ROOT="${ANYENV_ROOT:-$HOME/.anyenv}/envs/goenv"
+      path=("$GOENV_ROOT/bin" "$GOENV_ROOT/shims" $path)
+      ;;
+    freebsd* | linux*) anyenv install goenv && exec -l zsh ;;
   esac
 }
 

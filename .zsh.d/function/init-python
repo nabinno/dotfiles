@@ -12,7 +12,12 @@ export REQUIRED_PYTHON_VERSION=3.7.3
 # ### version control ###
 get-pyenv() {
   case "${OSTYPE}" in
-    freebsd* | darwin* | linux*) anyenv install pyenv && exec -l zsh ;;
+    darwin*)
+      anyenv install pyenv || return
+      export PYENV_ROOT="${ANYENV_ROOT:-$HOME/.anyenv}/envs/pyenv"
+      path=("$PYENV_ROOT/bin" "$PYENV_ROOT/shims" $path)
+      ;;
+    freebsd* | linux*) anyenv install pyenv && exec -l zsh ;;
   esac
 }
 
@@ -168,10 +173,22 @@ get-gym() {
 }
 # if ! type -p gym > /dev/null ; then get-gym ; fi
 
-get-poetry() {
-  pip install --user poetry
+# ----------------------------------------------------------------------
+# uv
+get-uv() {
+  curl -LsSf https://astral.sh/uv/install.sh | sh
 }
-if ! type -p poetry >/dev/null; then get-poetry; fi
+if ! type -p uv >/dev/null; then get-uv; fi
+
+get-poetry() {
+  case "$OSTYPE" in
+    darwin*) uv tool install poetry ;;
+    *) pip install --user poetry ;;
+  esac
+}
+if ! type -p poetry >/dev/null; then
+  if [[ $OSTYPE != darwin* ]] || type -p uv >/dev/null; then get-poetry; fi
+fi
 
 # set-poetry() {
 #   eval "$(poetry completions zsh)"
@@ -179,12 +196,6 @@ if ! type -p poetry >/dev/null; then get-poetry; fi
 # if type -p poetry >/dev/null; then set-poetry; fi
 
 
-# ----------------------------------------------------------------------
-# uv
-get-uv() {
-  curl -LsSf https://astral.sh/uv/install.sh | sh
-}
-if ! type -p uv >/dev/null; then get-uv; fi
 
 if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
   printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"

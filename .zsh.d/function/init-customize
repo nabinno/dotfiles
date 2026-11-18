@@ -10,7 +10,7 @@ local -F _start_time=$EPOCHREALTIME
 export PATH="$HOME/.local/dove/bin:$PATH"
 
 get-dove() {
-  git clone git@github.com:nabinno/dove.git ~/.local/dove
+  git clone https://github.com/nabinno/dove.git "$HOME/.local/dove"
 }
 if [ ! -d ~/.local/dove ]; then get-dove; fi
 

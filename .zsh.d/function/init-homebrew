@@ -24,11 +24,10 @@ get-brew() {
 get-base-brew-packages() {
   case "${OSTYPE}" in
     darwin*)
-      brew install \
-        jq \
-        memcached \
-        the_silver_searcher \
-        tree
+      local formula
+      for formula in jq memcached the_silver_searcher tree; do
+        brew list --versions "$formula" >/dev/null || brew install "$formula"
+      done
       ;;
     linux*)
       case "${DIST}" in
@@ -60,7 +59,10 @@ case "${OSTYPE}" in
     esac
     ;;
 esac
-if ! [ -f ~/.linuxbrew/bin/brew ]; then get-brew && get-base-brew-packages; fi
+case "$OSTYPE" in
+  darwin*) get-base-brew-packages ;;
+  linux*) [[ -x ~/.linuxbrew/bin/brew ]] || { get-brew && get-base-brew-packages; } ;;
+esac
 
 if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
   printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"

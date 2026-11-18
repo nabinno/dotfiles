@@ -7,6 +7,10 @@ zmodload zsh/datetime
 local -F _start_time=$EPOCHREALTIME
 
 get-ansible() {
+  if [[ $OSTYPE == darwin* ]]; then
+    uv tool install --python 3.12 --with ansible --with apache-libcloud ansible-core && mkdir -p ~/.gcp
+    return
+  fi
   pip install \
     ansible \
     apache-libcloud
@@ -20,7 +24,6 @@ get-ans() {
   case "${OSTYPE}" in
     freebsd* | darwin* | linux*)
       git clone https://github.com/nabinno/ans ~/.ans
-      eval "$(ans init -)"
       ;;
   esac
 }

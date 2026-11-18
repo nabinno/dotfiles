@@ -8,7 +8,7 @@ local -F _start_time=$EPOCHREALTIME
 
 get-herdr() {
   case "${OSTYPE}" in
-    darwin*) brew install herdr ;;
+    darwin*) (setopt pipefail; curl -fsSL https://herdr.dev/install.sh | sh) ;;
     linux*)
       if type -p brew >/dev/null; then
         brew install herdr

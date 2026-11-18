@@ -11,7 +11,8 @@ export REQUIRED_GHC_VERSION=8.4.3
 
 get-ghc() {
   case $OSTYPE in
-    freebsd* | darwin*) nix-install ghc 2>/dev/null || echo "Warning: nix-install ghc failed, trying alternative methods" ;;
+    darwin*) brew install ghc ;;
+    freebsd*) nix-install ghc 2>/dev/null || echo "Warning: nix-install ghc failed, trying alternative methods" ;;
     linux*)
       case $DIST in
         Redhat* | RedHat* | Debian | Ubuntu*)
@@ -34,7 +35,8 @@ get-ghc-by-asdf() {
 
 get-cabal() {
   case $OSTYPE in
-    freebsd* | darwin*)
+    darwin*) brew install cabal-install ;;
+    freebsd*)
       nix-install cabal-install 2>/dev/null || echo "Warning: nix-install cabal-install failed, trying alternative methods"
       cabal update 2>/dev/null || true
       ;;
@@ -50,7 +52,10 @@ get-cabal() {
 }
 
 get-stack() {
-  curl -sSL https://get.haskellstack.org/ | sh
+  case "$OSTYPE" in
+    darwin*) brew install stack ;;
+    *) curl -sSL https://get.haskellstack.org/ | sh ;;
+  esac
 }
 
 if ! type -p ghc >/dev/null; then get-ghc && get-cabal; fi
