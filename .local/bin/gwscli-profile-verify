@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Read-only smoke test of gwscli for one profile.
+# Prints only result shapes (keys and item counts) or the kind of error, never
+# mail, event, or file content, so the output is safe to paste into a chat.
+#
+# Usage: gwscli-profile-verify NAME   (NAME is a gwscli-profile profile)
+set -uo pipefail
+
+name=${1:?usage: gwscli-profile-verify NAME}
+profile_bin=${GWSCLI_PROFILE_CMD:-gwscli-profile}
+
+summarize() {
+  python3 -I -c '
+import json, sys
+raw = sys.stdin.read()
+last = (raw.strip().splitlines() or [""])[-1]
+if "confirmation required via stdin" in raw:
+    print("NEEDS APPROVAL (Allow once / Don'"'"'t allow; run it in your own terminal)"); sys.exit()
+if "no valid cached token" in raw:
+    print("MISSING SCOPE (add it with: auth login <service> <command>)"); sys.exit()
+try:
+    d = json.loads(raw[raw.index("{"):])
+except Exception:
+    print("ERROR " + last[:100]); sys.exit()
+if d.get("isError"):
+    text = " ".join(c.get("text", "") for c in d.get("content", []))
+    if "Developer Preview" in text:
+        print("BLOCKED (project must be enrolled in the Developer Preview Program)")
+    elif "not enabled for this project" in text:
+        print("BLOCKED (" + text[:80] + ")")
+    else:
+        print("ERROR " + text[:100])
+    sys.exit()
+if not d:
+    print("OK (0 items)"); sys.exit()
+parts = [f"{k}[{len(v)}]" if isinstance(v, list) else k for k, v in d.items()]
+print("OK " + " ".join(parts[:6]))
+'
+}
+
+# stdin is closed so that approval prompts fail fast instead of waiting.
+check() {
+  local label=$1; shift
+  printf '%-28s ' "$label"
+  "$profile_bin" "$name" "$@" </dev/null 2>&1 | summarize || true
+}
+
+check 'gmail list_labels'         gmail list_labels
+check 'gmail search_threads'      gmail search_threads --query 'in:inbox newer_than:7d' --view THREAD_VIEW_IDS_ONLY --pageSize 50
+check 'calendar list_calendars'   calendar list_calendars
+check 'calendar list_events'      calendar list_events --pageSize 10
+check 'tasks list_task_lists'     tasks list_task_lists
+check 'chat search_conversations' chat search_conversations --pageSize 10
+check 'drive list_recent_files'   drive list_recent_files --pageSize 5 --excludeContentSnippets
+check 'drive search_files'        drive search_files --query "mimeType = 'application/vnd.google-apps.presentation'" --pageSize 5 --excludeContentSnippets

@@ -1,0 +1,203 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  gwscli-profile init [--paste] [NAME...]
+  gwscli-profile list
+  gwscli-profile NAME [--] [gwscli arguments...]
+
+Runs gwscli with a separate OAuth client and token store per Google Workspace.
+Each profile lives in $GWSCLI_PROFILES_DIR/NAME (default ~/.config/gwscli-profiles),
+which gwscli sees as XDG_CONFIG_HOME, so its files land in NAME/gwscli/.
+NAME may contain lowercase letters, digits, - and _.
+
+init walks through each profile that is not signed in yet (default: every
+profile in $GWSCLI_PROFILES, or every existing profile folder). For a profile without an OAuth client it prints
+the Google Cloud console personal-mode URL, waits for the client_secret*.json
+you download there, moves it into the profile and registers it, then runs a
+read-only sign-in. Run it in your own terminal; it waits for browser steps.
+With --paste it asks for the project ID, client ID and secret instead of
+waiting for a download.
+
+Environment:
+  GWSCLI_PROFILES       Space-separated profiles for init/list (default: the
+                        folders already in $GWSCLI_PROFILES_DIR)
+  GWSCLI_PROFILES_DIR   Profile root (default: ~/.config/gwscli-profiles)
+  GWSCLI_DOWNLOADS_DIR  Where the browser saves downloads (default: Windows
+                        Downloads under WSL, otherwise ~/Downloads)
+  GWSCLI_PROJECT_PREFIX Project ID prefix used to match downloads (default: gwscli-)
+  GWSCLI_PROFILE_BIN    gwscli executable (default: gwscli on PATH)
+EOF
+}
+fail() { printf '%s\n' "$1" >&2; exit 2; }
+log() { printf '[%s] %s\n' "$1" "$2" >&2; }
+
+root=${GWSCLI_PROFILES_DIR:-$HOME/.config/gwscli-profiles}
+bin=${GWSCLI_PROFILE_BIN:-gwscli}
+profiles=()
+if [[ -n ${GWSCLI_PROFILES:-} ]]; then
+  read -r -a profiles <<<"$GWSCLI_PROFILES"
+elif [[ -d $root ]]; then
+  for dir in "$root"/*/; do [[ -d $dir ]] && profiles+=("$(basename -- "$dir")"); done
+fi
+prefix=${GWSCLI_PROJECT_PREFIX:-gwscli-}
+setup_url='https://console.cloud.google.com/auth/overview/personal?apis=ws,wsmcp,tasksmcp&clientType=desktop&isAgent=true'
+
+valid_name() { [[ $1 =~ ^[a-z0-9_-]+$ ]] || fail "Invalid profile name: $1"; }
+
+# Run gwscli inside one profile without touching the caller's environment.
+run_in() {
+  local name=$1; shift
+  local config_home="$root/$name"
+  # Credentials and refresh tokens are stored here; keep the tree private.
+  (umask 077 && mkdir -p -- "$config_home")
+  XDG_CONFIG_HOME="$config_home" GWSCLI_PROFILE="$name" "$bin" "$@"
+}
+
+# One-line summary of `auth status`, which lists granted scopes but no account.
+status_line() {
+  local status
+  status=$(run_in "$1" auth status 2>&1) || true
+  if [[ $status == *"Granted the following scopes"* ]]; then
+    printf 'Signed in (%d scopes)\n' "$(grep -c '^  - ' <<<"$status")"
+  else
+    printf '%s\n' "${status%%$'\n'*}"
+  fi
+}
+
+signed_in() {
+  local status
+  status=$(run_in "$1" auth status 2>&1) || return 1
+  [[ $status != *"No logged in user"* ]]
+}
+
+downloads_dir() {
+  if [[ -n ${GWSCLI_DOWNLOADS_DIR:-} ]]; then
+    printf '%s\n' "$GWSCLI_DOWNLOADS_DIR"
+  elif command -v wslvar >/dev/null && command -v wslpath >/dev/null \
+    && profile_dir=$(wslvar USERPROFILE 2>/dev/null) && [[ -n $profile_dir ]]; then
+    printf '%s/Downloads\n' "$(wslpath -u "$profile_dir")"
+  else
+    printf '%s/Downloads\n' "$HOME"
+  fi
+}
+
+# Wait for this profile's client_secret*.json. A file whose project_id is
+# $GWSCLI_PROJECT_PREFIX$name (default gwscli-NAME) is taken whenever it was
+# downloaded, so several profiles can be downloaded in any order; otherwise
+# only a file that appears after the marker was created is taken.
+wait_for_client_file() {
+  local dir=$1 marker=$2 project=$3 found file
+  while :; do
+    found=
+    while IFS= read -r file; do
+      if grep -q "\"project_id\": *\"$project\"" -- "$file" 2>/dev/null; then
+        found=$file; break
+      fi
+    done < <(find "$dir" -maxdepth 1 -type f -name 'client_secret*.json' \
+      -printf '%T@ %p\n' 2>/dev/null | sort -rn | cut -d' ' -f2-)
+    if [[ -z $found ]]; then
+      # Fall back to a fresh download that belongs to no gwscli-* project.
+      while IFS= read -r file; do
+        grep -q "\"project_id\": *\"$prefix" -- "$file" 2>/dev/null || { found=$file; break; }
+      done < <(find "$dir" -maxdepth 1 -type f -name 'client_secret*.json' \
+        -newer "$marker" -printf '%T@ %p\n' 2>/dev/null | sort -rn | cut -d' ' -f2-)
+    fi
+    [[ -n $found ]] && { printf '%s\n' "$found"; return; }
+    sleep 2
+  done
+}
+
+# Build the client JSON from a pasted client ID and secret (for when the console
+# shows the secret but the JSON download is unavailable). The secret is read
+# without echo and never placed on a command line.
+paste_client() {
+  local name=$1 client_file=$2 project client_id client_secret
+  log "$name" "Paste the OAuth client values shown in the Google Cloud console."
+  read -r -p '  Project ID: ' project
+  read -r -p '  Client ID: ' client_id
+  read -r -s -p '  Client secret (hidden): ' client_secret; printf '\n' >&2
+  [[ $project =~ ^[a-z][a-z0-9-]{4,28}[a-z0-9]$ ]] || fail "Invalid project ID: $project"
+  [[ $client_id =~ ^[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com$ ]] || fail 'Invalid client ID'
+  [[ $client_secret =~ ^[A-Za-z0-9_-]+$ ]] || fail 'Invalid client secret'
+  (umask 077 && mkdir -p -- "$root/$name" && printf '%s' \
+    "{\"installed\":{\"client_id\":\"$client_id\",\"project_id\":\"$project\",\"auth_uri\":\"https://accounts.google.com/o/oauth2/auth\",\"token_uri\":\"https://oauth2.googleapis.com/token\",\"auth_provider_x509_cert_url\":\"https://www.googleapis.com/oauth2/v1/certs\",\"client_secret\":\"$client_secret\",\"redirect_uris\":[\"http://localhost\"]}}" \
+    >"$client_file")
+  log "$name" "Saved $client_file"
+}
+
+init_profile() {
+  local name=$1 client_dir client_file downloads marker src
+  valid_name "$name"
+  if signed_in "$name"; then
+    log "$name" "Already signed in; skipping. ($(status_line "$name"))"
+    return
+  fi
+
+  client_dir="$root/$name/gwscli"
+  client_file="$root/$name/client_secret.json"
+  if [[ ! -s $client_dir/client_credentials.json ]]; then
+    if [[ ! -s $client_file && $paste == 1 ]]; then
+      paste_client "$name" "$client_file"
+    elif [[ ! -s $client_file ]]; then
+      downloads=$(downloads_dir)
+      [[ -d $downloads ]] || fail "Downloads folder not found: $downloads (set GWSCLI_DOWNLOADS_DIR)"
+      marker=$(mktemp)
+      log "$name" "Create an OAuth client while signed in to the $name Workspace account:"
+      printf '  1. Open: %s\n' "$setup_url" >&2
+      printf '  2. Create project %s, click Create Client, then download the JSON.\n' "$prefix$name" >&2
+      log "$name" "Waiting for client_secret*.json in $downloads (Ctrl-C to stop)..."
+      src=$(wait_for_client_file "$downloads" "$marker" "$prefix$name")
+      rm -f -- "$marker"
+      (umask 077 && mkdir -p -- "$root/$name")
+      # Move the secret out of Downloads so it is kept only inside the profile.
+      mv -- "$src" "$client_file"
+      chmod 600 -- "$client_file"
+      log "$name" "Saved $(basename -- "$src") as $client_file"
+    fi
+    # auth setup asks to confirm clearing tokens; a new profile has none.
+    printf 'Y\n' | run_in "$name" auth setup --oauth_client_file="$client_file" >/dev/null
+    log "$name" "Registered OAuth client."
+  fi
+
+  log "$name" "Signing in read-only. Open the URL below with the $name account."
+  run_in "$name" auth login --bundle=readonly
+  log "$name" "$(status_line "$name")"
+}
+
+name=${1:-}
+case "$name" in
+  -h|--help) usage; exit 0 ;;
+  init)
+    shift
+    paste=0
+    [[ ${1:-} == --paste ]] && { paste=1; shift; }
+    (( $# )) || set -- "${profiles[@]}"
+    (( $# )) || fail 'Name the profiles to set up, e.g. gwscli-profile init work personal (or set GWSCLI_PROFILES).'
+
+    for profile in "$@"; do init_profile "$profile"; done
+    exit 0 ;;
+  list)
+    (( ${#profiles[@]} )) || { printf 'No profiles yet (gwscli-profile init NAME...)\n'; exit 0; }
+    for profile in "${profiles[@]}"; do
+      if [[ -d $root/$profile ]]; then
+        printf '%s\t%s\n' "$profile" "$(status_line "$profile")"
+      else
+        printf '%s\t%s\n' "$profile" 'Not initialized (gwscli-profile init)'
+      fi
+    done
+    exit 0 ;;
+  '') usage >&2; exit 2 ;;
+esac
+valid_name "$name"
+shift
+[[ ${1:-} == -- ]] && shift
+
+# Only the child process sees the profile; the parent shell is untouched.
+config_home="$root/$name"
+(umask 077 && mkdir -p -- "$config_home")
+export XDG_CONFIG_HOME="$config_home"
+export GWSCLI_PROFILE="$name"
+exec "$bin" "$@"
