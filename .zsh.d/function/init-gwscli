@@ -1,0 +1,109 @@
+#!/usr/bin/env zsh
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  print
+  print -r -- '[init-gwscli]'
+fi
+zmodload zsh/datetime
+local -F _start_time=$EPOCHREALTIME
+
+# ----------------------------------------------------------------------
+# ### Google Workspace CLI (gwscli) ###
+# Google's official CLI for Calendar, Chat, Docs, Drive, Gmail, People,
+# Sheets, Slides and Tasks, backed by the Workspace MCP services.
+# https://developers.google.com/workspace/guides/workspace-cli
+#
+# # CHEATSHEET
+# # 1. Install (opt-in at shell start with ZSH_AUTO_INSTALL=1)
+# get-gwscli
+#
+# # 2. Register an OAuth client (Desktop app, "Use this client for an
+# #    AI-powered agent" checked). Run in your own terminal, not via an agent.
+# gwscli auth setup --oauth_client_file=/path/to/client_secret.json
+#
+# # 3. Sign in, read-only first; add write scopes per service/command later
+# gwscli auth login --bundle=readonly
+# gwscli auth login "gmail create_draft"
+# gwscli auth status
+#
+# # 4. Discover commands at runtime (signatures may change between releases)
+# gwscli --help; gwscli drive --help; gwscli drive search_files --schema
+#
+# # 5. Install the packaged agent skills for Claude Code / Codex / Grok
+# set-gwscli-skills
+#
+# # Update binary and skills together
+# update-gwscli
+#
+# # Several Workspaces: gwscli-profile (~/.local/bin) gives each profile its own
+# # OAuth client and tokens in ~/.config/gwscli-profiles/NAME. List the profiles
+# # in GWSCLI_PROFILES (e.g. in ~/.zsh.d/init.zsh) to get an alias gws-NAME each.
+# #  1. In the Workspace's browser, open the personal-mode page printed by init,
+# #     create project gwscli-NAME (no billing account), create the client and
+# #     click "Download JSON" yourself. Keep the secret away from agents.
+# #  2. gwscli-profile init NAME...   # picks the JSON by project_id, read-only login
+# #     (the login listener times out after 5 minutes)
+# #  3. gws-NAME auth login "drive search_files" ...   # readonly lacks drive.file
+# #  4. gwscli-profile-verify NAME    # item counts only; BLOCKED = Developer Preview,
+# #     NEEDS APPROVAL = answer Allow once / Don't allow in your own terminal
+# #  Lost the secret? Re-create the client on the same project, or add a secret
+# #  and copy it at once, then: gwscli-profile init --paste NAME
+GWSCLI_INSTALL_DIR=${GWSCLI_INSTALL_DIR:-$HOME/.local/bin}
+GWSCLI_SKILLS_DIR=${GWSCLI_SKILLS_DIR:-$HOME/.gwscli/skills}
+export GWSCLI_PROFILES_DIR=${GWSCLI_PROFILES_DIR:-$HOME/.config/gwscli-profiles}
+if [[ -d $GWSCLI_INSTALL_DIR && ${path[(Ie)$GWSCLI_INSTALL_DIR]} -eq 0 ]]; then
+  export PATH="$GWSCLI_INSTALL_DIR:$PATH"
+fi
+
+# Define gws-NAME for each profile in GWSCLI_PROFILES and each existing profile folder.
+set-gwscli-profile-aliases() {
+  local name
+  for name in ${=GWSCLI_PROFILES:-} $GWSCLI_PROFILES_DIR/*(N/:t); do
+    [[ $name =~ '^[a-z0-9_-]+$' ]] && alias "gws-$name=gwscli-profile $name"
+  done
+}
+set-gwscli-profile-aliases
+
+get-gwscli() {
+  case "${OSTYPE}" in
+    darwin* | linux*)
+      # The official installer downloads the binary for this OS/arch, checks
+      # that it runs, and atomically replaces any existing install.
+      if ! curl -fsSL https://dl.google.com/workspace-cli/install.sh \
+        | GWSCLI_INSTALL_DIR=$GWSCLI_INSTALL_DIR bash; then
+        print -u2 '[init-gwscli] Installation failed; continuing shell initialization. Retry with get-gwscli.'
+        return 1
+      fi
+      rehash
+      gwscli version
+      ;;
+  esac
+}
+
+# Install the skills embedded in the binary into one folder, then link each
+# skill into every agent's skill folder that exists on this machine.
+set-gwscli-skills() {
+  type -p gwscli >/dev/null || { print -u2 '[init-gwscli] gwscli is not installed; run get-gwscli.'; return 1; }
+  mkdir -p $GWSCLI_SKILLS_DIR
+  gwscli skills install --dir $GWSCLI_SKILLS_DIR --overwrite || return 1
+  local agent_dir skill
+  for agent_dir in ~/.agents/skills ~/.claude/skills ~/.claude-bedrock/skills \
+    ~/.claude-pro/skills ~/.codex/skills ~/.grok/skills; do
+    [[ -d $agent_dir ]] || continue
+    for skill in $GWSCLI_SKILLS_DIR/*(N/); do
+      # Keep any real directory that happens to share the name.
+      [[ -e $agent_dir/${skill:t} && ! -L $agent_dir/${skill:t} ]] && continue
+      ln -sfn $skill $agent_dir/${skill:t}
+    done
+  done
+  print -r -- "[init-gwscli] Skills linked from $GWSCLI_SKILLS_DIR. Restart agent sessions to load them."
+}
+
+update-gwscli() {
+  get-gwscli && set-gwscli-skills
+}
+
+if [[ ${ZSH_AUTO_INSTALL:-0} == 1 ]] && ! type -p gwscli >/dev/null; then get-gwscli; fi
+
+if [[ ${ZSH_INIT_VERBOSE:-0} == 1 ]]; then
+  printf "time: %.3f sec\n" "$(( EPOCHREALTIME - _start_time ))"
+fi

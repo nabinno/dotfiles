@@ -130,6 +130,7 @@ require init-herdr
 # Platform
 # require init-heroku
 require init-google-cloud-platform
+require init-gwscli
 # require init-kubernetes
 require init-amazon-web-services
 
